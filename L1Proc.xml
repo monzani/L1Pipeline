@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline
+   xmlns="http://glast-ground.slac.stanford.edu/pipeline"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
+
+<task name="L1Proc" version="0.0" type="Data">
+   <prerequisites>
+      <prerequisite name="DOWNLINK_ID" type="string"/>
+      <prerequisite name="L1ProcROOT" type="string"/>
+   </prerequisites>
+
+   <process name="findRunDirs">
+      <job executable="${L1ProcROOT}/findRunDirs.py" maxCPU="xxx"/>
+   </process>
+
+   <process name="startRuns">
+      <depends>
+         <after process="findRunDirs" status="SUCCESS"/>
+      </depends>
+      <createsSubtasks>
+         <subtask>doRun</subtask>
+      </createsSubtasks>
+   </process>
+
+   <process name="launchASP">
+      <depends>
+         <after process="doRun.registerFT1" status="DONE"/>
+      </depends>
+   </process>
+
+   <task name="doRun" version="0.0" type="Data">
+
+      <process name="startChunks">
+         <createsSubtasks>
+            <subtask>doChunk</subtask>
+         </createsSubtasks>
+      </process>
+
+      <process name="mergeDigi">
+         <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="xxx"/>
+         <depends>
+            <after process="doChunk.digitization" status="DONE"/>
+         </depends>
+      </process>
+      <process name="registerDigi">
+         <job executable="${L1ProcROOT}/registerStuff.py" maxCPU="xxx"/>
+         <depends>
+            <after process="mergeDigi" status="SUCCESS"/>
+         </depends>
+      </process>
+
+      <process name="mergeDigiMon">
+         <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="xxx"/>
+         <depends>
+            <after process="doChunk.digiMon" status="DONE"/>
+         </depends>
+      </process>
+      <process name="registerDigiMon">
+         <job executable="${L1ProcROOT}/registerStuff.py" maxCPU="xxx"/>
+         <depends>
+            <after process="mergeDigiMon" status="SUCCESS"/>
+         </depends>
+      </process>
+
+      <process name="mergeRecon">
+         <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="xxx"/>
+         <depends>
+            <after process="doChunk.mergeReconCrumbs" status="DONE"/>
+         </depends>
+      </process>
+      <process name="registerRecon">
+         <job executable="${L1ProcROOT}/registerStuff.py" maxCPU="xxx"/>
+         <depends>
+            <after process="mergeRecon" status="SUCCESS"/>
+         </depends>
+      </process>
+
+      <process name="mergeReconMon">
+         <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="xxx"/>
+         <depends>
+            <after process="doChunk.reconMon" status="DONE"/>
+         </depends>
+      </process>
+      <process name="registerReconMon">
+         <job executable="${L1ProcROOT}/registerStuff.py" maxCPU="xxx"/>
+         <depends>
+            <after process="mergeReconMon" status="SUCCESS"/>
+         </depends>
+      </process>
+
+      <process name="mergeSvacTuple">
+         <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="xxx"/>
+         <depends>
+            <after process="doChunk.svacTuple" status="DONE"/>
+         </depends>
+      </process>
+      <process name="registerSvacTuple">
+         <job executable="${L1ProcROOT}/registerStuff.py" maxCPU="xxx"/>
+         <depends>
+            <after process="mergeSvacTuple" status="SUCCESS"/>
+         </depends>
+      </process>
+
+      <process name="mergeFT1">
+         <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="xxx"/>
+         <depends>
+            <after process="doChunk.FT1" status="DONE"/>
+         </depends>
+      </process>
+      <process name="registerFT1">
+         <job executable="${L1ProcROOT}/registerStuff.py" maxCPU="xxx"/>
+         <depends>
+            <after process="mergeFT1" status="SUCCESS"/>
+         </depends>
+      </process>
+
+
+      <task name="doChunk" version="0.0" type="Data">
+
+         <process name="digitization">
+         </process>
+
+         <process name="digiMon">
+            <depends>
+               <after process="digitization" status="SUCCESS"/>
+            </depends>
+         </process>
+
+         <process name="setupCrumbs">
+            <depends>
+               <after process="digitization" status="SUCCESS"/>
+            </depends>
+         </process>
+         <process name="startCrumbs">
+            <depends>
+               <after process="setupCrumbs" status="SUCCESS"/>
+            </depends>
+            <createsSubtasks>
+               <subtask>doCrumb</subtask>
+            </createsSubtasks>
+         </process>
+         <process name="mergeReconCrumbs">
+            <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="xxx"/>
+            <depends>
+               <after process="doCrumb.recon" status="SUCCESS"/>
+            </depends>
+         </process>
+
+         <process name="reconMon">
+            <depends>
+               <after process="mergeReconCrumbs" status="SUCCESS"/>
+            </depends>
+         </process>
+
+         <process name="svacTuple">
+            <depends>
+               <after process="mergeReconCrumbs" status="SUCCESS"/>
+            </depends>
+         </process>
+
+         <process name="FT1">
+            <depends>
+               <after process="mergeReconCrumbs" status="SUCCESS"/>
+            </depends>
+         </process>
+
+
+         <task name="doCrumb" version="0.0" type="Data">
+            <process name="recon">
+            </process>
+         </task>
+
+      </task>
+
+   </task>
+
+</pipeline>
