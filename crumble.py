@@ -7,11 +7,8 @@ import math
 def crumble(total, maxChunk):
     nChunks = int(math.ceil(float(total) / maxChunk))
     chunkSize = total / nChunks
-    chunks = [chunkSize] * nChunks
     extra = total - chunkSize * nChunks
-    for iChunk in range(extra):
-        chunks[iChunk] += 1
-        pass
+    chunks = [chunkSize + 1] * extra + [chunkSize] * (nChunks - extra)
     return chunks
 
 
