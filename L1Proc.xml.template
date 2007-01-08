@@ -12,18 +12,20 @@
 
    <process name="findRunDirs">
       <job executable="${L1ProcROOT}/findRunDirs.py" maxCPU="%(maxCpu)s"/>
-   </process>
-
-   <process name="startRuns">
-      <depends>
-         <after process="findRunDirs" status="SUCCESS"/>
-      </depends>
       <createsSubtasks>
          <subtask>doRun</subtask>
       </createsSubtasks>
    </process>
 
+   <process name="exportFT1">
+      <job executable="${L1ProcROOT}/exportStuff.py" maxCPU="%(maxCpu)s"/>
+      <depends>
+         <after process="doRun.registerFT1" status="SUCCESS"/>
+      </depends>
+   </process>
+
    <process name="launchASP">
+      <job executable="${L1ProcROOT}/launchASP.py" maxCPU="%(maxCpu)s"/>
       <depends>
          <after process="doRun.registerFT1" status="DONE"/>
       </depends>
@@ -31,7 +33,8 @@
 
    <task name="doRun" version="%(L1Version)s" type="Data">
 
-      <process name="startChunks">
+      <process name="findChunks">
+         <job executable="${L1ProcROOT}/findChunks.py" maxCPU="%(maxCpu)s"/>
          <createsSubtasks>
             <subtask>doChunk</subtask>
          </createsSubtasks>
@@ -63,7 +66,7 @@
          </depends>
       </process>
 
-      <process name="mergeRecon">
+      <process name="mergeReconChunks">
          <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="%(maxCpu)s"/>
          <depends>
             <after process="doChunk.mergeReconCrumbs" status="DONE"/>
@@ -72,7 +75,7 @@
       <process name="registerRecon">
          <job executable="${L1ProcROOT}/registerStuff.py" maxCPU="%(maxCpu)s"/>
          <depends>
-            <after process="mergeRecon" status="SUCCESS"/>
+            <after process="mergeReconChunks" status="SUCCESS"/>
          </depends>
       </process>
 
@@ -119,22 +122,20 @@
       <task name="doChunk" version="%(L1Version)s" type="Data">
 
          <process name="digitization">
+            <job executable="${L1ProcROOT}/digitize.py" maxCPU="%(maxCpu)s"/>
          </process>
 
          <process name="digiMon">
+            <job executable="${L1ProcROOT}/monitorDigi.py" maxCPU="%(maxCpu)s"/>
             <depends>
                <after process="digitization" status="SUCCESS"/>
             </depends>
          </process>
 
-         <process name="setupCrumbs">
+         <process name="setupRecon">
+            <job executable="${L1ProcROOT}/setupRecon.py" maxCPU="%(maxCpu)s"/>
             <depends>
                <after process="digitization" status="SUCCESS"/>
-            </depends>
-         </process>
-         <process name="startCrumbs">
-            <depends>
-               <after process="setupCrumbs" status="SUCCESS"/>
             </depends>
             <createsSubtasks>
                <subtask>doCrumb</subtask>
@@ -143,24 +144,27 @@
          <process name="mergeReconCrumbs">
             <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="%(maxCpu)s"/>
             <depends>
-               <after process="doCrumb.recon" status="SUCCESS"/>
+               <after process="doCrumb.recon" status="DONE"/>
             </depends>
          </process>
 
          <process name="reconMon">
-            <depends>
+           <job executable="${L1ProcROOT}/monitorRecon.py" maxCPU="%(maxCpu)s"/>
+           <depends>
                <after process="mergeReconCrumbs" status="SUCCESS"/>
             </depends>
          </process>
 
          <process name="svacTuple">
+            <job executable="${L1ProcROOT}/makeSvac.py" maxCPU="%(maxCpu)s"/>
             <depends>
                <after process="mergeReconCrumbs" status="SUCCESS"/>
             </depends>
          </process>
 
          <process name="FT1">
-            <depends>
+            <job executable="${L1ProcROOT}/makeFT1.py" maxCPU="%(maxCpu)s"/>
+           <depends>
                <after process="mergeReconCrumbs" status="SUCCESS"/>
             </depends>
          </process>
@@ -168,6 +172,7 @@
 
          <task name="doCrumb" version="%(L1Version)s" type="Data">
             <process name="recon">
+               <job executable="${L1ProcROOT}/doRecon.py" maxCPU="%(maxCpu)s"/>
             </process>
          </task>
 
@@ -175,4 +180,5 @@
 
    </task>
 
+</task>
 </pipeline>
