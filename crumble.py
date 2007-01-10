@@ -5,6 +5,7 @@ import math
 
 
 def crumble(total, maxChunk):
+    total = int(total)
     nChunks = int(math.ceil(float(total) / maxChunk))
     chunkSize = total / nChunks
     extra = total - chunkSize * nChunks

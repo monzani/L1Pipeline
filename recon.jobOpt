@@ -1,0 +1,7 @@
+#include "$LATINTEGRATIONROOT/src/jobOptions/pipeline/readigi_runrecon.txt"
+digiRootReaderAlg.digiRootFile = "$digiChunkFile";
+RootIoSvc.StartingIndex = $crumbStart;
+ApplicationMgr.EvtMax = $crumbEvents;
+reconRootWriterAlg.reconRootFile = "$reconCrumbFile";
+RootTupleSvc.filename = "$meritCrumbFile";
+CalTupleAlg.tupleFilename = "$calCrumbFile";

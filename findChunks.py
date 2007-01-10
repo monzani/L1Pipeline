@@ -24,5 +24,9 @@ chunkFiles = glob.glob(chunkPattern)
 
 # Launch a subStream for each run
 for iChunk, chunkFile in enumerate(chunkFiles):
-    args = "EVTFILE=%(chunkFile)s" % locals()
+
+    chunkId = os.path.basename(chunkFile).split('_')[1]
+    chunkDir = os.path.join(rootDir, chunkId)
+    
+    args = "EVTFILE=%(chunkFile)s,chunkDir=%(chunkDir)s,chunkId=%(chunkId)s" % locals()
     pipeline.createSubstream("doChunk", iChunk+1, args)
