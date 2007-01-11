@@ -12,6 +12,7 @@ import os
 env = os.environ
 import sys
 
+import runner
 import stageFiles
 
 import config
@@ -24,6 +25,8 @@ env['reconCrumbFile'] = staged.stageOut(env['reconCrumbFile'])
 
 env['JOBOPTIONS'] = config.reconOptions
 
-status = os.system(config.reconApp)
+status = runner.run(config.reconApp)
 
 staged.finish()
+
+sys.exit(status)

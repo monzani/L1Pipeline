@@ -7,7 +7,9 @@ import os
 env = os.environ
 
 L1Version = "0.1"
-L1ProcROOT = "/nfs/slac/g/svac/focke/cvs/L1Pipeline"
+installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
+L1ProcROOT = os.path.join(installRoot, L1Version)
+env['L1ProcROOT'] = L1ProcROOT
 
 # nevermind these, Bryson will tell us where to find the data
 #L0Disk = '/nfs/slac/g/svac/focke/L1'
