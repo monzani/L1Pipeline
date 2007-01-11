@@ -4,10 +4,14 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
 
+<variables>
+      <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+</variables>
+
 <task name="L1Proc" version="%(L1Version)s" type="Data">
    <prerequisites>
       <prerequisite name="DOWNLINK_ID" type="string"/>
-      <prerequisite name="L1ProcROOT" type="string"/>
+      <prerequisite name="DOWNLINK_RAWDIR" type="string"/>
    </prerequisites>
 
    <process name="findRunDirs">
@@ -32,6 +36,12 @@
    </process>
 
    <task name="doRun" version="%(L1Version)s" type="Data">
+
+      <prerequisites>
+         <prerequisite name="RUNID" type="string"/>
+         <prerequisite name="RUN_RAWDIR" type="string"/>
+         <prerequisite name="RUN_ROOTDIR" type="string"/>
+      </prerequisites>
 
       <process name="findChunks">
          <job executable="${L1ProcROOT}/findChunks.py" maxCPU="%(maxCpu)s"/>
@@ -121,6 +131,11 @@
 
       <task name="doChunk" version="%(L1Version)s" type="Data">
 
+         <prerequisites>
+            <prerequisite name="digiChunkFile" type="string"/>
+            <prerequisite name="chunkDir" type="string"/>
+         </prerequisites>
+
          <process name="digitization">
             <job executable="${L1ProcROOT}/digitize.py" maxCPU="%(maxCpu)s"/>
          </process>
@@ -171,6 +186,11 @@
 
 
          <task name="doCrumb" version="%(L1Version)s" type="Data">
+
+            <prerequisites>
+               <prerequisite name="reconCrumbFile" type="string"/>
+            </prerequisites>
+
             <process name="recon">
                <job executable="${L1ProcROOT}/doRecon.py" maxCPU="%(maxCpu)s"/>
             </process>
@@ -182,3 +202,4 @@
 
 </task>
 </pipeline>
+

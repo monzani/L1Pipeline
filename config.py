@@ -7,6 +7,7 @@ import os
 env = os.environ
 
 L1Version = "0.1"
+L1ProcROOT = "/nfs/slac/g/svac/focke/cvs/L1Pipeline"
 
 # nevermind these, Bryson will tell us where to find the data
 #L0Disk = '/nfs/slac/g/svac/focke/L1'
@@ -38,8 +39,10 @@ cmtScript = os.path.join(glastLocation, releaseName, glastVersion, 'cmt',
 digiApp = gleam
 reconApp = gleam
 #
-digiOptions = os.path.join(env['L1ProcROOT'], 'digi.jobOpt')
-reconOptions = os.path.join(env['L1ProcROOT'], 'recon.jobOpt')
+#digiOptions = os.path.join(env['L1ProcROOT'], 'digi.jobOpt')
+#reconOptions = os.path.join(env['L1ProcROOT'], 'recon.jobOpt')
+digiOptions = os.path.join(L1ProcROOT, 'digi.jobOpt')
+reconOptions = os.path.join(L1ProcROOT, 'recon.jobOpt')
 
 if __name__ == "__main__":
     print L1Dir
