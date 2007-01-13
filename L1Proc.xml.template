@@ -88,6 +88,30 @@
             <after process="mergeReconChunks" status="SUCCESS"/>
          </depends>
       </process>
+      <process name="mergeMeritChunks">
+         <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="%(maxCpu)s"/>
+         <depends>
+            <after process="doChunk.mergeMeritCrumbs" status="DONE"/>
+         </depends>
+      </process>
+      <process name="registerMerit">
+         <job executable="${L1ProcROOT}/registerStuff.py" maxCPU="%(maxCpu)s"/>
+         <depends>
+            <after process="mergeMeritChunks" status="SUCCESS"/>
+         </depends>
+      </process>
+      <process name="mergeCalChunks">
+         <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="%(maxCpu)s"/>
+         <depends>
+            <after process="doChunk.mergeCalCrumbs" status="DONE"/>
+         </depends>
+      </process>
+      <process name="registerCal">
+         <job executable="${L1ProcROOT}/registerStuff.py" maxCPU="%(maxCpu)s"/>
+         <depends>
+            <after process="mergeCalChunks" status="SUCCESS"/>
+         </depends>
+      </process>
 
       <process name="mergeReconMon">
          <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="%(maxCpu)s"/>
@@ -157,6 +181,18 @@
             </createsSubtasks>
          </process>
          <process name="mergeReconCrumbs">
+            <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="%(maxCpu)s"/>
+            <depends>
+               <after process="doCrumb.recon" status="DONE"/>
+            </depends>
+         </process>
+         <process name="mergeMeritCrumbs">
+            <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="%(maxCpu)s"/>
+            <depends>
+               <after process="doCrumb.recon" status="DONE"/>
+            </depends>
+         </process>
+         <process name="mergeCalCrumbs">
             <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="%(maxCpu)s"/>
             <depends>
                <after process="doCrumb.recon" status="DONE"/>

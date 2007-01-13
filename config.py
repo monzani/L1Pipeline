@@ -6,14 +6,10 @@
 import os
 env = os.environ
 
-L1Version = "0.1"
+L1Version = "0.2"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
-env['L1ProcROOT'] = L1ProcROOT
-
-# nevermind these, Bryson will tell us where to find the data
-#L0Disk = '/nfs/slac/g/svac/focke/L1'
-#L0Dir = os.path.join(L0Disk, 'rawData')
+L1Cmt = os.path.join(L1ProcROOT, 'builds')
 
 L1Disk = '/nfs/slac/g/svac/focke/L1'
 L1Dir = os.path.join(L1Disk, 'rootData')
@@ -25,7 +21,6 @@ maxCrumbSize = 6353
 cmtConfig = 'rh9_gcc32opt'
 glastExt = os.path.join('/afs/slac.stanford.edu/g/glast/ground/GLAST_EXT',
                         cmtConfig)
-env['GLAST_EXT'] = glastExt
 #
 releaseDir = '/afs/slac.stanford.edu/g/glast/ground/releases/volume07'
 glastVersion = 'v6r070329p29em1'
@@ -37,14 +32,28 @@ glastLocation = os.path.join(releaseDir, glastName)
 gleam = os.path.join(glastLocation, 'bin', gleamPackage)
 cmtScript = os.path.join(glastLocation, releaseName, glastVersion, 'cmt',
                          'setup.sh') # do we need this?
+cmtPath = ':'.join((glastLocation, L1Cmt))
 #
 digiApp = gleam
 reconApp = gleam
 #
-#digiOptions = os.path.join(env['L1ProcROOT'], 'digi.jobOpt')
-#reconOptions = os.path.join(env['L1ProcROOT'], 'recon.jobOpt')
 digiOptions = os.path.join(L1ProcROOT, 'digi.jobOpt')
 reconOptions = os.path.join(L1ProcROOT, 'recon.jobOpt')
+
+rootSys = os.path.join(glastExt, 'ROOT/v4.02.00/root')
+hadd = os.path.join(rootSys, 'bin', 'hadd')
+
+testReportVersion = 'v3r6p33'
+testReportDir = os.path.join(L1Cmt, 'TestReport', testReportVersion)
+testReportCmt = os.path.join(testReportDir, 'cmt')
+testReportApp = os.path.join(testReportDir, cmtConfig, 'TestReport.exe')
+#
+digiMonCmt = testReportCmt
+digiMonApp = testReportApp
+#
+reconMonCmt = testReportCmt
+reconMonApp = testReportApp
+
 
 if __name__ == "__main__":
     print L1Dir
