@@ -27,6 +27,12 @@
          <after process="doRun.registerFT1" status="SUCCESS"/>
       </depends>
    </process>
+   <process name="deleteChunks">
+      <job executable="${L1ProcROOT}/deleteStuff.py" maxCPU="%(maxCpu)s"/>
+      <depends>
+         <after process="exportFT1" status="SUCCESS"/>
+      </depends>
+   </process>
 
    <process name="launchASP">
       <job executable="${L1ProcROOT}/launchASP.py" maxCPU="%(maxCpu)s"/>
@@ -64,7 +70,7 @@
       </process>
 
       <process name="mergeDigiMon">
-         <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="%(maxCpu)s"/>
+         <job executable="${L1ProcROOT}/mergeMon.py" maxCPU="%(maxCpu)s"/>
          <depends>
             <after process="doChunk.digiMon" status="DONE"/>
          </depends>
@@ -75,6 +81,7 @@
             <after process="mergeDigiMon" status="SUCCESS"/>
          </depends>
       </process>
+
 
       <process name="mergeReconChunks">
          <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="%(maxCpu)s"/>
@@ -88,6 +95,7 @@
             <after process="mergeReconChunks" status="SUCCESS"/>
          </depends>
       </process>
+
       <process name="mergeMeritChunks">
          <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="%(maxCpu)s"/>
          <depends>
@@ -100,6 +108,7 @@
             <after process="mergeMeritChunks" status="SUCCESS"/>
          </depends>
       </process>
+
       <process name="mergeCalChunks">
          <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="%(maxCpu)s"/>
          <depends>
@@ -113,8 +122,9 @@
          </depends>
       </process>
 
+
       <process name="mergeReconMon">
-         <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="%(maxCpu)s"/>
+         <job executable="${L1ProcROOT}/mergeMon.py" maxCPU="%(maxCpu)s"/>
          <depends>
             <after process="doChunk.reconMon" status="DONE"/>
          </depends>
@@ -171,6 +181,7 @@
             </depends>
          </process>
 
+
          <process name="setupRecon">
             <job executable="${L1ProcROOT}/setupRecon.py" maxCPU="%(maxCpu)s"/>
             <depends>
@@ -180,24 +191,47 @@
                <subtask>doCrumb</subtask>
             </createsSubtasks>
          </process>
+
+
          <process name="mergeReconCrumbs">
             <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="%(maxCpu)s"/>
             <depends>
                <after process="doCrumb.recon" status="DONE"/>
             </depends>
          </process>
+         <process name="deleteReconCrumbs">
+            <job executable="${L1ProcROOT}/deleteStuff.py" maxCPU="%(maxCpu)s"/>
+            <depends>
+               <after process="mergeReconCrumbs" status="SUCCESS"/>
+            </depends>
+         </process>
+
          <process name="mergeMeritCrumbs">
             <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="%(maxCpu)s"/>
             <depends>
                <after process="doCrumb.recon" status="DONE"/>
             </depends>
          </process>
+         <process name="deleteMeritCrumbs">
+            <job executable="${L1ProcROOT}/deleteStuff.py" maxCPU="%(maxCpu)s"/>
+            <depends>
+               <after process="mergeMeritCrumbs" status="SUCCESS"/>
+            </depends>
+         </process>
+
          <process name="mergeCalCrumbs">
             <job executable="${L1ProcROOT}/mergeStuff.py" maxCPU="%(maxCpu)s"/>
             <depends>
                <after process="doCrumb.recon" status="DONE"/>
             </depends>
          </process>
+         <process name="deleteCalCrumbs">
+            <job executable="${L1ProcROOT}/deleteStuff.py" maxCPU="%(maxCpu)s"/>
+            <depends>
+               <after process="mergeCalCrumbs" status="SUCCESS"/>
+            </depends>
+         </process>
+
 
          <process name="reconMon">
            <job executable="${L1ProcROOT}/monitorRecon.py" maxCPU="%(maxCpu)s"/>

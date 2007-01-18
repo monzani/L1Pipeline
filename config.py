@@ -6,7 +6,7 @@
 import os
 env = os.environ
 
-L1Version = "0.2"
+L1Version = "0.1"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Cmt = os.path.join(L1ProcROOT, 'builds')
@@ -47,12 +47,18 @@ testReportVersion = 'v3r6p33'
 testReportDir = os.path.join(L1Cmt, 'TestReport', testReportVersion)
 testReportCmt = os.path.join(testReportDir, 'cmt')
 testReportApp = os.path.join(testReportDir, cmtConfig, 'TestReport.exe')
+reportMergeApp = os.path.join(testReportDir, cmtConfig, 'MergeHistFiles.exe')
 #
 digiMonCmt = testReportCmt
 digiMonApp = testReportApp
 #
 reconMonCmt = testReportCmt
 reconMonApp = testReportApp
+
+svacTupleVersion = 'v3r0p3'
+svacTupleDir = os.path.join(L1Cmt, 'EngineeringModelRoot', svacTupleVersion)
+svacTupleCmt = os.path.join(svacTupleDir, 'cmt')
+svacTupleApp = os.path.join(svacTupleDir, cmtConfig, 'RunRootAnalyzer.exe')
 
 
 if __name__ == "__main__":
