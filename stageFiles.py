@@ -5,11 +5,12 @@
 """
 
 import os
+import shutil
 
 try:
-    stageBase = os.environ['STAGEDIR']
+    defaultStageArea = os.environ['STAGEDIR']
 except KeyError:
-    stageBase = '/scratch'
+    defaultStageArea = '/scratch'
     pass
 
 class StageSet:
@@ -38,9 +39,24 @@ class StageSet:
     """
 
 
-    def __init__(self):
+    def __init__(self, stageName=None, stageArea=None):
+        """@brief Set up a staging area.
+        @param [stageName] Name of directory where staged copies are kept.
+        @param [stageArea] Parent of directory where staged copies are kept.
+        """
+        
+        if stageArea is None:
+            stageArea = defaultStageArea
+            pass
+        if stageName is None:
+            stageName = `os.getpid()`
+            pass
+        self.stageDir = os.path.join(stageArea, stageName)
+        os.mkdir(self.stageDir)
+
         self.inFiles = {}
         self.outFiles = {}
+        
         return
 
     def stageIn(self, inFile):
@@ -48,7 +64,11 @@ class StageSet:
         @param inFile real name of the input file
         @return name of the staged file
         """
-        stageName = inFile
+        stageName = self.stagedName(inFile)
+        try:
+            shutil.copy(inFile, stageName)
+        except OSError:
+            stageName = inFile
         return stageName
     
     def stageOut(self, outFile):
@@ -56,7 +76,7 @@ class StageSet:
         @param outFile real name of the output file
         @return name of the staged file
         """
-        stageName = outFile
+        stageName = self.stagedName(outFile)
         return stageName
 
     def finish(self):
@@ -66,7 +86,16 @@ class StageSet:
             os.remove(stageName)
             pass
         for realName, stageName in self.outFiles.items():
-            os.rename(stageName, realName)
+            shutil.move(stageName, realName)
             pass
+        os.rmdir(self.stageDir)
         return
     
+    def stagedName(self, fileName):
+        """@brief Generate names of staged files.
+        @param fileName Real name of file.
+        @return Name of staged file.
+        """
+        base = os.path.basename(fileName)
+        stageName = os.path.join(self.stageDir, base)
+        return stageName
