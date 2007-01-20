@@ -67,6 +67,7 @@ class StageSet:
         stageName = self.stagedName(inFile)
         try:
             shutil.copy(inFile, stageName)
+            self.inFiles[inFile] = stageName
         except OSError:
             stageName = inFile
         return stageName
@@ -77,6 +78,7 @@ class StageSet:
         @return name of the staged file
         """
         stageName = self.stagedName(outFile)
+        self.outFiles[outFile] = stageName
         return stageName
 
     def finish(self):
