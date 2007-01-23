@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline
+   xmlns="http://glast-ground.slac.stanford.edu/pipeline"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
+
+<task name="Larry_doChunk" type="Data" version="0.0">
+
+   <prerequisites>
+       <prerequisite name="RUN_ID" type="string"/>
+   </prerequisites>
+
+   <process name="digitization">
+      <variables>
+         <var name="L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
+         <var name="GLAST_EXT">/afs/slac/g/glast/ground/GLAST_EXT/rh9_gcc32opt</var>
+         <var name="LATCalibRoot">/afs/slac/g/glast/ground/releases/calibrations</var>
+         <var name="TestDir">/nfs/farm/g/glast/u33/wai/pipeline_tests/testdir</var>
+         <var name="EVTFILE">/nfs/farm/g/glast/u35/MC-tasks/SC1-Level0-test/ldf/CCSDS/000000001.evt</var>
+         <var name="digiChunkFile">${TestDir}/${RUN_ID}/larry_digi.root</var>
+      </variables>
+      <job batchOptions=" -q short" executable="${L1ProcROOT}/digitize.py"/>
+   </process>
+
+   <process name="setupRecon">
+      <script>
+         <![CDATA[
+         print "Digitize was successful!"
+         nCrumbs=1
+         for iCrumb in range(1,nCrumbs+1):
+            print "Firing off substream for crumb "+str(iCrumb)
+            pipeline.createSubstream("Larry_doCrumb",iCrumb)
+         ]]>
+      </script>
+      <depends>
+         <after process="digitization" status="SUCCESS" />
+      </depends>
+      <createsSubtasks>
+        <subtask>Larry_doCrumb</subtask>
+      </createsSubtasks>
+   </process>
+
+   <task name="Larry_doCrumb" version="0.0" type="Data">
+      <variables>
+         <var name="L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
+         <var name="GLAST_EXT">/afs/slac/g/glast/ground/GLAST_EXT/rh9_gcc32opt</var>
+         <var name="LATCalibRoot">/afs/slac/g/glast/ground/releases/calibrations</var>
+         <var name="TestDir">/nfs/farm/g/glast/u33/wai/pipeline_tests/testdir</var>
+         <var name="EVTFILE">/nfs/farm/g/glast/u35/MC-tasks/SC1-Level0-test/ldf/CCSDS/000000001.evt</var>
+         <var name="digiChunkFile">${TestDir}/${RUN_ID}/larry_digi.root</var>
+         <var name="crumbStart">1</var>
+         <var name="crumbEvents">100</var>
+         <var name="reconCrumbFile">${TestDir}/${RUN_ID}/larry_recon.root</var>
+         <var name="meritCrumbFile">${TestDir}/${RUN_ID}/larry_merit.root</var>
+         <var name="calCrumbFile">${TestDir}/${RUN_ID}/larry_cal.root</var>
+      </variables>
+
+      <process name="recon">
+         <job batchOptions=" -q short" executable="${L1ProcROOT}/recon.py" />
+      </process>
+
+   </task>
+</task>
+</pipeline>

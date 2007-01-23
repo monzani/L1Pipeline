@@ -8,25 +8,30 @@ here to handle staging and set JOBOPTIONS.
 @author W. Focke <focke@slac.stanford.edu>
 """
 
-import os
-env = os.environ
-import sys
-
-import runner
-import stageFiles
-
+from os import system, environ
 import config
 
+system(config.reconApp+' '+environ['L1ProcROOT']+'/recon.jobOpt; chgrp -R glast-pipeline '+environ['TestDir']+'/'+environ['RUN_ID'])
 
-staged = stageFiles.StageSet()
+#import os
+#env = os.environ
+#import sys
 
-env['digiChunkFile'] = staged.stageIn(env['digiChunkFile'])
-env['reconCrumbFile'] = staged.stageOut(env['reconCrumbFile'])
+#import runner
+#import stageFiles
 
-env['JOBOPTIONS'] = config.reconOptions
+#import config
 
-status = runner.run(config.reconApp)
 
-staged.finish()
+#staged = stageFiles.StageSet()
 
-sys.exit(status)
+#env['digiChunkFile'] = staged.stageIn(env['digiChunkFile'])
+#env['reconCrumbFile'] = staged.stageOut(env['reconCrumbFile'])
+
+#env['JOBOPTIONS'] = config.reconOptions
+
+#status = runner.run(config.reconApp)
+
+#staged.finish()
+
+#sys.exit(status)
