@@ -30,7 +30,8 @@ except KeyError:
     stagedReconFile = 'noSuchFile'
     pass
 
-outDir = os.path.join(inDir, digiMon)
+#outDir = os.path.join(inDir, digiMon)
+outDir = env['TestDir']
 outName = fileNames.join((nameBase, env['PIPELINE_PROCESS'], config.L1Version), 'root')
 realOutFile = os.path.join(outDir, outName)
 stagedOutFile = staged.stageOut(realOutFile)
