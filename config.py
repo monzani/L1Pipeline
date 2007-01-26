@@ -40,7 +40,7 @@ reconApp = gleam
 digiOptions = os.path.join(L1ProcROOT, 'digi.jobOpt')
 reconOptions = os.path.join(L1ProcROOT, 'recon.jobOpt')
 
-rootSys = os.path.join(glastExt, 'ROOT/v4.02.00/root')
+rootSys = os.path.join(glastExt, 'ROOT/v5.10.00/root')
 hadd = os.path.join(rootSys, 'bin', 'hadd')
 
 testReportVersion = 'v3r6p33'

@@ -9,12 +9,16 @@ import os
 env = os.environ
 import sys
 
-import runner
+#import runner
 
 import config
 
+#env['outFile']="larry_recon.root"
+#env['inFiles']="larry_recon_1.root larry_recon_2.root larry_recon_3.root"
 
-cmd = config.hadd + (' %s' % outFile) + ((' %s' * len(inFiles)) % tuple(inFiles))
-status = runner.run(cmd)
+os.system(config.hadd+" "+env['outFile']+" "+env['inFiles'])
 
-sys.exit(status)
+#cmd = config.hadd + (' %s' % outFile) + ((' %s' * len(inFiles)) % tuple(inFiles))
+#status = runner.run(cmd)
+
+#sys.exit(status)

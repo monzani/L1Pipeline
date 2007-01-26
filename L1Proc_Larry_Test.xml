@@ -23,15 +23,22 @@
    </process>
 
    <process name="setupRecon">
+      <variables>
+         <var name="TestDir">/nfs/farm/g/glast/u33/wai/pipeline_tests/testdir</var>
+         <var name="crumbEvents">100</var>
+      </variables>
       <script>
          <![CDATA[
-         print "Digitize was successful!"
+         inFiles=""
+         outFile=TestDir+"/"+RUN_ID+"/larry_recon.root"
          nCrumbs=3
          for iCrumb in range(1,nCrumbs+1):
-            crumbEvents=100
-            crumbStart=crumbEvents*(iCrumb-1)
+            crumbStart=int(crumbEvents)*(iCrumb-1)
             args="crumbEvents="+str(crumbEvents)+",crumbStart="+str(crumbStart)
             pipeline.createSubstream("Larry_doCrumb",iCrumb,args)
+            inFiles=inFiles+TestDir+"/"+RUN_ID+"/larry_recon_"+str(iCrumb)+".root"+" "
+         pipeline.setVariable("inFiles",inFiles)
+         pipeline.setVariable("outFile",outFile)
          ]]>
       </script>
       <depends>
@@ -42,12 +49,21 @@
       </createsSubtasks>
    </process>
 
+   <process name="mergeReconCrumbs">
+      <variables>
+         <var name="L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
+      </variables>
+      <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py"/>
+      <depends>
+         <after process="Larry_doCrumb.recon" status="SUCCESS" />
+      </depends>
+   </process>
+
    <task name="Larry_doCrumb" version="0.0" type="Data">
       <prerequisites>
          <prerequisite name="crumbEvents" type="string" />
          <prerequisite name="crumbStart" type="string" />
       </prerequisites>
-
       <process name="recon">
          <variables>
             <var name="L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
@@ -62,7 +78,8 @@
          </variables>
          <job batchOptions=" -q short" executable="${L1ProcROOT}/recon.py" />
       </process>
-
    </task>
+      
+
 </task>
 </pipeline>
