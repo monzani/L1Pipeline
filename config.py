@@ -45,7 +45,7 @@ hadd = os.path.join(rootSys, 'bin', 'hadd')
 
 testReportVersion = 'v3r6p33'
 testReportDir = os.path.join(L1Cmt, 'TestReport', testReportVersion)
-testReportCmt = os.path.join(testReportDir, 'cmt')
+testReportCmt = os.path.join(testReportDir, 'cmt', 'setup.sh')
 testReportApp = os.path.join(testReportDir, cmtConfig, 'TestReport.exe')
 reportMergeApp = os.path.join(testReportDir, cmtConfig, 'MergeHistFiles.exe')
 #

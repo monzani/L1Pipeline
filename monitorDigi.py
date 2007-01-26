@@ -20,7 +20,6 @@ staged = stageFiles.StageSet()
 
 realDigiFile = env['digiChunkFile']
 stagedDigiFile = staged.stageIn(realDigiFile)
-env['digiChunkFile'] = stagedDigiFile
 digiDir = os.path.dirname(realDigiFile)
 nameBase = fileNames.baseHead(realDigiFile)
 
@@ -31,7 +30,6 @@ except KeyError:
     stagedReconFile = 'noSuchFile'
     pass
 
-#env['digiMonChunkFile'] = staged.stageOut(env['digiMonChunkFile'])
 outDir = os.path.join(inDir, digiMon)
 outName = fileNames.join((nameBase, env['PIPELINE_PROCESS'], config.L1Version), 'root')
 realOutFile = os.path.join(outDir, outName)
@@ -63,7 +61,10 @@ open(optionFile, 'w').write(options)
 
 
 # do the work
-status = runner.run(config.digiMonApp)
+digiMonApp = config.digiMonApp
+digiMonCmt = config.digiMonCmt
+cmd = 'cd %(outDir)s ; source %(digiMonCmt)s ; %(digiMonApp)s' % locals()
+status = runner.run(cmd)
 
 staged.finish()
 
