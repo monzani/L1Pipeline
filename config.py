@@ -33,6 +33,7 @@ gleam = os.path.join(glastLocation, 'bin', gleamPackage)
 cmtScript = os.path.join(glastLocation, releaseName, glastVersion, 'cmt',
                          'setup.sh') # do we need this?
 cmtPath = ':'.join((glastLocation, L1Cmt))
+env['CMTPATH'] = cmtPath
 #
 digiApp = gleam
 reconApp = gleam
@@ -51,9 +52,11 @@ reportMergeApp = os.path.join(testReportDir, cmtConfig, 'MergeHistFiles.exe')
 #
 digiMonCmt = testReportCmt
 digiMonApp = testReportApp
+digiMonVersion = testReportVersion
 #
 reconMonCmt = testReportCmt
 reconMonApp = testReportApp
+reconMonVersion = testReportVersion
 
 svacTupleVersion = 'v3r0p3'
 svacTupleDir = os.path.join(L1Cmt, 'EngineeringModelRoot', svacTupleVersion)

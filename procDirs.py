@@ -16,10 +16,10 @@ outputDirs = { \
     }
 
 
-def setup(runId, downlinkId, chunkId=None, crumbId=None):
+def setup(runId, chunkId=None, crumbId=None):
     global outputDirs
-    runDir = os.path.join(L1Dir, runId)
-    dlDir = os.path.join(runDir, downlinkId)
+    runBase = os.path.join(L1Dir, runId)
+    runDir = os.path.join(runBase, config.glastVersion)
     if chunkId is not None:
         setupChunk()
         if crumbId is not None:
@@ -30,9 +30,9 @@ def setup(runId, downlinkId, chunkId=None, crumbId=None):
 
 def setupChunk(chunkId):
     global outputDirs
-    chunkDir = os.path.join(dlDir, chunkId)
-    digiMonDir = os.path.join(chunkDir, 'digiMon', config.testReportVersion)
-    reconMonDir = os.path.join(chunkDir, 'reconMon', config.testReportVersion)
+    chunkDir = os.path.join(runDir, chunkId)
+    digiMonDir = os.path.join(chunkDir, 'digiMon', config.digiMonVersion)
+    reconMonDir = os.path.join(chunkDir, 'reconMon', config.reconMonVersion)
     return
 
 def setupCrumb(crumbId):
