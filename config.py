@@ -34,6 +34,7 @@ cmtScript = os.path.join(glastLocation, releaseName, glastVersion, 'cmt',
                          'setup.sh') # do we need this?
 cmtPath = ':'.join((glastLocation, L1Cmt))
 env['CMTPATH'] = cmtPath
+env['CMTCONFIG']=cmtConfig
 #
 digiApp = gleam
 reconApp = gleam
@@ -42,7 +43,10 @@ digiOptions = os.path.join(L1ProcROOT, 'digi.jobOpt')
 reconOptions = os.path.join(L1ProcROOT, 'recon.jobOpt')
 
 rootSys = os.path.join(glastExt, 'ROOT/v5.10.00/root')
-hadd = os.path.join(rootSys, 'bin', 'hadd')
+#rootSys = os.path.join(glastExt, 'ROOT/v4.02.00/root')
+#hadd = os.path.join(rootSys, 'bin', 'hadd')
+hadd = os.path.join(glastExt, 'ROOT/v5.10.00/root', 'bin', 'hadd')
+#env['ROOTSYS']=rootSys
 
 testReportVersion = 'v3r6p33'
 testReportDir = os.path.join(L1Cmt, 'TestReport', testReportVersion)

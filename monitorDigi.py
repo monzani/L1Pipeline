@@ -64,7 +64,7 @@ open(optionFile, 'w').write(options)
 # do the work
 digiMonApp = config.digiMonApp
 digiMonCmt = config.digiMonCmt
-cmd = 'cd %(outDir)s ; source %(digiMonCmt)s ; %(digiMonApp)s' % locals()
+cmd = 'cd %(outDir)s ; printenv CMTPATH; source %(digiMonCmt)s ; printenv LD_LIBRARY_PATH; %(digiMonApp)s' % locals()
 status = runner.run(cmd)
 
 staged.finish()

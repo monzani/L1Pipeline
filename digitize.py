@@ -16,4 +16,4 @@ import config
 
 #env['JOBOPTIONS']='/afs/slac/u/ek/wai/pipeline_tests/ldf2digi.txt'
 
-system("mkdir "+environ['TestDir']+"/"+environ['RUN_ID']+";"+config.digiApp+' '+environ['L1ProcROOT']+'/digi.jobOpt;chgrp -R glast-pipeline '+environ['TestDir']+'/'+environ['RUN_ID'])
+system("mkdir "+environ['TestDir']+"/"+environ['RUN_ID']+";"+config.digiApp+' '+environ['Larry_L1ProcROOT']+'/digi.jobOpt;chgrp -R glast-pipeline '+environ['TestDir']+'/'+environ['RUN_ID'])
