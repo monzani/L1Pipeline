@@ -6,6 +6,9 @@
 
 <variables>
       <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+      <var name="CMTPATH">%(cmtPath)s</var>
+      <var name="CMTCONFIG">%(cmtConfig)s</var>
+      <var name="ROOTSYS">%(rootSys)s</var>
 </variables>
 
 <task name="L1Proc" version="%(L1Version)s" type="Data">

@@ -34,8 +34,8 @@ except KeyError:
 outDir = env['TestDir']
 outName = fileNames.join((nameBase, env['PIPELINE_PROCESS'], config.L1Version), 'root')
 realOutFile = os.path.join(outDir, outName)
-stagedOutFile = staged.stageOut(realOutFile)
-
+#stagedOutFile = staged.stageOut(realOutFile)
+stagedOutFile = realOutFile
 
 glastVersion = config.glastVersion
 testReportVersion = config.testReportVersion
@@ -64,7 +64,7 @@ open(optionFile, 'w').write(options)
 # do the work
 digiMonApp = config.digiMonApp
 digiMonCmt = config.digiMonCmt
-cmd = 'cd %(outDir)s ; printenv CMTPATH; source %(digiMonCmt)s ; printenv LD_LIBRARY_PATH; %(digiMonApp)s' % locals()
+cmd = 'cd %(outDir)s ; printenv CMTPATH; source %(digiMonCmt)s ; printenv LD_LIBRARY_PATH; %(digiMonApp)s %(optionFile)s' % locals()
 status = runner.run(cmd)
 
 staged.finish()
