@@ -31,7 +31,7 @@ except KeyError:
     pass
 
 #outDir = os.path.join(inDir, digiMon)
-outDir = env['TestDir']
+outDir = os.path.join(env['TestDir'],env['CHUNK_ID'])
 outName = fileNames.join((nameBase, env['PIPELINE_PROCESS'], config.L1Version), 'root')
 realOutFile = os.path.join(outDir, outName)
 #stagedOutFile = staged.stageOut(realOutFile)

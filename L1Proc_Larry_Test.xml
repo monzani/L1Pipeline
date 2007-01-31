@@ -4,96 +4,126 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
 
-<task name="Larry_doChunk" type="Data" version="0.3">
+<task name="Larry_doRun" type="Data" version="0.46">
 
-   <prerequisites>
-       <prerequisite name="RUN_ID" type="string"/>
-   </prerequisites>
-
-   <process name="digitization">
+   <process name="findChunks">
       <variables>
-         <var name="Larry_L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
-         <var name="GLAST_EXT">/afs/slac/g/glast/ground/GLAST_EXT/rh9_gcc32opt</var>
-         <var name="LATCalibRoot">/afs/slac/g/glast/ground/releases/calibrations</var>
+         <var name="ChunkDir">/nfs/farm/g/glast/u33/wai/pipeline_tests/chunkdir</var>
          <var name="TestDir">/nfs/farm/g/glast/u33/wai/pipeline_tests/testdir</var>
-         <var name="EVTFILE">/nfs/farm/g/glast/u35/MC-tasks/SC1-Level0-test/ldf/CCSDS/000000001.evt</var>
-         <var name="digiChunkFile">${TestDir}/${RUN_ID}/larry_digi.root</var>
-      </variables>
-      <job batchOptions=" -q short" executable="${Larry_L1ProcROOT}/digitize.py"/>
-   </process>
-
-   <process name="digiMon">
-      <variables>
-         <var name="GLAST_EXT">/afs/slac/g/glast/ground/GLAST_EXT/rh9_gcc32opt</var>
-         <var name="ROOTSYS">${GLAST_EXT}/ROOT/v5.10.00/root</var>
-         <var name="Larry_L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
-         <var name="TestDir">/nfs/farm/g/glast/u33/wai/pipeline_tests/testdir</var>
-         <var name="digiChunkFile">${TestDir}/${RUN_ID}/larry_digi.root</var>
-      </variables>
-      <job batchOptions=" -q short" executable="${Larry_L1ProcROOT}/monitorDigi.py"/>
-      <depends>
-         <after process="digitization" status="SUCCESS" />
-      </depends>
-   </process>
-
-   <process name="setupRecon">
-      <variables>
-         <var name="TestDir">/nfs/farm/g/glast/u33/wai/pipeline_tests/testdir</var>
-         <var name="crumbEvents">100</var>
       </variables>
       <script>
          <![CDATA[
-         inFiles=""
-         outFile=TestDir+"/"+RUN_ID+"/larry_recon.root"
-         nCrumbs=3
-         for iCrumb in range(1,nCrumbs+1):
-            crumbStart=int(crumbEvents)*(iCrumb-1)
-            args="crumbEvents="+str(crumbEvents)+",crumbStart="+str(crumbStart)
-            pipeline.createSubstream("Larry_doCrumb",iCrumb,args)
-            inFiles=inFiles+TestDir+"/"+RUN_ID+"/larry_recon_"+str(iCrumb)+".root"+" "
-         pipeline.setVariable("inFiles",inFiles)
-         pipeline.setVariable("outFile",outFile)
+         nChunks=1
+         for iChunk in range(1,nChunks+1):
+            args="CHUNK_ID=chunk00"+str(iChunk)+",ChunkDir="+str(ChunkDir)+",TestDir="+str(TestDir)
+            pipeline.createSubstream("Larry_doChunk",iChunk,args)
          ]]>
       </script>
-      <depends>
-         <after process="digitization" status="SUCCESS" />
-      </depends>
       <createsSubtasks>
-        <subtask>Larry_doCrumb</subtask>
+         <subtask>Larry_doChunk</subtask>
       </createsSubtasks>
-   </process>
+      </process>
 
-   <process name="mergeReconCrumbs">
-      <variables>
-         <var name="Larry_L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
-      </variables>
-      <job batchOptions=" -q short" executable="${Larry_L1ProcROOT}/mergeStuff.py"/>
-      <depends>
-         <after process="Larry_doCrumb.recon" status="SUCCESS" />
-      </depends>
-   </process>
+   <task name="Larry_doChunk" type="Data" version="0.46">
 
-   <task name="Larry_doCrumb" version="0.3" type="Data">
       <prerequisites>
-         <prerequisite name="crumbEvents" type="string" />
-         <prerequisite name="crumbStart" type="string" />
+          <prerequisite name="CHUNK_ID" type="string"/>
+          <prerequisite name="TestDir" type="string"/>
+          <prerequisite name="ChunkDir" type="string"/>
       </prerequisites>
-      <process name="recon">
+
+      <process name="digitization">
          <variables>
             <var name="Larry_L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
             <var name="GLAST_EXT">/afs/slac/g/glast/ground/GLAST_EXT/rh9_gcc32opt</var>
             <var name="LATCalibRoot">/afs/slac/g/glast/ground/releases/calibrations</var>
-            <var name="TestDir">/nfs/farm/g/glast/u33/wai/pipeline_tests/testdir</var>
-            <var name="EVTFILE">/nfs/farm/g/glast/u35/MC-tasks/SC1-Level0-test/ldf/CCSDS/000000001.evt</var>
-            <var name="digiChunkFile">${TestDir}/${RUN_ID}/larry_digi.root</var>
-            <var name="reconCrumbFile">${TestDir}/${RUN_ID}/larry_recon_${pipeline.stream}.root</var>
-            <var name="meritCrumbFile">${TestDir}/${RUN_ID}/larry_merit_${pipeline.stream}.root</var>
-            <var name="calCrumbFile">${TestDir}/${RUN_ID}/larry_cal_${pipeline.stream}.root</var>
+            <var name="digiChunkFile">${TestDir}/${CHUNK_ID}/larry_digi.root</var>
+            <var name="EVTFILE">${ChunkDir}/${CHUNK_ID}.evt</var>
          </variables>
-         <job batchOptions=" -q short" executable="${Larry_L1ProcROOT}/recon.py" />
+         <job batchOptions=" -q short" executable="${Larry_L1ProcROOT}/digitize.py"/>
       </process>
-   </task>
+ 
+      <process name="digiMon">
+         <variables>
+            <var name="GLAST_EXT">/afs/slac/g/glast/ground/GLAST_EXT/rh9_gcc32opt</var>
+            <var name="ROOTSYS">${GLAST_EXT}/ROOT/v5.10.00/root</var>
+            <var name="Larry_L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
+            <var name="digiChunkFile">${TestDir}/${CHUNK_ID}/larry_digi.root</var>
+         </variables>
+         <job batchOptions=" -q medium" executable="${Larry_L1ProcROOT}/monitorDigi.py"/>
+         <depends>
+            <after process="digitization" status="SUCCESS" />
+         </depends>
+      </process>
+
+      <process name="digiReport">
+         <variables>
+            <var name="Larry_L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
+            <var name="latexHeader">/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/EM-tasks/builds/TestReport/v3r6p33/src/latexHeader.tex</var>
+            <var name="testReportVersion">v3r6p33</var>
+         </variables>
+         <job batchOptions=" -q short" executable="${Larry_L1ProcROOT}/digiReport.py"/>
+         <depends>
+            <after process="digiMon" status="SUCCESS" />
+         </depends>
+      </process>
+
+      <process name="setupRecon">
+         <variables>
+            <var name="crumbEvents">100</var>
+         </variables>
+         <script>
+            <![CDATA[
+            inFiles=""
+            outFile=TestDir+"/"+CHUNK_ID+"/larry_recon.root"
+            nCrumbs=3
+            for iCrumb in range(1,nCrumbs+1):
+               crumbStart=int(crumbEvents)*(iCrumb-1)
+               args="crumbEvents="+str(crumbEvents)+",crumbStart="+str(crumbStart)
+               pipeline.createSubstream("Larry_doCrumb",iCrumb,args)
+               inFiles=inFiles+TestDir+"/"+CHUNK_ID+"/larry_recon_"+str(iCrumb)+".root"+" "
+            pipeline.setVariable("inFiles",inFiles)
+            pipeline.setVariable("outFile",outFile)
+            ]]>
+         </script>
+         <depends>
+            <after process="digitization" status="SUCCESS" />
+         </depends>
+         <createsSubtasks>
+            <subtask>Larry_doCrumb</subtask>
+         </createsSubtasks>
+      </process>
+
+      <process name="mergeReconCrumbs">
+         <variables>
+            <var name="Larry_L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
+         </variables>
+         <job batchOptions=" -q short" executable="${Larry_L1ProcROOT}/mergeStuff.py"/>
+         <depends>
+            <after process="Larry_doCrumb.recon" status="SUCCESS" />
+         </depends>
+      </process>
+
+      <task name="Larry_doCrumb" version="0.46" type="Data">
+         <prerequisites>
+            <prerequisite name="crumbEvents" type="string" />
+            <prerequisite name="crumbStart" type="string" />
+         </prerequisites>
+         <process name="recon">
+            <variables>
+               <var name="Larry_L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
+               <var name="GLAST_EXT">/afs/slac/g/glast/ground/GLAST_EXT/rh9_gcc32opt</var>
+               <var name="LATCalibRoot">/afs/slac/g/glast/ground/releases/calibrations</var>
+               <var name="digiChunkFile">${TestDir}/${CHUNK_ID}/larry_digi.root</var>
+               <var name="reconCrumbFile">${TestDir}/${CHUNK_ID}/larry_recon_${pipeline.stream}.root</var>
+               <var name="meritCrumbFile">${TestDir}/${CHUNK_ID}/larry_merit_${pipeline.stream}.root</var>
+               <var name="calCrumbFile">${TestDir}/${CHUNK_ID}/larry_cal_${pipeline.stream}.root</var>
+            </variables>
+            <job batchOptions=" -q short" executable="${Larry_L1ProcROOT}/recon.py" />
+         </process>
+      </task>
       
+   </task>
 
 </task>
 </pipeline>
