@@ -4,18 +4,21 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
 
-<task name="Larry_doRun" type="Data" version="0.46">
+<task name="Larry_doRun" type="Data" version="0.47">
 
    <process name="findChunks">
       <variables>
          <var name="ChunkDir">/nfs/farm/g/glast/u33/wai/pipeline_tests/chunkdir</var>
          <var name="TestDir">/nfs/farm/g/glast/u33/wai/pipeline_tests/testdir</var>
+         <var name="Larry_L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
+         <var name="GLAST_EXT">/afs/slac/g/glast/ground/GLAST_EXT/rh9_gcc32opt</var>
+         <var name="LATCalibRoot">/afs/slac/g/glast/ground/releases/calibrations</var>
       </variables>
       <script>
          <![CDATA[
          nChunks=1
          for iChunk in range(1,nChunks+1):
-            args="CHUNK_ID=chunk00"+str(iChunk)+",ChunkDir="+str(ChunkDir)+",TestDir="+str(TestDir)
+            args="CHUNK_ID=chunk00"+str(iChunk)+",ChunkDir="+str(ChunkDir)+",TestDir="+str(TestDir)+",Larry_L1ProcROOT="+str(Larry_L1ProcROOT)+",GLAST_EXT="+str(GLAST_EXT)+",LATCalibRoot="+str(LATCalibRoot)
             pipeline.createSubstream("Larry_doChunk",iChunk,args)
          ]]>
       </script>
@@ -24,19 +27,19 @@
       </createsSubtasks>
       </process>
 
-   <task name="Larry_doChunk" type="Data" version="0.46">
+   <task name="Larry_doChunk" type="Data" version="0.47">
 
       <prerequisites>
           <prerequisite name="CHUNK_ID" type="string"/>
           <prerequisite name="TestDir" type="string"/>
           <prerequisite name="ChunkDir" type="string"/>
+          <prerequisite name="Larry_L1ProcROOT" type="string"/>
+          <prerequisite name="GLAST_EXT" type="string"/>
+          <prerequisite name="LATCalibRoot" type="string"/>
       </prerequisites>
 
       <process name="digitization">
          <variables>
-            <var name="Larry_L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
-            <var name="GLAST_EXT">/afs/slac/g/glast/ground/GLAST_EXT/rh9_gcc32opt</var>
-            <var name="LATCalibRoot">/afs/slac/g/glast/ground/releases/calibrations</var>
             <var name="digiChunkFile">${TestDir}/${CHUNK_ID}/larry_digi.root</var>
             <var name="EVTFILE">${ChunkDir}/${CHUNK_ID}.evt</var>
          </variables>
@@ -45,9 +48,7 @@
  
       <process name="digiMon">
          <variables>
-            <var name="GLAST_EXT">/afs/slac/g/glast/ground/GLAST_EXT/rh9_gcc32opt</var>
             <var name="ROOTSYS">${GLAST_EXT}/ROOT/v5.10.00/root</var>
-            <var name="Larry_L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
             <var name="digiChunkFile">${TestDir}/${CHUNK_ID}/larry_digi.root</var>
          </variables>
          <job batchOptions=" -q medium" executable="${Larry_L1ProcROOT}/monitorDigi.py"/>
@@ -58,7 +59,6 @@
 
       <process name="digiReport">
          <variables>
-            <var name="Larry_L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
             <var name="latexHeader">/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/EM-tasks/builds/TestReport/v3r6p33/src/latexHeader.tex</var>
             <var name="testReportVersion">v3r6p33</var>
          </variables>
@@ -95,25 +95,19 @@
       </process>
 
       <process name="mergeReconCrumbs">
-         <variables>
-            <var name="Larry_L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
-         </variables>
          <job batchOptions=" -q short" executable="${Larry_L1ProcROOT}/mergeStuff.py"/>
          <depends>
             <after process="Larry_doCrumb.recon" status="SUCCESS" />
          </depends>
       </process>
 
-      <task name="Larry_doCrumb" version="0.46" type="Data">
+      <task name="Larry_doCrumb" version="0.47" type="Data">
          <prerequisites>
             <prerequisite name="crumbEvents" type="string" />
             <prerequisite name="crumbStart" type="string" />
          </prerequisites>
          <process name="recon">
             <variables>
-               <var name="Larry_L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
-               <var name="GLAST_EXT">/afs/slac/g/glast/ground/GLAST_EXT/rh9_gcc32opt</var>
-               <var name="LATCalibRoot">/afs/slac/g/glast/ground/releases/calibrations</var>
                <var name="digiChunkFile">${TestDir}/${CHUNK_ID}/larry_digi.root</var>
                <var name="reconCrumbFile">${TestDir}/${CHUNK_ID}/larry_recon_${pipeline.stream}.root</var>
                <var name="meritCrumbFile">${TestDir}/${CHUNK_ID}/larry_merit_${pipeline.stream}.root</var>
