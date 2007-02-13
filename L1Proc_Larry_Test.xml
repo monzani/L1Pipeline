@@ -4,7 +4,7 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
 
-<task name="Larry_doRun" type="Data" version="0.47">
+<task name="Larry_doRun" type="Data" version="0.002">
 
    <process name="findChunks">
       <variables>
@@ -13,11 +13,11 @@
          <var name="Larry_L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
          <var name="GLAST_EXT">/afs/slac/g/glast/ground/GLAST_EXT/rh9_gcc32opt</var>
          <var name="LATCalibRoot">/afs/slac/g/glast/ground/releases/calibrations</var>
+         <var name="nChunks">2</var>
       </variables>
       <script>
          <![CDATA[
-         nChunks=1
-         for iChunk in range(1,nChunks+1):
+         for iChunk in range(1,int(nChunks)+1):
             args="CHUNK_ID=chunk00"+str(iChunk)+",ChunkDir="+str(ChunkDir)+",TestDir="+str(TestDir)+",Larry_L1ProcROOT="+str(Larry_L1ProcROOT)+",GLAST_EXT="+str(GLAST_EXT)+",LATCalibRoot="+str(LATCalibRoot)
             pipeline.createSubstream("Larry_doChunk",iChunk,args)
          ]]>
@@ -25,9 +25,16 @@
       <createsSubtasks>
          <subtask>Larry_doChunk</subtask>
       </createsSubtasks>
-      </process>
+   </process>
+ 
+   <process name="mergeDigiMon">
+      <job batchOptions=" -q medium" executable="${Larry_L1ProcROOT}/mergeHistos.py"/>
+      <depends>
+         <after process="digiMon" status="SUCCESS" />
+      </depends>
+   </process>
 
-   <task name="Larry_doChunk" type="Data" version="0.47">
+   <task name="Larry_doChunk" type="Data" version="0.002">
 
       <prerequisites>
           <prerequisite name="CHUNK_ID" type="string"/>
@@ -101,7 +108,7 @@
          </depends>
       </process>
 
-      <task name="Larry_doCrumb" version="0.47" type="Data">
+      <task name="Larry_doCrumb" version="0.002" type="Data">
          <prerequisites>
             <prerequisite name="crumbEvents" type="string" />
             <prerequisite name="crumbStart" type="string" />

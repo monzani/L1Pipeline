@@ -46,7 +46,7 @@ rootSys = os.path.join(glastExt, 'ROOT/v4.02.00/root')
 haddRootSys = os.path.join(glastExt, 'ROOT/v5.10.00/root')
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
-testReportVersion = 'v3r6p33'
+testReportVersion = 'v3r6p36'
 testReportDir = os.path.join(L1Cmt, 'TestReport', testReportVersion)
 testReportCmt = os.path.join(testReportDir, 'cmt', 'setup.sh')
 testReportApp = os.path.join(testReportDir, cmtConfig, 'TestReport.exe')
