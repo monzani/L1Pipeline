@@ -14,4 +14,4 @@ environ['LD_LIBRARY_PATH']=""
 environ['ROOTSYS']=rootSys
 environ['CMTPATH']=cmtPath
 
-system("source /afs/slac/g/glast/ground/scripts/group.sh; CMTCONFIG="+cmtConfig+"; export CMTCONFIG; GLAST_EXT="+glastExt+"; export GLAST_EXT; cd /afs/slac/g/glast/ground/PipelineConfig/SC/L1Pipeline/builds/TestReport/v3r6p36/cmt; source setup.sh; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"+glastExt+"/xerces/2.6.0/lib; export LD_LIBRARY_PATH; "+reportMergeApp+" -I ~wai/pipeline_tests/testdir/inputFiles.txt -o ~wai/pipeline_tests/testdir/merged_digi_hist.root -c ~wai/pipeline_tests/testdir/histos.txt")
+system("source /afs/slac/g/glast/ground/scripts/group.sh; CMTCONFIG="+cmtConfig+"; export CMTCONFIG; GLAST_EXT="+glastExt+"; export GLAST_EXT; cd /afs/slac/g/glast/ground/PipelineConfig/SC/L1Pipeline/builds/TestReport/v3r6p36/cmt; source setup.sh; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"+glastExt+"/xerces/2.6.0/lib; export LD_LIBRARY_PATH; "+reportMergeApp+" -I $Larry_L1ProcROOT/inputFiles.txt -o $TestDir/merged_digi_hist.root -c $Larry_L1ProcROOT/merge.txt; chgrp -R glast-pipeline $TestDir")
