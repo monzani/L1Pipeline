@@ -6,7 +6,7 @@
 import os
 env = os.environ
 
-L1Version = "0.1"
+L1Version = "0.3"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Cmt = os.path.join(installRoot, 'builds')

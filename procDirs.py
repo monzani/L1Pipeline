@@ -14,10 +14,12 @@ L1Dir = os.path.join(L1Disk, 'rootData')
 
 
 
-def setup(runId, chunkId=None, crumbId=None):
+def setup(dlId, runId=None, chunkId=None, crumbId=None):
     """@brief Setup data directory names.  And create the directories.
 
-    @arg runId The run ID.
+    @arg dlId The dowlink ID.
+
+    @arg [runId] The run ID.
 
     @arg [chunkId] The chunk ID.
 
@@ -27,7 +29,11 @@ def setup(runId, chunkId=None, crumbId=None):
     
     """
     dirs = {}
-    runBase = os.path.join(L1Dir, runId)
+    dlDir = os.path.join(L1Dir, 'downlinks', dlId)
+    dirs['downlink'] = dlDir
+    if runId is None:
+        return dirs
+    runBase = os.path.join(L1Dir, 'runs', runId)
     runDir = os.path.join(runBase, config.glastVersion)
     dirs['run'] = runDir
     if chunkId is not None:

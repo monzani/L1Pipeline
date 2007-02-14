@@ -32,10 +32,12 @@ def join(parts, ext):
     return '_'.join(parts) + '.' + ext
 
 
-def setup(runId, chunkId=None, crumbId=None):
+def setup(dlId, runId=None, chunkId=None, crumbId=None):
     """@brief Setup data directory names.
 
-    @arg runId The run ID.
+    @arg dlId The dowlink ID.
+
+    @arg [runId] The run ID.
 
     @arg [chunkId] The chunk ID.
 
@@ -46,11 +48,14 @@ def setup(runId, chunkId=None, crumbId=None):
     """
     runHead = runId
 
-    dirs = procDirs.setup(runId, chunkId, crumbId)
+    dirs = procDirs.setup(dlId, runId, chunkId, crumbId)
     files = {}
     files['run'] = {}
 
-    files[''] = ''
+    files['dirs'] = 'dirs'
+
+    files['downlink'] = {}
+    files['downlink']['runList'] = os.path.join(dirs['downlink'], 'runList')
 
     if chunkId is not None:
         files['chunk'] = _setupChunk(dirs, chunkId, runHead)

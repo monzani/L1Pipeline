@@ -26,7 +26,8 @@ goodOnes = [iDir for iDir, runDir in enumerate(maybeDirs) if os.path.isdir(runDi
 #runList = files['dirs']['runList']
 
 # set up a subStream for each run
-argList = []
+# Launch a subStream for each run
+argSets = []
 for iStream, iDir in enumerate(goodOnes):
     runId = maybeIds[iDir]
     runDir = maybeDirs[iDir]
@@ -34,9 +35,4 @@ for iStream, iDir in enumerate(goodOnes):
     rootDir = files['dirs']['run']
     args = "RUNID=%(runId)s,RUN_RAWDIR=%(runDir)s,RUN_ROOTDIR=%(rootDir)s" % \
            locals()
-    argList.append(args)
-    pass
-
-# Will this work?  Can't set variable that contain commas
-allArgs = ':'.join(argList) 
-pipeline.setVariable('runList', allArgs)
+    pipeline.createSubstream("doRun", iStream+1, args)
