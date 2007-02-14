@@ -65,6 +65,7 @@ svacTupleDir = os.path.join(L1Cmt, 'EngineeringModelRoot', svacTupleVersion)
 svacTupleCmt = os.path.join(svacTupleDir, 'cmt')
 svacTupleApp = os.path.join(svacTupleDir, cmtConfig, 'RunRootAnalyzer.exe')
 
+joiner = '*'
 
 if __name__ == "__main__":
     print L1Dir

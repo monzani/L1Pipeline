@@ -35,8 +35,9 @@ for iStream, iDir in enumerate(goodOnes):
     args = "RUNID=%(runId)s,RUN_RAWDIR=%(runDir)s,RUN_ROOTDIR=%(rootDir)s" % \
            locals()
     argList.append(args)
-    pass
+    continue
 
-# Will this work?  Can't set variable that contain commas
-allArgs = ':'.join(argList) 
+# Will this work?  Can't set variables that contain commas
+# or colons
+allArgs = config.joiner.join(argList) 
 pipeline.setVariable('runList', allArgs)
