@@ -11,7 +11,8 @@ here to handle staging and set JOBOPTIONS.
 from os import system, environ
 import config
 
-system(config.reconApp+' '+environ['Larry_L1ProcROOT']+'/recon.jobOpt; chgrp -R glast-pipeline '+environ['TestDir']+'/'+environ['CHUNK_ID'])
+##wbf## system(config.reconApp+' '+environ['Larry_L1ProcROOT']+'/recon.jobOpt; chgrp -R glast-pipeline '+environ['TestDir']+'/'+environ['CHUNK_ID'])
+cmd = config.reconApp+' '+environ['Larry_L1ProcROOT']+'/recon.jobOpt; chgrp -R glast-pipeline '+environ['TestDir']+'/'+environ['CHUNK_ID']
 
 #import os
 #env = os.environ
@@ -30,8 +31,8 @@ system(config.reconApp+' '+environ['Larry_L1ProcROOT']+'/recon.jobOpt; chgrp -R 
 
 #env['JOBOPTIONS'] = config.reconOptions
 
-#status = runner.run(config.reconApp)
+status = runner.run(cmd)
 
 #staged.finish()
 
-#sys.exit(status)
+sys.exit(status)

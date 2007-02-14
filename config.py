@@ -9,7 +9,7 @@ env = os.environ
 L1Version = "0.1"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
-L1Cmt = os.path.join(L1ProcROOT, 'builds')
+L1Cmt = os.path.join(installRoot, 'builds')
 
 L1Disk = '/nfs/slac/g/svac/focke/L1'
 L1Dir = os.path.join(L1Disk, 'rootData')

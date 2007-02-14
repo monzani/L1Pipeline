@@ -11,9 +11,15 @@ from os import system, environ
 #env['digiChunkFile']='larry_digi.root'
 
 import config
+import runner
 
 #env['JOBOPTIONS']=config.digiOptions
 
 #env['JOBOPTIONS']='/afs/slac/u/ek/wai/pipeline_tests/ldf2digi.txt'
 
-system("mkdir "+environ['TestDir']+"/"+environ['CHUNK_ID']+";"+config.digiApp+' '+environ['Larry_L1ProcROOT']+'/digi.jobOpt;chgrp -R glast-pipeline '+environ['TestDir']+'/'+environ['CHUNK_ID'])
+##wbf## system("mkdir "+environ['TestDir']+"/"+environ['CHUNK_ID']+";"+config.digiApp+' '+environ['Larry_L1ProcROOT']+'/digi.jobOpt;chgrp -R glast-pipeline '+environ['TestDir']+'/'+environ['CHUNK_ID'])
+
+cmd = "mkdir "+environ['TestDir']+"/"+environ['CHUNK_ID']+";"+config.digiApp+' '+environ['Larry_L1ProcROOT']+'/digi.jobOpt;chgrp -R glast-pipeline '+environ['TestDir']+'/'+environ['CHUNK_ID']
+
+status = runner.run(cmd)
+sys.exit(status)
