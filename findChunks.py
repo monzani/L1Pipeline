@@ -8,17 +8,20 @@
 import glob
 import os
 
-import pipeline
-
 import config
+import fileNames
+import pipeline
 
 
 dlId = os.environ['DOWNLINK_ID']
 runId = os.environ['RUNID']
 runDir = os.environ['RUN_RAWDIR']
-rootDir = os.environ['RUN_ROOTDIR']
 
-# Find chunk files
+files = fileNames.setup(dlId, runId)
+
+rootDir = files['dirs']['run']
+
+## Find chunk files
 chunkPattern = os.path.join(runDir, '*.evt')
 chunkFiles = glob.glob(chunkPattern)
 
@@ -27,9 +30,8 @@ argList = []
 for iChunk, chunkFile in enumerate(chunkFiles):
 
     chunkId = os.path.basename(chunkFile).split('_')[1]
-    chunkDir = os.path.join(rootDir, chunkId)
     
-    args = "EVTFILE=%(chunkFile)s,chunkDir=%(chunkDir)s,chunkId=%(chunkId)s" % locals()
+    args = "EVTFILE=%(chunkFile)s,chunkId=%(chunkId)s" % locals()
     argList.append(args)
     continue
 

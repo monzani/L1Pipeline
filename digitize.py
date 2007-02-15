@@ -13,7 +13,14 @@ import sys
 #env['digiChunkFile']='larry_digi.root'
 
 import config
+import fileNames
 import runner
+import stageFiles
+
+files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'], \
+                        environ['CHUNK_ID'])
+
+#env['digiChunkFile'] = staged.stageIn(files['chunk']['digiChunk'])
 
 #env['JOBOPTIONS']=config.digiOptions
 

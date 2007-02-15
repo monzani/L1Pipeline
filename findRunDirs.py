@@ -22,17 +22,14 @@ maybeIds = os.listdir(dlRawDir)
 maybeDirs = [os.path.join(dlRawDir, xx) for xx in maybeIds]
 goodOnes = [iDir for iDir, runDir in enumerate(maybeDirs) if os.path.isdir(runDir)]
 
-#files = fileNames.setup(dlId)
-#runList = files['dirs']['runList']
+files = fileNames.setup(dlId)
 
 # set up a subStream for each run
 argList = []
 for iStream, iDir in enumerate(goodOnes):
     runId = maybeIds[iDir]
     runDir = maybeDirs[iDir]
-    files = fileNames.setup(dlId, runId)
-    rootDir = files['dirs']['run']
-    args = "RUNID=%(runId)s,RUN_RAWDIR=%(runDir)s,RUN_ROOTDIR=%(rootDir)s" % \
+    args = "RUNID=%(runId)s,RUN_RAWDIR=%(runDir)s" % \
            locals()
     argList.append(args)
     continue

@@ -10,25 +10,22 @@ here to handle staging and set JOBOPTIONS.
 
 from os import system, environ
 import sys
+
 import config
+import fileNames
+import runner
+import stageFiles
 
 ##wbf## system(config.reconApp+' '+environ['Larry_L1ProcROOT']+'/recon.jobOpt; chgrp -R glast-pipeline '+environ['TestDir']+'/'+environ['CHUNK_ID'])
 cmd = config.reconApp+' '+environ['Larry_L1ProcROOT']+'/recon.jobOpt; chgrp -R glast-pipeline '+environ['TestDir']+'/'+environ['CHUNK_ID']
 
-#import os
-#env = os.environ
-#import sys
-
-#import runner
-#import stageFiles
-
-#import config
-
+files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'], \
+                        environ['CHUNK_ID'], environ['CRUMB_ID'])
 
 #staged = stageFiles.StageSet()
 
-#env['digiChunkFile'] = staged.stageIn(env['digiChunkFile'])
-#env['reconCrumbFile'] = staged.stageOut(env['reconCrumbFile'])
+#env['digiChunkFile'] = staged.stageIn(files['chunk']['digiChunk'])
+#env['reconCrumbFile'] = staged.stageOut(files['crumb']['reconCrumb'])
 
 #env['JOBOPTIONS'] = config.reconOptions
 
