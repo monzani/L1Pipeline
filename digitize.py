@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 from os import system, environ
+import sys
+
 #from os import environ as env
 #from os import path
 

@@ -8,7 +8,7 @@
 
    <process name="findChunks">
       <variables>
-         <var name="ChunkDir">/nfs/farm/g/glast/u33/wai/pipeline_tests/chunkdir</var>
+         <var name="ChunkDir">/nfs/farm/g/glast/u33/wai/pipeline_tests/dldir/run001</var>
          <var name="TestDir">/nfs/farm/g/glast/u33/wai/pipeline_tests/testdir</var>
          <var name="Larry_L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
          <var name="GLAST_EXT">/afs/slac/g/glast/ground/GLAST_EXT/rh9_gcc32opt</var>

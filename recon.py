@@ -9,6 +9,7 @@ here to handle staging and set JOBOPTIONS.
 """
 
 from os import system, environ
+import sys
 import config
 
 ##wbf## system(config.reconApp+' '+environ['Larry_L1ProcROOT']+'/recon.jobOpt; chgrp -R glast-pipeline '+environ['TestDir']+'/'+environ['CHUNK_ID'])

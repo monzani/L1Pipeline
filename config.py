@@ -6,12 +6,15 @@
 import os
 env = os.environ
 
-L1Version = "0.3"
+L1Version = "0.01"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
-L1ProcROOT = os.path.join(installRoot, L1Version)
+#L1ProcROOT = os.path.join(installRoot, L1Version)
+L1ProcROOT = /nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline # for Larry testing only
+LATCalibRoot = /afs/slac/g/glast/ground/releases/calibrations
 L1Cmt = os.path.join(installRoot, 'builds')
 
-L1Disk = '/nfs/slac/g/svac/focke/L1'
+#L1Disk = '/nfs/slac/g/svac/focke/L1'
+L1Disk = '/nfs/farm/g/glast/u33/wai/pipeline_tests/L1' # for Larry testing only
 L1Dir = os.path.join(L1Disk, 'rootData')
 
 maxCpu = 1000

@@ -8,7 +8,7 @@ import os
 import config
 
 
-L1Disk = '/nfs/slac/g/svac/focke/L1'
+#L1Disk = '/nfs/slac/g/svac/focke/L1'
 L1Dir = os.path.join(L1Disk, 'rootData')
 
 
