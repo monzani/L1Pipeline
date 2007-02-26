@@ -20,6 +20,7 @@ import stageFiles
 files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'], \
                         environ['CHUNK_ID'])
 
+staged = stageFiles.stageSet()
 #env['digiChunkFile'] = staged.stageIn(files['chunk']['digiChunk'])
 
 #env['JOBOPTIONS']=config.digiOptions
