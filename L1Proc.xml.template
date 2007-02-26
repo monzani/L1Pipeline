@@ -17,7 +17,7 @@
 
    <process name="launchRuns">
       <variables>
-         <var name="runList">RUNID=run001,RUN_RAWDIR=/nfs/farm/g/glast/u33/wai/pipeline_tests/dldir/run001,RUN_ROOTDIR=/nfs/farm/g/glast/u33/wai/pipeline_tests/L1</var>
+         <var name="runList">RUNID=run001,RUN_RAWDIR=/nfs/farm/g/glast/u33/wai/pipeline_tests/dldir/run001</var>
       </variables>
       <script>
          <![CDATA[
@@ -38,9 +38,9 @@
    <task name="doRun" version="%(L1Version)s" type="Data">
 
       <prerequisites>
+          <prerequisite name="DOWNLINK_ID" type="string"/>
           <prerequisite name="RUNID" type="string"/>
           <prerequisite name="RUN_RAWDIR" type="string"/>
-          <prerequisite name="RUN_ROOTDIR" type="string"/>
       </prerequisites>
 
       <process name="findChunks">
@@ -52,7 +52,7 @@
 
       <process name="launchChunks">
          <variables>
-            <var name="chunkList">"CHUNK_RAWFILE=${RUN_RAWDIR}/chunk_001.evt,CHUNK_ROOTDIR=${RUN_ROOTDIR}/chunk_001*CHUNK_RAWFILE=${RUN_RAWDIR}/chunk_002.evt,CHUNK_ROOTDIR=${RUN_ROOTDIR}/chunk_002"</var>
+            <var name="chunkList">"CHUNK_RAWFILE=${RUN_RAWDIR}/chunk_001.evt*CHUNK_RAWFILE=${RUN_RAWDIR}/chunk_002.evt"</var>
          </variables>
          <script>
             <![CDATA[
@@ -83,6 +83,7 @@
       <process name="registerDigiMon">
          <variables>
             <var name="MergedFilename">merged_digi_hist.root</var>
+            <var name="RUN_ROOTDIR">/nfs/farm/g/glast/u33/wai/pipeline_tests/L1</var>
          </variables>
          <script><![CDATA[
             dataType = "MC"
@@ -101,7 +102,6 @@
 
          <prerequisites>
              <prerequisite name="CHUNK_RAWFILE" type="string"/>
-             <prerequisite name="CHUNK_ROOTDIR" type="string"/>
          </prerequisites>
 
          <process name="digitization">

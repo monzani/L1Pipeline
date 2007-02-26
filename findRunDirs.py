@@ -37,4 +37,4 @@ for iStream, iDir in enumerate(goodOnes):
 # Will this work?  Can't set variables that contain commas
 # or colons?
 allArgs = config.joiner.join(argList) 
-pipeline.setVariable('runList', allArgs)
+#pipeline.setVariable('runList', allArgs)

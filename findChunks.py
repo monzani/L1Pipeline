@@ -39,4 +39,4 @@ for iChunk, chunkFile in enumerate(chunkFiles):
 # Will this work?  Can't set variables that contain commas
 # or colons?
 allArgs = config.joiner.join(argList) 
-pipeline.setVariable('chunkList', allArgs)
+#pipeline.setVariable('chunkList', allArgs)
