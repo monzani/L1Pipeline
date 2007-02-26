@@ -7,14 +7,8 @@ import os
 
 import config
 
-
-#L1Disk = '/nfs/slac/g/svac/focke/L1'
-L1Dir = os.path.join(L1Disk, 'rootData')
-
-
-
-
 def setup(dlId, runId=None, chunkId=None, crumbId=None):
+
     """@brief Setup data directory names.  And create the directories.
 
     @arg dlId The dowlink ID.
@@ -29,11 +23,11 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None):
     
     """
     dirs = {}
-    dlDir = os.path.join(L1Dir, 'downlinks', dlId)
+    dlDir = os.path.join(config.L1Dir, 'downlinks', dlId)
     dirs['downlink'] = dlDir
     if runId is None:
         return dirs
-    runBase = os.path.join(L1Dir, 'runs', runId)
+    runBase = os.path.join(config.L1Dir, 'runs', runId)
     runDir = os.path.join(runBase, config.glastVersion)
     dirs['run'] = runDir
     if chunkId is not None:
@@ -49,6 +43,7 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None):
 
 
 def _setupChunk(dirs, chunkId):
+
     runDir = dirs['run']
     chunkDir = os.path.join(runDir, chunkId)
     dirs['chunk'] = chunkDir
@@ -60,6 +55,7 @@ def _setupChunk(dirs, chunkId):
 
 
 def _setupCrumb(dirs, crumbId):
+
     runDir = dirs['run']
     chunkDir = dirs['chunk']
     crumbDir = os.path.join(chunkDir, crumbId)
@@ -68,6 +64,7 @@ def _setupCrumb(dirs, crumbId):
 
 
 def mkdir(path):
+
     """@brief Create a directory and any necessary parents.
 
     @arg path The directory to create.

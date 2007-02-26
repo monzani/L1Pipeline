@@ -7,6 +7,6 @@ def setVariable(varName, value):
     # muck about with pipeline summary file
     line = 'pipeline.%s: %s' % (varName, value)
     ofp = open('pipeline_summary', 'a')
-    of.write(line)
+    ofp.write(line)
     ofp.close()
     return

@@ -6,54 +6,65 @@
 
 <task name="L1Proc" version="%(L1Version)s" type="Data">
 
-   <prerequisites>
-      <prerequisite name="DOWNLINK_RAWDIR" type="string"/>
-   </prerequisites>
-
    <process name="findRunDirs">
       <variables>
          <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+         <var name="DOWNLINK_ID">0</var>
+         <var name="DOWNLINK_RAWDIR">/nfs/farm/g/glast/u33/wai/pipeline_tests/dldir</var>
       </variables>
-      <job executable="${L1ProcROOT}/findRunDirs.py" maxCPU="%(maxCpu)s"/>
+      <job batchOptions=" -q short" executable="${L1ProcROOT}/findRunDirs.py"/>
    </process>
 
    <process name="launchRuns">
       <variables>
-         <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+         <var name="runList">RUNID=run001,RUN_RAWDIR=/nfs/farm/g/glast/u33/wai/pipeline_tests/dldir/run001,RUN_ROOTDIR=/nfs/farm/g/glast/u33/wai/pipeline_tests/L1</var>
       </variables>
       <script>
          <![CDATA[
-         for iRun in range(1,int(nRuns)+1):
-            args="CHUNK_ID=chunk00"+str(iChunk)+",ChunkDir="+str(ChunkDir)+",TestDir="+str(TestDir)+",L1ProcROOT="+str(L1ProcROOT)+",GLAST_EXT="+str(GLAST_EXT)+",LATCalibRoot="+str(LATCalibRoot)
-            pipeline.createSubstream("doRun",iRun,args)
+         argList = runList.split('*')
+         for iStream in range(len(argList)):
+            pipeline.createSubstream("doRun",iStream,argList[iStream])
+            continue
          ]]>
       </script>
       <depends>
-         <after process="findRunDirs" status="DONE"/>
+         <after process="findRunDirs" status="SUCCESS"/>
       </depends>
       <createsSubtasks>
          <subtask>doRun</subtask>
       </createsSubtasks>
    </process>
 
-   <task name="doRun" type="Data" version="0.31">
+   <task name="doRun" version="%(L1Version)s" type="Data">
+
+      <prerequisites>
+          <prerequisite name="RUNID" type="string"/>
+          <prerequisite name="RUN_RAWDIR" type="string"/>
+          <prerequisite name="RUN_ROOTDIR" type="string"/>
+      </prerequisites>
 
       <process name="findChunks">
          <variables>
-            <var name="ChunkDir">/nfs/farm/g/glast/u33/wai/pipeline_tests/dldir/run001</var>
-            <var name="TestDir">/nfs/farm/g/glast/u33/wai/pipeline_tests/testdir</var>
-            <var name="L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
-            <var name="GLAST_EXT">/afs/slac/g/glast/ground/GLAST_EXT/rh9_gcc32opt</var>
-            <var name="LATCalibRoot">/afs/slac/g/glast/ground/releases/calibrations</var>
-            <var name="nChunks">2</var>
+            <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+         </variables>
+         <job batchOptions=" -q short" executable="${L1ProcROOT}/findChunks.py"/>
+      </process>
+
+      <process name="launchChunks">
+         <variables>
+            <var name="chunkList">"CHUNK_RAWFILE=${RUN_RAWDIR}/chunk_001.evt,CHUNK_ROOTDIR=${RUN_ROOTDIR}/chunk_001*CHUNK_RAWFILE=${RUN_RAWDIR}/chunk_002.evt,CHUNK_ROOTDIR=${RUN_ROOTDIR}/chunk_002"</var>
          </variables>
          <script>
             <![CDATA[
-            for iChunk in range(1,int(nChunks)+1):
-               args="CHUNK_ID=chunk00"+str(iChunk)+",ChunkDir="+str(ChunkDir)+",TestDir="+str(TestDir)+",L1ProcROOT="+str(L1ProcROOT)+",GLAST_EXT="+str(GLAST_EXT)+",LATCalibRoot="+str(LATCalibRoot)
-               pipeline.createSubstream("doChunk",iChunk,args)
+            argList = chunkList.split('*')
+            for iStream in range(len(argList)):
+               pipeline.createSubstream("doChunk",iStream,argList[iStream])
+               continue
             ]]>
          </script>
+         <depends>
+            <after process="findChunks" status="SUCCESS"/>
+         </depends>
          <createsSubtasks>
             <subtask>doChunk</subtask>
          </createsSubtasks>
@@ -61,24 +72,22 @@
  
       <process name="mergeDigiMon">
          <variables>
-            <var name="TestDir">/nfs/farm/g/glast/u33/wai/pipeline_tests/testdir</var>
-            <var name="L1ProcROOT">/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline</var>
+            <var name="L1ProcROOT">%(L1ProcROOT)s</var>
          </variables>
          <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeHistos.py"/>
          <depends>
-            <after process="digiMon" status="SUCCESS" />
+            <after process="doChunk.digiMon" status="SUCCESS" />
          </depends>
       </process>
 
       <process name="registerDigiMon">
          <variables>
-            <var name="TestDir">/nfs/farm/g/glast/u33/wai/pipeline_tests/testdir</var>
             <var name="MergedFilename">merged_digi_hist.root</var>
          </variables>
          <script><![CDATA[
             dataType = "MC"
             logicalPath = "/L1Proc/DigiMon/" + MergedFilename
-            filePath = TestDir + "/" + MergedFilename
+            filePath = RUN_ROOTDIR + "/" + MergedFilename
             attributes = "tstart=0:tstop=120"
             datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
             ]]>
@@ -88,29 +97,23 @@
          </depends>
       </process>
 
-      <task name="doChunk" type="Data" version="0.31">
+      <task name="doChunk" version="%(L1Version)s" type="Data">
 
          <prerequisites>
-             <prerequisite name="CHUNK_ID" type="string"/>
-             <prerequisite name="TestDir" type="string"/>
-             <prerequisite name="ChunkDir" type="string"/>
-             <prerequisite name="L1ProcROOT" type="string"/>
-             <prerequisite name="GLAST_EXT" type="string"/>
-             <prerequisite name="LATCalibRoot" type="string"/>
+             <prerequisite name="CHUNK_RAWFILE" type="string"/>
+             <prerequisite name="CHUNK_ROOTDIR" type="string"/>
          </prerequisites>
 
          <process name="digitization">
             <variables>
-               <var name="digiChunkFile">${TestDir}/${CHUNK_ID}/larry_digi.root</var>
-               <var name="EVTFILE">${ChunkDir}/${CHUNK_ID}.evt</var>
+               <var name="L1ProcROOT">%(L1ProcROOT)s</var>
             </variables>
             <job batchOptions=" -q short" executable="${L1ProcROOT}/digitize.py"/>
          </process>
  
          <process name="digiMon">
             <variables>
-               <var name="ROOTSYS">${GLAST_EXT}/ROOT/v5.10.00/root</var>
-               <var name="digiChunkFile">${TestDir}/${CHUNK_ID}/larry_digi.root</var>
+               <var name="L1ProcROOT">%(L1ProcROOT)s</var>
             </variables>
             <job batchOptions=" -q medium" executable="${L1ProcROOT}/monitorDigi.py"/>
             <depends>
@@ -120,63 +123,13 @@
 
          <process name="digiReport">
             <variables>
-               <var name="latexHeader">/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/EM-tasks/builds/TestReport/v3r6p33/src/latexHeader.tex</var>
-               <var name="testReportVersion">v3r6p33</var>
+               <var name="L1ProcROOT">%(L1ProcROOT)s</var>
             </variables>
             <job batchOptions=" -q short" executable="${L1ProcROOT}/digiReport.py"/>
             <depends>
                <after process="digiMon" status="SUCCESS" />
             </depends>
          </process>
-
-         <process name="setupRecon">
-            <variables>
-               <var name="crumbEvents">100</var>
-            </variables>
-            <script>
-               <![CDATA[
-               inFiles=""
-               outFile=TestDir+"/"+CHUNK_ID+"/larry_recon.root"
-               nCrumbs=3
-               for iCrumb in range(1,nCrumbs+1):
-                  crumbStart=int(crumbEvents)*(iCrumb-1)
-                  args="crumbEvents="+str(crumbEvents)+",crumbStart="+str(crumbStart)
-                  pipeline.createSubstream("doCrumb",iCrumb,args)
-                  inFiles=inFiles+TestDir+"/"+CHUNK_ID+"/larry_recon_"+str(iCrumb)+".root"+" "
-               pipeline.setVariable("inFiles",inFiles)
-               pipeline.setVariable("outFile",outFile)
-               ]]>
-            </script>
-            <depends>
-               <after process="digitization" status="SUCCESS" />
-            </depends>
-            <createsSubtasks>
-               <subtask>doCrumb</subtask>
-            </createsSubtasks>
-         </process>
-
-         <process name="mergeReconCrumbs">
-            <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py"/>
-            <depends>
-               <after process="doCrumb.recon" status="SUCCESS" />
-            </depends>
-         </process>
-
-         <task name="doCrumb" version="0.31" type="Data">
-            <prerequisites>
-               <prerequisite name="crumbEvents" type="string" />
-               <prerequisite name="crumbStart" type="string" />
-            </prerequisites>
-            <process name="recon">
-               <variables>
-                  <var name="digiChunkFile">${TestDir}/${CHUNK_ID}/larry_digi.root</var>
-                  <var name="reconCrumbFile">${TestDir}/${CHUNK_ID}/larry_recon_${pipeline.stream}.root</var>
-                  <var name="meritCrumbFile">${TestDir}/${CHUNK_ID}/larry_merit_${pipeline.stream}.root</var>
-                  <var name="calCrumbFile">${TestDir}/${CHUNK_ID}/larry_cal_${pipeline.stream}.root</var>
-               </variables>
-               <job batchOptions=" -q short" executable="${L1ProcROOT}/recon.py" />
-            </process>
-         </task>
        
       </task>
 

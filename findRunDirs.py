@@ -22,7 +22,7 @@ maybeIds = os.listdir(dlRawDir)
 maybeDirs = [os.path.join(dlRawDir, xx) for xx in maybeIds]
 goodOnes = [iDir for iDir, runDir in enumerate(maybeDirs) if os.path.isdir(runDir)]
 
-files = fileNames.setup(dlId)
+# files = fileNames.setup(dlId)
 
 # set up a subStream for each run
 argList = []

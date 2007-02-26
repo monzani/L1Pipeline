@@ -52,7 +52,7 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None):
     files = {}
     files['run'] = {}
 
-    files['dirs'] = 'dirs'
+    files['dirs'] = dirs
 
     files['downlink'] = {}
     files['downlink']['runList'] = os.path.join(dirs['downlink'], 'runList')
@@ -65,23 +65,16 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None):
         pass
 
 
-    files['run']['digi'] = os.path.join(dirs['run'], \
-                                      join(runHead, 'digi.root'))
-    files['run']['digiMon'] = os.path.join(dirs['run'], \
-                                      join(runHead, 'digiHist.root'))
+    files['run']['digi'] = os.path.join(dirs['run'],join(runHead, 'digi.root'))
+    files['run']['digiMon'] = os.path.join(dirs['run'],join(runHead, 'digiHist.root'))
     
-    files['run']['recon'] = os.path.join(dirs['run'], \
-                                       join(runHead, 'recon.root'))
-    files['run']['merit'] = os.path.join(dirs['run'], \
-                                       join(crumbHead, 'merit.root'))
-    files['run']['cal'] = os.path.join(dirs['run'], \
-                                       join(crumbHead, 'cal.root'))
+    files['run']['recon'] = os.path.join(dirs['run'],join(runHead, 'recon.root'))
+    files['run']['merit'] = os.path.join(dirs['run'],join(crumbHead, 'merit.root'))
+    files['run']['cal'] = os.path.join(dirs['run'],join(crumbHead, 'cal.root'))
     
-    files['run']['reconMon'] = os.path.join(dirs['run'], \
-                                      join(runHead, 'reconHist.root'))
+    files['run']['reconMon'] = os.path.join(dirs['run'],join(runHead, 'reconHist.root'))
 
-    files['run']['svac'] = os.path.join(dirs['run'], \
-                                      join(runHead, 'svac.root'))
+    files['run']['svac'] = os.path.join(dirs['run'],join(runHead, 'svac.root'))
     
     
     return files
