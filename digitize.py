@@ -32,4 +32,7 @@ staged = stageFiles.stageSet()
 cmd = "mkdir "+environ['TestDir']+"/"+environ['CHUNK_ID']+";"+config.digiApp+' '+environ['Larry_L1ProcROOT']+'/digi.jobOpt;chgrp -R glast-pipeline '+environ['TestDir']+'/'+environ['CHUNK_ID']
 
 status = runner.run(cmd)
+
+staged.finish()
+
 sys.exit(status)
