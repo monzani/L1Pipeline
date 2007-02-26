@@ -9,6 +9,7 @@ import config
 
 def setup(dlId, runId=None, chunkId=None, crumbId=None):
 
+def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=False):
     """@brief Setup data directory names.  And create the directories.
 
     @arg dlId The dowlink ID.
@@ -37,8 +38,12 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None):
             pass
         pass
 
-    for item in dirs.values():
-        mkdir(item)
+    if createDirs:
+        for item in dirs.values():
+            mkdir(item)
+            continue
+        pass
+    
     return dirs
 
 
@@ -79,5 +84,5 @@ def mkdir(path):
         if os.path.isdir(path):
             return
         raise os.error
-    os.mkdirs(path)
+    os.makedirs(path)
     return
