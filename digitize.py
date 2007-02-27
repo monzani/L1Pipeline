@@ -13,7 +13,7 @@ files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'], \
 
 staged = stageFiles.StageSet()
 environ['EVTFILE'] = staged.stageIn(environ['EVTFILE'])
-environ['digiChunkFile'] = staged.stageOut(files['chunk']['digiChunk'])
+environ['digiChunkFile'] = staged.stageOut(files['chunk']['digi'])
 
 #environ['JOBOPTIONS'] = config.digiOptions
 

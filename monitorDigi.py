@@ -4,9 +4,9 @@
 
 @author W. Focke <focke@slac.stanford.edu>
 """
-
+from os import environ
 import os
-env = os.environ
+
 import sys
 
 import fileNames
@@ -24,7 +24,7 @@ staged = stageFiles.StageSet()
 stagedDigiFile = staged.stageIn(files['chunk']['digi'])
 nameBase = files['chunk']['head']
 
-if env['reportType'] == 'recon':
+if environ['reportType'] == 'recon':
     stagedReconFile = staged.stageIn(files['chunk']['recon'])
     outDir = files['dirs']['reconMon']
     stagedOutFile = files['chunk']['reconMon']
