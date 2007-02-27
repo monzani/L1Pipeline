@@ -114,6 +114,7 @@
          <process name="digiMon">
             <variables>
                <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+               <var name="reportType">digi</var>
             </variables>
             <job batchOptions=" -q medium" executable="${L1ProcROOT}/monitorDigi.py"/>
             <depends>

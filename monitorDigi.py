@@ -24,7 +24,7 @@ staged = stageFiles.StageSet()
 stagedDigiFile = staged.stageIn(files['chunk']['digi'])
 nameBase = files['chunk']['head']
 
-if 'recon' in env['PIPELINE_PROCESS']:
+if env['reportType'] == 'recon':
     stagedReconFile = staged.stageIn(files['chunk']['recon'])
     outDir = files['dirs']['reconMon']
     stagedOutFile = files['chunk']['reconMon']

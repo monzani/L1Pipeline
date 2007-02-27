@@ -16,17 +16,22 @@ import sys
 import config
 
 import fileNames
+import stageFiles
+
+staged = stageFiles.StageSet()
 
 # figure out what we're supposed to be doing from process name
-taskName = env['PIPELINE_PROCESS']
-taskRe = re.compile('^merge(.*)(Chunk|Crumb)s$')
-match = taskRe.match(taskName)
-if not match:
-    print >> sys.stderr, "Bad task name %s" % taskName
-    sys.exit(1)
-    pass
-fileType, level = match.groups()
-level = level.lower()
+# taskName = env['PIPELINE_PROCESS']
+# taskRe = re.compile('^merge(.*)(Chunk|Crumb)s$')
+# match = taskRe.match(taskName)
+# if not match:
+#     print >> sys.stderr, "Bad task name %s" % taskName
+#     sys.exit(1)
+#     pass
+# fileType, level = match.groups()
+# level = level.lower()
+fileType = env['fileType']
+level = env['mergeLevel']
 
 # find input files
 if level == 'chunk':
@@ -51,4 +56,7 @@ cmd = config.hadd+" "+env['outFile']+" "+env['inFiles']
 #cmd = config.hadd + (' %s' % outFile) + ((' %s' * len(inFiles)) % tuple(inFiles))
 
 status = runner.run(cmd)
+
+staged.finish()
+
 sys.exit(status)
