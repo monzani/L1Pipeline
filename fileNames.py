@@ -91,23 +91,23 @@ def _setupChunk(dirs, chunkId, runHead):
     files = {}
     chunkHead = join(runHead, chunkId)
     files['head'] = chunkHead
-    files['digiChunk'] = os.path.join(dirs['chunk'], \
-                                      join(chunkHead, 'digi.root'))
-    files['digiMonChunk'] = os.path.join(dirs['chunk'], \
-                                      join(chunkHead, 'digiHist.root'))
+    files['digi'] = os.path.join(dirs['chunk'], \
+                                 join(chunkHead, 'digi.root'))
+    files['digiMon'] = os.path.join(dirs['chunk'], \
+                                    join(chunkHead, 'digiHist.root'))
     
-    files['reconChunk'] = os.path.join(dirs['chunk'], \
-                                       join(chunkHead, 'recon.root'))
-    files['meritChunk'] = os.path.join(dirs['chunk'], \
-                                       join(chunkHead, 'merit.root'))
-    files['calChunk'] = os.path.join(dirs['chunk'], \
-                                       join(chunkHead, 'cal.root'))
+    files['recon'] = os.path.join(dirs['chunk'], \
+                                  join(chunkHead, 'recon.root'))
+    files['merit'] = os.path.join(dirs['chunk'], \
+                                  join(chunkHead, 'merit.root'))
+    files['cal'] = os.path.join(dirs['chunk'], \
+                                join(chunkHead, 'cal.root'))
     
-    files['reconMonChunk'] = os.path.join(dirs['chunk'], \
-                                      join(chunkHead, 'reconHist.root'))
+    files['reconMon'] = os.path.join(dirs['chunk'], \
+                                     join(chunkHead, 'reconHist.root'))
 
-    files['svacChunk'] = os.path.join(dirs['chunk'], \
-                                      join(chunkHead, 'svac.root'))
+    files['svac'] = os.path.join(dirs['chunk'], \
+                                 join(chunkHead, 'svac.root'))
 
     return files
 
@@ -116,10 +116,10 @@ def _setupCrumb(dirs, crumbId, chunkHead):
     files = {}
     crumbHead = join(chunkHead, crumbId)
     files['head'] = crumbHead
-    files['reconCrumb'] = os.path.join(dirs['crumb'], \
-                                       join(crumbHead, 'recon.root'))
-    files['meritCrumb'] = os.path.join(dirs['crumb'], \
-                                       join(crumbHead, 'merit.root'))
-    files['calCrumb'] = os.path.join(dirs['crumb'], \
-                                       join(crumbHead, 'cal.root'))
+    files['recon'] = os.path.join(dirs['crumb'], \
+                                  join(crumbHead, 'recon.root'))
+    files['merit'] = os.path.join(dirs['crumb'], \
+                                  join(crumbHead, 'merit.root'))
+    files['cal'] = os.path.join(dirs['crumb'], \
+                                join(crumbHead, 'cal.root'))
     return files

@@ -16,26 +16,24 @@ import stageFiles
 import config
 
 
+files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'], \
+                        environ['CHUNK_ID'])
+
 staged = stageFiles.StageSet()
 
-realDigiFile = env['digiChunkFile']
-stagedDigiFile = staged.stageIn(realDigiFile)
-digiDir = os.path.dirname(realDigiFile)
-nameBase = fileNames.baseHead(realDigiFile)
+stagedDigiFile = staged.stageIn(files['chunk']['digi'])
+nameBase = files['chunk']['head']
 
-try:
-    realReconFile = env['reconChunkFile']
-    stagedReconFile = staged.stageIn(realReconFile)
-except KeyError:
+if 'recon' in env['PIPELINE_PROCESS']:
+    stagedReconFile = staged.stageIn(files['chunk']['recon'])
+    outDir = files['dirs']['reconMon']
+    stagedOutFile = files['chunk']['reconMon']
+else:
     stagedReconFile = 'noSuchFile'
+    outDir = files['dirs']['digiMon']
+    stagedOutFile = files['chunk']['digiMon']
     pass
 
-#outDir = os.path.join(inDir, digiMon)
-outDir = os.path.join(env['TestDir'],env['CHUNK_ID'])
-outName = fileNames.join((nameBase, env['PIPELINE_PROCESS'], config.L1Version), 'root')
-realOutFile = os.path.join(outDir, outName)
-#stagedOutFile = staged.stageOut(realOutFile)
-stagedOutFile = realOutFile
 
 glastVersion = config.glastVersion
 testReportVersion = config.testReportVersion
