@@ -17,7 +17,7 @@
 
    <process name="launchRuns">
       <variables>
-         <var name="runList">RUNID=run001,RUN_RAWDIR=/nfs/farm/g/glast/u33/wai/pipeline_tests/dldir/run001</var>
+         <var name="runList">RUNID=run001,RUN_RAWDIR=/nfs/farm/g/glast/u33/wai/pipeline_tests/dldir/run001,DOWNLINK_ID=0</var>
       </variables>
       <script>
          <![CDATA[
@@ -52,7 +52,7 @@
 
       <process name="launchChunks">
          <variables>
-            <var name="chunkList">"CHUNK_RAWFILE=${RUN_RAWDIR}/chunk_001.evt*CHUNK_RAWFILE=${RUN_RAWDIR}/chunk_002.evt"</var>
+            <var name="chunkList">CHUNK_ID=001,EVTFILE=${RUN_RAWDIR}/chunk_001.evt,GLAST_EXT=/afs/slac/g/glast/ground/GLAST_EXT/rh9_gcc32opt,LATCalibRoot=/afs/slac/g/glast/ground/releases/calibrations*CHUNK_ID=002,EVTFILE=${RUN_RAWDIR}/chunk_002.evt,GLAST_EXT=/afs/slac/g/glast/ground/GLAST_EXT/rh9_gcc32opt,LATCalibRoot=/afs/slac/g/glast/ground/releases/calibrations</var>
          </variables>
          <script>
             <![CDATA[
@@ -101,7 +101,10 @@
       <task name="doChunk" version="%(L1Version)s" type="Data">
 
          <prerequisites>
-             <prerequisite name="CHUNK_RAWFILE" type="string"/>
+             <prerequisite name="CHUNK_ID" type="string"/>
+             <prerequisite name="EVTFILE" type="string"/>
+             <prerequisite name="GLAST_EXT" type="string"/>
+             <prerequisite name="LATCalibRoot" type="string"/>
          </prerequisites>
 
          <process name="digitization">

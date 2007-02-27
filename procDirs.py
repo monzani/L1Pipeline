@@ -7,8 +7,6 @@ import os
 
 import config
 
-def setup(dlId, runId=None, chunkId=None, crumbId=None):
-
 def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=False):
     """@brief Setup data directory names.  And create the directories.
 

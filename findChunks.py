@@ -30,8 +30,7 @@ argList = []
 for iChunk, chunkFile in enumerate(chunkFiles):
 
     chunkId = os.path.basename(chunkFile).split('_')[1]
-    
-    args = "EVTFILE=%(chunkFile)s,chunkId=%(chunkId)s" % locals()
+    args = "EVTFILE=%(chunkFile)s,CHUNK_ID=%(chunkId)s" % locals()
     argList.append(args)
     continue
 
