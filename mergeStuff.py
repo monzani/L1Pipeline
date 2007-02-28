@@ -20,36 +20,23 @@ import stageFiles
 
 staged = stageFiles.StageSet()
 
-# figure out what we're supposed to be doing from process name
-# taskName = env['PIPELINE_PROCESS']
-# taskRe = re.compile('^merge(.*)(Chunk|Crumb)s$')
-# match = taskRe.match(taskName)
-# if not match:
-#     print >> sys.stderr, "Bad task name %s" % taskName
-#     sys.exit(1)
-#     pass
-# fileType, level = match.groups()
-# level = level.lower()
+dlId = env['DOWNLINK_ID']
 fileType = env['fileType']
-level = env['mergeLevel']
+chunkId = os.environ.get('CHUNK_ID')
 
-# find input files
-if level == 'chunk':
-    chunkId = '*'
-    crumbId = None
-elif level == 'crumb':
-    chunkId = env['CHUNKID']
-    crumbId = '*'
+id chunkId is None:
+    mergeLevel = 'run'
 else:
-    print >> sys.stderr, 'Bad merge level %s' % level
-    sys.exit(1)
+    mergeLevel = 'chunk'
     pass
-files = fileNames.setup(env['DOWNLINK_ID'], chunkId, crumbId, createDirs=False)
-pattern = files[fileType][level]
-inFiles = glob.glob(pattern)
 
-#env['outFile']="larry_recon.root"
-#env['inFiles']="larry_recon_1.root larry_recon_2.root larry_recon_3.root"
+files = fileNames.setup(dlId, runId, chunkId)
+
+realInFiles = fileNames.findPieces(fileType, dlId, runId, chunkId)
+inFiles = [staged.stageIn(iFile) for iFile in realInFiles]
+
+realOutFile = files[fileType][mergeLevel]
+outFile = staged.stageOut(realOutFile)
 
 ##wbf## os.system(config.hadd+" "+env['outFile']+" "+env['inFiles'])
 cmd = config.hadd+" "+env['outFile']+" "+env['inFiles']

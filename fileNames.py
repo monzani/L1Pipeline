@@ -66,22 +66,21 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=True):
             pass
         pass
 
-    files['run']['head'] = runHead
+    dlHead = join(runHead, dlId)
+    files['run']['head'] = dlHead
     files['run']['digi'] = os.path.join(dirs['run'], \
-                                      join(runHead, 'digi.root'))
+                                        join(dlHead, 'digi.root'))
     files['run']['digiMon'] = os.path.join(dirs['run'], \
-                                      join(runHead, 'digiHist.root'))
-    
+                                           join(dlHead, 'digiHist.root'))
     files['run']['recon'] = os.path.join(dirs['run'], \
-                                       join(runHead, 'recon.root'))
+                                         join(dlHead, 'recon.root'))
     files['run']['merit'] = os.path.join(dirs['run'], \
-                                       join(runHead, 'merit.root'))
+                                         join(dlHead, 'merit.root'))
     files['run']['cal'] = os.path.join(dirs['run'], \
-                                       join(runHead, 'cal.root'))
-    
-    files['run']['reconMon'] = os.path.join(dirs['run'],join(runHead, 'reconHist.root'))
-
-    files['run']['svac'] = os.path.join(dirs['run'],join(runHead, 'svac.root'))
+                                       join(dlHead, 'cal.root'))
+    files['run']['reconMon'] = os.path.join(dirs['run'],
+                                            join(dlHead, 'reconHist.root'))
+    files['run']['svac'] = os.path.join(dirs['run'], join(dlHead, 'svac.root'))
     
     
     return files
@@ -95,17 +94,14 @@ def _setupChunk(dirs, chunkId, runHead):
                                  join(chunkHead, 'digi.root'))
     files['digiMon'] = os.path.join(dirs['chunk'], \
                                     join(chunkHead, 'digiHist.root'))
-    
     files['recon'] = os.path.join(dirs['chunk'], \
                                   join(chunkHead, 'recon.root'))
     files['merit'] = os.path.join(dirs['chunk'], \
                                   join(chunkHead, 'merit.root'))
     files['cal'] = os.path.join(dirs['chunk'], \
                                 join(chunkHead, 'cal.root'))
-    
     files['reconMon'] = os.path.join(dirs['chunk'], \
                                      join(chunkHead, 'reconHist.root'))
-
     files['svac'] = os.path.join(dirs['chunk'], \
                                  join(chunkHead, 'svac.root'))
 
@@ -123,3 +119,35 @@ def _setupCrumb(dirs, crumbId, chunkHead):
     files['cal'] = os.path.join(dirs['crumb'], \
                                 join(crumbHead, 'cal.root'))
     return files
+
+
+def findPieces(fileType, dlId, runId, chunkId=None):
+    """@brief find chunks or crumbs to merge.
+
+    @arg fileType The type of file we're merging ('digi', 'reconMon', etc.)
+
+    @arg dlId
+
+    @arg runId
+
+    @arg [chunkId]
+
+    @return A sequence of file names
+    """
+
+    if chunkId is None:
+        chunkId = '*'
+        crumbId = None
+        level = 'chunk'
+    else:
+        crumbId = '*'
+        level = 'crumb'
+        pass
+
+    files = setup(env['DOWNLINK_ID'], chunkId, crumbId, createDirs=False)
+    pattern = files[fileType][level]
+    inFiles = glob.glob(pattern)
+
+    inFiles.sort(key=os.basename)
+   
+    return inFiles
