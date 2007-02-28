@@ -24,7 +24,7 @@ dlId = env['DOWNLINK_ID']
 fileType = env['fileType']
 chunkId = os.environ.get('CHUNK_ID')
 
-id chunkId is None:
+if chunkId is None:
     mergeLevel = 'run'
 else:
     mergeLevel = 'chunk'
