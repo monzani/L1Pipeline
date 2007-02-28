@@ -144,7 +144,7 @@ def findPieces(fileType, dlId, runId, chunkId=None):
         level = 'crumb'
         pass
 
-    files = setup(env['DOWNLINK_ID'], chunkId, crumbId, createDirs=False)
+    files = setup(os.environ['DOWNLINK_ID'], chunkId, crumbId, createDirs=False)
     pattern = files[fileType][level]
     inFiles = glob.glob(pattern)
 

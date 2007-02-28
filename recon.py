@@ -21,15 +21,17 @@ import stageFiles
 files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'], \
                         environ['CHUNK_ID'], environ['CRUMB_ID'])
 
-#staged = stageFiles.StageSet()
+staged = stageFiles.StageSet()
 
-#env['digiChunkFile'] = staged.stageIn(files['chunk']['digiChunk'])
-#env['reconCrumbFile'] = staged.stageOut(files['crumb']['reconCrumb'])
+environ['digiChunkFile'] = staged.stageIn(files['chunk']['digi'])
+environ['reconCrumbFile'] = staged.stageOut(files['crumb']['recon'])
+environ['meritCrumbFile'] = staged.stageOut(files['crumb']['merit'])
+environ['calCrumbFile'] = staged.stageOut(files['crumb']['cal'])
 
-#env['JOBOPTIONS'] = config.reconOptions
+#environ['JOBOPTIONS'] = config.reconOptions
 
 status = runner.run(config.reconApp+' '+config.reconOptions)
 
-#staged.finish()
+staged.finish()
 
 sys.exit(status)

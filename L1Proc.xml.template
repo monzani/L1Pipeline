@@ -69,6 +69,17 @@
             <subtask>doChunk</subtask>
          </createsSubtasks>
       </process>
+
+      <process name="mergeDigi">
+         <variables>
+            <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+            <var name="fileType">digi</var>
+         </variables>
+         <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py"/>
+         <depends>
+            <after process="doChunk.digitization" status="SUCCESS"/>
+         </depends>
+      </process>
  
       <process name="mergeDigiMon">
          <variables>
@@ -95,6 +106,39 @@
          </script>
          <depends>
             <after process="mergeDigiMon" status="SUCCESS" />
+         </depends>
+      </process>
+
+      <process name="mergeReconChunks">
+         <variables>
+            <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+            <var name="fileType">recon</var>
+         </variables>
+         <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
+         <depends>
+            <after process="doChunk.mergeReconCrumbs" status="SUCCESS"/>
+         </depends>
+      </process>
+
+      <process name="mergeCalChunks">
+         <variables>
+            <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+            <var name="fileType">cal</var>
+         </variables>
+         <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
+         <depends>
+            <after process="doChunk.mergeCalCrumbs" status="SUCCESS"/>
+         </depends>
+      </process>
+
+      <process name="mergeMeritChunks">
+         <variables>
+            <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+            <var name="fileType">merit</var>
+         </variables>
+         <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
+         <depends>
+            <after process="doChunk.mergeMeritCrumbs" status="SUCCESS"/>
          </depends>
       </process>
 
@@ -147,7 +191,7 @@
 
          <process name="launchCrumbs">
             <variables>
-               <var name="crumbList">CRUMB_ID=0,crumbEvents=100,crumbStart=0</var>
+               <var name="crumbList">CRUMB_ID=0,crumbEvents=100,crumbStart=0*CRUMB_ID=1,crumbEvents=100,crumbStart=100</var>
             </variables>
             <script>
                <![CDATA[
@@ -163,6 +207,39 @@
             <createsSubtasks>
                <subtask>doCrumb</subtask>
             </createsSubtasks>
+         </process>
+
+         <process name="mergeReconCrumbs">
+            <variables>
+               <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+               <var name="fileType">recon</var>
+            </variables>
+            <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
+            <depends>
+               <after process="doCrumb.recon" status="SUCCESS"/>
+            </depends>
+         </process>
+
+         <process name="mergeCalCrumbs">
+            <variables>
+               <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+               <var name="fileType">cal</var>
+            </variables>
+            <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
+            <depends>
+               <after process="doCrumb.recon" status="SUCCESS"/>
+            </depends>
+         </process>
+
+         <process name="mergeMeritCrumbs">
+            <variables>
+               <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+               <var name="fileType">merit</var>
+            </variables>
+            <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
+            <depends>
+               <after process="doCrumb.recon" status="SUCCESS"/>
+            </depends>
          </process>
 
          <task name="doCrumb" version="%(L1Version)s" type="Data">

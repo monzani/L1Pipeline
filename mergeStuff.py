@@ -6,8 +6,8 @@
 """
 
 import glob
-import os
-env = os.environ
+from os import environ
+
 import re
 import sys
 
@@ -20,9 +20,10 @@ import stageFiles
 
 staged = stageFiles.StageSet()
 
-dlId = env['DOWNLINK_ID']
-fileType = env['fileType']
-chunkId = os.environ.get('CHUNK_ID')
+fileType = environ['fileType']
+dlId = environ['DOWNLINK_ID']
+runId= environ['RUNID']
+chunkId = environ.get('CHUNK_ID')
 
 if chunkId is None:
     mergeLevel = 'run'
@@ -38,8 +39,32 @@ inFiles = [staged.stageIn(iFile) for iFile in realInFiles]
 realOutFile = files[fileType][mergeLevel]
 outFile = staged.stageOut(realOutFile)
 
-##wbf## os.system(config.hadd+" "+env['outFile']+" "+env['inFiles'])
-cmd = config.hadd+" "+env['outFile']+" "+env['inFiles']
+##wbf## system(config.hadd+" "+environ['outFile']+" "+environ['inFiles'])
+
+if fileType=='digiMon':
+
+ glastRoot='/afs/slac/g/glast'
+ cmtConfig='rh9_gcc32opt'
+ rootSys=glastRoot+'/ground/GLAST_EXT/'+cmtConfig+'/ROOT/v4.02.00/root'
+ glastExt=glastRoot+'/ground/GLAST_EXT/'+cmtConfig
+ cmtPath='/afs/slac/g/glast/ground/releases/volume07/EngineeringModel-v6r070329p29em1:/afs/slac/g/glast/ground/PipelineConfig/SC/L1Pipeline/builds'
+
+ reportMergeApp=glastRoot+'/ground/PipelineConfig/SC/L1Pipeline/builds/TestReport/v3r6p36/'+cmtConfig+'/MergeHistFiles.exe'
+
+ environ['LD_LIBRARY_PATH']=""
+ environ['ROOTSYS']=rootSys
+ environ['CMTPATH']=cmtPath
+
+ infilestring=""
+ for i_infile in range(len(inFiles)):
+  infilestring=infilestring+"-i "+inFiles[i_infile]
+
+ cmd = "source /afs/slac/g/glast/ground/scripts/group.sh; CMTCONFIG="+cmtConfig+"; export CMTCONFIG; GLAST_EXT="+glastExt+"; export GLAST_EXT; cd /afs/slac/g/glast/ground/PipelineConfig/SC/L1Pipeline/builds/TestReport/v3r6p36/cmt; source setup.sh; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"+glastExt+"/xerces/2.6.0/lib; export LD_LIBRARY_PATH; "+reportMergeApp+" "+infilestring+" -o "+outFile+" -c $L1ProcROOT/merge.txt"
+
+else:
+
+ cmd = config.hadd+" "+environ['outFile']+" "+environ['inFiles']
+
 #cmd = config.hadd + (' %s' % outFile) + ((' %s' * len(inFiles)) % tuple(inFiles))
 
 status = runner.run(cmd)
