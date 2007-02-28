@@ -134,6 +134,53 @@
                <after process="digiMon" status="SUCCESS" />
             </depends>
          </process>
+
+         <process name="setupCrumbs">
+            <variables>
+               <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+            </variables>
+            <job batchOptions=" -q short" executable="${L1ProcROOT}/setupCrumbs.py"/>
+            <depends>
+               <after process="digitization" status="SUCCESS" />
+            </depends>
+         </process>
+
+         <process name="launchCrumbs">
+            <variables>
+               <var name="crumbList">CRUMB_ID=0,crumbEvents=100,crumbStart=0</var>
+            </variables>
+            <script>
+               <![CDATA[
+               argList = crumbList.split('*')
+               for iStream in range(len(argList)):
+                  pipeline.createSubstream("doCrumb",iStream,argList[iStream])
+                  continue
+               ]]>
+            </script>
+            <depends>
+               <after process="setupCrumbs" status="SUCCESS" />
+            </depends>
+            <createsSubtasks>
+               <subtask>doCrumb</subtask>
+            </createsSubtasks>
+         </process>
+
+         <task name="doCrumb" version="%(L1Version)s" type="Data">
+
+            <prerequisites>
+               <prerequisite name="CRUMB_ID" type="string"/>
+               <prerequisite name="crumbEvents" type="string" />
+               <prerequisite name="crumbStart" type="string" />
+            </prerequisites>
+
+            <process name="recon">
+               <variables>
+                  <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+               </variables>
+               <job batchOptions=" -q short" executable="${L1ProcROOT}/recon.py" />
+            </process>
+
+         </task>
        
       </task>
 

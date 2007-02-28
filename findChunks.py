@@ -6,30 +6,29 @@
 """
 
 import glob
-import os
+from os import path, environ
 
 import config
 import fileNames
 import pipeline
 
-
-dlId = os.environ['DOWNLINK_ID']
-runId = os.environ['RUNID']
-runDir = os.environ['RUN_RAWDIR']
+dlId = environ['DOWNLINK_ID']
+runId = environ['RUNID']
+runDir = environ['RUN_RAWDIR']
 
 files = fileNames.setup(dlId, runId)
 
 rootDir = files['dirs']['run']
 
 ## Find chunk files
-chunkPattern = os.path.join(runDir, '*.evt')
+chunkPattern = path.join(runDir, '*.evt')
 chunkFiles = glob.glob(chunkPattern)
 
 # set up a subStream for each run
 argList = []
 for iChunk, chunkFile in enumerate(chunkFiles):
 
-    chunkId = os.path.basename(chunkFile).split('_')[1]
+    chunkId = path.basename(chunkFile).split('_')[1]
     args = "EVTFILE=%(chunkFile)s,CHUNK_ID=%(chunkId)s" % locals()
     argList.append(args)
     continue

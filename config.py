@@ -3,26 +3,25 @@
 @author W. Focke <focke@slac.stanford.edu>
 """
 
-import os
-env = os.environ
+from os import path, environ
 
-L1Version = "0.36"
+L1Version = "0.40"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
-#L1ProcROOT = os.path.join(installRoot, L1Version)
+#L1ProcROOT = path.join(installRoot, L1Version)
 L1ProcROOT = '/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline'
 LATCalibRoot = '/afs/slac/g/glast/ground/releases/calibrations'
-L1Cmt = os.path.join(installRoot, 'builds')
+L1Cmt = path.join(installRoot, 'builds')
 
 #L1Disk = '/nfs/slac/g/svac/focke/L1'
 L1Disk = '/nfs/farm/g/glast/u33/wai/pipeline_tests/L1'
-L1Dir = os.path.join(L1Disk, 'rootData')
+L1Dir = path.join(L1Disk, 'rootData')
 
 maxCpu = 1000
 
 maxCrumbSize = 6353
 
 cmtConfig = 'rh9_gcc32opt'
-glastExt = os.path.join('/afs/slac.stanford.edu/g/glast/ground/GLAST_EXT',
+glastExt = path.join('/afs/slac.stanford.edu/g/glast/ground/GLAST_EXT',
                         cmtConfig)
 #
 releaseDir = '/afs/slac.stanford.edu/g/glast/ground/releases/volume07'
@@ -31,29 +30,29 @@ releaseName = 'EngineeringModel'
 gleamPackage = 'LatIntegration'
 #
 glastName = '-'.join((releaseName, glastVersion))
-glastLocation = os.path.join(releaseDir, glastName)
-gleam = os.path.join(glastLocation, 'bin', gleamPackage)
-cmtScript = os.path.join(glastLocation, releaseName, glastVersion, 'cmt',
+glastLocation = path.join(releaseDir, glastName)
+gleam = path.join(glastLocation, 'bin', gleamPackage)
+cmtScript = path.join(glastLocation, releaseName, glastVersion, 'cmt',
                          'setup.sh') # do we need this?
 cmtPath = ':'.join((glastLocation, L1Cmt))
-env['CMTPATH'] = cmtPath
-env['CMTCONFIG'] = cmtConfig
+environ['CMTPATH'] = cmtPath
+environ['CMTCONFIG'] = cmtConfig
 #
 digiApp = gleam
 reconApp = gleam
 #
-digiOptions = os.path.join(L1ProcROOT, 'digi.jobOpt')
-reconOptions = os.path.join(L1ProcROOT, 'recon.jobOpt')
+digiOptions = path.join(L1ProcROOT, 'digi.jobOpt')
+reconOptions = path.join(L1ProcROOT, 'recon.jobOpt')
 
-rootSys = os.path.join(glastExt, 'ROOT/v4.02.00/root')
-haddRootSys = os.path.join(glastExt, 'ROOT/v5.10.00/root')
-hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
+rootSys = path.join(glastExt, 'ROOT/v4.02.00/root')
+haddRootSys = path.join(glastExt, 'ROOT/v5.10.00/root')
+hadd = path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
 testReportVersion = 'v3r6p36'
-testReportDir = os.path.join(L1Cmt, 'TestReport', testReportVersion)
-testReportCmt = os.path.join(testReportDir, 'cmt', 'setup.sh')
-testReportApp = os.path.join(testReportDir, cmtConfig, 'TestReport.exe')
-reportMergeApp = os.path.join(testReportDir, cmtConfig, 'MergeHistFiles.exe')
+testReportDir = path.join(L1Cmt, 'TestReport', testReportVersion)
+testReportCmt = path.join(testReportDir, 'cmt', 'setup.sh')
+testReportApp = path.join(testReportDir, cmtConfig, 'TestReport.exe')
+reportMergeApp = path.join(testReportDir, cmtConfig, 'MergeHistFiles.exe')
 #
 digiMonCmt = testReportCmt
 digiMonApp = testReportApp
@@ -64,9 +63,9 @@ reconMonApp = testReportApp
 reconMonVersion = testReportVersion
 
 svacTupleVersion = 'v3r0p3'
-svacTupleDir = os.path.join(L1Cmt, 'EngineeringModelRoot', svacTupleVersion)
-svacTupleCmt = os.path.join(svacTupleDir, 'cmt')
-svacTupleApp = os.path.join(svacTupleDir, cmtConfig, 'RunRootAnalyzer.exe')
+svacTupleDir = path.join(L1Cmt, 'EngineeringModelRoot', svacTupleVersion)
+svacTupleCmt = path.join(svacTupleDir, 'cmt')
+svacTupleApp = path.join(svacTupleDir, cmtConfig, 'RunRootAnalyzer.exe')
 
 joiner = '*'
 

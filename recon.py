@@ -17,7 +17,6 @@ import runner
 import stageFiles
 
 ##wbf## system(config.reconApp+' '+environ['Larry_L1ProcROOT']+'/recon.jobOpt; chgrp -R glast-pipeline '+environ['TestDir']+'/'+environ['CHUNK_ID'])
-cmd = config.reconApp+' '+environ['Larry_L1ProcROOT']+'/recon.jobOpt; chgrp -R glast-pipeline '+environ['TestDir']+'/'+environ['CHUNK_ID']
 
 files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'], \
                         environ['CHUNK_ID'], environ['CRUMB_ID'])
@@ -29,7 +28,7 @@ files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'], \
 
 #env['JOBOPTIONS'] = config.reconOptions
 
-status = runner.run(cmd)
+status = runner.run(config.reconApp+' '+config.reconOptions)
 
 #staged.finish()
 
