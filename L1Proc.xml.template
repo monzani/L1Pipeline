@@ -80,6 +80,24 @@
             <after process="doChunk.digitization" status="SUCCESS"/>
          </depends>
       </process>
+
+      <process name="registerDigi">
+         <variables>
+            <var name="REGISTER_LOGIPATH">/L1Proc/Digi/${RUNID}_${DOWNLINK_ID}_digi.root</var>
+            <var name="REGISTER_FILEPATH">/nfs/farm/g/glast/u33/wai/pipeline_tests/L1/rootData/runs/${RUNID}/v6r070329p29em1/${RUNID}_${DOWNLINK_ID}_digi.root</var>
+         </variables>
+         <script><![CDATA[
+            dataType = "MC"
+            logicalPath = REGISTER_LOGIPATH
+            filePath = REGISTER_FILEPATH
+            attributes = "tstart=0:tstop=120"
+            datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
+            ]]>
+         </script>
+         <depends>
+            <after process="mergeDigi" status="SUCCESS" />
+         </depends>
+      </process>
  
       <process name="mergeDigiMon">
          <variables>
@@ -121,6 +139,24 @@
          </depends>
       </process>
 
+      <process name="registerRecon">
+         <variables>
+            <var name="REGISTER_LOGIPATH">/L1Proc/Recon/${RUNID}_${DOWNLINK_ID}_recon.root</var>
+            <var name="REGISTER_FILEPATH">/nfs/farm/g/glast/u33/wai/pipeline_tests/L1/rootData/runs/${RUNID}/v6r070329p29em1/${RUNID}_${DOWNLINK_ID}_recon.root</var>
+         </variables>
+         <script><![CDATA[
+            dataType = "MC"
+            logicalPath = REGISTER_LOGIPATH
+            filePath = REGISTER_FILEPATH
+            attributes = "tstart=0:tstop=120"
+            datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
+            ]]>
+         </script>
+         <depends>
+            <after process="mergeReconChunks" status="SUCCESS" />
+         </depends>
+      </process>
+
       <process name="mergeCalChunks">
          <variables>
             <var name="L1ProcROOT">%(L1ProcROOT)s</var>
@@ -132,6 +168,24 @@
          </depends>
       </process>
 
+      <process name="registerCal">
+         <variables>
+            <var name="REGISTER_LOGIPATH">/L1Proc/Cal/${RUNID}_${DOWNLINK_ID}_cal.root</var>
+            <var name="REGISTER_FILEPATH">/nfs/farm/g/glast/u33/wai/pipeline_tests/L1/rootData/runs/${RUNID}/v6r070329p29em1/${RUNID}_${DOWNLINK_ID}_cal.root</var>
+         </variables>
+         <script><![CDATA[
+            dataType = "MC"
+            logicalPath = REGISTER_LOGIPATH
+            filePath = REGISTER_FILEPATH
+            attributes = "tstart=0:tstop=120"
+            datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
+            ]]>
+         </script>
+         <depends>
+            <after process="mergeCalChunks" status="SUCCESS" />
+         </depends>
+      </process>
+
       <process name="mergeMeritChunks">
          <variables>
             <var name="L1ProcROOT">%(L1ProcROOT)s</var>
@@ -140,6 +194,24 @@
          <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
          <depends>
             <after process="doChunk.mergeMeritCrumbs" status="SUCCESS"/>
+         </depends>
+      </process>
+
+      <process name="registerMerit">
+         <variables>
+            <var name="REGISTER_LOGIPATH">/L1Proc/Merit/${RUNID}_${DOWNLINK_ID}_merit.root</var>
+            <var name="REGISTER_FILEPATH">/nfs/farm/g/glast/u33/wai/pipeline_tests/L1/rootData/runs/${RUNID}/v6r070329p29em1/${RUNID}_${DOWNLINK_ID}_merit.root</var>
+         </variables>
+         <script><![CDATA[
+            dataType = "MC"
+            logicalPath = REGISTER_LOGIPATH
+            filePath = REGISTER_FILEPATH
+            attributes = "tstart=0:tstop=120"
+            datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
+            ]]>
+         </script>
+         <depends>
+            <after process="mergeMeritChunks" status="SUCCESS" />
          </depends>
       </process>
 
