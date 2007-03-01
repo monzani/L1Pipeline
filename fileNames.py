@@ -94,7 +94,7 @@ def _setupChunk(dirs, chunkId, runHead):
     files['digi'] = os.path.join(dirs['chunk'], \
                                  join(chunkHead, 'digi.root'))
     files['digiMon'] = os.path.join(dirs['chunk'], \
-                                    join(chunkHead, 'digiHist.root'))
+                                    join(chunkHead, 'hist.root'))
     files['recon'] = os.path.join(dirs['chunk'], \
                                   join(chunkHead, 'recon.root'))
     files['merit'] = os.path.join(dirs['chunk'], \
@@ -102,7 +102,7 @@ def _setupChunk(dirs, chunkId, runHead):
     files['cal'] = os.path.join(dirs['chunk'], \
                                 join(chunkHead, 'cal.root'))
     files['reconMon'] = os.path.join(dirs['chunk'], \
-                                     join(chunkHead, 'reconHist.root'))
+                                     join(chunkHead, 'hist.root'))
     files['svac'] = os.path.join(dirs['chunk'], \
                                  join(chunkHead, 'svac.root'))
 
