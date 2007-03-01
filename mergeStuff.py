@@ -36,12 +36,12 @@ files = fileNames.setup(dlId, runId, chunkId)
 realInFiles = fileNames.findPieces(fileType, dlId, runId, chunkId)
 inFiles = [staged.stageIn(iFile) for iFile in realInFiles]
 
-realOutFile = files[fileType][mergeLevel]
+realOutFile = files[mergeLevel][fileType]
 outFile = staged.stageOut(realOutFile)
 
 ##wbf## system(config.hadd+" "+environ['outFile']+" "+environ['inFiles'])
 
-if fileType=='digiMon':
+if fileType in ['digiMon', 'reconMon']:
 
  glastRoot='/afs/slac/g/glast'
  cmtConfig='rh9_gcc32opt'
