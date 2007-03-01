@@ -84,8 +84,9 @@
       <process name="mergeDigiMon">
          <variables>
             <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+            <var name="fileType">digiMon</var>
          </variables>
-         <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeHistos.py"/>
+         <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py"/>
          <depends>
             <after process="doChunk.digiMon" status="SUCCESS" />
          </depends>
@@ -93,13 +94,13 @@
 
       <process name="registerDigiMon">
          <variables>
-            <var name="MergedFilename">merged_digi_hist.root</var>
-            <var name="RUN_ROOTDIR">/nfs/farm/g/glast/u33/wai/pipeline_tests/L1</var>
+            <var name="REGISTER_LOGIPATH">/L1Proc/DigiMon/merged_digi_hist.root</var>
+            <var name="REGISTER_FILEPATH">/nfs/farm/g/glast/u33/wai/pipeline_tests/L1/rootData/runs/run001/v6r070329p29em1/merged_digi_hist.root</var>
          </variables>
          <script><![CDATA[
             dataType = "MC"
-            logicalPath = "/L1Proc/DigiMon/" + MergedFilename
-            filePath = RUN_ROOTDIR + "/" + MergedFilename
+            logicalPath = REGISTER_LOGIPATH
+            filePath = REGISTER_FILEPATH
             attributes = "tstart=0:tstop=120"
             datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
             ]]>

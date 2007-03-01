@@ -3,6 +3,7 @@
 @author W. Focke <focke@slac.stanford.edu>
 """
 
+import glob
 import os
 
 import config
@@ -149,6 +150,6 @@ def findPieces(fileType, dlId, runId, chunkId=None):
     pattern = files[level][fileType]
     inFiles = glob.glob(pattern)
 
-    inFiles.sort(key=os.basename)
+    inFiles.sort(key=os.path.basename)
    
     return inFiles
