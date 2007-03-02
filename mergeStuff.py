@@ -70,5 +70,8 @@ staged.finish()
 
 sys.exit(status)
 
-pipeline.setVariable('REGISTER_LOGIPATH', '/L1Proc/'+fileType+'/'+realOutFile)
+templist=outFile.split('/')
+outFileName=templist[len(templist)-1]
+
+pipeline.setVariable('REGISTER_LOGIPATH', '/L1Proc/'+fileType+'/'+outFileName)
 pipeline.setVariable('REGISTER_FILEPATH', outFile)
