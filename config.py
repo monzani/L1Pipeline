@@ -18,7 +18,8 @@ L1Dir = path.join(L1Disk, 'rootData')
 
 maxCpu = 1000
 
-maxCrumbSize = 6353
+#maxCrumbSize = 6353
+maxCrumbSize = 250
 
 cmtConfig = 'rh9_gcc32opt'
 glastExt = path.join('/afs/slac.stanford.edu/g/glast/ground/GLAST_EXT',

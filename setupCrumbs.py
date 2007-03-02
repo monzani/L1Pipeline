@@ -19,7 +19,7 @@ files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'], \
 digiFile = files['chunk']['digi']
 chunkDir = files['dirs']['chunk']
 
-chunkEvents = 85643
+chunkEvents = 1000
 
 cDigits = int(math.ceil(math.log(chunkEvents) / math.log(10)))
 cForm = '%0' + `cDigits` + 'd'

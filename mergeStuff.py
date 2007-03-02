@@ -55,7 +55,7 @@ if fileType in ['digiMon', 'reconMon']:
 
  print "infilestring=",infilestring
 
- cmd = "source /afs/slac/g/glast/ground/scripts/group.sh; CMTCONFIG="+config.cmtConfig+"; export CMTCONFIG; GLAST_EXT="+config.glastExt+"; export GLAST_EXT; cd "+config.testReportDir+"/cmt; source setup.sh; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"+config.glastExt+"/xerces/2.6.0/lib; export LD_LIBRARY_PATH; "+config.reportMergeApp+" "+infilestring+" -o "+outFile+" -c $L1ProcROOT/merge.txt"
+ cmd = "source /afs/slac/g/glast/ground/scripts/group.sh; CMTCONFIG="+config.cmtConfig+"; export CMTCONFIG; GLAST_EXT="+config.glastExt+"; export GLAST_EXT; cd "+config.testReportDir+"/cmt; source setup.sh; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"+config.glastExt+"/xerces/2.6.0/lib:"+config.glastLocation+"/lib:"+config.rootSys+"/lib; export LD_LIBRARY_PATH; "+config.reportMergeApp+" "+infilestring+" -o "+outFile+" -c $L1ProcROOT/merge.txt"
 
 else:
 
