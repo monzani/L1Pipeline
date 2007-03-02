@@ -51,7 +51,7 @@ if fileType in ['digiMon', 'reconMon']:
  infilestring=""
  for i_infile in range(len(inFiles)):
   print "Infile",i_infile,"is",inFiles[i_infile]
-  infilestring=infilestring+"-i "+inFiles[i_infile]
+  infilestring=infilestring+" -i "+inFiles[i_infile]
 
  print "infilestring=",infilestring
 

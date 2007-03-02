@@ -93,7 +93,7 @@ def _setupChunk(dirs, chunkId, runHead):
     files['head'] = chunkHead
     files['digi'] = os.path.join(dirs['chunk'], \
                                  join(chunkHead, 'digi.root'))
-    files['digiMon'] = os.path.join(dirs['chunk'], \
+    files['digiMon'] = os.path.join(dirs['digiMon'], \
                                     join(chunkHead, 'hist.root'))
     files['recon'] = os.path.join(dirs['chunk'], \
                                   join(chunkHead, 'recon.root'))
@@ -101,7 +101,7 @@ def _setupChunk(dirs, chunkId, runHead):
                                   join(chunkHead, 'merit.root'))
     files['cal'] = os.path.join(dirs['chunk'], \
                                 join(chunkHead, 'cal.root'))
-    files['reconMon'] = os.path.join(dirs['chunk'], \
+    files['reconMon'] = os.path.join(dirs['reconMon'], \
                                      join(chunkHead, 'hist.root'))
     files['svac'] = os.path.join(dirs['chunk'], \
                                  join(chunkHead, 'svac.root'))
@@ -145,7 +145,7 @@ def findPieces(fileType, dlId, runId, chunkId=None):
         level = 'crumb'
         pass
 
-    files = setup(os.environ['DOWNLINK_ID'], runId, chunkId, crumbId, \
+    files = setup(dlId, runId, chunkId, crumbId, \
                   createDirs=False)
     pattern = files[level][fileType]
     inFiles = glob.glob(pattern)
