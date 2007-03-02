@@ -250,11 +250,9 @@
          </process>
 
          <process name="launchCrumbs">
-            <variables>
-               <var name="crumbList">CRUMB_ID=0,crumbEvents=100,crumbStart=0*CRUMB_ID=1,crumbEvents=100,crumbStart=100</var>
-            </variables>
             <script>
                <![CDATA[
+               crumbList=pipeline.getProcessInstance("setupCrumbs").getVariable("crumbList")
                argList = crumbList.split('*')
                for iStream in range(len(argList)):
                   pipeline.createSubstream("doCrumb",iStream,argList[iStream])

@@ -35,14 +35,14 @@ for iCrumb in range(nCrumbs):
     start = crumbStarts[iCrumb]
     crumbId = cForm % start
     nEvents = crumbSizes[iCrumb]
-    reconBase = '_'.join((environ['RUNID'], environ['CHUNK_ID'], crumbId,
+#    reconBase = '_'.join((environ['RUNID'], environ['CHUNK_ID'], crumbId,
                           environ['DOWNLINK_ID'], 'RECON.root'))
-    reconFile = path.join(chunkDir, reconBase)
-    args = 'crumbStart=%(start)s,crumbEvents=%(nEvents)s,reconCrumbFile=%(reconFile)s' % locals()
+#    reconFile = path.join(chunkDir, reconBase)
+    args = 'CRUMB_ID=%(crumbId)s,crumbStart=%(start)s,crumbEvents=%(nEvents)s' % locals()
     argList.append(args)
     pass
 
 # Will this work?  Can't set variables that contain commas
 # or colons?
 allArgs = config.joiner.join(argList) 
-#pipeline.setVariable('chunkList', allArgs)
+pipeline.setVariable('crumbList', allArgs)

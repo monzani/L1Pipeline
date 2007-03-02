@@ -17,6 +17,7 @@ import config
 
 import fileNames
 import stageFiles
+import pipeline
 
 staged = stageFiles.StageSet()
 
@@ -64,14 +65,16 @@ else:
  environ['ROOTSYS']=config.haddRootSys
  cmd = config.hadd + (' %s' % outFile) + ((' %s' * len(inFiles)) % tuple(inFiles))
 
+
 status = runner.run(cmd)
 
 staged.finish()
 
-sys.exit(status)
-
-templist=outFile.split('/')
+templist=realOutFile.split('/')
 outFileName=templist[len(templist)-1]
+logipath='/L1Proc/'+fileType+'/'+outFileName
+print "logipath=",logipath,"filepath=",outFile
+pipeline.setVariable('REGISTER_LOGIPATH', logipath)
+pipeline.setVariable('REGISTER_FILEPATH', realOutFile)
 
-pipeline.setVariable('REGISTER_LOGIPATH', '/L1Proc/'+fileType+'/'+outFileName)
-pipeline.setVariable('REGISTER_FILEPATH', outFile)
+sys.exit(status)
