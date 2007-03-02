@@ -16,11 +16,9 @@
    </process>
 
    <process name="launchRuns">
-      <variables>
-         <var name="runList">RUNID=run001,RUN_RAWDIR=/nfs/farm/g/glast/u33/wai/pipeline_tests/dldir/run001,DOWNLINK_ID=0</var>
-      </variables>
       <script>
          <![CDATA[
+         runList=pipeline.getProcessInstance("findRunDirs").getVariable("runList")
          argList = runList.split('*')
          for iStream in range(len(argList)):
             pipeline.createSubstream("doRun",iStream,argList[iStream])
@@ -51,11 +49,9 @@
       </process>
 
       <process name="launchChunks">
-         <variables>
-            <var name="chunkList">CHUNK_ID=001,EVTFILE=${RUN_RAWDIR}/chunk_001.evt,GLAST_EXT=/afs/slac/g/glast/ground/GLAST_EXT/rh9_gcc32opt,LATCalibRoot=/afs/slac/g/glast/ground/releases/calibrations*CHUNK_ID=002,EVTFILE=${RUN_RAWDIR}/chunk_002.evt,GLAST_EXT=/afs/slac/g/glast/ground/GLAST_EXT/rh9_gcc32opt,LATCalibRoot=/afs/slac/g/glast/ground/releases/calibrations</var>
-         </variables>
          <script>
             <![CDATA[
+            chunkList=pipeline.getProcessInstance("findChunks").getVariable("chunkList")
             argList = chunkList.split('*')
             for iStream in range(len(argList)):
                pipeline.createSubstream("doChunk",iStream,argList[iStream])
@@ -82,14 +78,10 @@
       </process>
 
       <process name="registerDigi">
-         <variables>
-            <var name="REGISTER_LOGIPATH">/L1Proc/Digi/${RUNID}_${DOWNLINK_ID}_digi.root</var>
-            <var name="REGISTER_FILEPATH">/nfs/farm/g/glast/u33/wai/pipeline_tests/L1/rootData/runs/${RUNID}/v6r070329p29em1/${RUNID}_${DOWNLINK_ID}_digi.root</var>
-         </variables>
          <script><![CDATA[
             dataType = "MC"
-            logicalPath = REGISTER_LOGIPATH
-            filePath = REGISTER_FILEPATH
+            logicalPath = pipeline.getProcessInstance("mergeDigi").getVariable("REGISTER_LOGIPATH")
+            filePath = pipeline.getProcessInstance("mergeDigi").getVariable("REGISTER_FILEPATH")
             attributes = "tstart=0:tstop=120"
             datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
             ]]>
@@ -111,14 +103,10 @@
       </process>
 
       <process name="registerDigiMon">
-         <variables>
-            <var name="REGISTER_LOGIPATH">/L1Proc/DigiMon/merged_digi_hist.root</var>
-            <var name="REGISTER_FILEPATH">/nfs/farm/g/glast/u33/wai/pipeline_tests/L1/rootData/runs/run001/v6r070329p29em1/merged_digi_hist.root</var>
-         </variables>
          <script><![CDATA[
             dataType = "MC"
-            logicalPath = REGISTER_LOGIPATH
-            filePath = REGISTER_FILEPATH
+            logicalPath = pipeline.getProcessInstance("mergeDigiMon").getVariable("REGISTER_LOGIPATH")
+            filePath = pipeline.getProcessInstance("mergeDigiMon").getVariable("REGISTER_FILEPATH")
             attributes = "tstart=0:tstop=120"
             datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
             ]]>
@@ -140,14 +128,10 @@
       </process>
 
       <process name="registerRecon">
-         <variables>
-            <var name="REGISTER_LOGIPATH">/L1Proc/Recon/${RUNID}_${DOWNLINK_ID}_recon.root</var>
-            <var name="REGISTER_FILEPATH">/nfs/farm/g/glast/u33/wai/pipeline_tests/L1/rootData/runs/${RUNID}/v6r070329p29em1/${RUNID}_${DOWNLINK_ID}_recon.root</var>
-         </variables>
          <script><![CDATA[
             dataType = "MC"
-            logicalPath = REGISTER_LOGIPATH
-            filePath = REGISTER_FILEPATH
+            logicalPath = pipeline.getProcessInstance("mergeReconChunks").getVariable("REGISTER_LOGIPATH")
+            filePath = pipeline.getProcessInstance("mergeReconChunks").getVariable("REGISTER_FILEPATH")
             attributes = "tstart=0:tstop=120"
             datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
             ]]>
@@ -169,14 +153,10 @@
       </process>
 
       <process name="registerCal">
-         <variables>
-            <var name="REGISTER_LOGIPATH">/L1Proc/Cal/${RUNID}_${DOWNLINK_ID}_cal.root</var>
-            <var name="REGISTER_FILEPATH">/nfs/farm/g/glast/u33/wai/pipeline_tests/L1/rootData/runs/${RUNID}/v6r070329p29em1/${RUNID}_${DOWNLINK_ID}_cal.root</var>
-         </variables>
          <script><![CDATA[
             dataType = "MC"
-            logicalPath = REGISTER_LOGIPATH
-            filePath = REGISTER_FILEPATH
+            logicalPath = pipeline.getProcessInstance("mergeCalChunks").getVariable("REGISTER_LOGIPATH")
+            filePath = pipeline.getProcessInstance("mergeCalChunks").getVariable("REGISTER_FILEPATH")
             attributes = "tstart=0:tstop=120"
             datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
             ]]>
@@ -198,20 +178,27 @@
       </process>
 
       <process name="registerMerit">
-         <variables>
-            <var name="REGISTER_LOGIPATH">/L1Proc/Merit/${RUNID}_${DOWNLINK_ID}_merit.root</var>
-            <var name="REGISTER_FILEPATH">/nfs/farm/g/glast/u33/wai/pipeline_tests/L1/rootData/runs/${RUNID}/v6r070329p29em1/${RUNID}_${DOWNLINK_ID}_merit.root</var>
-         </variables>
          <script><![CDATA[
             dataType = "MC"
-            logicalPath = REGISTER_LOGIPATH
-            filePath = REGISTER_FILEPATH
+            logicalPath = pipeline.getProcessInstance("mergeMeritChunks").getVariable("REGISTER_LOGIPATH")
+            filePath = pipeline.getProcessInstance("mergeMeritChunks").getVariable("REGISTER_FILEPATH")
             attributes = "tstart=0:tstop=120"
             datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
             ]]>
          </script>
          <depends>
             <after process="mergeMeritChunks" status="SUCCESS" />
+         </depends>
+      </process>
+ 
+      <process name="mergeReconMon">
+         <variables>
+            <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+            <var name="fileType">reconMon</var>
+         </variables>
+         <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py"/>
+         <depends>
+            <after process="doChunk.reconMon" status="SUCCESS" />
          </depends>
       </process>
 
@@ -282,17 +269,6 @@
             </createsSubtasks>
          </process>
 
-         <process name="mergeReconCrumbs">
-            <variables>
-               <var name="L1ProcROOT">%(L1ProcROOT)s</var>
-               <var name="fileType">recon</var>
-            </variables>
-            <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
-            <depends>
-               <after process="doCrumb.recon" status="SUCCESS"/>
-            </depends>
-         </process>
-
          <process name="mergeCalCrumbs">
             <variables>
                <var name="L1ProcROOT">%(L1ProcROOT)s</var>
@@ -312,6 +288,28 @@
             <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
             <depends>
                <after process="doCrumb.recon" status="SUCCESS"/>
+            </depends>
+         </process>
+
+         <process name="mergeReconCrumbs">
+            <variables>
+               <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+               <var name="fileType">recon</var>
+            </variables>
+            <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
+            <depends>
+               <after process="doCrumb.recon" status="SUCCESS"/>
+            </depends>
+         </process>
+
+         <process name="reconMon">
+            <variables>
+               <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+               <var name="reportType">recon</var>
+            </variables>
+            <job batchOptions=" -q medium" executable="${L1ProcROOT}/monitorDigi.py"/>
+            <depends>
+               <after process="mergeReconCrumbs" status="SUCCESS" />
             </depends>
          </process>
 

@@ -10,5 +10,5 @@ argList = runList.split('*')
 
 # Launch a subStream for each run
 for iStream, args in enumerate(argList):
-    pipeline.createSubstream("doRun", iStream+1, args)
+    pipeline.createSubstream("doRun", iStream, args)
     continue

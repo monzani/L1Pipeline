@@ -29,7 +29,7 @@ argList = []
 for iStream, iDir in enumerate(goodOnes):
     runId = maybeIds[iDir]
     runDir = maybeDirs[iDir]
-    args = "RUNID=%(runId)s,RUN_RAWDIR=%(runDir)s" % \
+    args = "RUNID=%(runId)s,RUN_RAWDIR=%(runDir)s,DOWNLINK_ID=%(dlId)s" % \
            locals()
     argList.append(args)
     continue
@@ -37,4 +37,4 @@ for iStream, iDir in enumerate(goodOnes):
 # Will this work?  Can't set variables that contain commas
 # or colons?
 allArgs = config.joiner.join(argList) 
-#pipeline.setVariable('runList', allArgs)
+pipeline.setVariable('runList', allArgs)

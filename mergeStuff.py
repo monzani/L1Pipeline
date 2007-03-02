@@ -43,14 +43,6 @@ outFile = staged.stageOut(realOutFile)
 
 if fileType in ['digiMon', 'reconMon']:
 
-# glastRoot='/afs/slac/g/glast'
-# cmtConfig='rh9_gcc32opt'
-# rootSys=glastRoot+'/ground/GLAST_EXT/'+cmtConfig+'/ROOT/v4.02.00/root'
-# glastExt=glastRoot+'/ground/GLAST_EXT/'+cmtConfig
-# cmtPath='/afs/slac/g/glast/ground/releases/volume07/EngineeringModel-v6r070329p29em1:/afs/slac/g/glast/ground/PipelineConfig/SC/L1Pipeline/builds'
-
-# reportMergeApp=glastRoot+'/ground/PipelineConfig/SC/L1Pipeline/builds/TestReport/v3r6p36/'+cmtConfig+'/MergeHistFiles.exe'
-
  environ['LD_LIBRARY_PATH']=""
  environ['ROOTSYS']=config.rootSys
  environ['CMTPATH']=config.cmtPath
@@ -63,7 +55,6 @@ if fileType in ['digiMon', 'reconMon']:
  print "infilestring=",infilestring
 
  cmd = "source /afs/slac/g/glast/ground/scripts/group.sh; CMTCONFIG="+config.cmtConfig+"; export CMTCONFIG; GLAST_EXT="+config.glastExt+"; export GLAST_EXT; cd "+config.testReportDir+"/cmt; source setup.sh; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"+config.glastExt+"/xerces/2.6.0/lib; export LD_LIBRARY_PATH; "+config.reportMergeApp+" "+infilestring+" -o "+outFile+" -c $L1ProcROOT/merge.txt"
-
 
 else:
 
@@ -79,4 +70,5 @@ staged.finish()
 
 sys.exit(status)
 
-#pipeline.setVariable('REGISTER_FILE', outFile)
+pipeline.setVariable('REGISTER_LOGIPATH', '/L1Proc/'+fileType+'/'+realOutFile)
+pipeline.setVariable('REGISTER_FILEPATH', outFile)
