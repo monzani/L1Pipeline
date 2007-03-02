@@ -323,7 +323,7 @@
                <variables>
                   <var name="L1ProcROOT">%(L1ProcROOT)s</var>
                </variables>
-               <job batchOptions=" -q short" executable="${L1ProcROOT}/recon.py" />
+               <job batchOptions=" -q medium" executable="${L1ProcROOT}/recon.py" />
             </process>
 
          </task>

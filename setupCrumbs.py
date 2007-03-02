@@ -11,6 +11,7 @@ import math
 import config
 import fileNames
 import crumble
+import pipeline
 
 files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'], \
                         environ['CHUNK_ID'])
@@ -36,7 +37,7 @@ for iCrumb in range(nCrumbs):
     crumbId = cForm % start
     nEvents = crumbSizes[iCrumb]
 #    reconBase = '_'.join((environ['RUNID'], environ['CHUNK_ID'], crumbId,
-                          environ['DOWNLINK_ID'], 'RECON.root'))
+#                          environ['DOWNLINK_ID'], 'RECON.root'))
 #    reconFile = path.join(chunkDir, reconBase)
     args = 'CRUMB_ID=%(crumbId)s,crumbStart=%(start)s,crumbEvents=%(nEvents)s' % locals()
     argList.append(args)
