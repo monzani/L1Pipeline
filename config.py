@@ -5,7 +5,7 @@
 
 from os import path, environ
 
-L1Version = "0.56"
+L1Version = "0.57"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 #L1ProcROOT = path.join(installRoot, L1Version)
 L1ProcROOT = '/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline'

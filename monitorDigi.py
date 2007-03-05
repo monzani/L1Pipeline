@@ -62,6 +62,8 @@ open(optionFile, 'w').write(options)
 # do the work
 digiMonApp = config.digiMonApp
 digiMonCmt = config.digiMonCmt
+environ['LD_LIBRARY_PATH']=config.glastLocation+"/lib:"+config.rootSys+"/lib:"+config.glastExt+"/xerces/2.6.0/lib:"+environ['LD_LIBRARY_PATH']
+environ['ROOTSYS']=config.rootSys
 cmd = 'cd %(outDir)s ; printenv CMTPATH; source %(digiMonCmt)s ; printenv LD_LIBRARY_PATH; %(digiMonApp)s %(optionFile)s' % locals()
 status = runner.run(cmd)
 
