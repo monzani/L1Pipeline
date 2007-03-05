@@ -23,7 +23,7 @@ maxCrumbSize = 250
 
 cmtConfig = 'rh9_gcc32opt'
 glastExt = path.join('/afs/slac.stanford.edu/g/glast/ground/GLAST_EXT',
-                        cmtConfig)
+                     cmtConfig)
 #
 releaseDir = '/afs/slac.stanford.edu/g/glast/ground/releases/volume07'
 glastVersion = 'v6r070329p29em1'

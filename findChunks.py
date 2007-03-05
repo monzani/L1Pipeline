@@ -7,10 +7,15 @@
 
 import glob
 from os import path, environ
+import re
 
 import config
 import fileNames
 import pipeline
+
+# recognize and parse a chunk
+# this is a contract with the halfpipe
+chunkRe = re.compile('^([0-9]*)-([0-9]*)\.evt$')
 
 dlId = environ['DOWNLINK_ID']
 runId = environ['RUNID']
@@ -24,14 +29,21 @@ files = fileNames.setup(dlId, runId)
 rootDir = files['dirs']['run']
 
 ## Find chunk files
-chunkPattern = path.join(runDir, '*.evt')
-chunkFiles = glob.glob(chunkPattern)
+# this is a contract with the halfpipe
+chunkGlob = path.join(runDir, '*.evt')
+chunkFiles = glob.glob(chunkGlob)
 
 # set up a subStream for each run
 argList = []
 for iChunk, chunkFile in enumerate(chunkFiles):
 
-    chunkId = path.basename(chunkFile).split('_')[1]
+    fileBase = path.basename(chunkFile)
+    match = chunkRe.match(fileBase)
+    if match:
+        runIdFromFile, chunkId = match.groups()
+    else:
+        print >> sys.stderr, 'Bad chunk file name %s' % fileBase
+        continue
     args = "EVTFILE=%(chunkFile)s,CHUNK_ID=%(chunkId)s,GLAST_EXT=%(glastExt)s,LATCalibRoot=%(LATCalibRoot)s" % locals()
     argList.append(args)
     continue

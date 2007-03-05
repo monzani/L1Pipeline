@@ -18,6 +18,8 @@ dlId = os.environ['DOWNLINK_ID']
 dlRawDir = os.environ['DOWNLINK_RAWDIR']
 
 # Figure out which runs have data in this dl
+# we assume that any subdirectory of the downlink directory represents a run
+# this is a contract with the halfpipe
 maybeIds = os.listdir(dlRawDir)
 maybeDirs = [os.path.join(dlRawDir, xx) for xx in maybeIds]
 goodOnes = [iDir for iDir, runDir in enumerate(maybeDirs) if os.path.isdir(runDir)]
