@@ -8,6 +8,7 @@
 import glob
 from os import environ
 
+import shutil
 import sys
 
 import runner
@@ -34,9 +35,16 @@ else:
 files = fileNames.setup(dlId, runId, chunkId)
 
 realInFiles = fileNames.findPieces(fileType, dlId, runId, chunkId)
-inFiles = [staged.stageIn(iFile) for iFile in realInFiles]
-
 realOutFile = files[mergeLevel][fileType]
+
+if len(realInFiles) == 1:
+    print >> sys.stderr, 'Single input file, copying %s to %s' % \
+          (realInFiles[0], realOutFile)
+    shutil.copyFile(realInFiles[0], realOutFile)
+    sys.exit(0)
+    pass
+
+inFiles = [staged.stageIn(iFile) for iFile in realInFiles]
 outFile = staged.stageOut(realOutFile)
 
 ##wbf## system(config.hadd+" "+environ['outFile']+" "+environ['inFiles'])
