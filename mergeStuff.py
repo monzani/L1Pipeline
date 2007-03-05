@@ -8,7 +8,6 @@
 import glob
 from os import environ
 
-import re
 import sys
 
 import runner
@@ -50,12 +49,12 @@ if fileType in ['digiMon', 'reconMon']:
 
  infilestring=""
  for i_infile in range(len(inFiles)):
-  print "Infile",i_infile,"is",inFiles[i_infile]
+  print "Infile",i_infile,"is",inFiles[i_infile],"and realInFile is",realInFiles[i_infile]
   infilestring=infilestring+" -i "+inFiles[i_infile]
 
  print "infilestring=",infilestring
 
- cmd = "source /afs/slac/g/glast/ground/scripts/group.sh; CMTCONFIG="+config.cmtConfig+"; export CMTCONFIG; GLAST_EXT="+config.glastExt+"; export GLAST_EXT; cd "+config.testReportDir+"/cmt; source setup.sh; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"+config.glastExt+"/xerces/2.6.0/lib:"+config.glastLocation+"/lib:"+config.rootSys+"/lib; export LD_LIBRARY_PATH; "+config.reportMergeApp+" "+infilestring+" -o "+outFile+" -c $L1ProcROOT/merge.txt"
+ cmd = "source /afs/slac/g/glast/ground/scripts/group.sh; CMTCONFIG="+config.cmtConfig+"; export CMTCONFIG; GLAST_EXT="+config.glastExt+"; export GLAST_EXT; cd "+config.testReportDir+"/cmt; source setup.sh; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"+config.glastExt+"/xerces/2.6.0/lib:"+config.glastLocation+"/lib:"+config.rootSys+"/lib; export LD_LIBRARY_PATH; "+config.reportMergeApp+" "+infilestring+" -o "+outFile+" -c $L1ProcROOT/merge.txt"+";chgrp -R glast-pipeline "+config.L1Disk
 
 else:
 
@@ -63,7 +62,7 @@ else:
 
  environ['LD_LIBRARY_PATH']=config.haddRootSys+"/lib:"+environ['LD_LIBRARY_PATH']
  environ['ROOTSYS']=config.haddRootSys
- cmd = config.hadd + (' %s' % outFile) + ((' %s' * len(inFiles)) % tuple(inFiles))
+ cmd = config.hadd + (' %s' % outFile) + ((' %s' * len(inFiles)) % tuple(inFiles))+";chgrp -R glast-pipeline "+config.L1Disk
 
 
 status = runner.run(cmd)
