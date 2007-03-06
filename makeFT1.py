@@ -6,6 +6,7 @@ import sys
 import fileNames
 import runner
 import stageFiles
+import pipeline
 import config
 
 files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'])
