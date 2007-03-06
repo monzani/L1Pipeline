@@ -24,7 +24,7 @@ chunkDir = files['dirs']['chunk']
 chunkEvents = rootFiles.getFileEvents(digiFile)
 
 cDigits = int(math.ceil(math.log(chunkEvents) / math.log(10)))
-cForm = '%0' + `cDigits` + 'd'
+cForm = 'b%0' + `cDigits` + 'd'
 
 crumbSizes = crumble.crumble(chunkEvents, config.maxCrumbSize)
 nCrumbs = len(crumbSizes)
