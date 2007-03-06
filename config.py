@@ -3,6 +3,7 @@
 @author W. Focke <focke@slac.stanford.edu>
 """
 
+import os
 from os import path, environ
 
 L1Version = "0.59"
@@ -69,6 +70,10 @@ svacTupleCmt = path.join(svacTupleDir, 'cmt')
 svacTupleApp = path.join(svacTupleDir, cmtConfig, 'RunRootAnalyzer.exe')
 
 joiner = '*'
+
+
+pythonPath = os.path.join(rootSys, 'lib')
+libraryPath = os.path.join(glastLocation, 'lib')
 
 if __name__ == "__main__":
     print L1Dir

@@ -6,6 +6,9 @@
 
 <task name="L1Proc" version="%(L1Version)s" type="Data">
 
+   <var name="LD_LIBRARY_PATH">%(libraryPath)s</var>
+   <var name="PYTHONPATH">%(pythonPath)s</var>
+
    <process name="findRunDirs">
       <variables>
          <var name="L1ProcROOT">%(L1ProcROOT)s</var>

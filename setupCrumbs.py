@@ -9,9 +9,10 @@ from os import path, environ
 import math
 
 import config
-import fileNames
 import crumble
+import fileNames
 import pipeline
+import rootFiles
 
 files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'], \
                         environ['CHUNK_ID'])
@@ -19,7 +20,8 @@ files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'], \
 digiFile = files['chunk']['digi']
 chunkDir = files['dirs']['chunk']
 
-chunkEvents = 1000
+#chunkEvents = 1000
+chunkEvents = rootFiles.getFileEvents(digiFile)
 
 cDigits = int(math.ceil(math.log(chunkEvents) / math.log(10)))
 cForm = '%0' + `cDigits` + 'd'
