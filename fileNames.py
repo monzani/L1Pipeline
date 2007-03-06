@@ -77,6 +77,8 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=True):
                                          join(dlHead, 'recon.root'))
     files['run']['merit'] = os.path.join(dirs['run'], \
                                          join(dlHead, 'merit.root'))
+    files['run']['ft1'] = os.path.join(dirs['run'], \
+                                         join(dlHead, 'ft1.fits'))
     files['run']['cal'] = os.path.join(dirs['run'], \
                                        join(dlHead, 'cal.root'))
     files['run']['reconMon'] = os.path.join(dirs['run'],

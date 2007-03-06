@@ -177,6 +177,30 @@
          </depends>
       </process>
 
+      <process name="makeFT1">
+         <variables>
+            <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+         </variables>
+         <job batchOptions=" -q short" executable="${L1ProcROOT}/makeFT1.py" />
+         <depends>
+            <after process="mergeMeritChunks" status="SUCCESS"/>
+         </depends>
+      </process>
+
+      <process name="registerFT1">
+         <script><![CDATA[
+            dataType = "MC"
+            logicalPath = pipeline.getProcessInstance("makeFT1").getVariable("REGISTER_LOGIPATH")
+            filePath = pipeline.getProcessInstance("makeFT1").getVariable("REGISTER_FILEPATH")
+            attributes = "tstart=0:tstop=120"
+            datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
+            ]]>
+         </script>
+         <depends>
+            <after process="makeFT1" status="SUCCESS" />
+         </depends>
+      </process>
+
       <process name="registerMerit">
          <script><![CDATA[
             dataType = "MC"
@@ -199,6 +223,20 @@
          <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py"/>
          <depends>
             <after process="doChunk.reconMon" status="SUCCESS" />
+         </depends>
+      </process>
+
+      <process name="registerReconMon">
+         <script><![CDATA[
+            dataType = "MC"
+            logicalPath = pipeline.getProcessInstance("mergeReconMon").getVariable("REGISTER_LOGIPATH")
+            filePath = pipeline.getProcessInstance("mergeReconMon").getVariable("REGISTER_FILEPATH")
+            attributes = "tstart=0:tstop=120"
+            datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
+            ]]>
+         </script>
+         <depends>
+            <after process="mergeReconMon" status="SUCCESS" />
          </depends>
       </process>
 
