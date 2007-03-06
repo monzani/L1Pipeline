@@ -19,6 +19,16 @@ import fileNames
 import stageFiles
 import pipeline
 
+def finalize(status):
+ staged.finish()
+ templist=realOutFile.split('/')
+ outFileName=templist[len(templist)-1]
+ logipath='/L1Proc/'+fileType+'/'+outFileName
+# print "logipath=",logipath,"filepath=",outFile
+ pipeline.setVariable('REGISTER_LOGIPATH', logipath)
+ pipeline.setVariable('REGISTER_FILEPATH', realOutFile)
+ sys.exit(status)
+
 staged = stageFiles.StageSet()
 
 fileType = environ['fileType']
@@ -41,7 +51,7 @@ if len(realInFiles) == 1:
     print >> sys.stderr, 'Single input file, copying %s to %s' % \
           (realInFiles[0], realOutFile)
     shutil.copyfile(realInFiles[0], realOutFile)
-    sys.exit(0)
+    finalize(0)
     pass
 
 inFiles = [staged.stageIn(iFile) for iFile in realInFiles]
@@ -75,13 +85,4 @@ else:
 
 status = runner.run(cmd)
 
-staged.finish()
-
-templist=realOutFile.split('/')
-outFileName=templist[len(templist)-1]
-logipath='/L1Proc/'+fileType+'/'+outFileName
-print "logipath=",logipath,"filepath=",outFile
-pipeline.setVariable('REGISTER_LOGIPATH', logipath)
-pipeline.setVariable('REGISTER_FILEPATH', realOutFile)
-
-sys.exit(status)
+finalize(status)
