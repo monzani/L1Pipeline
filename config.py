@@ -6,7 +6,7 @@
 import os
 from os import path, environ
 
-L1Version = "0.65"
+L1Version = "0.66"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 #L1ProcROOT = path.join(installRoot, L1Version)
 L1ProcROOT = '/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline'
@@ -27,8 +27,8 @@ glastExt = path.join('/afs/slac.stanford.edu/g/glast/ground/GLAST_EXT',
                      cmtConfig)
 #
 releaseDir = '/afs/slac.stanford.edu/g/glast/ground/releases/volume07'
-#glastVersion = 'v6r070329p29em1'
-glastVersion = 'v7r0913p10'
+glastVersion = 'v6r070329p29em1'
+#glastVersion = 'v7r0913p10'
 releaseName = 'EngineeringModel'
 gleamPackage = 'LatIntegration'
 #
