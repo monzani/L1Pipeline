@@ -40,7 +40,7 @@ realOutFile = files[mergeLevel][fileType]
 if len(realInFiles) == 1:
     print >> sys.stderr, 'Single input file, copying %s to %s' % \
           (realInFiles[0], realOutFile)
-    shutil.copyFile(realInFiles[0], realOutFile)
+    shutil.copyfile(realInFiles[0], realOutFile)
     sys.exit(0)
     pass
 

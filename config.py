@@ -6,7 +6,7 @@
 import os
 from os import path, environ
 
-L1Version = "0.59"
+L1Version = "0.62"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 #L1ProcROOT = path.join(installRoot, L1Version)
 L1ProcROOT = '/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline'
@@ -19,8 +19,8 @@ L1Dir = path.join(L1Disk, 'rootData')
 
 maxCpu = 1000
 
-#maxCrumbSize = 6353
-maxCrumbSize = 250
+maxCrumbSize = 6353
+#maxCrumbSize = 250
 
 cmtConfig = 'rh9_gcc32opt'
 glastExt = path.join('/afs/slac.stanford.edu/g/glast/ground/GLAST_EXT',
@@ -69,11 +69,14 @@ svacTupleDir = path.join(L1Cmt, 'EngineeringModelRoot', svacTupleVersion)
 svacTupleCmt = path.join(svacTupleDir, 'cmt')
 svacTupleApp = path.join(svacTupleDir, cmtConfig, 'RunRootAnalyzer.exe')
 
+ST="/nfs/farm/g/glast/u09/builds/rh9_gcc32opt/ScienceTools/ScienceTools-v7r6p1"
+PFILES="."
+
 joiner = '*'
 
 
 pythonPath = os.path.join(rootSys, 'lib')
-libraryPath = os.path.join(glastLocation, 'lib')
+libraryPath = os.path.join(glastLocation, 'lib')+':'+os.path.join(rootSys, 'lib')
 
 if __name__ == "__main__":
     print L1Dir
