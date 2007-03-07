@@ -6,11 +6,14 @@
 
 <task name="L1Proc" version="%(L1Version)s" type="Data">
 
+   <prerequisites>
+      <prerequisite name="DOWNLINK_RAWDIR" type="string" />
+      <prerequisite name="DOWNLINK_ID" type="string" />
+   </prerequisites>
+
    <process name="findRunDirs">
       <variables>
          <var name="L1ProcROOT">%(L1ProcROOT)s</var>
-         <var name="DOWNLINK_ID">0</var>
-         <var name="DOWNLINK_RAWDIR">/nfs/farm/g/glast/u33/wai/pipeline_tests/dldir</var>
       </variables>
       <job batchOptions=" -q short" executable="${L1ProcROOT}/findRunDirs.py"/>
    </process>
@@ -73,7 +76,7 @@
          </variables>
          <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py"/>
          <depends>
-            <after process="doChunk.digitization" status="SUCCESS"/>
+            <after process="doChunk.digitization" status="DONE"/>
          </depends>
       </process>
 
@@ -98,7 +101,7 @@
          </variables>
          <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py"/>
          <depends>
-            <after process="doChunk.digiMon" status="SUCCESS" />
+            <after process="doChunk.digiMon" status="DONE" />
          </depends>
       </process>
 
@@ -123,7 +126,7 @@
          </variables>
          <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
          <depends>
-            <after process="doChunk.mergeReconCrumbs" status="SUCCESS"/>
+            <after process="doChunk.mergeReconCrumbs" status="DONE"/>
          </depends>
       </process>
 
@@ -148,7 +151,7 @@
          </variables>
          <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
          <depends>
-            <after process="doChunk.mergeCalCrumbs" status="SUCCESS"/>
+            <after process="doChunk.mergeCalCrumbs" status="DONE"/>
          </depends>
       </process>
 
@@ -173,7 +176,7 @@
          </variables>
          <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
          <depends>
-            <after process="doChunk.mergeMeritCrumbs" status="SUCCESS"/>
+            <after process="doChunk.mergeMeritCrumbs" status="DONE"/>
          </depends>
       </process>
 
@@ -222,7 +225,7 @@
          </variables>
          <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py"/>
          <depends>
-            <after process="doChunk.reconMon" status="SUCCESS" />
+            <after process="doChunk.reconMon" status="DONE" />
          </depends>
       </process>
 
@@ -237,6 +240,31 @@
          </script>
          <depends>
             <after process="mergeReconMon" status="SUCCESS" />
+         </depends>
+      </process>
+
+      <process name="mergeSvacTuple">
+         <variables>
+            <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+            <var name="fileType">svac</var>
+         </variables>
+         <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py"/>
+         <depends>
+            <after process="doChunk.svacTuple" status="DONE" />
+         </depends>
+      </process>
+
+      <process name="registerSvacTuple">
+         <script><![CDATA[
+            dataType = "MC"
+            logicalPath = pipeline.getProcessInstance("mergeSvacTuple").getVariable("REGISTER_LOGIPATH")
+            filePath = pipeline.getProcessInstance("mergeSvacTuple").getVariable("REGISTER_FILEPATH")
+            attributes = "tstart=0:tstop=120"
+            datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
+            ]]>
+         </script>
+         <depends>
+            <after process="mergeSvacTuple" status="SUCCESS" />
          </depends>
       </process>
 
@@ -314,7 +342,7 @@
             </variables>
             <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
             <depends>
-               <after process="doCrumb.recon" status="SUCCESS"/>
+               <after process="doCrumb.recon" status="DONE"/>
             </depends>
          </process>
 
@@ -325,7 +353,7 @@
             </variables>
             <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
             <depends>
-               <after process="doCrumb.recon" status="SUCCESS"/>
+               <after process="doCrumb.recon" status="DONE"/>
             </depends>
          </process>
 
@@ -336,7 +364,7 @@
             </variables>
             <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
             <depends>
-               <after process="doCrumb.recon" status="SUCCESS"/>
+               <after process="doCrumb.recon" status="DONE"/>
             </depends>
          </process>
 
@@ -346,6 +374,16 @@
                <var name="reportType">recon</var>
             </variables>
             <job batchOptions=" -q medium" executable="${L1ProcROOT}/monitorDigi.py"/>
+            <depends>
+               <after process="mergeReconCrumbs" status="SUCCESS" />
+            </depends>
+         </process>
+
+         <process name="svacTuple">
+            <variables>
+               <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+            </variables>
+            <job batchOptions=" -q medium" executable="${L1ProcROOT}/makeSvac.py"/>
             <depends>
                <after process="mergeReconCrumbs" status="SUCCESS" />
             </depends>

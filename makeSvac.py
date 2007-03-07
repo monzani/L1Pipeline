@@ -23,30 +23,23 @@ staged = stageFiles.StageSet()
 
 stagedDigiFile = staged.stageIn(files['chunk']['digi'])
 stagedReconFile = staged.stageIn(files['chunk']['recon'])
-nameBase = files['chunk']['head']
+
+stagedOutFile = staged.stageOut(files['chunk']['svac'])
+stagedHistFile = staged.stageOut(files['chunk']['svacHist'])
 
 outDir = files['dirs']['chunk']
 
-stagedOutFile = staged.stageOut(files['chunk']['svac'])
-
-############### good down to here ###################
-
-glastVersion = config.glastVersion
-testReportVersion = config.testReportVersion
-
-tkrCalibSerNo = '-9999'
-calCalibSerNo = '-9999'
+# make an empty file to use as dummy MC
+mcFile = os.path.join(outDir, 'emptyFile')
+open(mcFile, 'w').close()
 
 # contents of JO file
 options = \
-"""%(stagedDigiFile)s
+"""%(mcFile)s
+%(stagedDigiFile)s
 %(stagedReconFile)s
-%(outDir)s
-%(nameBase)s
-%(testReportVersion)s
-%(glastVersion)s
-%(tkrCalibSerNo)s
-%(calCalibSerNo)s
+%(stagedOutFile)s
+%(stagedHistFile)s
 """ \
 % locals()
 
@@ -54,11 +47,10 @@ options = \
 optionFile = os.path.join(outDir, 'jobOptions.txt')
 open(optionFile, 'w').write(options)
 
-
 # do the work
-digiMonApp = config.digiMonApp
-digiMonCmt = config.digiMonCmt
-cmd = 'cd %(outDir)s ; printenv CMTPATH; source %(digiMonCmt)s ; printenv LD_LIBRARY_PATH; %(digiMonApp)s %(optionFile)s' % locals()
+svacTupleApp = config.svacTupleApp
+svacTupleCmt = config.svacTupleCmt
+cmd = 'cd %(outDir)s ; printenv ; source %(svacTupleCmt)s ; printenv LD_LIBRARY_PATH ; %(svacTupleApp)s %(optionFile)s' % locals()
 status = runner.run(cmd)
 
 staged.finish()

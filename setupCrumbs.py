@@ -20,11 +20,7 @@ files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'], \
 digiFile = files['chunk']['digi']
 chunkDir = files['dirs']['chunk']
 
-#chunkEvents = 1000
 chunkEvents = rootFiles.getFileEvents(digiFile)
-
-cDigits = int(math.ceil(math.log(chunkEvents) / math.log(10)))
-cForm = 'b%0' + `cDigits` + 'd'
 
 crumbSizes = crumble.crumble(chunkEvents, config.maxCrumbSize)
 nCrumbs = len(crumbSizes)
@@ -32,6 +28,10 @@ crumbStarts = [0] * nCrumbs
 for iCrumb in range(nCrumbs-1):
     crumbStarts[iCrumb+1] = crumbStarts[iCrumb] + crumbSizes[iCrumb]
     pass
+
+biggest = max(crumbStarts)
+cDigits = int(math.ceil(math.log(biggest) / math.log(10)))
+cForm = 'b%0' + `cDigits` + 'd'
 
 argList = []
 for iCrumb in range(nCrumbs):

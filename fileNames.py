@@ -107,6 +107,8 @@ def _setupChunk(dirs, chunkId, runHead):
                                      join(chunkHead, 'hist.root'))
     files['svac'] = os.path.join(dirs['chunk'], \
                                  join(chunkHead, 'svac.root'))
+    files['svacHist'] = os.path.join(dirs['chunk'], \
+                                     join(chunkHead, 'svacHist.root'))
 
     return files
 

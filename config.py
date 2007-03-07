@@ -6,10 +6,11 @@
 import os
 from os import path, environ
 
-L1Version = "0.66"
+L1Version = "0.67"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 #L1ProcROOT = path.join(installRoot, L1Version)
-L1ProcROOT = '/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline'
+#L1ProcROOT = '/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline'
+L1ProcROOT = '/nfs/slac/g/svac/focke/cvs/L1Pipeline'
 LATCalibRoot = '/afs/slac/g/glast/ground/releases/calibrations'
 L1Cmt = path.join(installRoot, 'builds')
 
@@ -67,7 +68,7 @@ reconMonVersion = testReportVersion
 
 svacTupleVersion = 'v3r0p3'
 svacTupleDir = path.join(L1Cmt, 'EngineeringModelRoot', svacTupleVersion)
-svacTupleCmt = path.join(svacTupleDir, 'cmt')
+svacTupleCmt = path.join(svacTupleDir, 'cmt', 'setup.sh')
 svacTupleApp = path.join(svacTupleDir, cmtConfig, 'RunRootAnalyzer.exe')
 
 ST="/nfs/farm/g/glast/u09/builds/rh9_gcc32opt/ScienceTools/ScienceTools-v7r6p1"
@@ -75,9 +76,10 @@ PFILES="."
 
 joiner = '*'
 
-
-pythonPath = os.path.join(rootSys, 'lib')
-libraryPath = os.path.join(glastLocation, 'lib')+':'+os.path.join(rootSys, 'lib')
+rootPath = os.path.join(rootSys, 'lib')
+pythonPath = rootPath
+libraryPath = ':'.join((os.path.join(glastLocation, 'lib'), \
+                        rootPath))
 
 if __name__ == "__main__":
     print L1Dir

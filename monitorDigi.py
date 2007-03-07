@@ -27,11 +27,9 @@ nameBase = files['chunk']['head']
 if environ['reportType'] == 'recon':
     stagedReconFile = staged.stageIn(files['chunk']['recon'])
     outDir = files['dirs']['reconMon']
-    stagedOutFile = files['chunk']['reconMon']
 else:
     stagedReconFile = 'noSuchFile'
     outDir = files['dirs']['digiMon']
-    stagedOutFile = files['chunk']['digiMon']
     pass
 
 
