@@ -4,7 +4,12 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
 
+
 <task name="L1Proc" version="%(L1Version)s" type="Data">
+
+   <variables>
+      <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+   </variables>
 
    <prerequisites>
       <prerequisite name="DOWNLINK_RAWDIR" type="string" />
@@ -12,10 +17,7 @@
    </prerequisites>
 
    <process name="findRunDirs">
-      <variables>
-         <var name="L1ProcROOT">%(L1ProcROOT)s</var>
-      </variables>
-      <job batchOptions=" -q short" executable="${L1ProcROOT}/findRunDirs.py"/>
+      <job executable="${L1ProcROOT}/findRunDirs.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
    </process>
 
    <process name="launchRuns">
@@ -45,10 +47,7 @@
       </prerequisites>
 
       <process name="findChunks">
-         <variables>
-            <var name="L1ProcROOT">%(L1ProcROOT)s</var>
-         </variables>
-         <job batchOptions=" -q short" executable="${L1ProcROOT}/findChunks.py"/>
+         <job executable="${L1ProcROOT}/findChunks.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
       </process>
 
       <process name="launchChunks">
@@ -71,10 +70,9 @@
 
       <process name="mergeDigi">
          <variables>
-            <var name="L1ProcROOT">%(L1ProcROOT)s</var>
             <var name="fileType">digi</var>
          </variables>
-         <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py"/>
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
          <depends>
             <after process="doChunk.digitization" status="DONE"/>
          </depends>
@@ -96,10 +94,9 @@
  
       <process name="mergeDigiMon">
          <variables>
-            <var name="L1ProcROOT">%(L1ProcROOT)s</var>
             <var name="fileType">digiMon</var>
          </variables>
-         <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py"/>
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
          <depends>
             <after process="doChunk.digiMon" status="DONE" />
          </depends>
@@ -121,10 +118,9 @@
 
       <process name="mergeReconChunks">
          <variables>
-            <var name="L1ProcROOT">%(L1ProcROOT)s</var>
             <var name="fileType">recon</var>
          </variables>
-         <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
          <depends>
             <after process="doChunk.mergeReconCrumbs" status="DONE"/>
          </depends>
@@ -146,10 +142,9 @@
 
       <process name="mergeCalChunks">
          <variables>
-            <var name="L1ProcROOT">%(L1ProcROOT)s</var>
             <var name="fileType">cal</var>
          </variables>
-         <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
          <depends>
             <after process="doChunk.mergeCalCrumbs" status="DONE"/>
          </depends>
@@ -171,20 +166,16 @@
 
       <process name="mergeMeritChunks">
          <variables>
-            <var name="L1ProcROOT">%(L1ProcROOT)s</var>
             <var name="fileType">merit</var>
          </variables>
-         <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
          <depends>
             <after process="doChunk.mergeMeritCrumbs" status="DONE"/>
          </depends>
       </process>
 
       <process name="makeFT1">
-         <variables>
-            <var name="L1ProcROOT">%(L1ProcROOT)s</var>
-         </variables>
-         <job batchOptions=" -q short" executable="${L1ProcROOT}/makeFT1.py" />
+         <job executable="${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
          <depends>
             <after process="mergeMeritChunks" status="SUCCESS"/>
          </depends>
@@ -220,10 +211,9 @@
  
       <process name="mergeReconMon">
          <variables>
-            <var name="L1ProcROOT">%(L1ProcROOT)s</var>
             <var name="fileType">reconMon</var>
          </variables>
-         <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py"/>
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
          <depends>
             <after process="doChunk.reconMon" status="DONE" />
          </depends>
@@ -245,10 +235,9 @@
 
       <process name="mergeSvacTuple">
          <variables>
-            <var name="L1ProcROOT">%(L1ProcROOT)s</var>
             <var name="fileType">svac</var>
          </variables>
-         <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py"/>
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
          <depends>
             <after process="doChunk.svacTuple" status="DONE" />
          </depends>
@@ -278,28 +267,21 @@
          </prerequisites>
 
          <process name="digitization">
-            <variables>
-               <var name="L1ProcROOT">%(L1ProcROOT)s</var>
-            </variables>
-            <job batchOptions=" -q short" executable="${L1ProcROOT}/digitize.py"/>
+            <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
          </process>
  
          <process name="digiMon">
             <variables>
-               <var name="L1ProcROOT">%(L1ProcROOT)s</var>
                <var name="reportType">digi</var>
             </variables>
-            <job batchOptions=" -q medium" executable="${L1ProcROOT}/monitorDigi.py"/>
+            <job executable="${L1ProcROOT}/monitorDigi.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
             <depends>
                <after process="digitization" status="SUCCESS" />
             </depends>
          </process>
 
          <process name="digiReport">
-            <variables>
-               <var name="L1ProcROOT">%(L1ProcROOT)s</var>
-            </variables>
-            <job batchOptions=" -q short" executable="${L1ProcROOT}/digiReport.py"/>
+            <job executable="${L1ProcROOT}/digiReport.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
             <depends>
                <after process="digiMon" status="SUCCESS" />
             </depends>
@@ -307,11 +289,10 @@
 
          <process name="setupCrumbs">
             <variables>
-               <var name="L1ProcROOT">%(L1ProcROOT)s</var>
                <var name="LD_LIBRARY_PATH">%(libraryPath)s</var>
                <var name="PYTHONPATH">%(pythonPath)s</var>
             </variables>
-            <job batchOptions=" -q short" executable="${L1ProcROOT}/setupCrumbs.py"/>
+            <job executable="${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
             <depends>
                <after process="digitization" status="SUCCESS" />
             </depends>
@@ -337,10 +318,9 @@
 
          <process name="mergeCalCrumbs">
             <variables>
-               <var name="L1ProcROOT">%(L1ProcROOT)s</var>
                <var name="fileType">cal</var>
             </variables>
-            <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
+            <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
             <depends>
                <after process="doCrumb.recon" status="DONE"/>
             </depends>
@@ -348,10 +328,9 @@
 
          <process name="mergeMeritCrumbs">
             <variables>
-               <var name="L1ProcROOT">%(L1ProcROOT)s</var>
                <var name="fileType">merit</var>
             </variables>
-            <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
+            <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
             <depends>
                <after process="doCrumb.recon" status="DONE"/>
             </depends>
@@ -359,10 +338,9 @@
 
          <process name="mergeReconCrumbs">
             <variables>
-               <var name="L1ProcROOT">%(L1ProcROOT)s</var>
                <var name="fileType">recon</var>
             </variables>
-            <job batchOptions=" -q short" executable="${L1ProcROOT}/mergeStuff.py" />
+            <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
             <depends>
                <after process="doCrumb.recon" status="DONE"/>
             </depends>
@@ -370,20 +348,16 @@
 
          <process name="reconMon">
             <variables>
-               <var name="L1ProcROOT">%(L1ProcROOT)s</var>
                <var name="reportType">recon</var>
             </variables>
-            <job batchOptions=" -q medium" executable="${L1ProcROOT}/monitorDigi.py"/>
+            <job executable="${L1ProcROOT}/monitorDigi.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
             <depends>
                <after process="mergeReconCrumbs" status="SUCCESS" />
             </depends>
          </process>
 
          <process name="svacTuple">
-            <variables>
-               <var name="L1ProcROOT">%(L1ProcROOT)s</var>
-            </variables>
-            <job batchOptions=" -q medium" executable="${L1ProcROOT}/makeSvac.py"/>
+            <job executable="${L1ProcROOT}/makeSvac.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
             <depends>
                <after process="mergeReconCrumbs" status="SUCCESS" />
             </depends>
@@ -398,10 +372,7 @@
             </prerequisites>
 
             <process name="recon">
-               <variables>
-                  <var name="L1ProcROOT">%(L1ProcROOT)s</var>
-               </variables>
-               <job batchOptions=" -q medium" executable="${L1ProcROOT}/recon.py" />
+               <job executable="${L1ProcROOT}/recon.py" batchOptions=" -q %(reconQueue)s "  allocationGroup="%(allocationGroup)s" />
             </process>
 
          </task>

@@ -6,7 +6,7 @@
 import os
 from os import path, environ
 
-L1Version = "0.70"
+L1Version = "0.82"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = path.join(installRoot, L1Version)
 #L1ProcROOT = '/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline'
@@ -80,6 +80,13 @@ rootPath = os.path.join(rootSys, 'lib')
 pythonPath = rootPath
 libraryPath = ':'.join((os.path.join(glastLocation, 'lib'), \
                         rootPath))
+
+# LSF stuff
+allocationGroup = 'glastdata'
+#
+quickQueue = 'express'
+reconQueue = 'long'
+standardQueue = 'glastdataq'
 
 if __name__ == "__main__":
     print L1Dir
