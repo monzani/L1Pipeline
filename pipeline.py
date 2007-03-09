@@ -3,10 +3,15 @@
 """@brief interface to pipeline functions.
 """
 
+import os
+
 def setVariable(varName, value):
-    # muck about with pipeline summary file
-    line = 'pipeline.%s: %s\n' % (varName, value)
-    ofp = open('pipeline_summary', 'a')
-    ofp.write(line)
-    ofp.close()
-    return
+    # use bash function
+    cmd = 'pipelineSet %s %s' % (varName, value)
+    status = os.system(cmd)
+    return status
+
+def createSubStream(subTask, stream=0, args=''):
+    cmd = 'pipelineCreateStream %s %s %s' % (subTask, stream, args)
+    status = os.system(cmd)
+    return status

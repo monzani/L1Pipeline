@@ -16,7 +16,8 @@ import pipeline
 
 # recognize and parse a chunk
 # this is a contract with the halfpipe
-chunkRe = re.compile('^(r[0-9]*)-(e[0-9]*)\.evt$')
+#chunkRe = re.compile('^(r[0-9]*)-(e[0-9]*)\.evt$')
+chunkRe = re.compile('^(.[0-9]*)-(.[0-9]*)\.evt$')
 
 dlId = environ['DOWNLINK_ID']
 runId = environ['RUNID']

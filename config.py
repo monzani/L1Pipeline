@@ -8,9 +8,9 @@ from os import path, environ
 
 L1Version = "0.82"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
-L1ProcROOT = path.join(installRoot, L1Version)
+#L1ProcROOT = path.join(installRoot, L1Version)
 #L1ProcROOT = '/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline'
-#L1ProcROOT = '/nfs/slac/g/svac/focke/cvs/L1Pipeline'
+L1ProcROOT = '/nfs/slac/g/svac/focke/cvs/L1Pipeline'
 LATCalibRoot = '/afs/slac/g/glast/ground/releases/calibrations'
 L1Cmt = path.join(installRoot, 'builds')
 
@@ -20,7 +20,8 @@ L1Dir = path.join(L1Disk, 'rootData')
 
 maxCpu = 1000
 
-maxCrumbSize = 6353
+maxCrumbSize = 48000
+#maxCrumbSize = 6353
 #maxCrumbSize = 250
 
 cmtConfig = 'rh9_gcc32opt'
