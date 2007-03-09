@@ -9,25 +9,6 @@ import os
 import config
 import procDirs
 
-headFields = 3
-
-def baseHead(inFile):
-    """@brief DEPRECATED
-
-    Parses out the portion of a filename that does not depend on
-    the file type.
-    """
-
-    inDir, inName = os.path.split(inFile)
-
-    cut = inName.rindex('.')
-    inBase = inName[:cut]
-    allFields = inBase.split('_')
-
-    goodFields = allFields[:headFields]
-    head = '_'.join(goodFields)
-
-    return head
 
 def join(*args):
     joined = '_'.join(args)
