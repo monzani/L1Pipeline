@@ -363,6 +363,39 @@
             </depends>
          </process>
 
+         <process name="deleteReconCrumbs">
+            <variables>
+               <var name="fileType">recon</var>
+            </variables>
+            <job executable="${L1ProcROOT}/deleteStuff.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
+            <depends>
+               <after process="mergeReconCrumbs" status="SUCCESS"/>
+               <after process="doCrumb.recon" status="SUCCESS"/>
+            </depends>
+         </process>
+
+         <process name="deleteCalCrumbs">
+            <variables>
+               <var name="fileType">cal</var>
+            </variables>
+            <job executable="${L1ProcROOT}/deleteStuff.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
+            <depends>
+               <after process="mergeCalCrumbs" status="SUCCESS"/>
+               <after process="doCrumb.recon" status="SUCCESS"/>
+            </depends>
+         </process>
+
+         <process name="deleteMeritCrumbs">
+            <variables>
+               <var name="fileType">merit</var>
+            </variables>
+            <job executable="${L1ProcROOT}/deleteStuff.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
+            <depends>
+               <after process="mergeMeritCrumbs" status="SUCCESS"/>
+               <after process="doCrumb.recon" status="SUCCESS"/>
+            </depends>
+         </process>
+
          <task name="doCrumb" version="%(L1Version)s" type="Data">
 
             <prerequisites>
