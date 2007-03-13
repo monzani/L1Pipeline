@@ -36,7 +36,6 @@ chunkGlob = path.join(runDir, '*.evt')
 chunkFiles = glob.glob(chunkGlob)
 
 # set up a subStream for each run
-argList = []
 for iChunk, chunkFile in enumerate(chunkFiles):
 
     fileBase = path.basename(chunkFile)
@@ -47,11 +46,5 @@ for iChunk, chunkFile in enumerate(chunkFiles):
         print >> sys.stderr, 'Bad chunk file name %s' % fileBase
         continue
     args = "EVTFILE=%(chunkFile)s,CHUNK_ID=%(chunkId)s,GLAST_EXT=%(glastExt)s,LATCalibRoot=%(LATCalibRoot)s" % locals()
-    argList.append(args)
+    pipeline.createSubStream("doChunk",iChunk,args)
     continue
-
-
-# Will this work?  Can't set variables that contain commas
-# or colons?
-allArgs = config.joiner.join(argList) 
-pipeline.setVariable('chunkList', allArgs)

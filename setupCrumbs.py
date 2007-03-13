@@ -30,22 +30,19 @@ for iCrumb in range(nCrumbs-1):
     pass
 
 biggest = max(crumbStarts)
-cDigits = int(math.ceil(math.log(biggest) / math.log(10)))
+
+print "biggest=",biggest,"nCrumbs=",nCrumbs
+
+if (nCrumbs == 1):
+    cDigits = 1
+else:
+    cDigits = int(math.ceil(math.log(biggest) / math.log(10)))
 cForm = 'b%0' + `cDigits` + 'd'
 
-argList = []
 for iCrumb in range(nCrumbs):
     start = crumbStarts[iCrumb]
     crumbId = cForm % start
     nEvents = crumbSizes[iCrumb]
-#    reconBase = '_'.join((environ['RUNID'], environ['CHUNK_ID'], crumbId,
-#                          environ['DOWNLINK_ID'], 'RECON.root'))
-#    reconFile = path.join(chunkDir, reconBase)
     args = 'CRUMB_ID=%(crumbId)s,crumbStart=%(start)s,crumbEvents=%(nEvents)s' % locals()
-    argList.append(args)
+    pipeline.createSubStream("doCrumb",iCrumb,args)
     pass
-
-# Will this work?  Can't set variables that contain commas
-# or colons?
-allArgs = config.joiner.join(argList) 
-pipeline.setVariable('crumbList', allArgs)

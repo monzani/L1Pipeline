@@ -27,16 +27,10 @@ goodOnes = [iDir for iDir, runDir in enumerate(maybeDirs) if os.path.isdir(runDi
 # files = fileNames.setup(dlId)
 
 # set up a subStream for each run
-argList = []
-for iStream, iDir in enumerate(goodOnes):
+for iRun, iDir in enumerate(goodOnes):
     runId = maybeIds[iDir]
     runDir = maybeDirs[iDir]
     args = "RUNID=%(runId)s,RUN_RAWDIR=%(runDir)s,DOWNLINK_ID=%(dlId)s" % \
            locals()
-    argList.append(args)
+    pipeline.createSubStream("doRun",iRun,args)
     continue
-
-# Will this work?  Can't set variables that contain commas
-# or colons?
-allArgs = config.joiner.join(argList) 
-pipeline.setVariable('runList', allArgs)
