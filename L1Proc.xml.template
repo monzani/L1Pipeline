@@ -18,21 +18,6 @@
 
    <process name="findRunDirs">
       <job executable="${L1ProcROOT}/findRunDirs.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
-   </process>
-
-   <process name="launchRuns">
-      <script>
-         <![CDATA[
-         runList=pipeline.getProcessInstance("findRunDirs").getVariable("runList")
-         argList = runList.split('*')
-         for iStream in range(len(argList)):
-            pipeline.createSubstream("doRun",iStream,argList[iStream])
-            continue
-         ]]>
-      </script>
-      <depends>
-         <after process="findRunDirs" status="SUCCESS"/>
-      </depends>
       <createsSubtasks>
          <subtask>doRun</subtask>
       </createsSubtasks>
@@ -48,21 +33,6 @@
 
       <process name="findChunks">
          <job executable="${L1ProcROOT}/findChunks.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
-      </process>
-
-      <process name="launchChunks">
-         <script>
-            <![CDATA[
-            chunkList=pipeline.getProcessInstance("findChunks").getVariable("chunkList")
-            argList = chunkList.split('*')
-            for iStream in range(len(argList)):
-               pipeline.createSubstream("doChunk",iStream,argList[iStream])
-               continue
-            ]]>
-         </script>
-         <depends>
-            <after process="findChunks" status="SUCCESS"/>
-         </depends>
          <createsSubtasks>
             <subtask>doChunk</subtask>
          </createsSubtasks>
@@ -262,8 +232,6 @@
          <prerequisites>
              <prerequisite name="CHUNK_ID" type="string"/>
              <prerequisite name="EVTFILE" type="string"/>
-             <prerequisite name="GLAST_EXT" type="string"/>
-             <prerequisite name="LATCalibRoot" type="string"/>
          </prerequisites>
 
          <process name="digitization">
@@ -295,21 +263,6 @@
             <job executable="${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
             <depends>
                <after process="digitization" status="SUCCESS" />
-            </depends>
-         </process>
-
-         <process name="launchCrumbs">
-            <script>
-               <![CDATA[
-               crumbList=pipeline.getProcessInstance("setupCrumbs").getVariable("crumbList")
-               argList = crumbList.split('*')
-               for iStream in range(len(argList)):
-                  pipeline.createSubstream("doCrumb",iStream,argList[iStream])
-                  continue
-               ]]>
-            </script>
-            <depends>
-               <after process="setupCrumbs" status="SUCCESS" />
             </depends>
             <createsSubtasks>
                <subtask>doCrumb</subtask>
