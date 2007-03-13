@@ -34,7 +34,7 @@ else:
 
 
 glastVersion = config.glastVersion
-testReportVersion = config.testReportVersion
+testReportVersion = config.packages['TestReport']['version']
 
 tkrCalibSerNo = '-9999'
 calCalibSerNo = '-9999'
@@ -58,8 +58,8 @@ open(optionFile, 'w').write(options)
 
 
 # do the work
-digiMonApp = config.digiMonApp
-digiMonCmt = config.digiMonCmt
+digiMonApp = config.apps['digiMon']
+digiMonCmt = config.packages['TestReport']['setup']
 environ['LD_LIBRARY_PATH']=config.glastLocation+"/lib:"+config.rootSys+"/lib:"+config.glastExt+"/xerces/2.6.0/lib:"+environ['LD_LIBRARY_PATH']
 environ['ROOTSYS']=config.rootSys
 cmd = 'cd %(outDir)s ; printenv CMTPATH; source %(digiMonCmt)s ; printenv LD_LIBRARY_PATH; %(digiMonApp)s %(optionFile)s' % locals()

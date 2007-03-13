@@ -24,6 +24,6 @@ except KeyError:
 goners = fileNames.findPieces(fileType, dlId, runId, chunkId)
 
 for goner in goners:
-    os.unlink(goner)
+    #os.unlink(goner)
     print >> sys.stderr, '%s has left the building.' % goner
     continue

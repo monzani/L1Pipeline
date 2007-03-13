@@ -3,6 +3,7 @@
 @author W. Focke <focke@slac.stanford.edu>
 """
 
+import glob
 import os
 
 import config
@@ -50,9 +51,9 @@ def _setupChunk(dirs, chunkId):
     runDir = dirs['run']
     chunkDir = os.path.join(runDir, chunkId)
     dirs['chunk'] = chunkDir
-    digiMonDir = os.path.join(chunkDir, 'digiMon', config.digiMonVersion)
+    digiMonDir = os.path.join(chunkDir, 'digiMon', config.packages['TestReport']['version'])
     dirs['digiMon'] = digiMonDir
-    reconMonDir = os.path.join(chunkDir, 'reconMon', config.reconMonVersion)
+    reconMonDir = os.path.join(chunkDir, 'reconMon', config.packages['TestReport']['version'])
     dirs['reconMon'] = reconMonDir
     return
 
@@ -84,3 +85,33 @@ def mkdir(path):
         raise os.error
     os.makedirs(path)
     return
+
+
+def findPieceDirs(dlId, runId, chunkId=None):
+    """@brief find chunks or crumb directories.
+
+    @arg dlId
+
+    @arg runId
+
+    @arg [chunkId]
+
+    @return A sequence of directory names
+    """
+
+    if chunkId is None:
+        chunkId = '*'
+        crumbId = None
+        level = 'chunk'
+    else:
+        crumbId = '*'
+        level = 'crumb'
+        pass
+
+    dirs = setup(dlId, runId, chunkId, crumbId, createDirs=False)
+    pattern = dirs[level]
+    pieceDirs = glob.glob(pattern)
+    
+    pieceDirs.sort(key=os.path.basename)
+   
+    return pieceDirs

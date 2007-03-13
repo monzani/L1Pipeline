@@ -8,7 +8,10 @@
 <task name="L1Proc" version="%(L1Version)s" type="Data">
 
    <variables>
+      <var name="CMTCONFIG">%(cmtConfig)s</var>
+      <var name="GLAST_EXT">%(glastExt)s</var>
       <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+      <var name="ROOTSYS">%(rootSys)s</var>
    </variables>
 
    <prerequisites>

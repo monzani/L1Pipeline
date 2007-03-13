@@ -5,8 +5,9 @@
 @author W. Focke <focke@slac.stanford.edu>
 """
 
-from os import path, environ
 import math
+from os import path, environ
+import sys
 
 import config
 import crumble
@@ -21,6 +22,7 @@ digiFile = files['chunk']['digi']
 chunkDir = files['dirs']['chunk']
 
 chunkEvents = rootFiles.getFileEvents(digiFile)
+print >> sys.stderr, "Chunk has %d events." % chunkEvents
 
 crumbSizes = crumble.crumble(chunkEvents, config.maxCrumbSize)
 nCrumbs = len(crumbSizes)
@@ -31,7 +33,7 @@ for iCrumb in range(nCrumbs-1):
 
 biggest = max(crumbStarts)
 
-print "biggest=",biggest,"nCrumbs=",nCrumbs
+print >> sys.stderr, "biggest start = ", biggest, "nCrumbs = ", nCrumbs
 
 if (nCrumbs == 1):
     cDigits = 1

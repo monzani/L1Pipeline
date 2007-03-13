@@ -1,4 +1,4 @@
 #include "$LATINTEGRATIONROOT/src/jobOptions/pipeline/ldf2digi.txt"
 EventSelector.StorageType = "CCSDSFILE";
-EventSelector.InputList = {"$EVTFILE"};
+EventSelector.FileName = "$EVTFILE";
 digiRootWriterAlg.digiRootFile = "$digiChunkFile";

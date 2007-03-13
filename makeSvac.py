@@ -48,9 +48,11 @@ optionFile = os.path.join(outDir, 'jobOptions.txt')
 open(optionFile, 'w').write(options)
 
 # do the work
-svacTupleApp = config.svacTupleApp
-svacTupleCmt = config.svacTupleCmt
+svacTupleApp = config.apps['svacTuple']
+svacTupleCmt = config.packages['EngineeringModelRoot']['setup']
+
 cmd = "cd %(outDir)s ; printenv ; source %(svacTupleCmt)s ; printenv LD_LIBRARY_PATH ; %(svacTupleApp)s %(optionFile)s" % locals()
+
 status = runner.run(cmd)
 
 staged.finish()

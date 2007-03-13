@@ -30,7 +30,7 @@ environ['calCrumbFile'] = staged.stageOut(files['crumb']['cal'])
 
 #environ['JOBOPTIONS'] = config.reconOptions
 
-status = runner.run(config.reconApp+' '+config.reconOptions)
+status = runner.run(config.apps['recon'] + ' ' + config.reconOptions)
 
 staged.finish()
 

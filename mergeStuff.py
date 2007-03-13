@@ -57,30 +57,27 @@ if len(realInFiles) == 1:
 inFiles = [staged.stageIn(iFile) for iFile in realInFiles]
 outFile = staged.stageOut(realOutFile)
 
-##wbf## system(config.hadd+" "+environ['outFile']+" "+environ['inFiles'])
-
 if fileType in ['digiMon', 'reconMon']:
 
- environ['LD_LIBRARY_PATH']=""
- environ['ROOTSYS']=config.rootSys
- environ['CMTPATH']=config.cmtPath
+    environ['LD_LIBRARY_PATH']=""
+    environ['ROOTSYS']=config.rootSys
+    environ['CMTPATH']=config.cmtPath
 
- infilestring=""
- for i_infile in range(len(inFiles)):
-  print "Infile",i_infile,"is",inFiles[i_infile],"and realInFile is",realInFiles[i_infile]
-  infilestring=infilestring+" -i "+inFiles[i_infile]
+    infilestring = ""
+    for i_infile in range(len(inFiles)):
+        print "Infile ", i_infile, " is ", inFiles[i_infile], " and realInFile is ", realInFiles[i_infile]
+        infilestring=infilestring + " -i " + inFiles[i_infile]
 
- print "infilestring=",infilestring
+        print "infilestring=", infilestring
 
- cmd = "source /afs/slac/g/glast/ground/scripts/group.sh; CMTCONFIG="+config.cmtConfig+"; export CMTCONFIG; GLAST_EXT="+config.glastExt+"; export GLAST_EXT; cd "+config.testReportDir+"/cmt; source setup.sh; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"+config.glastExt+"/xerces/2.6.0/lib:"+config.glastLocation+"/lib:"+config.rootSys+"/lib; export LD_LIBRARY_PATH; "+config.reportMergeApp+" "+infilestring+" -o "+outFile+" -c $L1ProcROOT/merge.txt"+";chgrp -R glast-pipeline "+config.L1Disk
+        cmd = "source /afs/slac/g/glast/ground/scripts/group.sh ;  source " + config.packages['TestReport']['setup'] + "  ; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:" + config.glastExt + "/xerces/2.6.0/lib:" + config.glastLocation + "/lib:" + config.rootSys + "/lib ; export LD_LIBRARY_PATH ; " + config.apps['reportMerge'] + " " + infilestring + " -o " + outFile + " -c $L1ProcROOT/merge.txt" + " ; chgrp -R glast-pipeline " + config.L1Disk
+        continue
 
 else:
 
-# cmd = config.hadd+" "+environ['outFile']+" "+environ['inFiles']
-
- environ['LD_LIBRARY_PATH']=config.haddRootSys+"/lib:"+environ['LD_LIBRARY_PATH']
- environ['ROOTSYS']=config.haddRootSys
- cmd = config.hadd + (' %s' % outFile) + ((' %s' * len(inFiles)) % tuple(inFiles))+";chgrp -R glast-pipeline "+config.L1Disk
+    environ['LD_LIBRARY_PATH'] = config.haddRootSys+"/lib:"+environ['LD_LIBRARY_PATH']
+    environ['ROOTSYS'] = config.haddRootSys
+    cmd = config.hadd + (' %s' % outFile) + ((' %s' * len(inFiles)) % tuple(inFiles)) + " ;chgrp -R glast-pipeline " + config.L1Disk
 
 
 status = runner.run(cmd)
