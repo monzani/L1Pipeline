@@ -15,9 +15,10 @@ template = 'L1Proc.xml.template'
 configuration = dict(config.__dict__)
 
 retireScript = os.path.join(config.L1ProcROOT, 'retireRun.py')
-retireScriptBody = open(retireScript).read()
+configuration['retireScriptBody'] = open(retireScript).read()
 
-configuration['retireScriptBody'] = retireScriptBody
+placeHolderScript = os.path.join(config.L1ProcROOT, 'placeHolder.py')
+configuration['placeHolderBody'] = open(placeHolderScript).read()
 
 expandTemplate.expand(template, taskFile, configuration)
 

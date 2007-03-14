@@ -1,2 +1,3 @@
-print "This should mark datasets from run %s as %s," % (RUNID, RUNSTATUS)
-print "but instead it prints this message."
+# This script is automagically pasted into the XML at install time
+print '''This should mark datasets from run %s as %s,
+but instead it prints this message.'''  % (RUNID, RUNSTATUS)

@@ -24,15 +24,6 @@
       <job executable="${L1ProcROOT}/findRunDirs.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
       <createsSubtasks>
          <subtask>doRun</subtask>
-      </createsSubtasks>
-   </process>
-
-   <process name="launchCleanup">
-      <job executable="${L1ProcROOT}/launchCleanup.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
-      <depends>
-         <after process="doRun.checkRun" status="SUCCESS" />
-      </depends>
-      <createsSubtasks>
          <subtask>cleanupRun</subtask>
       </createsSubtasks>
    </process>
@@ -40,9 +31,10 @@
    <task name="doRun" version="%(L1Version)s" type="Data">
 
       <prerequisites>
-          <prerequisite name="DOWNLINK_ID" type="string"/>
-          <prerequisite name="RUNID" type="string"/>
-          <prerequisite name="RUN_RAWDIR" type="string"/>
+         <prerequisite name="DOWNLINK_ID" type="string"/>
+         <prerequisite name="RUNID" type="string"/>
+         <prerequisite name="RUNSTATUS" type="string"/>
+         <prerequisite name="RUN_RAWDIR" type="string"/>
       </prerequisites>
 
       <process name="findChunks">
@@ -243,21 +235,40 @@
 
       <process name="checkRun">
          <script><![CDATA[
-            print "Placeholder to aggregate dependency flow."
-            ]]>
+%(placeHolderBody)s            
+]]>
          </script>
          <depends>
-            <after process="doChunk.digiReport" status="SUCCESS"/>
             <after process="doChunk.cleanupCrumbs" status="SUCCESS"/>
+            <after process="doChunk.digiReport" status="SUCCESS"/>
             <after process="doChunk.reconMon" status="SUCCESS"/>
             <after process="doChunk.svacTuple" status="SUCCESS"/>
-            <after process="mergeDigi" status="SUCCESS"/>
-            <after process="mergeDigiMon" status="SUCCESS"/>
-            <after process="mergeReconChunks" status="SUCCESS"/>
-            <after process="mergeReconMon" status="SUCCESS"/>
-            <after process="mergeCalChunks" status="SUCCESS"/>
-            <after process="mergeMeritChunks" status="SUCCESS"/>
-            <after process="mergeSvacTuple" status="SUCCESS"/>
+            <after process="registerCal" status="SUCCESS"/>
+            <after process="registerFT1" status="SUCCESS"/>
+            <after process="registerDigi" status="SUCCESS"/>
+            <after process="registerDigiMon" status="SUCCESS"/>
+            <after process="registerMerit" status="SUCCESS"/>
+            <after process="registerRecon" status="SUCCESS"/>
+            <after process="registerReconMon" status="SUCCESS"/>
+            <after process="registerSvacTuple" status="SUCCESS"/>
+         </depends>
+      </process>
+
+      <process name="cleanupChunks">
+         <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
+         <depends>
+            <after process="checkRun" status="SUCCESS"/>
+         </depends>
+      </process>
+
+      <process name="retireRun">
+         <script>
+            <![CDATA[
+%(retireScriptBody)s
+]]>
+         </script>
+         <depends>
+            <after process="checkRun" status="SUCCESS"/>
          </depends>
       </process>
 
