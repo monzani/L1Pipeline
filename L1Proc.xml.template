@@ -24,7 +24,7 @@
       <job executable="${L1ProcROOT}/findRunDirs.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
       <createsSubtasks>
          <subtask>doRun</subtask>
-         <subtask>cleanupRun</subtask>
+         <subtask>cleanupIncompleteRun</subtask>
       </createsSubtasks>
    </process>
 
@@ -261,7 +261,7 @@
          </depends>
       </process>
 
-      <process name="retireRun">
+      <process name="updateRunStatus">
          <script>
             <![CDATA[
 %(retireScriptBody)s
@@ -390,7 +390,7 @@
 
    </task>
 
-   <task name="cleanupRun" version="%(L1Version)s" type="Data">
+   <task name="cleanupIncompleteRun" version="%(L1Version)s" type="Data">
 
       <prerequisites>
          <prerequisite name="RUNID" type="string"/>
@@ -401,7 +401,7 @@
          <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
       </process>
 
-      <process name="retireRun">
+      <process name="updateRunStatus">
          <script>
             <![CDATA[
 %(retireScriptBody)s

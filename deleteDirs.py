@@ -12,6 +12,7 @@ import procDirs
 import runner
 
 runId = os.environ['RUNID']
+runStatus = os.environ['RUNSTATUS']
 
 try:
     chunkId = os.environ['CHUNK_ID']
@@ -21,6 +22,12 @@ except KeyError:
     chunkId = None
     dlId = '*'
     level = 'chunk'
+    pass
+
+if level == 'chunk' and runStatus not in ['COMPLETE', 'INCOMPLETE']:
+    print >> sys.stderr, 'Run %s has status %s, not deleting chunks.' \
+          % (runId, runStatus)
+    sys.exit(0)
     pass
 
 goners = procDirs.findPieceDirs(dlId, runId, chunkId)

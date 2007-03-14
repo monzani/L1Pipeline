@@ -50,9 +50,15 @@ realOutFile = files[mergeLevel][fileType]
 inFiles = [staged.stageIn(iFile) for iFile in realInFiles]
 
 for i_infile in range(len(inFiles)):
-    print "Infile ", i_infile, " is ", inFiles[i_infile], " and realInFile is ", realInFiles[i_infile]
+    print >> sys.stderr, "Infile ", i_infile, " is ", inFiles[i_infile], " and realInFile is ", realInFiles[i_infile]
 
 if len(realInFiles) == 1:
+    # We're "merging" 1 file.  So it's just a copy.
+    # 
+    # Stage the input, but not the output.  This might seems wasteful
+    # relative to copying the unstaged input to the unstaged output,
+    # but they're probably on the same fiesystem, and this reduces the
+    # load on the file server in that case.
     print >> sys.stderr, 'Single input file, copying %s to %s' % \
           (inFiles[0], realOutFile)
     shutil.copyfile(inFiles[0], realOutFile)
@@ -63,19 +69,12 @@ outFile = staged.stageOut(realOutFile)
 
 if fileType in ['digiMon', 'reconMon']:
 
-    environ['LD_LIBRARY_PATH']=""
-    environ['ROOTSYS']=config.rootSys
-    environ['CMTPATH']=config.cmtPath
+    environ['LD_LIBRARY_PATH'] = ""
+    environ['CMTPATH'] = config.cmtPath
 
-    infilestring = ""
-    for i_infile in range(len(inFiles)):
-        print "Infile ", i_infile, " is ", inFiles[i_infile], " and realInFile is ", realInFiles[i_infile]
-        infilestring=infilestring + " -i " + inFiles[i_infile]
+    inFileString = ''.join([' -i %s ' % ff for ff in inFiles])
 
-        print "infilestring=", infilestring
-
-        cmd = "source " + config.glastSetup + " ;  source " + config.packages['TestReport']['setup'] + "  ; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:" + config.glastExt + "/xerces/2.6.0/lib:" + config.glastLocation + "/lib:" + config.rootSys + "/lib ; export LD_LIBRARY_PATH ; " + config.apps['reportMerge'] + " " + infilestring + " -o " + outFile + " -c $L1ProcROOT/merge.txt" + " ; chgrp -R glast-pipeline " + config.L1Disk
-        continue
+    cmd = "source " + config.glastSetup + " ;  source " + config.packages['TestReport']['setup'] + "  ; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:" + config.glastExt + "/xerces/2.6.0/lib:" + config.glastLocation + "/lib:" + config.rootSys + "/lib ; export LD_LIBRARY_PATH ; " + config.apps['reportMerge'] + " " + inFileString + " -o " + outFile + " -c $L1ProcROOT/merge.txt" + " ; chgrp -R glast-pipeline " + config.L1Disk
 
 else:
 

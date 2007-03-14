@@ -22,12 +22,12 @@ dlRawDir = os.environ['DOWNLINK_RAWDIR']
 # this is a contract with the halfpipe
 maybeIds = os.listdir(dlRawDir)
 
-dataRuns = []
+dataRuns = set()
 runDirs = {}
 for candidate in maybeIds:
     maybeDir = os.path.join(dlRawDir, candidate)
     if os.path.isdir(maybeDir):
-        dataRuns.append(candidate)
+        dataRuns.add(candidate)
         runDirs[candidate] = maybeDir
         pass
     continue
@@ -36,26 +36,25 @@ runStatuses = dict.fromkeys(dataRuns, 'WAITING')
 # the name of this file is a contract with the halfpipe
 retireFile = os.path.join(dlRawDir, 'retired_runs.txt')
 retireeStatus = dict([line.split() for line in open(retireFile)])
-retirees = retireeStatus.keys()
+retirees = set(retireeStatus.keys())
 
 runStatuses.update(retireeStatus)
 
-oldRuns = [runId for runId in retirees if runId not in dataRuns]
+oldRuns = retirees - dataRuns
 
-iRun = 0
-# set up a subStream for each data run
-for runId in dataRuns:
+# create up a subStream for each data run
+for stream, runId in enumerate(dataRuns):
     runDir = runDirs[runId]
     runStatus = runStatuses[runId]
     args = "RUNID=%(runId)s,RUN_RAWDIR=%(runDir)s,RUNSTATUS=%(runStatus)s,DOWNLINK_ID=%(dlId)s" % locals()
-    pipeline.createSubStream("doRun", iRun, args)
-    iRun += 1
+    pipeline.createSubStream("doRun", stream, args)
+    stream += 1
     continue
 
 # and for each old run
-for runId in oldRuns:
+for stream, runId in enumerate(oldRuns):
     runStatus = runStatuses[runId]
     args = "RUNID=%(runId)s,RUNSTATUS=%(runStatus)s" % locals()
-    pipeline.createSubStream("cleanupRun", iRun, args)
-    iRun += 1
+    pipeline.createSubStream("cleanupIncompleteRun", stream, args)
+    stream += 1
     continue

@@ -5,6 +5,7 @@
 
 import glob
 import os
+import re
 import sys
 
 import config
@@ -104,20 +105,36 @@ def findPieceDirs(dlId, runId, chunkId=None):
         chunkId = '*'
         crumbId = None
         level = 'chunk'
+        filter = '^e[0-9]*$'
     else:
         crumbId = '*'
         level = 'crumb'
+        filter = '^b[0-9]*$'
         pass
 
     dirs = setup(dlId, runId, chunkId, crumbId, createDirs=False)
     pattern = dirs[level]
     pieceDirs = glob.glob(pattern)
 
-    print >> sys.stderr, 'Pattern is "%s", matching items are:' % pattern
+    print >> sys.stderr, '----------------------------------------------'
+    print >> sys.stderr, 'Pattern (first pass) is "%s", matching items are:' \
+          % pattern
     for piece in pieceDirs:
         print >> sys.stderr, piece
         continue
-    
+    print >> sys.stderr, '----------------------------------------------'
+
+    filterRe = re.compile(filter)
+    pieceDirs = [d for d in pieceDirs if filterRe.match(os.path.basename(d))]
+
+    print >> sys.stderr, '----------------------------------------------'
+    print >> sys.stderr, 'Filter (second pass) is "%s", matching items are:' \
+          % filter
+    for piece in pieceDirs:
+        print >> sys.stderr, piece
+        continue
+    print >> sys.stderr, '----------------------------------------------'
+
     pieceDirs.sort(key=os.path.basename)
    
     return pieceDirs
