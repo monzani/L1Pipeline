@@ -23,9 +23,6 @@ dlId = environ['DOWNLINK_ID']
 runId = environ['RUNID']
 runDir = environ['RUN_RAWDIR']
 
-glastExt=config.glastExt
-LATCalibRoot=config.LATCalibRoot
-
 files = fileNames.setup(dlId, runId)
 
 rootDir = files['dirs']['run']
@@ -45,6 +42,6 @@ for iChunk, chunkFile in enumerate(chunkFiles):
     else:
         print >> sys.stderr, 'Bad chunk file name %s' % fileBase
         continue
-    args = "EVTFILE=%(chunkFile)s,CHUNK_ID=%(chunkId)s,GLAST_EXT=%(glastExt)s,LATCalibRoot=%(LATCalibRoot)s" % locals()
+    args = "EVTFILE=%(chunkFile)s,CHUNK_ID=%(chunkId)s" % locals()
     pipeline.createSubStream("doChunk",iChunk,args)
     continue

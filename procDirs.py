@@ -5,6 +5,7 @@
 
 import glob
 import os
+import sys
 
 import config
 
@@ -111,6 +112,11 @@ def findPieceDirs(dlId, runId, chunkId=None):
     dirs = setup(dlId, runId, chunkId, crumbId, createDirs=False)
     pattern = dirs[level]
     pieceDirs = glob.glob(pattern)
+
+    print >> sys.stderr, 'Pattern is "%s", matching items are:' % pattern
+    for piece in pieceDirs:
+        print >> sys.stderr, piece
+        continue
     
     pieceDirs.sort(key=os.path.basename)
    

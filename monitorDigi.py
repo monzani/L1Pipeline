@@ -21,13 +21,14 @@ files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'], \
 
 staged = stageFiles.StageSet()
 
-stagedDigiFile = staged.stageIn(files['chunk']['digi'])
 nameBase = files['chunk']['head']
 
 if environ['reportType'] == 'recon':
+    stagedDigiFile = 'noSuchFile'
     stagedReconFile = staged.stageIn(files['chunk']['recon'])
     outDir = files['dirs']['reconMon']
 else:
+    stagedDigiFile = staged.stageIn(files['chunk']['digi'])
     stagedReconFile = 'noSuchFile'
     outDir = files['dirs']['digiMon']
     pass

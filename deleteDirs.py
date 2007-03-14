@@ -13,9 +13,6 @@ import runner
 
 runId = os.environ['RUNID']
 
-# Put something real here based on values passed from halfpipe 
-retireRun = False
-
 try:
     chunkId = os.environ['CHUNK_ID']
     dlId = os.environ['DOWNLINK_ID']
@@ -24,11 +21,6 @@ except KeyError:
     chunkId = None
     dlId = '*'
     level = 'chunk'
-    pass
-
-if level == 'chunk' and not retireRun:
-    print >> sys.stderr, 'Run %s not retired, not deleting chunks.' % runId
-    sys.exit(0)
     pass
 
 goners = procDirs.findPieceDirs(dlId, runId, chunkId)

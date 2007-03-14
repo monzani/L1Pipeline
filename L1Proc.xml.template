@@ -11,6 +11,7 @@
       <var name="CMTCONFIG">%(cmtConfig)s</var>
       <var name="GLAST_EXT">%(glastExt)s</var>
       <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+      <var name="LATCalibRoot">%(LATCalibRoot)s</var>
       <var name="ROOTSYS">%(rootSys)s</var>
    </variables>
 
@@ -23,6 +24,16 @@
       <job executable="${L1ProcROOT}/findRunDirs.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
       <createsSubtasks>
          <subtask>doRun</subtask>
+      </createsSubtasks>
+   </process>
+
+   <process name="launchCleanup">
+      <job executable="${L1ProcROOT}/launchCleanup.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
+      <depends>
+         <after process="doRun.checkRun" status="SUCCESS" />
+      </depends>
+      <createsSubtasks>
+         <subtask>cleanupRun</subtask>
       </createsSubtasks>
    </process>
 
@@ -230,6 +241,26 @@
          </depends>
       </process>
 
+      <process name="checkRun">
+         <script><![CDATA[
+            print "Placeholder to aggregate dependency flow."
+            ]]>
+         </script>
+         <depends>
+            <after process="doChunk.digiReport" status="SUCCESS"/>
+            <after process="doChunk.cleanupCrumbs" status="SUCCESS"/>
+            <after process="doChunk.reconMon" status="SUCCESS"/>
+            <after process="doChunk.svacTuple" status="SUCCESS"/>
+            <after process="mergeDigi" status="SUCCESS"/>
+            <after process="mergeDigiMon" status="SUCCESS"/>
+            <after process="mergeReconChunks" status="SUCCESS"/>
+            <after process="mergeReconMon" status="SUCCESS"/>
+            <after process="mergeCalChunks" status="SUCCESS"/>
+            <after process="mergeMeritChunks" status="SUCCESS"/>
+            <after process="mergeSvacTuple" status="SUCCESS"/>
+         </depends>
+      </process>
+
       <task name="doChunk" version="%(L1Version)s" type="Data">
 
          <prerequisites>
@@ -319,38 +350,16 @@
             </depends>
          </process>
 
-         <process name="deleteReconCrumbs">
-            <variables>
-               <var name="fileType">recon</var>
-            </variables>
-            <job executable="${L1ProcROOT}/deleteStuff.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
+         <process name="cleanupCrumbs">
+            <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
             <depends>
+               <after process="doCrumb.recon" status="SUCCESS"/>
                <after process="mergeReconCrumbs" status="SUCCESS"/>
-               <after process="doCrumb.recon" status="SUCCESS"/>
-            </depends>
-         </process>
-
-         <process name="deleteCalCrumbs">
-            <variables>
-               <var name="fileType">cal</var>
-            </variables>
-            <job executable="${L1ProcROOT}/deleteStuff.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
-            <depends>
                <after process="mergeCalCrumbs" status="SUCCESS"/>
-               <after process="doCrumb.recon" status="SUCCESS"/>
+               <after process="mergeMeritCrumbs" status="SUCCESS"/>
             </depends>
          </process>
 
-         <process name="deleteMeritCrumbs">
-            <variables>
-               <var name="fileType">merit</var>
-            </variables>
-            <job executable="${L1ProcROOT}/deleteStuff.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
-            <depends>
-               <after process="mergeMeritCrumbs" status="SUCCESS"/>
-               <after process="doCrumb.recon" status="SUCCESS"/>
-            </depends>
-         </process>
 
          <task name="doCrumb" version="%(L1Version)s" type="Data">
 
@@ -367,6 +376,27 @@
          </task>
        
       </task>
+
+   </task>
+
+   <task name="cleanupRun" version="%(L1Version)s" type="Data">
+
+      <prerequisites>
+         <prerequisite name="RUNID" type="string"/>
+         <prerequisite name="RUNSTATUS" type="string"/>
+      </prerequisites>
+
+      <process name="cleanupChunks">
+         <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
+      </process>
+
+      <process name="retireRun">
+         <script>
+            <![CDATA[
+%(retireScriptBody)s
+]]>
+         </script>
+      </process>
 
    </task>
 

@@ -8,8 +8,6 @@
 from os import environ
 import config
 
-environ['ROOTSYS']=config.rootSys
-
 import ROOT
 ROOT.gSystem.Load('libcommonRootData.so')
 ROOT.gSystem.Load('libdigiRootData.so')

@@ -20,14 +20,14 @@ import stageFiles
 import pipeline
 
 def finalize(status):
- staged.finish()
- templist=realOutFile.split('/')
- outFileName=templist[len(templist)-1]
- logipath='/L1Proc/'+fileType+'/'+outFileName
-# print "logipath=",logipath,"filepath=",outFile
- pipeline.setVariable('REGISTER_LOGIPATH', logipath)
- pipeline.setVariable('REGISTER_FILEPATH', realOutFile)
- sys.exit(status)
+    staged.finish()
+    templist=realOutFile.split('/')
+    outFileName=templist[len(templist)-1]
+    logipath='/L1Proc/'+fileType+'/'+outFileName
+    # print "logipath=",logipath,"filepath=",outFile
+    pipeline.setVariable('REGISTER_LOGIPATH', logipath)
+    pipeline.setVariable('REGISTER_FILEPATH', realOutFile)
+    sys.exit(status)
 
 staged = stageFiles.StageSet()
 
@@ -47,14 +47,18 @@ files = fileNames.setup(dlId, runId, chunkId)
 realInFiles = fileNames.findPieces(fileType, dlId, runId, chunkId)
 realOutFile = files[mergeLevel][fileType]
 
+inFiles = [staged.stageIn(iFile) for iFile in realInFiles]
+
+for i_infile in range(len(inFiles)):
+    print "Infile ", i_infile, " is ", inFiles[i_infile], " and realInFile is ", realInFiles[i_infile]
+
 if len(realInFiles) == 1:
     print >> sys.stderr, 'Single input file, copying %s to %s' % \
-          (realInFiles[0], realOutFile)
-    shutil.copyfile(realInFiles[0], realOutFile)
+          (inFiles[0], realOutFile)
+    shutil.copyfile(inFiles[0], realOutFile)
     finalize(0)
     pass
 
-inFiles = [staged.stageIn(iFile) for iFile in realInFiles]
 outFile = staged.stageOut(realOutFile)
 
 if fileType in ['digiMon', 'reconMon']:
@@ -70,7 +74,7 @@ if fileType in ['digiMon', 'reconMon']:
 
         print "infilestring=", infilestring
 
-        cmd = "source /afs/slac/g/glast/ground/scripts/group.sh ;  source " + config.packages['TestReport']['setup'] + "  ; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:" + config.glastExt + "/xerces/2.6.0/lib:" + config.glastLocation + "/lib:" + config.rootSys + "/lib ; export LD_LIBRARY_PATH ; " + config.apps['reportMerge'] + " " + infilestring + " -o " + outFile + " -c $L1ProcROOT/merge.txt" + " ; chgrp -R glast-pipeline " + config.L1Disk
+        cmd = "source " + config.glastSetup + " ;  source " + config.packages['TestReport']['setup'] + "  ; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:" + config.glastExt + "/xerces/2.6.0/lib:" + config.glastLocation + "/lib:" + config.rootSys + "/lib ; export LD_LIBRARY_PATH ; " + config.apps['reportMerge'] + " " + infilestring + " -o " + outFile + " -c $L1ProcROOT/merge.txt" + " ; chgrp -R glast-pipeline " + config.L1Disk
         continue
 
 else:
