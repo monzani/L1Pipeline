@@ -16,7 +16,7 @@ staged = stageFiles.StageSet()
 stagedMeritFile = staged.stageIn(files['run']['merit'])
 Ft1FilePath = files['run']['ft1']
 
-cmd = 'ST='+config.ST+';export ST;PATH=${ST}/bin:${PATH};GLAST_EXT='+config.glastExt+';export GLAST_EXT; ROOTSYS='+config.rootSys+';export ROOTSYS;PFILES='+config.PFILES+';export PFILES;makeFT1 rootFile='+stagedMeritFile+' fitsFile='+Ft1FilePath
+cmd = 'ST='+config.ST+';export ST;PATH=${ST}/bin:${PATH};PFILES='+config.PFILES+';export PFILES;makeFT1 rootFile='+stagedMeritFile+' fitsFile='+Ft1FilePath
 
 status = runner.run(cmd)
 

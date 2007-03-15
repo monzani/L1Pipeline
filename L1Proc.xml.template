@@ -12,6 +12,8 @@
       <var name="GLAST_EXT">%(glastExt)s</var>
       <var name="L1ProcROOT">%(L1ProcROOT)s</var>
       <var name="LATCalibRoot">%(LATCalibRoot)s</var>
+      <var name="LD_LIBRARY_PATH">%(libraryPath)s</var>
+      <var name="PYTHONPATH">%(pythonPath)s</var>
       <var name="ROOTSYS">%(rootSys)s</var>
    </variables>
 
@@ -301,10 +303,6 @@
          </process>
 
          <process name="setupCrumbs">
-            <variables>
-               <var name="LD_LIBRARY_PATH">%(libraryPath)s</var>
-               <var name="PYTHONPATH">%(pythonPath)s</var>
-            </variables>
             <job executable="${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
             <depends>
                <after process="digitization" status="SUCCESS" />

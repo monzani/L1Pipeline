@@ -6,7 +6,7 @@
 import os
 from os import path, environ
 
-L1Version = "0.96"
+L1Version = "0.99"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 #L1ProcROOT = path.join(installRoot, L1Version)
 #L1ProcROOT = '/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline'
@@ -22,9 +22,9 @@ L1Dir = path.join(L1Disk, 'rootData')
 
 maxCpu = 1000
 
-#maxCrumbSize = 48000
-maxCrumbSize = 6353
-#maxCrumbSize = 250
+#maxCrumbSize = 48000 # SVAC pipeline uses this
+#maxCrumbSize = 250   # tiny
+maxCrumbSize = 6353   # ~.5Hr on tori.  Also about half of medium q limit
 
 glastRoot = '/afs/slac.stanford.edu/g/glast'
 groundRoot = os.path.join(glastRoot, 'ground')
@@ -48,7 +48,6 @@ cmtScript = path.join(glastLocation, releaseName, glastVersion, 'cmt',
                          'setup.sh') # do we need this?
 cmtPath = ':'.join((glastLocation, L1Cmt))
 environ['CMTPATH'] = cmtPath
-environ['CMTCONFIG'] = cmtConfig
 #
 digiOptions = path.join(L1ProcROOT, 'digi.jobOpt')
 reconOptions = path.join(L1ProcROOT, 'recon.jobOpt')
@@ -106,14 +105,15 @@ joiner = '*'
 
 rootPath = os.path.join(rootSys, 'lib')
 pythonPath = rootPath
-libraryPath = ':'.join((os.path.join(glastLocation, 'lib'), \
+libraryPath = ':'.join((os.path.join(L1Cmt, 'lib'), \
+                        os.path.join(glastLocation, 'lib'), \
                         rootPath))
 
 # LSF stuff
 allocationGroup = 'glastdata'
 #
 quickQueue = 'express'
-reconQueue = 'long'
+reconQueue = 'medium'
 standardQueue = 'glastdataq'
 
 if __name__ == "__main__":

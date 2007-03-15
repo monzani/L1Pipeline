@@ -7,8 +7,8 @@
 
 import glob
 from os import environ
-
 import shutil
+import string
 import sys
 
 import runner
@@ -16,8 +16,9 @@ import runner
 import config
 
 import fileNames
-import stageFiles
 import pipeline
+import stageFiles
+import rootFiles
 
 def finalize(status):
     staged.finish()
@@ -67,21 +68,26 @@ if len(realInFiles) == 1:
 
 outFile = staged.stageOut(realOutFile)
 
-if fileType in ['digiMon', 'reconMon']:
 
+if fileType in ['digiMon', 'reconMon']:
     environ['LD_LIBRARY_PATH'] = ""
     environ['CMTPATH'] = config.cmtPath
-
     inFileString = ''.join([' -i %s ' % ff for ff in inFiles])
-
     cmd = "source " + config.glastSetup + " ;  source " + config.packages['TestReport']['setup'] + "  ; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:" + config.glastExt + "/xerces/2.6.0/lib:" + config.glastLocation + "/lib:" + config.rootSys + "/lib ; export LD_LIBRARY_PATH ; " + config.apps['reportMerge'] + " " + inFileString + " -o " + outFile + " -c $L1ProcROOT/merge.txt" + " ; chgrp -R glast-pipeline " + config.L1Disk
 
-else:
 
+elif fileType in ['digi', 'recon']:
+    treeName = string.capitalize(fileType)
+    rootFiles.concatenate_prune(outFile, inFiles, treeName)
+    cmd = ''
+
+else:
     environ['LD_LIBRARY_PATH'] = config.haddRootSys+"/lib:"+environ['LD_LIBRARY_PATH']
     environ['ROOTSYS'] = config.haddRootSys
     cmd = config.hadd + (' %s' % outFile) + ((' %s' * len(inFiles)) % tuple(inFiles)) + " ;chgrp -R glast-pipeline " + config.L1Disk
 
+
+    pass
 
 status = runner.run(cmd)
 
