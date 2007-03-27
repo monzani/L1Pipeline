@@ -6,17 +6,18 @@
 import os
 from os import path, environ
 
-L1Version = "1.01"
+L1Version = "0.100"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
-#L1ProcROOT = path.join(installRoot, L1Version)
-L1ProcROOT = '/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline'
+L1ProcROOT = path.join(installRoot, L1Version)
+#L1ProcROOT = '/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline'
 #L1ProcROOT = '/nfs/slac/g/svac/focke/cvs/L1Pipeline'
 LATCalibRoot = '/afs/slac/g/glast/ground/releases/calibrations'
-#L1Cmt = path.join(installRoot, 'builds')
-L1Cmt = '/nfs/slac/g/svac/focke/builds'
+L1Cmt = path.join(installRoot, 'builds')
+#L1Cmt = '/nfs/slac/g/svac/focke/builds'
 
+L1Disk = '/nfs/farm/g/glast/u40/L1'
 #L1Disk = '/nfs/slac/g/svac/focke/L1'
-L1Disk = '/nfs/farm/g/glast/u33/wai/pipeline_tests/L1'
+#L1Disk = '/nfs/farm/g/glast/u33/wai/pipeline_tests/L1'
 #L1Disk = 'L1DISK'
 L1Dir = path.join(L1Disk, 'rootData')
 

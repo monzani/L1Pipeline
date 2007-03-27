@@ -25,11 +25,12 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=False):
     
     """
     dirs = {}
-    dlDir = os.path.join(config.L1Dir, 'downlinks', dlId)
-    dirs['downlink'] = dlDir
-    if runId is None:
-        return dirs
-    runBase = os.path.join(config.L1Dir, 'runs', runId)
+#     dlDir = os.path.join(config.L1Dir, 'downlinks', dlId)
+#     dirs['downlink'] = dlDir
+#     if runId is None:
+#         return dirs
+#     runBase = os.path.join(config.L1Dir, 'runs', runId)
+     runBase = os.path.join(config.L1Dir, runId)
     runDir = os.path.join(runBase, config.glastVersion)
     dirs['run'] = runDir
     if chunkId is not None:

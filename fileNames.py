@@ -37,8 +37,8 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=True):
 
     files['dirs'] = dirs
 
-    files['downlink'] = {}
-    files['downlink']['runList'] = os.path.join(dirs['downlink'], 'runList')
+#     files['downlink'] = {}
+#     files['downlink']['runList'] = os.path.join(dirs['downlink'], 'runList')
 
     if chunkId is not None:
         files['chunk'] = _setupChunk(dirs, chunkId, runHead)
