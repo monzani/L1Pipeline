@@ -52,7 +52,18 @@ class StageSet:
             stageName = `os.getpid()`
             pass
         self.stageDir = os.path.join(stageArea, stageName)
-        os.mkdir(self.stageDir)
+
+        try:
+            os.mkdir(self.stageDir)
+            self.staged = True
+        except OSError:
+            self.staged = False
+            # override some methods so they don't have to be full of
+            # tedious condition checks
+            self.stageIn = self.noOp
+            self.stageOut = self.noOp
+            self.stagedName = self.noOp                        
+            pass
 
         self.inFiles = {}
         self.outFiles = {}
@@ -90,7 +101,8 @@ class StageSet:
         for realName, stageName in self.outFiles.items():
             shutil.move(stageName, realName)
             pass
-        os.rmdir(self.stageDir)
+        if self.staged:
+            os.rmdir(self.stageDir)
         return
     
     def stagedName(self, fileName):
@@ -101,3 +113,7 @@ class StageSet:
         base = os.path.basename(fileName)
         stageName = os.path.join(self.stageDir, base)
         return stageName
+
+    def noOp(self, input):
+        return input
+    

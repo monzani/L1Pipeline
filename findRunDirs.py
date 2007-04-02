@@ -35,7 +35,11 @@ runStatuses = dict.fromkeys(dataRuns, 'WAITING')
 
 # the name of this file is a contract with the halfpipe
 retireFile = os.path.join(dlRawDir, 'retired_runs.txt')
-retireeStatus = dict([line.split() for line in open(retireFile)])
+try:
+    retireeStatus = dict([line.split() for line in open(retireFile)])
+except IOError:
+    retireeStatus = {}
+    pass
 retirees = set(retireeStatus.keys())
 
 runStatuses.update(retireeStatus)
