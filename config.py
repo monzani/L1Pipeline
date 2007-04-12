@@ -6,7 +6,7 @@
 import os
 from os import path, environ
 
-L1Version = "1.3"
+L1Version = "1.4"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = path.join(installRoot, L1Version)
 #L1ProcROOT = '/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline'
@@ -20,6 +20,8 @@ L1Disk = '/nfs/farm/g/glast/u40/L1'
 #L1Disk = '/nfs/farm/g/glast/u33/wai/pipeline_tests/L1'
 #L1Disk = 'L1DISK'
 L1Dir = path.join(L1Disk, 'rootData')
+
+afsStage = "/afs/slac/g/glast/ground/PipelineStaging"
 
 maxCpu = 1000
 
@@ -35,10 +37,8 @@ cmtConfig = 'rh9_gcc32opt'
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases/volume03')
-#glastVersion = 'v6r070329p29em1'
-#glastVersion = 'EM'
-glastVersion = 'v7r0913p10'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
+glastVersion = 'v7r0913p11'
 releaseName = 'EngineeringModel'
 gleamPackage = 'LatIntegration'
 #
@@ -61,7 +61,7 @@ hadd = path.join(glastExt, haddRootSys, 'bin', 'hadd')
 packages = {
     'TestReport': {
         'repository': 'svac',
-        'version': 'v3r6p40',
+        'version': 'v3r6p41',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',

@@ -22,3 +22,30 @@ This will require keeping track either of which runs have been sent or
 
 @author W. Focke <focke@slac.stanford.edu>
 """
+
+import os
+
+import fileNames
+import runner
+import stageFiles
+
+#send = "--send GSSC"
+#send = "--send GSSC"
+send = ""
+
+staged = stageFiles.StageSet()
+
+files = fileNames.setup(os.environ['DOWNLINK_ID'], os.environ['RUN_ID'])
+exportFile = files['run'][os.environ['fileType']]
+
+stagedFile = staged.stageIn(exportFile)
+
+args = stagedFile
+
+cmd = """. /u/gl/glastops/isoc_config_devel.sh
+FASTCopy.py %(send)s %(args)s
+""" % locals()
+
+runner.run(cmd)
+
+staged.finish()

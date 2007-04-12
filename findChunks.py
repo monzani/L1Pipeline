@@ -33,7 +33,7 @@ chunkGlob = path.join(runDir, '*.evt')
 chunkFiles = glob.glob(chunkGlob)
 
 # set up a subStream for each run
-for iChunk, chunkFile in enumerate(chunkFiles):
+for chunkFile in chunkFiles:
 
     fileBase = path.basename(chunkFile)
     match = chunkRe.match(fileBase)
@@ -42,6 +42,7 @@ for iChunk, chunkFile in enumerate(chunkFiles):
     else:
         print >> sys.stderr, 'Bad chunk file name %s' % fileBase
         continue
+    stream = chunkId[1:]
     args = "EVTFILE=%(chunkFile)s,CHUNK_ID=%(chunkId)s" % locals()
-    pipeline.createSubStream("doChunk",iChunk,args)
+    pipeline.createSubStream("doChunk", stream, args)
     continue

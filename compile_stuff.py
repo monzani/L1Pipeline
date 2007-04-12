@@ -28,6 +28,7 @@ for packName, package in config.packages.items():
     cd %(L1Cmt)s
     cmt co -r %(version)s %(checkOutName)s
     cd %(cmtDir)s
+    cmt config
     make clean
     make''' % args
     

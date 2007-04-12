@@ -21,7 +21,8 @@ import stageFiles
 import rootFiles
 
 def finalize(status):
-    staged.finish()
+    inStage.finish()
+    # outStage.finish()
     templist=realOutFile.split('/')
     outFileName=templist[len(templist)-1]
     logipath='/L1Proc/'+fileType+'/'+outFileName
@@ -30,17 +31,17 @@ def finalize(status):
     pipeline.setVariable('REGISTER_FILEPATH', realOutFile)
     sys.exit(status)
 
-staged = stageFiles.StageSet()
-
 fileType = environ['fileType']
 dlId = environ['DOWNLINK_ID']
-runId= environ['RUNID']
+runId = environ['RUNID']
 chunkId = environ.get('CHUNK_ID')
 
 if chunkId is None:
     mergeLevel = 'run'
+    stageDirPieces = [dlId, runId, fileType]
 else:
     mergeLevel = 'chunk'
+    stageDirPieces = [dlId, runId, chunkId, fileType]
     pass
 
 files = fileNames.setup(dlId, runId, chunkId)
@@ -48,12 +49,43 @@ files = fileNames.setup(dlId, runId, chunkId)
 realInFiles = fileNames.findPieces(fileType, dlId, runId, chunkId)
 realOutFile = files[mergeLevel][fileType]
 
-inFiles = [staged.stageIn(iFile) for iFile in realInFiles]
+numInFiles = len(realInFiles)
+
+if numInFiles == 0:
+    print >> sys.stderr, "No input files, cannot continue."
+    sys.exit(1)
+    pass
+
+inStage = stageFiles.StageSet()
+
+outStageDir = '_'.join(stageDirPieces)
+# outStage = stageFiles.StageSet(outStageDir, config.afsStage)
+outStage = inStage
+
+inFiles = [inStage.stageIn(iFile) for iFile in realInFiles]
+# inFiles = []
+# for realInFile in realInFiles[::-1]:
+#     # Stage in input files in reverse order.  Then, if we run out of space
+#     # on the input staging filesystem (/scratch), and some input files don't
+#     # get staged, it's the ones that are merged in last, and are thus open
+#     # the longest, that do get staged.
+
+#     inFile = inStage.stageIn(realInFile)
+
+#     # Put any input files that wouldn't fit on the input filesystem on
+#     # the output filesystem.
+#     if inFile == realInFile:
+#         inFile = outStage.stageIn(relInFile)
+#         pass
+
+#     inFiles.append(inFile)
+#     continue
+# inFiles.reverse()
 
 for i_infile in range(len(inFiles)):
     print >> sys.stderr, "Infile ", i_infile, " is ", inFiles[i_infile], " and realInFile is ", realInFiles[i_infile]
 
-if len(realInFiles) == 1:
+if numInFiles == 1:
     # We're "merging" 1 file.  So it's just a copy.
     # 
     # Stage the input, but not the output.  This might seems wasteful
@@ -66,7 +98,7 @@ if len(realInFiles) == 1:
     finalize(0)
     pass
 
-outFile = staged.stageOut(realOutFile)
+outFile = outStage.stageOut(realOutFile)
 
 
 if fileType in ['digiMon', 'reconMon']:

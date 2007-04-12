@@ -45,6 +45,7 @@ for iCrumb in range(nCrumbs):
     start = crumbStarts[iCrumb]
     crumbId = cForm % start
     nEvents = crumbSizes[iCrumb]
+    stream = crumbId[1:]
     args = 'CRUMB_ID=%(crumbId)s,crumbStart=%(start)s,crumbEvents=%(nEvents)s' % locals()
-    pipeline.createSubStream("doCrumb",iCrumb,args)
+    pipeline.createSubStream("doCrumb", stream, args)
     pass

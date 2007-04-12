@@ -47,18 +47,18 @@ runStatuses.update(retireeStatus)
 oldRuns = retirees - dataRuns
 
 # create up a subStream for each data run
-for stream, runId in enumerate(dataRuns):
+for runId in dataRuns:
+    stream = runId[1:]
     runDir = runDirs[runId]
     runStatus = runStatuses[runId]
     args = "RUNID=%(runId)s,RUN_RAWDIR=%(runDir)s,RUNSTATUS=%(runStatus)s,DOWNLINK_ID=%(dlId)s" % locals()
     pipeline.createSubStream("doRun", stream, args)
-    stream += 1
     continue
 
 # and for each old run
-for stream, runId in enumerate(oldRuns):
+for runId in oldRuns:
+    stream = runId[1:]
     runStatus = runStatuses[runId]
     args = "RUNID=%(runId)s,RUNSTATUS=%(runStatus)s" % locals()
     pipeline.createSubStream("cleanupIncompleteRun", stream, args)
-    stream += 1
     continue
