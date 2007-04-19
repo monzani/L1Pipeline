@@ -29,13 +29,14 @@ import fileNames
 import runner
 import stageFiles
 
-#send = "--send GSSC"
-#send = "--send GSSC"
-send = ""
+# Where do we send the data?
+#send = ""             # noop
+send = "--send LISOC" # loopback test
+#send = "--send GSSC"  # the real deal
 
 staged = stageFiles.StageSet()
 
-files = fileNames.setup(os.environ['DOWNLINK_ID'], os.environ['RUN_ID'])
+files = fileNames.setup(os.environ['DOWNLINK_ID'], os.environ['RUNID'])
 exportFile = files['run'][os.environ['fileType']]
 
 stagedFile = staged.stageIn(exportFile)

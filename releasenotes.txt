@@ -23,3 +23,10 @@ When merging:
   Stage output file, and any input files that don't fit on /scratch, on AFS.
     Except we can't write to AFS.  So the code to do this is commented out.
 -------------------------------------------
+
+1.5
+-----------------
+Uses test version of pipelieDatasets that uses CloneTree to merge - fast, but 
+untrusted.
+export FT1 working.
+-------------------------------------------
