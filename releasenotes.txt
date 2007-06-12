@@ -30,3 +30,14 @@ Uses test version of pipelieDatasets that uses CloneTree to merge - fast, but
 untrusted.
 export FT1 working.
 -------------------------------------------
+
+1.6
+-----------------
+Expand registration script at install time instead of hardcoding it
+repeatedly, and set dataset type correctly.
+Add checkChunk process.
+Put updateRunStatus and cleanupChunks in a subtask.
+Lock run directory in before findChunks, unlock in checkRun (not finished).
+Add FastMon (not done).
+Work on ASP launch code.
+-------------------------------------------

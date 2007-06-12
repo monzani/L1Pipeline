@@ -20,6 +20,9 @@ configuration['retireScriptBody'] = open(retireScript).read()
 placeHolderScript = os.path.join(config.L1ProcROOT, 'placeHolder.py')
 configuration['placeHolderBody'] = open(placeHolderScript).read()
 
+registerScript = os.path.join(config.L1ProcROOT, 'registerStuff.py')
+configuration['registerBody'] = open(registerScript).read()
+
 expandTemplate.expand(template, taskFile, configuration)
 
 taskFile = os.path.abspath(taskFile)

@@ -57,16 +57,40 @@
       </process>
 
       <process name="registerDigi">
+         <variables>
+            <var name="parentProces">mergeDigi</var>
+            <var name="dataType">DIGI</var>
+         </variables>
          <script><![CDATA[
-            dataType = "MC"
-            logicalPath = pipeline.getProcessInstance("mergeDigi").getVariable("REGISTER_LOGIPATH")
-            filePath = pipeline.getProcessInstance("mergeDigi").getVariable("REGISTER_FILEPATH")
-            attributes = "tstart=0:tstop=120"
-            datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
+%(registerBody)s
             ]]>
          </script>
          <depends>
             <after process="mergeDigi" status="SUCCESS" />
+         </depends>
+      </process>
+ 
+      <process name="mergeFastMon">
+         <variables>
+            <var name="fileType">fastMon</var>
+         </variables>
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
+         <depends>
+            <after process="doChunk.fastMon" status="DONE"/>
+         </depends>
+      </process>
+
+      <process name="registerFastMon">
+         <variables>
+            <var name="parentProces">mergeFastMon</var>
+            <var name="dataType">histogram</var>
+         </variables>
+         <script><![CDATA[
+%(registerBody)s
+            ]]>
+         </script>
+         <depends>
+            <after process="mergeFastMon" status="SUCCESS" />
          </depends>
       </process>
  
@@ -81,12 +105,12 @@
       </process>
 
       <process name="registerDigiMon">
+         <variables>
+            <var name="parentProces">mergeDigiMon</var>
+            <var name="dataType">histogram</var>
+         </variables>
          <script><![CDATA[
-            dataType = "MC"
-            logicalPath = pipeline.getProcessInstance("mergeDigiMon").getVariable("REGISTER_LOGIPATH")
-            filePath = pipeline.getProcessInstance("mergeDigiMon").getVariable("REGISTER_FILEPATH")
-            attributes = "tstart=0:tstop=120"
-            datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
+%(registerBody)s
             ]]>
          </script>
          <depends>
@@ -105,12 +129,12 @@
       </process>
 
       <process name="registerRecon">
+         <variables>
+            <var name="parentProces">mergeReconChunks</var>
+            <var name="dataType">RECON</var>
+         </variables>
          <script><![CDATA[
-            dataType = "MC"
-            logicalPath = pipeline.getProcessInstance("mergeReconChunks").getVariable("REGISTER_LOGIPATH")
-            filePath = pipeline.getProcessInstance("mergeReconChunks").getVariable("REGISTER_FILEPATH")
-            attributes = "tstart=0:tstop=120"
-            datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
+%(registerBody)s
             ]]>
          </script>
          <depends>
@@ -129,12 +153,12 @@
       </process>
 
       <process name="registerCal">
+         <variables>
+            <var name="parentProces">mergeCalChunks</var>
+            <var name="dataType">cal</var>
+         </variables>
          <script><![CDATA[
-            dataType = "MC"
-            logicalPath = pipeline.getProcessInstance("mergeCalChunks").getVariable("REGISTER_LOGIPATH")
-            filePath = pipeline.getProcessInstance("mergeCalChunks").getVariable("REGISTER_FILEPATH")
-            attributes = "tstart=0:tstop=120"
-            datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
+%(registerBody)s
             ]]>
          </script>
          <depends>
@@ -170,12 +194,12 @@
       </process>
 
       <process name="registerFT1">
+         <variables>
+            <var name="parentProces">makeFT1</var>
+            <var name="dataType">FT1</var>
+         </variables>
          <script><![CDATA[
-            dataType = "MC"
-            logicalPath = pipeline.getProcessInstance("makeFT1").getVariable("REGISTER_LOGIPATH")
-            filePath = pipeline.getProcessInstance("makeFT1").getVariable("REGISTER_FILEPATH")
-            attributes = "tstart=0:tstop=120"
-            datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
+%(registerBody)s
             ]]>
          </script>
          <depends>
@@ -184,12 +208,12 @@
       </process>
 
       <process name="registerMerit">
+         <variables>
+            <var name="parentProces">mergeMeritChunks</var>
+            <var name="dataType">merit</var>
+         </variables>
          <script><![CDATA[
-            dataType = "MC"
-            logicalPath = pipeline.getProcessInstance("mergeMeritChunks").getVariable("REGISTER_LOGIPATH")
-            filePath = pipeline.getProcessInstance("mergeMeritChunks").getVariable("REGISTER_FILEPATH")
-            attributes = "tstart=0:tstop=120"
-            datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
+%(registerBody)s
             ]]>
          </script>
          <depends>
@@ -208,12 +232,12 @@
       </process>
 
       <process name="registerReconMon">
+         <variables>
+            <var name="parentProces">mergeReconMon</var>
+            <var name="dataType">histogram</var>
+         </variables>
          <script><![CDATA[
-            dataType = "MC"
-            logicalPath = pipeline.getProcessInstance("mergeReconMon").getVariable("REGISTER_LOGIPATH")
-            filePath = pipeline.getProcessInstance("mergeReconMon").getVariable("REGISTER_FILEPATH")
-            attributes = "tstart=0:tstop=120"
-            datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
+%(registerBody)s
             ]]>
          </script>
          <depends>
@@ -232,12 +256,12 @@
       </process>
 
       <process name="registerSvacTuple">
+         <variables>
+            <var name="parentProces">mergeSvacTuple</var>
+            <var name="dataType">svac</var>
+         </variables>
          <script><![CDATA[
-            dataType = "MC"
-            logicalPath = pipeline.getProcessInstance("mergeSvacTuple").getVariable("REGISTER_LOGIPATH")
-            filePath = pipeline.getProcessInstance("mergeSvacTuple").getVariable("REGISTER_FILEPATH")
-            attributes = "tstart=0:tstop=120"
-            datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
+%(registerBody)s
             ]]>
          </script>
          <depends>
@@ -251,38 +275,40 @@
 ]]>
          </script>
          <depends>
-            <after process="doChunk.cleanupCrumbs" status="SUCCESS"/>
-            <after process="doChunk.digiReport" status="SUCCESS"/>
-            <after process="doChunk.reconReport" status="SUCCESS"/>
-            <after process="doChunk.svacTuple" status="SUCCESS"/>
+            <after process="doChunk.checkChunk" status="SUCCESS"/>
+            <after process="exportFT1" status="SUCCESS"/>
             <after process="registerCal" status="SUCCESS"/>
             <after process="registerFT1" status="SUCCESS"/>
             <after process="registerDigi" status="SUCCESS"/>
+            <after process="registerFastMon" status="SUCCESS"/>
             <after process="registerDigiMon" status="SUCCESS"/>
             <after process="registerMerit" status="SUCCESS"/>
             <after process="registerRecon" status="SUCCESS"/>
             <after process="registerReconMon" status="SUCCESS"/>
             <after process="registerSvacTuple" status="SUCCESS"/>
          </depends>
+         <createsSubtasks>
+            <subtask>cleanupCompleteRun</subtask>
+         </createsSubtasks>
       </process>
 
-      <process name="cleanupChunks">
-         <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
-         <depends>
-            <after process="checkRun" status="SUCCESS"/>
-         </depends>
-      </process>
 
-      <process name="updateRunStatus">
-         <script>
-            <![CDATA[
+      <task name="cleanupCompleteRun" version="%(L1Version)s" type="Data">
+
+         <process name="cleanupChunks">
+            <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
+         </process>
+
+         <process name="updateRunStatus">
+            <script>
+               <![CDATA[
 %(retireScriptBody)s
 ]]>
-         </script>
-         <depends>
-            <after process="checkRun" status="SUCCESS"/>
-         </depends>
-      </process>
+            </script>
+         </process>
+
+      </task>
+
 
       <task name="doChunk" version="%(L1Version)s" type="Data">
 
@@ -293,6 +319,10 @@
 
          <process name="digitization">
             <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
+         </process>
+ 
+         <process name="fastMon">
+            <job executable="${L1ProcROOT}/fastMon.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
          </process>
  
          <process name="digiMon">
@@ -389,6 +419,17 @@
                <after process="mergeReconCrumbs" status="SUCCESS"/>
                <after process="mergeCalCrumbs" status="SUCCESS"/>
                <after process="mergeMeritCrumbs" status="SUCCESS"/>
+            </depends>
+         </process>
+
+         <process name="checkChunk">
+            <job executable="${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
+            <depends>
+               <after process="fastMon" status="SUCCESS"/>
+               <after process="cleanupCrumbs" status="SUCCESS"/>
+               <after process="digiReport" status="SUCCESS"/>
+               <after process="reconReport" status="SUCCESS"/>
+               <after process="svacTuple" status="SUCCESS"/>
             </depends>
          </process>
 

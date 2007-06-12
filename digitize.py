@@ -8,8 +8,10 @@ import fileNames
 import runner
 import stageFiles
 
-files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'], \
-                        environ['CHUNK_ID'])
+dlId = os.environ['DOWNLINK_ID']
+runId = os.environ['RUNID']
+chunkId = os.environ['CHUNK_ID']
+files = fileNames.setup(dlId, runId, chunkId)
 
 staged = stageFiles.StageSet()
 environ['EVTFILE'] = staged.stageIn(environ['EVTFILE'])

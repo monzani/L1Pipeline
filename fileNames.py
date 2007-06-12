@@ -5,8 +5,10 @@
 
 import glob
 import os
+import time
 
 import config
+# import glastTime
 import procDirs
 
 
@@ -48,10 +50,17 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=True):
             pass
         pass
 
-    dlHead = join(runHead, dlId)
+    # # This doesn't work, it gets generated differently for different
+    # # processes in the same stream.  So makeFT1 can't find the merit file.
+    # timestamp = '%09d' % int(glastTime.met())
+    # dlHead = join(runHead, timestamp, dlId)
+    
+    dlHead = join(runHead, dlId) 
     files['run']['head'] = dlHead
     files['run']['digi'] = os.path.join(dirs['run'], \
                                         join(dlHead, 'digi.root'))
+    files['run']['fastMon'] = os.path.join(dirs['run'], \
+                                           join(dlHead, 'fastHist.root'))
     files['run']['digiMon'] = os.path.join(dirs['run'], \
                                            join(dlHead, 'digiHist.root'))
     files['run']['recon'] = os.path.join(dirs['run'], \
@@ -76,6 +85,8 @@ def _setupChunk(dirs, chunkId, runHead):
     files['head'] = chunkHead
     files['digi'] = os.path.join(dirs['chunk'], \
                                  join(chunkHead, 'digi.root'))
+    files['fastMon'] = os.path.join(dirs['fastMon'], \
+                                    join(chunkHead, 'hist.root'))
     files['digiMon'] = os.path.join(dirs['digiMon'], \
                                     join(chunkHead, 'hist.root'))
     files['recon'] = os.path.join(dirs['chunk'], \
