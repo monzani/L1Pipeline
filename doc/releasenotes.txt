@@ -37,7 +37,9 @@ Expand registration script at install time instead of hardcoding it
 repeatedly, and set dataset type correctly.
 Add checkChunk process.
 Put updateRunStatus and cleanupChunks in a subtask.
-Lock run directory in before findChunks, unlock in checkRun (not finished).
-Add FastMon (not done).
+Lock run directory in before findChunks, unlock in checkRun.
+Add FastMon.
+Add digi and recon end-of-run monitoring.
+Add digi and recon trending.
 Work on ASP launch code.
 -------------------------------------------

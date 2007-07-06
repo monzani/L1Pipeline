@@ -60,9 +60,13 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=True):
     files['run']['digi'] = os.path.join(dirs['run'], \
                                         join(dlHead, 'digi.root'))
     files['run']['fastMon'] = os.path.join(dirs['run'], \
-                                           join(dlHead, 'fastHist.root'))
+                                           join(dlHead, 'fastMon.root'))
     files['run']['digiMon'] = os.path.join(dirs['run'], \
-                                           join(dlHead, 'digiHist.root'))
+                                           join(dlHead, 'digiMon.root'))
+    files['run']['digiEor'] = os.path.join(dirs['run'], \
+                                           join(dlHead, 'digiEor.root'))
+    files['run']['digiTdMon'] = os.path.join(dirs['digiTdMon'], \
+                                             join(dlHead, 'digiTd.root'))
     files['run']['recon'] = os.path.join(dirs['run'], \
                                          join(dlHead, 'recon.root'))
     files['run']['merit'] = os.path.join(dirs['run'], \
@@ -72,7 +76,11 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=True):
     files['run']['cal'] = os.path.join(dirs['run'], \
                                        join(dlHead, 'cal.root'))
     files['run']['reconMon'] = os.path.join(dirs['run'],
-                                            join(dlHead, 'reconHist.root'))
+                                            join(dlHead, 'reconMon.root'))
+    files['run']['reconEor'] = os.path.join(dirs['run'], \
+                                            join(dlHead, 'reconEor.root'))
+    files['run']['reconTdMon'] = os.path.join(dirs['reconTdMon'], \
+                                              join(dlHead, 'reconTd.root'))
     files['run']['svac'] = os.path.join(dirs['run'], join(dlHead, 'svac.root'))
     
     
@@ -86,9 +94,11 @@ def _setupChunk(dirs, chunkId, runHead):
     files['digi'] = os.path.join(dirs['chunk'], \
                                  join(chunkHead, 'digi.root'))
     files['fastMon'] = os.path.join(dirs['fastMon'], \
-                                    join(chunkHead, 'hist.root'))
+                                    join(chunkHead, 'fastMon.root'))
     files['digiMon'] = os.path.join(dirs['digiMon'], \
                                     join(chunkHead, 'hist.root'))
+    files['digiEor'] = os.path.join(dirs['digiEor'], \
+                                    join(chunkHead, 'digiEor.root'))
     files['recon'] = os.path.join(dirs['chunk'], \
                                   join(chunkHead, 'recon.root'))
     files['merit'] = os.path.join(dirs['chunk'], \
@@ -97,10 +107,15 @@ def _setupChunk(dirs, chunkId, runHead):
                                 join(chunkHead, 'cal.root'))
     files['reconMon'] = os.path.join(dirs['reconMon'], \
                                      join(chunkHead, 'hist.root'))
-    files['svac'] = os.path.join(dirs['chunk'], \
+    files['reconEor'] = os.path.join(dirs['reconEor'], \
+                                     join(chunkHead, 'reconEor.root'))
+    files['svac'] = os.path.join(dirs['svac'], \
                                  join(chunkHead, 'svac.root'))
-    files['svacHist'] = os.path.join(dirs['chunk'], \
+    files['svacHist'] = os.path.join(dirs['svac'], \
                                      join(chunkHead, 'svacHist.root'))
+
+    files['event'] = os.environ.get('EVTFILE')
+    # will not be set if we're not at chunk level
 
     return files
 

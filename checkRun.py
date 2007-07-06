@@ -6,6 +6,8 @@
 """
 
 import os
+import sys
+import time
 
 import fileNames
 import lockFile
@@ -18,6 +20,8 @@ files = fileNames.setup(dlId, runId)
 
 rootDir = files['dirs']['run']
 
+print >> sys.stderr, \
+      "Attempting to remove lock from [%s] at [%s]" % (rootDir, time.ctime())
 lockFile.unlockDir(rootDir, runId, dlId)
 
 # Here we need to check that all the chunk locks (created by the halfpipe,

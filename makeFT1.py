@@ -1,33 +1,42 @@
 #!/usr/bin/env python
 
-from os import system,environ
+import os
 import sys
+
+import config
 
 import fileNames
 import runner
 import stageFiles
-import pipeline
-import config
+#import pipeline
+import registerPrep
 
-files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'])
+files = fileNames.setup(os.environ['DOWNLINK_ID'], os.environ['RUNID'])
 
 staged = stageFiles.StageSet()
 
-stagedMeritFile = staged.stageIn(files['run']['merit'])
-Ft1FilePath = files['run']['ft1']
+if staged.staged:
+    workDir = staged.stageDir
+else:
+    workDir = files['dirs']['run']
+    pass
 
-cmd = 'ST='+config.ST+';export ST;PATH=${ST}/bin:${PATH};PFILES='+config.PFILES+';export PFILES;makeFT1 rootFile='+stagedMeritFile+' fitsFile='+Ft1FilePath
+app = config.apps['makeFT1']
+
+stagedMeritFile = staged.stageIn(files['run']['merit'])
+realFt1File = files['run']['ft1']
+stagedFt1File = staged.stageOut(realFt1File)
+
+cmd = '''
+cd %(workDir)s
+%(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s event_classifier=Pass4_Classifier
+''' % locals()
 
 status = runner.run(cmd)
 
 staged.finish()
 
-fileType='ft1'
-templist=Ft1FilePath.split('/')
-Ft1FileName=templist[len(templist)-1]
-logipath='/L1Proc/'+fileType+'/'+Ft1FileName
-print "logipath=",logipath,"filepath=",Ft1FilePath
-pipeline.setVariable('REGISTER_LOGIPATH', logipath)
-pipeline.setVariable('REGISTER_FILEPATH', Ft1FilePath)
+fileType = 'FT1'
+registerPrep.prep(fileType, realFt1File)
 
 sys.exit(status)

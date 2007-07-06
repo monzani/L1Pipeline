@@ -16,19 +16,16 @@ import runner
 import config
 
 import fileNames
-import pipeline
+#import pipeline
+import registerPrep
 import stageFiles
 import rootFiles
 
 def finalize(status):
     inStage.finish()
     # outStage.finish()
-    templist=realOutFile.split('/')
-    outFileName=templist[len(templist)-1]
-    logipath='/L1Proc/'+fileType+'/'+outFileName
-    # print "logipath=",logipath,"filepath=",outFile
-    pipeline.setVariable('REGISTER_LOGIPATH', logipath)
-    pipeline.setVariable('REGISTER_FILEPATH', realOutFile)
+    
+    registerPrep.prep(fileType, realOutFile)
     sys.exit(status)
 
 fileType = environ['fileType']
@@ -101,7 +98,7 @@ if numInFiles == 1:
 outFile = outStage.stageOut(realOutFile)
 
 
-if fileType in ['digiMon', 'reconMon']:
+if fileType in ['digiEor', 'digiMon', 'reconEor', 'reconMon', 'fastMon']:
     environ['LD_LIBRARY_PATH'] = ""
     environ['CMTPATH'] = config.cmtPath
     inFileString = ''.join([' -i %s ' % ff for ff in inFiles])
@@ -111,7 +108,7 @@ if fileType in ['digiMon', 'reconMon']:
 elif fileType in ['digi', 'recon']:
     treeName = string.capitalize(fileType)
     rootFiles.concatenate_prune(outFile, inFiles, treeName)
-    cmd = ''
+    cmd = 'echo Nothing to do here.'
 
 else:
     environ['LD_LIBRARY_PATH'] = config.haddRootSys+"/lib:"+environ['LD_LIBRARY_PATH']

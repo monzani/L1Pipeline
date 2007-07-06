@@ -1,0 +1,25 @@
+As i mentioned, when you have to run this thing many times it might be convenient to specify things on the command line,
+and having a joboptions file that has the minimum info (which is always the same for all runs); which is the monconfig file.
+
+
+I attached the joboptions file i am using, and below you find the command i use to run the show for the digi files.
+
+
+runStrip_t.exe -b 10 -j /nfs/farm/g/glast/u33/dpaneque/DataMonitoring/
+MartinCode/VersionCVS_2007_06_28/svac/Monitor/mk062007/src/jobOptions_batch_test.xml -d /nfs/farm/g/glast/u33/dpaneque/
+DataMonitoring/Data/LinksToDigiFiles_From_2006_11_01_To_2006_11_14/digitization-licos-v3r8p2_077012902_digi_DIGI.root -o
+/nfs/farm/g/glast/u33/dpaneque/DataMonitoring/Results/OutBatch/Test3/newtest/Trending_Run_077012902 -g
+/nfs/farm/g/glast/u33/dpaneque/DataMonitoring/Results/OutBatch/Test3/html/Trending_Run_077012902.html
+
+Here you have
+ -b   timebin
+-j   joboptions file
+-d  digi file
+-o output root file (complete name will be created by the code)
+-g output html file (complete name will be created by the code)
+
+If you want to run on recon, then you also need to specify the recon run as -r reconfile.root.
+
+If you specify everything on the command line anyway then you don't need the -j option. Instead do -c <monconfigfile.xml>.
+The directory for the shared libraries is specified with -w <directory>.
+It can be done this way if that's preferred to a job options file.

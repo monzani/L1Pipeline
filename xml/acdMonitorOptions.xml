@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<!-- job optin file for runMuonCalib_ped.exe -->
+
+<ifile>
+
+  <section name="parameters"> input parameters for ACD pedestal and gain calibration
+    <item name="outputPrefix" value="acd"> output file prefix </item>
+    <item name="configFile" value="/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/EM-tasks/builds/Monitor/acdemi6/src/monconfigacd.xml"> output file prefix </item>
+    <item name="htmlFile" value="alarms.html"> html output file </item>
+  </section>
+</ifile>

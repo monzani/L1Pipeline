@@ -28,10 +28,6 @@ files = fileNames.setup(dlId, runId)
 
 rootDir = files['dirs']['run']
 
-# Oops.  This should be in a separate script, to be used as an
-# LSF preexecute script for this job.
-lockFile.lockDir(rootDir, runId, dlId)
-
 ## Find chunk files
 # this is a contract with the halfpipe
 chunkGlob = path.join(runDir, '*.evt')

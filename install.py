@@ -9,8 +9,8 @@ import config
 
 #os.chdir(config.L1ProcROOT) # ?
 
-taskFile = 'L1Proc-' + config.L1Version + '.xml'
-template = 'L1Proc.xml.template'
+taskFile = os.path.join(config.L1Xml, 'L1Proc-' + config.L1Version + '.xml')
+template = os.path.join(config.L1Xml, 'L1Proc.xml.template')
 
 configuration = dict(config.__dict__)
 

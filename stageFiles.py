@@ -6,6 +6,9 @@
 
 import os
 import shutil
+import sys
+
+import runner
 
 try:
     defaultStageArea = os.environ['STAGEDIR']
@@ -53,10 +56,15 @@ class StageSet:
             pass
         self.stageDir = os.path.join(stageArea, stageName)
 
+        print >> sys.stderr, \
+              "Attempting to set up staging area [%s]" \
+              % self.stageDir
         try:
             os.mkdir(self.stageDir)
             self.staged = True
+            print >> sys.stderr, "Success!"
         except OSError:
+            print >> sys.stderr, "Failed!"
             self.staged = False
             # override some methods so they don't have to be full of
             # tedious condition checks
@@ -76,10 +84,16 @@ class StageSet:
         @return name of the staged file
         """
         stageName = self.stagedName(inFile)
+        print >> sys.stderr, \
+              "Attempting to stage [%s] to [%s]" \
+              % (inFile, stageName)
         try:
             shutil.copy(inFile, stageName)
             self.inFiles[inFile] = stageName
+            print >> sys.stderr, "Success!"
+            os.system('ls -l %s/*' % self.stageDir)
         except OSError:
+            print >> sys.stderr, "Failed!  Forging ahead with unstaged file."
             stageName = inFile
         return stageName
     
@@ -89,6 +103,9 @@ class StageSet:
         @return name of the staged file
         """
         stageName = self.stagedName(outFile)
+        print >> sys.stderr, \
+              "Expecting output file [%s], will move to [%s]" \
+              % (stageName, outFile)
         self.outFiles[outFile] = stageName
         return stageName
 
@@ -96,13 +113,23 @@ class StageSet:
         """@brief Delete staged inputs, move outputs to final destination.
         """
         for stageName in self.inFiles.values():
+            print >> sys.stderr, "Deleting [%s]" % stageName
             os.remove(stageName)
             pass
         for realName, stageName in self.outFiles.items():
+            print >> sys.stderr, "Moving [%s] to [%s]" % (stageName, realName)
             shutil.move(stageName, realName)
             pass
         if self.staged:
-            os.rmdir(self.stageDir)
+            print >> sys.stderr, "Deleting [%s]" % self.stageDir
+            try:
+                os.rmdir(self.stageDir)
+            except OSError:
+                print >> sys.stderr, "Terrible hack for staging issue! FIX ME!"
+                os.system('ls -l %s/*' % self.stageDir)
+                runner.run('rm -rf %s' % self.stageDir)
+                pass
+            pass
         return
     
     def stagedName(self, fileName):

@@ -9,4 +9,4 @@ parentPI = pipeline.getProcessInstance(parentProcess)
 logicalPath = parentPI.getVariable("REGISTER_LOGIPATH")
 filePath = parentPI.getVariable("REGISTER_FILEPATH")
 attributes = "tstart=0:tstop=120"
-datacatalog.registerDataset(dataType,logicalPath,filePath,attributes)
+datacatalog.registerDataset(dataType, logicalPath, filePath, attributes)

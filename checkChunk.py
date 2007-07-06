@@ -19,5 +19,13 @@ runId = os.environ['RUNID']
 chunkId = os.environ['CHUNK_ID']
 files = fileNames.setup(dlId, runId, chunkId)
 
-runDir = files['dirs']['run']
-lockFile.removeLock(runDir, chunkId)
+# # This is probably not the right location for these locks.
+# # They need to be put in a run-level (independent of downlink)
+# # directory by the halfpipe.
+# # The location has not yet been determined.
+# # When it is, it will affect this process and checkRun
+# runDir = files['dirs']['run']
+# # This ain't the right code, either.
+# lockFile.removeLock(runDir, chunkId)
+
+# Remove event file?

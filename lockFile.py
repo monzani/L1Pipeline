@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 """@brief Functions for dealing with lockfiles.
 
@@ -6,6 +7,7 @@
 
 import os
 import socket
+import sys
 import time
 
 class LockedError(EnvironmentError):
@@ -13,13 +15,13 @@ class LockedError(EnvironmentError):
 
 def lockFileName(base):
     """Make up a name for a lockfile."""
-    lockName = '.'.join(base, 'lock')
+    lockName = '.'.join((base, 'lock'))
     return lockName
 
 
 def uniqName():
     """Make up a filename that is likely to be unique."""
-    uniq = "%d@%s\n" % (os.getpid(), socket.gethostname())
+    uniq = '@'.join((`os.getpid()`, socket.gethostname(), `int(time.time())`))
     return uniq
 
 
@@ -85,7 +87,8 @@ def lockDir(directory, base, id):
     f.write('%r\n' % lockData(id))
     f.close()
 
-    os.close(fd)
+    # # Apparently closing f also closes fd
+    # os.close(fd)
 
     # Here is the actual locking operation.  This is advertized as atomic even
     # on NFS.
@@ -103,7 +106,7 @@ def lockDir(directory, base, id):
     # broken.  Let the operator deal with it.  If it turns out to be a
     # problem, we can add that check later.
 
-    # Don't need this anymore.
+    # Don't need unigFile anymore.
     os.unlink(uniqFile)
 
     return
@@ -126,3 +129,16 @@ def unlockDir(directory, base, id):
     os.unlink(lockFile)
 
     return
+
+
+if __name__ == "__main__":
+    import config
+    import fileNames
+    dlId = os.environ['DOWNLINK_ID']
+    runId = os.environ['RUNID']
+    files = fileNames.setup(dlId, runId)
+    runDir = files['dirs']['run']
+    print >> sys.stderr, "Attempting to lock directory [%s] at [%s]" % \
+          (runDir, time.ctime())
+    lockDir(runDir, runId, dlId)
+    pass

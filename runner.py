@@ -21,4 +21,4 @@ def run(cmd):
     print >> sys.stderr, "Status was %s at %s" % (status, time.asctime())
     print >> sys.stderr, 'Wall time: %f' % (wstop - wstart)
     print >> sys.stderr, '----------------  end commentary  ----------------'
-    return status
+    return status >> 8

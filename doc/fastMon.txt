@@ -1,0 +1,21 @@
+Date: Mon, 16 Apr 2007 16:10:06 +0200
+From: "[ISO-8859-15] Carmelo Sgrò" <carmelo.sgro@pi.infn.it>
+To: Anders Borgland <borgland@slac.stanford.edu>, focke@slac.stanford.edu
+Cc: Luca Baldini <luca.baldini@pi.infn.it>,
+    Johan Bregeon <johan.bregeon@pi.infn.it>
+Subject: FastMon on the pipeline
+
+Hi,
+we made some modifications on the Fast Mon code to make it run from a shell script.
+Now you can run from any directory you want, provided that you set two environmental variables:
+FAST_MON_DIR : points to the directory that contains the code and it's used to write the iterators classes
+XML_CONFIG_DIR : points to the directory of the default xml configuration files
+
+It works on lat-hobbit3, with the right environment (i.e. sourcing /afs/slac/u/gl/carmelo/FastMonTest/isoc.cshrc).
+An example of shell script is in /afs/slac/u/gl/carmelo/FastMonTest/runFastMon.sh
+
+I have no idea about what is needed to run it on the pipeline, can you try and tell us if it works (I don't think so) or
+where it crashes?
+
+Ciao
+Carmelo

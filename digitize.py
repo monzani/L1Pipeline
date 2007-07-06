@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from os import system, environ
+import os
 import sys
 
 import config
@@ -14,8 +14,8 @@ chunkId = os.environ['CHUNK_ID']
 files = fileNames.setup(dlId, runId, chunkId)
 
 staged = stageFiles.StageSet()
-environ['EVTFILE'] = staged.stageIn(environ['EVTFILE'])
-environ['digiChunkFile'] = staged.stageOut(files['chunk']['digi'])
+os.environ['EVTFILE'] = staged.stageIn(os.environ['EVTFILE'])
+os.environ['digiChunkFile'] = staged.stageOut(files['chunk']['digi'])
 
 status = runner.run(config.apps['digi']+' '+config.digiOptions)
 

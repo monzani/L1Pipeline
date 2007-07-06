@@ -9,6 +9,7 @@ import re
 import sys
 
 import config
+import runner
 
 def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=False):
     """@brief Setup data directory names.  And create the directories.
@@ -33,6 +34,14 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=False):
     runBase = os.path.join(config.L1Dir, runId)
     runDir = os.path.join(runBase, config.glastVersion)
     dirs['run'] = runDir
+
+    digiTdMonDir = os.path.join(runDir, 'digiTdMon',
+                                config.packages['Monitor']['version'])
+    dirs['digiTdMon'] = digiTdMonDir
+    reconTdMonDir = os.path.join(runDir, 'reconTdMon',
+                                 config.packages['Monitor']['version'])
+    dirs['reconTdMon'] = reconTdMonDir
+
     if chunkId is not None:
         _setupChunk(dirs, chunkId)
         if crumbId is not None:
@@ -54,10 +63,24 @@ def _setupChunk(dirs, chunkId):
     runDir = dirs['run']
     chunkDir = os.path.join(runDir, chunkId)
     dirs['chunk'] = chunkDir
-    digiMonDir = os.path.join(chunkDir, 'digiMon', config.packages['TestReport']['version'])
+    fastMonDir = os.path.join(chunkDir, 'fastMon',
+                              config.packages['FastMon']['version'])
+    dirs['fastMon'] = fastMonDir
+    digiMonDir = os.path.join(chunkDir, 'digiMon',
+                              config.packages['TestReport']['version'])
     dirs['digiMon'] = digiMonDir
-    reconMonDir = os.path.join(chunkDir, 'reconMon', config.packages['TestReport']['version'])
+    digiEorDir = os.path.join(chunkDir, 'digiEor',
+                              config.packages['Monitor']['version'])
+    dirs['digiEor'] = digiEorDir
+    reconMonDir = os.path.join(chunkDir, 'reconMon',
+                               config.packages['TestReport']['version'])
     dirs['reconMon'] = reconMonDir
+    reconEorDir = os.path.join(chunkDir, 'reconEor',
+                               config.packages['Monitor']['version'])
+    dirs['reconEor'] = reconEorDir
+    svacDir = os.path.join(chunkDir, 'svac',
+                           config.packages['EngineeringModelRoot']['version'])
+    dirs['svac'] = svacDir
     return
 
 
@@ -86,7 +109,9 @@ def mkdir(path):
         if os.path.isdir(path):
             return
         raise os.error
-    os.makedirs(path)
+    # Race condition here!
+    # os.makedirs(path)
+    runner.run('mkdir -p %s' % path)
     return
 
 
