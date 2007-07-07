@@ -13,8 +13,8 @@ import fileNames
 import lockFile
 import pipeline
 
-dlId = environ['DOWNLINK_ID']
-runId = environ['RUNID']
+dlId = os.environ['DOWNLINK_ID']
+runId = os.environ['RUNID']
 
 files = fileNames.setup(dlId, runId)
 

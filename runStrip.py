@@ -76,6 +76,9 @@ status = runner.run(cmd)
 
 staged.finish()
 
-registerPrep.prep(fileType, realOutFile)
+if 'Td' in reportType:
+    # This is a trending report, at run level.  Has to be registered.
+    registerPrep.prep(fileType, realOutFile)
+    pass
 
 sys.exit(status)

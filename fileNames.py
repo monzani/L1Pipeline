@@ -94,7 +94,7 @@ def _setupChunk(dirs, chunkId, runHead):
     files['digi'] = os.path.join(dirs['chunk'], \
                                  join(chunkHead, 'digi.root'))
     files['fastMon'] = os.path.join(dirs['fastMon'], \
-                                    join(chunkHead, 'fastMon.root'))
+                                    join(chunkHead, 'processed.root'))
     files['digiMon'] = os.path.join(dirs['digiMon'], \
                                     join(chunkHead, 'hist.root'))
     files['digiEor'] = os.path.join(dirs['digiEor'], \

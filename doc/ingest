@@ -1,0 +1,13 @@
+The following are the scripts to invoke: turns out they are shell scripts. Hope this is ok:
+
+ 
+
+/afs/slac.stanford.edu/g/glast/ground/bin/ingestRecoTrending
+
+/afs/slac.stanford.edu/g/glast/ground/bin/ingestDigiTrending
+
+ 
+
+ 
+
+They take a single argument, the full path of the file to process.

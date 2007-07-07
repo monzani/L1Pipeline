@@ -126,7 +126,7 @@ class StageSet:
                 os.rmdir(self.stageDir)
             except OSError:
                 print >> sys.stderr, "Terrible hack for staging issue! FIX ME!"
-                os.system('ls -l %s/*' % self.stageDir)
+                os.system('ls -lah %s/*' % self.stageDir)
                 runner.run('rm -rf %s' % self.stageDir)
                 pass
             pass

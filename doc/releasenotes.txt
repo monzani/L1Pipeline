@@ -43,3 +43,10 @@ Add digi and recon end-of-run monitoring.
 Add digi and recon trending.
 Work on ASP launch code.
 -------------------------------------------
+
+1.7
+-----------------
+Add ingestion of trending outputs.
+Use checkRun batch job (not script).
+Get merge configs for EOR, TDMon, FastMon.
+Generate histograms (not just trees) in FastMon, and register them.

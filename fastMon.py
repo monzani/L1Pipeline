@@ -26,6 +26,7 @@ commonPy = os.path.join(common['root'], 'python')
 
 os.environ.update(package['env'])
 
+dmRoot = config.L1Cmt
 fastMonDir = files['dirs']['fastMon']
 os.environ['FAST_MON_DIR'] = fastMonDir
 
@@ -34,11 +35,18 @@ setup = package['setup']
 app = config.apps['fastMon']
 nEvents = sys.maxint
 
+newLatexDir = config.installBin
+
 cmd = '''
+export DATAMONITORING_ROOT=%(dmRoot)s
+#export PATH=%(newLatexDir)s:${PATH}
 %(extra)s
 source %(setup)s
 export PYTHONPATH=${PYTHONPATH}:%(fastMonDir)s:%(commonPy)s
-%(app)s -n %(nEvents)d -o %(outFile)s -p %(inFile)s
+echo ____________________ environment ________________________
+printenv
+echo ____________________ environment ________________________
+%(app)s -v -n %(nEvents)d -o %(outFile)s -prf %(inFile)s
 ''' % locals()
 
 status = runner.run(cmd)

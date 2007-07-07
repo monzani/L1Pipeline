@@ -11,10 +11,17 @@ import stageFiles
 
 staged = stageFiles.StageSet()
 
-reportType = os.environ(reportType)
+dlId = os.environ['DOWNLINK_ID']
+runId = os.environ['RUNID']
+reportType = os.environ['reportType']
+
 app = config.ingestor[reportType]
 
-cmd = ''
+files = fileNames.setup(dlId, runId)
+realInFile = files['run'][reportType]
+stagedInFile = staged.stageIn(realInFile)
+
+cmd = '%(app)s %(stagedInFile)s' % locals()
 
 status = runner.run(cmd)
 

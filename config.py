@@ -5,7 +5,7 @@
 
 import os
 
-L1Version = "1.6"
+L1Version = "1.7"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 #L1ProcROOT = '/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline'
@@ -35,6 +35,8 @@ groundRoot = os.path.join(glastRoot, 'ground')
 glastSetup = os.path.join(groundRoot, 'scripts', 'group.sh')
 #
 cmtConfig = 'rh9_gcc32opt'
+installArea = os.path.join(L1Cmt, 'InstallArea', cmtConfig)
+installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
@@ -109,7 +111,7 @@ packages['FastMon']['app'] = os.path.join(packages['FastMon']['root'],
 packages['FastMon']['env'] = {
     'XML_CONFIG_DIR': os.path.join(packages['FastMon']['root'], 'xml'),
     }
-packages['FastMon']['extraSetup'] = 'eval `/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/isoc isoc_env --add-env=isoc --add-env=root`'
+packages['FastMon']['extraSetup'] = 'eval `/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/isoc isoc_env --add-env=flightops --add-env=root`'
 
 packages['Monitor']['app'] = os.path.join(packages['Monitor']['bin'],
                                           'runStrip_t.exe')
@@ -138,9 +140,9 @@ apps = {
 
 monitorOptions = {
     'digiEor': os.path.join(packages['Monitor']['configDir'],
-                            'monconfig_v21_no3D.xml'),
+                            'monconfig_digi_end2end.xml'),
     'digiTdMon': os.path.join(packages['Monitor']['configDir'],
-                              'monconfig_v21_no3D.xml'),
+                              'monconfig_digi_end2end.xml'),
     'reconEor': os.path.join(packages['Monitor']['configDir'],
                              'monconfig_recon_v2_no3D.xml'),
     'reconTdMon': os.path.join(packages['Monitor']['configDir'],
@@ -155,7 +157,22 @@ monitorOutFiles = {
     'reconTdMon': 'tripe',
     }
 
+mergeConfigs = {
+    'digiEor': os.path.join(packages['Monitor']['configDir'],
+                            'MergeHistos_e2e_digi.txt'),
+    'digiMon': os.path.join(L1ProcROOT, 'merge.txt'),
+    'fastMon': os.path.join(L1ProcROOT, 'fast_mon_config.txt'),
+    'reconEor': os.path.join(packages['Monitor']['configDir'],
+                             'MergeHistos_e2e_recon.txt'),
+    'reconMon': os.path.join(L1ProcROOT, 'merge.txt'),
+    }
+
 tdBin = 10
+
+ingestor = {
+    'digiTdMon': '/afs/slac.stanford.edu/g/glast/ground/bin/ingestDigiTrending',
+    'reconTdMon': '/afs/slac.stanford.edu/g/glast/ground/bin/ingestRecoTrending',
+    }
 
 joiner = '*'
 

@@ -23,3 +23,23 @@ If you want to run on recon, then you also need to specify the recon run as -r r
 If you specify everything on the command line anyway then you don't need the -j option. Instead do -c <monconfigfile.xml>.
 The directory for the shared libraries is specified with -w <directory>.
 It can be done this way if that's preferred to a job options file.
+
+
+Digi: monconfig_v21_no3D.xml
+Recon: monconfig_recon_v2_no3D.xml
+
+They work both for the 10 sec. average and for the end-run histograms.
+
+> > -1-
+> > monconfig_digi_end2end.xml:
+> > monconfig file for digi monitoring quantities, REDUCED sample
+
+
+
+> > -2-
+> > MergeHistos_e2e_digi.txt, MergeHistos_e2e_recon.txt:
+> > Configuration files used to merge the histograms (end-run histos)
+> > with macro svac/TestReport/v3r7p1/rh9_gcc32opt/MergeHistFiles.exe
+I put them together with the monitoring stuff, since
+the histograms that are created are defined in the monconfig files.
+svac/Monitor/XXXX/src/

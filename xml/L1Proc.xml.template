@@ -86,6 +86,16 @@
          </depends>
       </process>
  
+      <process name="ingestDigiTd">
+         <variables>
+            <var name="reportType">digiTdMon</var>
+         </variables>
+         <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
+         <depends>
+            <after process="digiTdMon" status="SUCCESS" />
+         </depends>
+      </process>
+ 
        <process name="mergeDigiEor">
          <variables>
             <var name="fileType">digiEor</var>
@@ -213,6 +223,16 @@
          <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
          <depends>
             <after process="mergeReconChunks" status="SUCCESS" />
+         </depends>
+      </process>
+ 
+      <process name="ingestReconTd">
+         <variables>
+            <var name="reportType">reconTdMon</var>
+         </variables>
+         <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(standardQueue)s "  allocationGroup="%(allocationGroup)s" />
+         <depends>
+            <after process="reconTdMon" status="SUCCESS" />
          </depends>
       </process>
  
@@ -359,10 +379,7 @@
       </process>
 
       <process name="checkRun">
-         <script><![CDATA[
-%(placeHolderBody)s            
-]]>
-         </script>
+         <job executable="${L1ProcROOT}/checkRun.py" batchOptions=" -q %(quickQueue)s "  allocationGroup="%(allocationGroup)s" />
          <depends>
             <after process="doChunk.checkChunk" status="SUCCESS"/>
             <after process="exportFT1" status="SUCCESS"/>
@@ -372,10 +389,12 @@
             <after process="registerFastMon" status="SUCCESS"/>
             <after process="registerDigiMon" status="SUCCESS"/>
             <after process="registerDigiEor" status="SUCCESS"/>
+            <after process="ingestDigiTd" status="SUCCESS"/>
             <after process="registerMerit" status="SUCCESS"/>
             <after process="registerRecon" status="SUCCESS"/>
             <after process="registerReconMon" status="SUCCESS"/>
             <after process="registerReconEor" status="SUCCESS"/>
+            <after process="ingestReconTd" status="SUCCESS"/>
             <after process="registerSvacTuple" status="SUCCESS"/>
          </depends>
          <createsSubtasks>

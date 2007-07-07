@@ -16,7 +16,6 @@ import runner
 import config
 
 import fileNames
-#import pipeline
 import registerPrep
 import stageFiles
 import rootFiles
@@ -102,7 +101,8 @@ if fileType in ['digiEor', 'digiMon', 'reconEor', 'reconMon', 'fastMon']:
     environ['LD_LIBRARY_PATH'] = ""
     environ['CMTPATH'] = config.cmtPath
     inFileString = ''.join([' -i %s ' % ff for ff in inFiles])
-    cmd = "source " + config.glastSetup + " ;  source " + config.packages['TestReport']['setup'] + "  ; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:" + config.glastExt + "/xerces/2.6.0/lib:" + config.glastLocation + "/lib:" + config.rootSys + "/lib ; export LD_LIBRARY_PATH ; " + config.apps['reportMerge'] + " " + inFileString + " -o " + outFile + " -c $L1ProcROOT/merge.txt" + " ; chgrp -R glast-pipeline " + config.L1Disk
+    mergeConfig = config.mergeConfigs[fileType]
+    cmd = "source " + config.glastSetup + " ;  source " + config.packages['TestReport']['setup'] + "  ; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:" + config.glastExt + "/xerces/2.6.0/lib:" + config.glastLocation + "/lib:" + config.rootSys + "/lib ; export LD_LIBRARY_PATH ; " + config.apps['reportMerge'] + " " + inFileString + " -o " + outFile + " -c " + mergeConfig + " ; chgrp -R glast-pipeline " + config.L1Disk
 
 
 elif fileType in ['digi', 'recon']:
