@@ -50,3 +50,19 @@ Add ingestion of trending outputs.
 Use checkRun batch job (not script).
 Get merge configs for EOR, TDMon, FastMon.
 Generate histograms (not just trees) in FastMon, and register them.
+-------------------------------------------
+
+1.8 2007/07/07
+-----------------
+Common v1r0p1
+FastMon v0r7p2
+Monitor mk20070707
+TestReport TRdp20070706
+EngineeringModelRoot v3r0p3
+pipelineDatasets v0r3
+
+Fix fastMon.py.  FastMon fails to produce output if the number of events is
+not restricted.  Set limit to 50K.
+
+Attempting to use this for ETE2.
+-------------------------------------------

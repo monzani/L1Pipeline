@@ -5,7 +5,7 @@
 
 import os
 
-L1Version = "1.7"
+L1Version = "1.8"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 #L1ProcROOT = '/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline'
@@ -79,7 +79,7 @@ packages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'dp20070706',
+        'version': 'mk20070707',
         },
     'TestReport': {
         'repository': 'svac',
@@ -160,11 +160,11 @@ monitorOutFiles = {
 mergeConfigs = {
     'digiEor': os.path.join(packages['Monitor']['configDir'],
                             'MergeHistos_e2e_digi.txt'),
-    'digiMon': os.path.join(L1ProcROOT, 'merge.txt'),
+    'digiMon': os.path.join(L1ProcROOT, 'merge_digi.txt'),
     'fastMon': os.path.join(L1ProcROOT, 'fast_mon_config.txt'),
     'reconEor': os.path.join(packages['Monitor']['configDir'],
                              'MergeHistos_e2e_recon.txt'),
-    'reconMon': os.path.join(L1ProcROOT, 'merge.txt'),
+    'reconMon': os.path.join(L1ProcROOT, 'merge_recon.txt'),
     }
 
 tdBin = 10
