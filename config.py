@@ -5,7 +5,7 @@
 
 import os
 
-L1Version = "1.8"
+L1Version = "1.9"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 #L1ProcROOT = '/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline'
@@ -71,11 +71,11 @@ stBinDir = os.path.join(ST, 'bin')
 packages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v1r0p1',
+        'version': 'v1r1p0',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v0r7p2',
+        'version': 'v1r0p0',
         },
     'Monitor': {
         'repository': 'svac',

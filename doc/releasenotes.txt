@@ -66,3 +66,9 @@ not restricted.  Set limit to 50K.
 
 Attempting to use this for ETE2.
 -------------------------------------------
+
+1.9
+-----------------
+Common v1r1p0
+FastMon v1r0p0
+Fixes fastmon '-n' bug, and another.

@@ -45,8 +45,6 @@ extra = package['extraSetup']
 setup = package['setup']
 app = config.apps['fastMon']
 
-nEvents = 50000
-
 newLatexDir = config.installBin
 
 cmd = '''
@@ -56,7 +54,7 @@ export PATH=%(newLatexDir)s:${PATH}
 %(extra)s
 source %(setup)s
 export PYTHONPATH=${PYTHONPATH}:%(fastMonDir)s:%(commonPy)s
-%(app)s -v -n %(nEvents)s -o %(brokenName)s -d %(workDir)s -p %(inFile)s
+%(app)s -v -o %(brokenName)s -d %(workDir)s -p %(inFile)s
 ls -lahR
 ''' % locals()
 
