@@ -145,30 +145,6 @@
          </depends>
       </process>
  
-      <process name="mergeDigiMon">
-         <variables>
-            <var name="fileType">digiMon</var>
-         </variables>
-         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "   />
-         <depends>
-            <after process="doChunk.digiMon" status="DONE" />
-         </depends>
-      </process>
-
-      <process name="registerDigiMon">
-         <variables>
-            <var name="parentProcess">mergeDigiMon</var>
-            <var name="dataType">HISTOGRAM</var>
-         </variables>
-         <script><![CDATA[
-%(registerBody)s
-            ]]>
-         </script>
-         <depends>
-            <after process="mergeDigiMon" status="SUCCESS" />
-         </depends>
-      </process>
-
       <process name="mergeReconChunks">
          <variables>
             <var name="fileType">recon</var>
@@ -333,30 +309,6 @@
          </depends>
       </process>
  
-      <process name="mergeReconMon">
-         <variables>
-            <var name="fileType">reconMon</var>
-         </variables>
-         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "   />
-         <depends>
-            <after process="doChunk.reconMon" status="DONE" />
-         </depends>
-      </process>
-
-      <process name="registerReconMon">
-         <variables>
-            <var name="parentProcess">mergeReconMon</var>
-            <var name="dataType">HISTOGRAM</var>
-         </variables>
-         <script><![CDATA[
-%(registerBody)s
-            ]]>
-         </script>
-         <depends>
-            <after process="mergeReconMon" status="SUCCESS" />
-         </depends>
-      </process>
-
       <process name="mergeSvacTuple">
          <variables>
             <var name="fileType">svac</var>
@@ -390,12 +342,10 @@
             <after process="registerFT1" status="SUCCESS"/>
             <after process="registerDigi" status="SUCCESS"/>
             <after process="registerFastMon" status="SUCCESS"/>
-            <after process="registerDigiMon" status="SUCCESS"/>
             <after process="registerDigiEor" status="SUCCESS"/>
             <after process="ingestDigiTd" status="SUCCESS"/>
             <after process="registerMerit" status="SUCCESS"/>
             <after process="registerRecon" status="SUCCESS"/>
-            <after process="registerReconMon" status="SUCCESS"/>
             <after process="registerReconEor" status="SUCCESS"/>
             <after process="ingestReconTd" status="SUCCESS"/>
             <after process="registerSvacTuple" status="SUCCESS"/>
@@ -441,26 +391,6 @@
             <job executable="${L1ProcROOT}/fastMon.py" batchOptions=" -q %(standardQueue)s "   />
          </process>
  
-         <process name="digiMon">
-            <variables>
-               <var name="reportType">digi</var>
-            </variables>
-            <job executable="${L1ProcROOT}/monitorDigi.py" batchOptions=" -q %(standardQueue)s "   />
-            <depends>
-               <after process="digitization" status="SUCCESS" />
-            </depends>
-         </process>
-
-         <process name="digiReport">
-            <variables>
-               <var name="reportType">digi</var>
-            </variables>
-            <job executable="${L1ProcROOT}/digiReport.py" batchOptions=" -q %(quickQueue)s "   />
-            <depends>
-               <after process="digiMon" status="SUCCESS" />
-            </depends>
-         </process>
-
          <process name="digiEor">
             <variables>
                <var name="reportType">digiEor</var>
@@ -511,26 +441,6 @@
             </depends>
          </process>
 
-         <process name="reconMon">
-            <variables>
-               <var name="reportType">recon</var>
-            </variables>
-            <job executable="${L1ProcROOT}/monitorDigi.py" batchOptions=" -q %(standardQueue)s "   />
-            <depends>
-               <after process="mergeReconCrumbs" status="SUCCESS" />
-            </depends>
-         </process>
-
-         <process name="reconReport">
-            <variables>
-               <var name="reportType">recon</var>
-            </variables>
-            <job executable="${L1ProcROOT}/digiReport.py" batchOptions=" -q %(quickQueue)s "   />
-            <depends>
-               <after process="reconMon" status="SUCCESS" />
-            </depends>
-         </process>
-
          <process name="reconEor">
             <variables>
                <var name="reportType">reconEor</var>
@@ -563,8 +473,8 @@
             <depends>
                <after process="fastMon" status="SUCCESS"/>
                <after process="cleanupCrumbs" status="SUCCESS"/>
-               <after process="digiReport" status="SUCCESS"/>
-               <after process="reconReport" status="SUCCESS"/>
+               <after process="digiEor" status="SUCCESS"/>
+               <after process="reconEor" status="SUCCESS"/>
                <after process="svacTuple" status="SUCCESS"/>
             </depends>
          </process>

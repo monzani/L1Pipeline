@@ -93,3 +93,8 @@ Enable export of FT1, with proper(ish) name.
 Use MET at time of run lock creation as version of run-level files.
 Generate dynamic code for Monitor at install time.
 Add some missing dependencies in XML.
+-------------------------------------------
+
+1.11
+-----------------
+Get rid of TestReport-based monitoring.

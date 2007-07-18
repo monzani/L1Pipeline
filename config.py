@@ -5,21 +5,15 @@
 
 import os
 
-L1Version = "1.10"
+L1Version = "1.11"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
-#L1ProcROOT = '/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline'
-#L1ProcROOT = '/nfs/slac/g/svac/focke/cvs/L1Pipeline'
 L1Xml = os.path.join(L1ProcROOT, 'xml')
 
 LATCalibRoot = '/afs/slac/g/glast/ground/releases/calibrations/'
 L1Cmt = os.path.join(installRoot, 'builds')
-#L1Cmt = '/nfs/slac/g/svac/focke/builds'
 
 L1Disk = '/nfs/farm/g/glast/u40/L1'
-#L1Disk = '/nfs/slac/g/svac/focke/L1'
-#L1Disk = '/nfs/farm/g/glast/u33/wai/pipeline_tests/L1'
-#L1Disk = 'L1DISK'
 L1Dir = os.path.join(L1Disk, 'rootData')
 
 # uncomment for test mode
@@ -61,14 +55,11 @@ os.environ['CMTPATH'] = cmtPath
 digiOptions = os.path.join(L1ProcROOT, 'digi.jobOpt')
 reconOptions = os.path.join(L1ProcROOT, 'recon.jobOpt')
 
-#rootSys = os.path.join(glastExt, 'ROOT/v5.10.00/root')
-#haddRootSys = os.path.join(glastExt, 'ROOT/v5.13.1/root')
 rootSys = os.path.join(glastExt, 'ROOT/v5.14.00d/root')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
 
-#ST="/nfs/farm/g/glast/u09/builds/rh9_gcc32opt/ScienceTools/ScienceTools-v7r6p1"
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-v9"
 PFILES="."
 stBinDir = os.path.join(ST, 'bin')
