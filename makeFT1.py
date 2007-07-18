@@ -36,6 +36,8 @@ status = runner.run(cmd)
 
 staged.finish()
 
+os.symlink(os.path.basename(realFt1File), files['run']['ft1Export'])
+
 fileType = 'FT1'
 registerPrep.prep(fileType, realFt1File)
 

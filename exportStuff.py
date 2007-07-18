@@ -30,9 +30,10 @@ import runner
 import stageFiles
 
 # Where do we send the data?
+# Should select this based on test or prod mode.
 #send = ""             # noop
-send = "--send LISOC" # loopback test
-#send = "--send GSSC"  # the real deal
+#send = "--send LISOC" # loopback test
+send = "--send GSSC"  # the real deal
 
 staged = stageFiles.StageSet()
 

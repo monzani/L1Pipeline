@@ -5,10 +5,13 @@
 
 import glob
 import os
+import sys
 import time
 
 import config
-# import glastTime
+
+import glastTime
+import lockFile
 import procDirs
 
 
@@ -50,12 +53,29 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=True):
             pass
         pass
 
+
     # # This doesn't work, it gets generated differently for different
     # # processes in the same stream.  So makeFT1 can't find the merit file.
     # timestamp = '%09d' % int(glastTime.met())
     # dlHead = join(runHead, timestamp, dlId)
+
+    runDir = files['dirs']['run']
+    try:
+        # This picks up the time (MET) at which the run lock was created,
+        # just before starting findChunks.  So it should be fixed for
+        # a given run/downlink combo, and should sort into time order
+        # (of file creation time), which should put the most-complete
+        # version of a file highest.
+        lockData = lockFile.readLock(runDir, runId, dlId)
+        timeStamp = glastTime.timeStamp(lockData['time'])
+        dlHead = join(runHead, timeStamp)
+    except:
+        # Use downlink ID as a fallback.
+        print >> sys.stderr, "Problem reading lock from [%s]." % runDir
+        dlHead = join(runHead, dlId)
+        pass
+
     
-    dlHead = join(runHead, dlId) 
     files['run']['head'] = dlHead
     files['run']['digi'] = os.path.join(dirs['run'], \
                                         join(dlHead, 'digi.root'))
@@ -84,6 +104,8 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=True):
     files['run']['svac'] = os.path.join(dirs['run'], join(dlHead, 'svac.root'))
     
     
+    files['run']['ft1Export'] = os.path.join(dirs['run'], ft1ExportName(dlId))
+
     return files
 
 
@@ -94,7 +116,7 @@ def _setupChunk(dirs, chunkId, runHead):
     files['digi'] = os.path.join(dirs['chunk'], \
                                  join(chunkHead, 'digi.root'))
     files['fastMon'] = os.path.join(dirs['fastMon'], \
-                                    join(chunkHead, 'processed.root'))
+                                    '.'.join([chunkHead, 'processed.root']))
     files['digiMon'] = os.path.join(dirs['digiMon'], \
                                     join(chunkHead, 'hist.root'))
     files['digiEor'] = os.path.join(dirs['digiEor'], \
@@ -164,3 +186,17 @@ def findPieces(fileType, dlId, runId, chunkId=None):
     inFiles.sort(key=os.path.basename)
    
     return inFiles
+
+
+def ft1ExportName(dlId):
+    day = dlId[:-3]
+    contact = dlId[-3:]
+    
+    version = '%.2d' % 0 # FIX THIS
+
+    lD = len(day)
+    if lD < 6:
+        day = '0' * (6 - lD) + day # nasty hack
+
+    name = 'gll_evsum_%s_c%s_v%s.fit' % (day, contact, version)
+    return name

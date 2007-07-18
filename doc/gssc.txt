@@ -1,0 +1,10 @@
+The naming convention for the level1 data files to be delivered to GSSC is documented in
+http://confluence.slac.stanford.edu/download/attachments/6947/Science_DP_ICD.pdf?version=1
+ 
+ 
+For the LS-001 event-summary file (which I think is FT1), the name format is:
+ 
+gll_evsum_yymmdd_cn_vxx.fit
+ 
+where "cn" is the "contact number".   When we did GRT5 I convinced Tom Stephens that one digit of contact wasn't enough, so
+I think they'll accept "cnnn" now.  You should be able to create the yymmdd_cnnn part by divvying up the DOWNLINK_ID...

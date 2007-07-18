@@ -117,7 +117,7 @@ def unlockDir(directory, base, id):
 
     # Open and read lock file.  Die if it isn't there, or other wierdness.
     try:
-        data = eval(open(lockFile).read())
+        data = readLock(directory, base, id)
     except OSError:
         raise LockedError, "Can't open lockfile %s." % lockFile
 
@@ -129,6 +129,11 @@ def unlockDir(directory, base, id):
     os.unlink(lockFile)
 
     return
+
+def readLock(directory, base, id):
+    lockFile = os.path.join(directory, lockFileName(base))
+    data = eval(open(lockFile).read())
+    return data
 
 
 if __name__ == "__main__":

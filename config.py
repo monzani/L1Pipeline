@@ -5,7 +5,7 @@
 
 import os
 
-L1Version = "1.9"
+L1Version = "1.10"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 #L1ProcROOT = '/nfs/farm/g/glast/u33/wai/pipeline_tests/svac/L1Pipeline'
@@ -21,6 +21,11 @@ L1Disk = '/nfs/farm/g/glast/u40/L1'
 #L1Disk = '/nfs/farm/g/glast/u33/wai/pipeline_tests/L1'
 #L1Disk = 'L1DISK'
 L1Dir = os.path.join(L1Disk, 'rootData')
+
+# uncomment for test mode
+# should have a software switch for this, possibly finding out
+# from the pipeline whethter we're running on (test or dev) or prod server
+#L1Dir = os.path.join(L1Dir, 'test')
 
 afsStage = "/afs/slac/g/glast/ground/PipelineStaging"
 
@@ -71,15 +76,15 @@ stBinDir = os.path.join(ST, 'bin')
 packages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v1r1p0',
+        'version': 'v1r2p0',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v1r0p0',
+        'version': 'v1r1p0',
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'mk20070707',
+        'version': 'mk20070716',
         },
     'TestReport': {
         'repository': 'svac',
@@ -91,7 +96,7 @@ packages = {
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
-        'version': 'v0r3',
+        'version': 'v0r4',
         },
     }
 
@@ -140,13 +145,13 @@ apps = {
 
 monitorOptions = {
     'digiEor': os.path.join(packages['Monitor']['configDir'],
-                            'monconfig_digi_end2end.xml'),
+                            'monconfig_digi_end2end_histos.xml'),
     'digiTdMon': os.path.join(packages['Monitor']['configDir'],
-                              'monconfig_digi_end2end.xml'),
+                              'monconfig_digi_end2end_trending.xml'),
     'reconEor': os.path.join(packages['Monitor']['configDir'],
-                             'monconfig_recon_v2_no3D.xml'),
+                             'monconfig_recon_end2end_histos.xml'),
     'reconTdMon': os.path.join(packages['Monitor']['configDir'],
-                               'monconfig_recon_v2_no3D.xml'),
+                               'monconfig_recon_end2end_trending.xml'),
     }
 
 monitorOutFiles = {
@@ -183,11 +188,16 @@ libraryPath = ':'.join((os.path.join(L1Cmt, 'lib'), \
                         rootPath))
 
 # LSF stuff
-allocationGroup = 'glastdata'
+# allocationGroup = 'glastdata' # don't use this anymore, policies have changed
+# allocationGroup="%(allocationGroup)s" # ripped from XML template
 #
 quickQueue = 'express'
 reconQueue = 'medium'
-standardQueue = 'glastdataq'
+#standardQueue = 'glastdataq'
+standardQueue = 'long'
+slowQueue = 'xlong'
+#
+reconMergeScratch = " -R &quot;select[scratch&gt;70]&quot; "
 
 if __name__ == "__main__":
     print L1Dir

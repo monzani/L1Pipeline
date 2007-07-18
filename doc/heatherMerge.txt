@@ -1,0 +1,17 @@
+In the meantime, are you willing/able to use the merged output file I generated, by doing the following?
+
+{
+
+  gSystem->Load("libcommonRootData.so");
+  gSystem->Load("libdigiRootData.so");
+
+  gROOT->Reset();
+
+
+  TChain *ch = new TChain("Digi");
+  Long64_t maxPerFile=500000000000LL;
+  TTree::SetMaxTreeSize(maxPerFile);
+  ch->Add("*.root");
+  ch->Merge("output.root", "fast");
+
+}

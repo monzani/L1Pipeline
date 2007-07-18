@@ -43,3 +43,9 @@ They work both for the 10 sec. average and for the end-run histograms.
 I put them together with the monitoring stuff, since
 the histograms that are created are defined in the monconfig files.
 svac/Monitor/XXXX/src/
+
+The new options are
+-q for compile only
+-p for running on the old shared libraries without any writing to the -w directory.
+The new tag is svac/Monitor mk20070712 .
+

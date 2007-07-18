@@ -61,6 +61,8 @@ else:
 
 tdBin = config.tdBin
 
+codeDir = config.packages['Monitor']['bin']
+
 # CHANGE THIS!
 tmpHead = 'temp'
 tmpOut = tmpHead + '_time.root'
@@ -68,7 +70,7 @@ htmlHead = 'html'
 
 cmd = """cd %(workDir)s
 source %(setup)s
-%(app)s -b %(tdBin)s -c %(options)s -d %(digiFile)s %(recon)s -o %(tmpHead)s -g %(htmlHead)s -w %(workDir)s || exit 1
+%(app)s -b %(tdBin)s -c %(options)s -d %(digiFile)s %(recon)s -o %(tmpHead)s -g %(htmlHead)s -w %(codeDir)s -p || exit 1
 mv %(tmpOut)s %(outFile)s
 """ % locals()
 

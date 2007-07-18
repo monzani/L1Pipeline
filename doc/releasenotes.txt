@@ -72,3 +72,24 @@ Attempting to use this for ETE2.
 Common v1r1p0
 FastMon v1r0p0
 Fixes fastmon '-n' bug, and another.
+-------------------------------------------
+
+1.10 2007-07-18
+-----------------
+Common v1r2p0
+FastMon v1r1p0
+Monitor mk20070716
+TestReport TRdp20070706
+EngineeringModelRoot v3r0p3
+pipelineDatasets v0r4
+
+Specify scratch>70 for mergeReconChunks.
+Don't specify LSF allocation group.
+Run most things on long, digi & recon on medium.
+Don't specifiy 32-bit hosts.
+Set MALLOC_CHECK_=0.
+
+Enable export of FT1, with proper(ish) name.
+Use MET at time of run lock creation as version of run-level files.
+Generate dynamic code for Monitor at install time.
+Add some missing dependencies in XML.
