@@ -53,5 +53,5 @@ source %(setup)s
 
     continue
 
-for fileName in os.listdir(workDir): os.remove(fileName)
+for fileName in os.listdir(workDir): os.remove(os.path.join(workDir, fileName))
 os.rmdir(workDir)

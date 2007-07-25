@@ -97,4 +97,18 @@ Add some missing dependencies in XML.
 
 1.11
 -----------------
+EM v8r1109p10
+ROOT v5.14.00g
+Monitor mk20070719
+TestReport v3r7p4 (only used for histo merge code)
+EngineeringModelRoot v3r1p2
+
 Get rid of TestReport-based monitoring.
+Put actual queue names in XML, instead of vars from config.py
+Fiddle queues & priorities to try to favor FT1/FT2
+Add test mode:
+	automatically entered if we are not on prod server
+	write data to test location
+	use LISOC loopback for FTx exports
+Make svacTuple depend on success of all crumbs in the chunk
+Do crumb cleanup

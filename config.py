@@ -4,6 +4,21 @@
 """
 
 import os
+import sys
+
+try:
+    mode = os.environ['PIPELINE_MODE']
+except KeyError:
+    print >> sys.stderr, 'PIPELINE_MODE not set, trying fallback.'
+    pfa = os.environ['PIPELINE_FROMADDRESS']
+    mode = pfa.split('@')[0].split('-')[1].lower()
+    pass
+if mode in ['prod']:
+    testMode = False
+else:
+    testMode = True
+    pass
+print >> sys.stderr, "Test mode: %s" % testMode
 
 L1Version = "1.11"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
@@ -16,10 +31,7 @@ L1Cmt = os.path.join(installRoot, 'builds')
 L1Disk = '/nfs/farm/g/glast/u40/L1'
 L1Dir = os.path.join(L1Disk, 'rootData')
 
-# uncomment for test mode
-# should have a software switch for this, possibly finding out
-# from the pipeline whethter we're running on (test or dev) or prod server
-#L1Dir = os.path.join(L1Dir, 'test')
+if testMode: L1Dir = os.path.join(L1Dir, 'test')
 
 afsStage = "/afs/slac/g/glast/ground/PipelineStaging"
 
@@ -39,8 +51,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
-glastVersion = 'v8r1109p7'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
+glastVersion = 'v8r1109p10'
 releaseName = 'EngineeringModel'
 gleamPackage = 'LatIntegration'
 #
@@ -55,7 +67,7 @@ os.environ['CMTPATH'] = cmtPath
 digiOptions = os.path.join(L1ProcROOT, 'digi.jobOpt')
 reconOptions = os.path.join(L1ProcROOT, 'recon.jobOpt')
 
-rootSys = os.path.join(glastExt, 'ROOT/v5.14.00d/root')
+rootSys = os.path.join(glastExt, 'ROOT/v5.14.00g/root')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
@@ -75,15 +87,15 @@ packages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'mk20070716',
+        'version': 'mk20070719',
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'TRdp20070706',
+        'version': 'v3r7p4',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
-        'version': 'v3r0p3',
+        'version': 'v3r1p2',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',

@@ -25,15 +25,19 @@ This will require keeping track either of which runs have been sent or
 
 import os
 
+import config
+
 import fileNames
 import runner
 import stageFiles
 
 # Where do we send the data?
-# Should select this based on test or prod mode.
-#send = ""             # noop
-#send = "--send LISOC" # loopback test
-send = "--send GSSC"  # the real deal
+if config.testMode:
+    # send = ""             # noop
+    send = "--send LISOC" # loopback test
+else:
+    send = "--send GSSC"  # the real deal
+pass
 
 staged = stageFiles.StageSet()
 

@@ -26,7 +26,7 @@
    </prerequisites>
 
    <process name="findRunDirs">
-      <job executable="${L1ProcROOT}/findRunDirs.py" batchOptions=" -q %(quickQueue)s "   />
+      <job executable="${L1ProcROOT}/findRunDirs.py" batchOptions=" -q express "   />
       <createsSubtasks>
          <subtask>doRun</subtask>
          <subtask>cleanupIncompleteRun</subtask>
@@ -34,7 +34,7 @@
    </process>
 
    <process name="ft2Gaps">
-      <job executable="${L1ProcROOT}/ft2Db.py" batchOptions=" -q %(quickQueue)s "   />
+      <job executable="${L1ProcROOT}/ft2Db.py" batchOptions=" -q express "   />
    </process>
 
    <task name="doRun" version="%(L1Version)s" type="Data">
@@ -47,7 +47,7 @@
       </prerequisites>
 
       <process name="findChunks">
-         <job executable="${L1ProcROOT}/findChunks.py" batchOptions=" -q %(quickQueue)s -E ${L1ProcROOT}/lockFile.py "   />
+         <job executable="${L1ProcROOT}/findChunks.py" batchOptions=" -q express -E ${L1ProcROOT}/lockFile.py "   />
          <createsSubtasks>
             <subtask>doChunk</subtask>
          </createsSubtasks>
@@ -57,7 +57,7 @@
          <variables>
             <var name="fileType">digi</var>
          </variables>
-         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "   />
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium -sp 100 "   />
          <depends>
             <after process="doChunk.digitization" status="DONE"/>
          </depends>
@@ -81,7 +81,7 @@
          <variables>
             <var name="reportType">digiTdMon</var>
          </variables>
-         <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(standardQueue)s "   />
+         <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q long "   />
          <depends>
             <after process="mergeDigi" status="SUCCESS" />
          </depends>
@@ -91,7 +91,7 @@
          <variables>
             <var name="reportType">digiTdMon</var>
          </variables>
-         <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(standardQueue)s "   />
+         <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q long "   />
          <depends>
             <after process="digiTdMon" status="SUCCESS" />
          </depends>
@@ -101,7 +101,7 @@
          <variables>
             <var name="fileType">digiEor</var>
          </variables>
-         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "   />
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium "   />
          <depends>
             <after process="doChunk.digiEor" status="DONE" />
          </depends>
@@ -125,7 +125,7 @@
          <variables>
             <var name="fileType">fastMon</var>
          </variables>
-         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "   />
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium "   />
          <depends>
             <after process="doChunk.fastMon" status="DONE"/>
          </depends>
@@ -149,7 +149,7 @@
          <variables>
             <var name="fileType">recon</var>
          </variables>
-         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(slowQueue)s %(reconMergeScratch)s "   />
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long %(reconMergeScratch)s "   />
          <depends>
             <after process="doChunk.mergeReconCrumbs" status="DONE"/>
          </depends>
@@ -173,7 +173,7 @@
          <variables>
             <var name="fileType">reconEor</var>
          </variables>
-         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "   />
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q short "   />
          <depends>
             <after process="doChunk.reconEor" status="DONE" />
          </depends>
@@ -197,7 +197,7 @@
          <variables>
             <var name="reportType">reconTdMon</var>
          </variables>
-         <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(standardQueue)s "   />
+         <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q long "   />
          <depends>
             <after process="mergeDigi" status="SUCCESS" />
             <after process="mergeReconChunks" status="SUCCESS" />
@@ -208,7 +208,7 @@
          <variables>
             <var name="reportType">reconTdMon</var>
          </variables>
-         <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(standardQueue)s "   />
+         <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q long "   />
          <depends>
             <after process="reconTdMon" status="SUCCESS" />
          </depends>
@@ -218,7 +218,7 @@
          <variables>
             <var name="fileType">cal</var>
          </variables>
-         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "   />
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "   />
          <depends>
             <after process="doChunk.mergeCalCrumbs" status="DONE"/>
          </depends>
@@ -242,21 +242,21 @@
          <variables>
             <var name="fileType">merit</var>
          </variables>
-         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "   />
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium -sp 100 "   />
          <depends>
             <after process="doChunk.mergeMeritCrumbs" status="DONE"/>
          </depends>
       </process>
 
       <process name="makeFT1">
-         <job executable="${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(standardQueue)s "   />
+         <job executable="${L1ProcROOT}/makeFT1.py" batchOptions=" -q medium -sp 100 "   />
          <depends>
             <after process="mergeMeritChunks" status="SUCCESS"/>
          </depends>
       </process>
 
       <process name="ft2Runs">
-         <job executable="${L1ProcROOT}/ft2Db.py" batchOptions=" -q %(standardQueue)s "   />
+         <job executable="${L1ProcROOT}/ft2Db.py" batchOptions=" -q express -sp 100 "   />
          <depends>
             <after process="mergeDigi" status="SUCCESS" />
             <after process="mergeMeritChunks" status="SUCCESS"/>
@@ -264,7 +264,7 @@
       </process>
 
       <process name="makeFT2">
-         <job executable="${L1ProcROOT}/makeFT2.py" batchOptions=" -q %(standardQueue)s "   />
+         <job executable="${L1ProcROOT}/makeFT2.py" batchOptions=" -q express -sp 100 "   />
          <depends>
             <after process="makeFT1" status="SUCCESS"/>
             <after process="ft2Runs" status="SUCCESS"/>
@@ -275,7 +275,7 @@
          <variables>
             <var name="fileType">ft1Export</var>
          </variables>
-         <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(quickQueue)s "   />
+         <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q express -sp 100 "   />
          <depends>
             <after process="makeFT2" status="SUCCESS" />
          </depends>
@@ -313,7 +313,7 @@
          <variables>
             <var name="fileType">svac</var>
          </variables>
-         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "   />
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "   />
          <depends>
             <after process="doChunk.svacTuple" status="DONE" />
          </depends>
@@ -334,7 +334,7 @@
       </process>
 
       <process name="checkRun">
-         <job executable="${L1ProcROOT}/checkRun.py" batchOptions=" -q %(quickQueue)s "   />
+         <job executable="${L1ProcROOT}/checkRun.py" batchOptions=" -q express "   />
          <depends>
             <after process="doChunk.checkChunk" status="SUCCESS"/>
             <after process="exportFT1" status="SUCCESS"/>
@@ -359,7 +359,7 @@
       <task name="cleanupCompleteRun" version="%(L1Version)s" type="Data">
 
          <process name="cleanupChunks">
-            <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(quickQueue)s "   />
+            <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q express "   />
          </process>
 
          <process name="updateRunStatus">
@@ -381,28 +381,28 @@
          </prerequisites>
 
          <process name="digitization">
-            <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q %(reconQueue)s "   />
+            <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q medium -sp 100 "   />
          </process>
  
          <process name="fastMon">
             <variables>
                <var name="reportType">fastMon</var>
             </variables>
-            <job executable="${L1ProcROOT}/fastMon.py" batchOptions=" -q %(standardQueue)s "   />
+            <job executable="${L1ProcROOT}/fastMon.py" batchOptions=" -q long "   />
          </process>
  
          <process name="digiEor">
             <variables>
                <var name="reportType">digiEor</var>
             </variables>
-            <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(standardQueue)s "   />
+            <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q medium "   />
             <depends>
                <after process="digitization" status="SUCCESS" />
             </depends>
          </process>
  
          <process name="setupCrumbs">
-            <job executable="${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q %(quickQueue)s "   />
+            <job executable="${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q express -sp 100 "   />
             <depends>
                <after process="digitization" status="SUCCESS" />
             </depends>
@@ -415,7 +415,7 @@
             <variables>
                <var name="fileType">cal</var>
             </variables>
-            <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "   />
+            <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium "   />
             <depends>
                <after process="doCrumb.recon" status="DONE"/>
             </depends>
@@ -425,7 +425,7 @@
             <variables>
                <var name="fileType">merit</var>
             </variables>
-            <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "   />
+            <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q short -sp 100 "   />
             <depends>
                <after process="doCrumb.recon" status="DONE"/>
             </depends>
@@ -435,7 +435,7 @@
             <variables>
                <var name="fileType">recon</var>
             </variables>
-            <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(standardQueue)s "   />
+            <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium "   />
             <depends>
                <after process="doCrumb.recon" status="DONE"/>
             </depends>
@@ -445,21 +445,22 @@
             <variables>
                <var name="reportType">reconEor</var>
             </variables>
-            <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(standardQueue)s "   />
+            <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q medium "   />
             <depends>
                <after process="mergeReconCrumbs" status="SUCCESS" />
             </depends>
          </process>
  
          <process name="svacTuple">
-            <job executable="${L1ProcROOT}/makeSvac.py" batchOptions=" -q %(standardQueue)s "   />
+            <job executable="${L1ProcROOT}/makeSvac.py" batchOptions=" -q long "   />
             <depends>
+               <after process="doCrumb.recon" status="SUCCESS"/>
                <after process="mergeReconCrumbs" status="SUCCESS" />
             </depends>
          </process>
 
          <process name="cleanupCrumbs">
-            <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(quickQueue)s "   />
+            <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q express "   />
             <depends>
                <after process="doCrumb.recon" status="SUCCESS"/>
                <after process="mergeReconCrumbs" status="SUCCESS"/>
@@ -469,7 +470,7 @@
          </process>
 
          <process name="checkChunk">
-            <job executable="${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(quickQueue)s "   />
+            <job executable="${L1ProcROOT}/checkChunk.py" batchOptions=" -q express "   />
             <depends>
                <after process="fastMon" status="SUCCESS"/>
                <after process="cleanupCrumbs" status="SUCCESS"/>
@@ -489,7 +490,7 @@
             </prerequisites>
 
             <process name="recon">
-               <job executable="${L1ProcROOT}/recon.py" batchOptions=" -q %(reconQueue)s "   />
+               <job executable="${L1ProcROOT}/recon.py" batchOptions=" -q medium -sp 100 "   />
             </process>
 
          </task>
@@ -506,7 +507,7 @@
       </prerequisites>
 
       <process name="cleanupChunks">
-         <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(quickQueue)s "   />
+         <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q express "   />
       </process>
 
       <process name="updateRunStatus">
