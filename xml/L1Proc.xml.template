@@ -460,7 +460,7 @@
          </process>
 
          <process name="cleanupCrumbs">
-            <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q express "   />
+            <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q short "   />
             <depends>
                <after process="doCrumb.recon" status="SUCCESS"/>
                <after process="mergeReconCrumbs" status="SUCCESS"/>

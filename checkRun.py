@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
 
 """@brief Make sure we are done processing a run/downlink.
 

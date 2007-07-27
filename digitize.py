@@ -1,9 +1,12 @@
-#!/usr/bin/env python
+#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
 
 import os
 import sys
 
 import config
+
+import GPLinit
+
 import fileNames
 import runner
 import stageFiles

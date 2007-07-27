@@ -1,3 +1,5 @@
+#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
+
 """@brief Configuration.
 
 @author W. Focke <focke@slac.stanford.edu>
@@ -6,13 +8,26 @@
 import os
 import sys
 
-try:
-    mode = os.environ['PIPELINE_MODE']
-except KeyError:
-    print >> sys.stderr, 'PIPELINE_MODE not set, trying fallback.'
-    pfa = os.environ['PIPELINE_FROMADDRESS']
-    mode = pfa.split('@')[0].split('-')[1].lower()
+mode = False
+if not mode:
+    try:
+        mode = os.environ['PIPELINE_MODE']
+    except KeyError:
+        print >> sys.stderr, 'PIPELINE_MODE not set.'
+        pass
     pass
+if not mode:
+    try:
+        pfa = os.environ['PIPELINE_FROMADDRESS']
+        mode = pfa.split('@')[0].split('-')[1]
+    except KeyError:
+        print >> sys.stderr, 'PIPELINE_FROMADDRESS not set.'
+        pass
+    pass
+if not mode:
+    mode = 'dev'
+    pass
+mode = mode.lower()
 if mode in ['prod']:
     testMode = False
 else:
@@ -20,7 +35,7 @@ else:
     pass
 print >> sys.stderr, "Test mode: %s" % testMode
 
-L1Version = "1.11"
+L1Version = "1.12"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
@@ -185,7 +200,8 @@ ingestor = {
 joiner = '*'
 
 rootPath = os.path.join(rootSys, 'lib')
-pythonPath = rootPath
+gplPath = '/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/GPLtools/prod/python'
+pythonPath = ':'.join([rootPath, gplPath])
 libraryPath = ':'.join((os.path.join(L1Cmt, 'lib'), \
                         os.path.join(glastLocation, 'lib'), \
                         rootPath))

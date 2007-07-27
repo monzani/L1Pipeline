@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
 
 """@brief Export completed runs to SSC.
 
@@ -26,6 +26,8 @@ This will require keeping track either of which runs have been sent or
 import os
 
 import config
+
+import GPLinit
 
 import fileNames
 import runner

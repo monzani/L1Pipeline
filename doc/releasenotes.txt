@@ -112,3 +112,14 @@ Add test mode:
 	use LISOC loopback for FTx exports
 Make svacTuple depend on success of all crumbs in the chunk
 Do crumb cleanup
+-------------------------------------------
+
+1.11
+-----------------
+EM v8r1109p12
+Use GPL2 version of stageFiles.py.
+Use ISOC installation of python2.5.
+Run crumb cleanup on short.
+config.py defaults to test mode (and doesn't crash) if pipeline env vars 
+aren't set.
+-------------------------------------------

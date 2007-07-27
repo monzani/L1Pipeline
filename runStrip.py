@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
 
 """@brief Make monitoring histograms.
 
@@ -9,6 +9,8 @@ import os
 import sys
 
 import config
+
+import GPLinit
 
 import fileNames
 #import pipeline
@@ -30,7 +32,7 @@ files = fileNames.setup(dlId, runId, chunkId)
 
 staged = stageFiles.StageSet()
 
-if staged.staged:
+if staged.setupOK:
     workDir = staged.stageDir
 else:
     workDir = files['dirs']['run']

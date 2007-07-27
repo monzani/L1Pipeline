@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
 
 """@brief Reconstruct a crumb.
 
@@ -10,6 +10,8 @@ here to handle staging and set JOBOPTIONS.
 
 from os import system, environ
 import sys
+
+import GPLinit
 
 import config
 import fileNames
