@@ -10,6 +10,7 @@
    <variables>
       <var name="CMTCONFIG">%(cmtConfig)s</var>
       <var name="GLAST_EXT">%(glastExt)s</var>
+      <var name="GPL2">%(GPL2)s</var>
       <var name="L1ProcROOT">%(L1ProcROOT)s</var>
       <var name="LATCalibRoot">%(LATCalibRoot)s</var>
       <var name="LD_LIBRARY_PATH">%(libraryPath)s</var>
@@ -77,26 +78,6 @@
          </depends>
       </process>
  
-      <process name="digiTdMon">
-         <variables>
-            <var name="reportType">digiTdMon</var>
-         </variables>
-         <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q long "   />
-         <depends>
-            <after process="mergeDigi" status="SUCCESS" />
-         </depends>
-      </process>
- 
-      <process name="ingestDigiTd">
-         <variables>
-            <var name="reportType">digiTdMon</var>
-         </variables>
-         <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q long "   />
-         <depends>
-            <after process="digiTdMon" status="SUCCESS" />
-         </depends>
-      </process>
- 
        <process name="mergeDigiEor">
          <variables>
             <var name="fileType">digiEor</var>
@@ -121,6 +102,26 @@
          </depends>
       </process>
 
+      <process name="mergeDigiTrend">
+         <variables>
+            <var name="fileType">digiTrend</var>
+         </variables>
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "   />
+         <depends>
+            <after process="doChunk.digiTrend" status="DONE" />
+         </depends>
+      </process>
+ 
+      <process name="ingestDigiTrend">
+         <variables>
+            <var name="reportType">digiTrend</var>
+         </variables>
+         <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q long "   />
+         <depends>
+            <after process="mergeDigiTrend" status="SUCCESS" />
+         </depends>
+      </process>
+ 
       <process name="mergeFastMon">
          <variables>
             <var name="fileType">fastMon</var>
@@ -193,24 +194,23 @@
          </depends>
       </process>
 
-      <process name="reconTdMon">
+      <process name="mergeReconTrend">
          <variables>
-            <var name="reportType">reconTdMon</var>
+            <var name="fileType">reconTrend</var>
          </variables>
-         <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q long "   />
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "   />
          <depends>
-            <after process="mergeDigi" status="SUCCESS" />
-            <after process="mergeReconChunks" status="SUCCESS" />
+            <after process="doChunk.reconTrend" status="DONE" />
          </depends>
       </process>
  
-      <process name="ingestReconTd">
+      <process name="ingestReconTrend">
          <variables>
-            <var name="reportType">reconTdMon</var>
+            <var name="reportType">reconTrend</var>
          </variables>
          <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q long "   />
          <depends>
-            <after process="reconTdMon" status="SUCCESS" />
+            <after process="mergeReconTrend" status="SUCCESS" />
          </depends>
       </process>
  
@@ -343,11 +343,11 @@
             <after process="registerDigi" status="SUCCESS"/>
             <after process="registerFastMon" status="SUCCESS"/>
             <after process="registerDigiEor" status="SUCCESS"/>
-            <after process="ingestDigiTd" status="SUCCESS"/>
+            <after process="ingestDigiTrend" status="SUCCESS"/>
             <after process="registerMerit" status="SUCCESS"/>
             <after process="registerRecon" status="SUCCESS"/>
             <after process="registerReconEor" status="SUCCESS"/>
-            <after process="ingestReconTd" status="SUCCESS"/>
+            <after process="ingestReconTrend" status="SUCCESS"/>
             <after process="registerSvacTuple" status="SUCCESS"/>
          </depends>
          <createsSubtasks>
@@ -394,6 +394,16 @@
          <process name="digiEor">
             <variables>
                <var name="reportType">digiEor</var>
+            </variables>
+            <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q medium "   />
+            <depends>
+               <after process="digitization" status="SUCCESS" />
+            </depends>
+         </process>
+ 
+         <process name="digiTrend">
+            <variables>
+               <var name="reportType">digiTrend</var>
             </variables>
             <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q medium "   />
             <depends>
@@ -451,6 +461,17 @@
             </depends>
          </process>
  
+         <process name="reconTrend">
+            <variables>
+               <var name="reportType">reconTrend</var>
+            </variables>
+            <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q medium "   />
+            <depends>
+               <after process="doCrumb.recon" status="SUCCESS"/>
+               <after process="mergeReconCrumbs" status="SUCCESS" />
+            </depends>
+         </process>
+ 
          <process name="svacTuple">
             <job executable="${L1ProcROOT}/makeSvac.py" batchOptions=" -q long "   />
             <depends>
@@ -475,7 +496,9 @@
                <after process="fastMon" status="SUCCESS"/>
                <after process="cleanupCrumbs" status="SUCCESS"/>
                <after process="digiEor" status="SUCCESS"/>
+               <after process="digiTrend" status="SUCCESS"/>
                <after process="reconEor" status="SUCCESS"/>
+               <after process="reconTrend" status="SUCCESS"/>
                <after process="svacTuple" status="SUCCESS"/>
             </depends>
          </process>

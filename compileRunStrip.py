@@ -20,7 +20,7 @@ codeDir = config.packages['Monitor']['bin']
 digiFile = os.path.join(config.L1ProcROOT, 'data', 'r0192524537_e00000000000000978971_digi.root')
 reconFile = os.path.join(config.L1ProcROOT, 'data', 'r0192524537_e00000000000000978971_recon.root')
 
-reportTypes = ['digiEor', 'digiTdMon', 'reconEor', 'reconTdMon']
+reportTypes = ['digiEor', 'digiTrend', 'reconEor', 'reconTrend']
 for reportType in reportTypes:
 
     options = config.monitorOptions[reportType]

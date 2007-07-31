@@ -35,7 +35,7 @@ else:
     pass
 print >> sys.stderr, "Test mode: %s" % testMode
 
-L1Version = "1.12"
+L1Version = "1.13"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
@@ -66,8 +66,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
-glastVersion = 'v8r1109p10'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume03')
+glastVersion = 'v8r1109p12'
 releaseName = 'EngineeringModel'
 gleamPackage = 'LatIntegration'
 #
@@ -76,7 +76,7 @@ glastLocation = os.path.join(releaseDir, glastName)
 gleam = os.path.join(glastLocation, 'bin', gleamPackage)
 cmtScript = os.path.join(glastLocation, releaseName, glastVersion, 'cmt',
                          'setup.sh') # do we need this?
-cmtPath = ':'.join((glastLocation, L1Cmt))
+cmtPath = ':'.join((L1Cmt, glastLocation, glastExt))
 os.environ['CMTPATH'] = cmtPath
 #
 digiOptions = os.path.join(L1ProcROOT, 'digi.jobOpt')
@@ -92,6 +92,10 @@ PFILES="."
 stBinDir = os.path.join(ST, 'bin')
 
 packages = {
+    'configData': {
+        'repository': '',
+        'version': 'v0r2p6',
+        },
     'Common': {
         'repository': 'dataMonitoring',
         'version': 'v1r2p0',
@@ -102,7 +106,7 @@ packages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'mk20070719',
+        'version': 'dp20070728',
         },
     'TestReport': {
         'repository': 'svac',
@@ -140,6 +144,8 @@ packages['Monitor']['app'] = os.path.join(packages['Monitor']['bin'],
                                           'runStrip_t.exe')
 packages['Monitor']['configDir'] = os.path.join(packages['Monitor']['root'],
                                                 'src')
+packages['Monitor']['trendMerge'] = os.path.join(packages['Monitor']['bin'],
+                                                 'treemerge.exe')
 
 packages['TestReport']['app'] = os.path.join(packages['TestReport']['bin'],
                                              'TestReport.exe')
@@ -159,25 +165,26 @@ apps = {
     'reconMon': packages['TestReport']['app'],
     'reportMerge': packages['TestReport']['mergeApp'],
     'svacTuple': packages['EngineeringModelRoot']['app'],
+    'trendMerge': packages['Monitor']['trendMerge']
     }
 
 monitorOptions = {
     'digiEor': os.path.join(packages['Monitor']['configDir'],
-                            'monconfig_digi_end2end_histos.xml'),
-    'digiTdMon': os.path.join(packages['Monitor']['configDir'],
-                              'monconfig_digi_end2end_trending.xml'),
+                            'monconfig_digi_v24_histos.xml'),
+    'digiTrend': os.path.join(packages['Monitor']['configDir'],
+                              'monconfig_digi_v24_trending.xml'),
     'reconEor': os.path.join(packages['Monitor']['configDir'],
-                             'monconfig_recon_end2end_histos.xml'),
-    'reconTdMon': os.path.join(packages['Monitor']['configDir'],
-                               'monconfig_recon_end2end_trending.xml'),
+                             'monconfig_recon_v2_histos.xml'),
+    'reconTrend': os.path.join(packages['Monitor']['configDir'],
+                               'monconfig_recon_v2_trending.xml'),
     }
 
 monitorOutFiles = {
     'fastMon': 'FASTMON',
     'digiEor': 'DIGIHIST',
-    'digiTdMon': 'tripe',
+    'digiTrend': 'tripe',
     'reconEor': 'RECONHIST',
-    'reconTdMon': 'tripe',
+    'reconTrend': 'tripe',
     }
 
 mergeConfigs = {
@@ -193,18 +200,25 @@ mergeConfigs = {
 tdBin = 10
 
 ingestor = {
-    'digiTdMon': '/afs/slac.stanford.edu/g/glast/ground/bin/ingestDigiTrending',
-    'reconTdMon': '/afs/slac.stanford.edu/g/glast/ground/bin/ingestRecoTrending',
+    'digiTrend': '/afs/slac.stanford.edu/g/glast/ground/bin/ingestDigiTrending',
+    'reconTrend': '/afs/slac.stanford.edu/g/glast/ground/bin/ingestRecoTrending',
     }
 
 joiner = '*'
 
 rootPath = os.path.join(rootSys, 'lib')
-gplPath = '/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/GPLtools/prod/python'
-pythonPath = ':'.join([rootPath, gplPath])
+xercesPath = ':'.join([glastExt, 'xerces/2.7.0/lib'])
+mysqlPath = ':'.join([glastExt, 'MYSQL/4.1.18/lib/mysql'])
+
 libraryPath = ':'.join((os.path.join(L1Cmt, 'lib'), \
                         os.path.join(glastLocation, 'lib'), \
-                        rootPath))
+                        rootPath, xercesPath, mysqlPath))
+
+#gplPath = '/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/GPLtools/prod/python'
+GPL2 = '/nfs/slac/g/svac/focke/builds/GPLtools/dev'
+gplPath = os.path.join(GPL2, 'python')
+
+pythonPath = ':'.join([L1ProcROOT, rootPath, gplPath])
 
 # LSF stuff
 # allocationGroup = 'glastdata' # don't use this anymore, policies have changed

@@ -26,21 +26,9 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=False):
     
     """
     dirs = {}
-    #dlDir = os.path.join(config.L1Dir, 'downlinks', dlId)
-    #dirs['downlink'] = dlDir
-    #if runId is None:
-    #    return dirs
-    #runBase = os.path.join(config.L1Dir, 'runs', runId)
     runBase = os.path.join(config.L1Dir, runId)
-    runDir = os.path.join(runBase, config.glastVersion)
+    runDir = os.path.join(runBase, config.L1Version)
     dirs['run'] = runDir
-
-    digiTdMonDir = os.path.join(runDir, 'digiTdMon',
-                                config.packages['Monitor']['version'])
-    dirs['digiTdMon'] = digiTdMonDir
-    reconTdMonDir = os.path.join(runDir, 'reconTdMon',
-                                 config.packages['Monitor']['version'])
-    dirs['reconTdMon'] = reconTdMonDir
 
     if chunkId is not None:
         _setupChunk(dirs, chunkId)
@@ -63,23 +51,17 @@ def _setupChunk(dirs, chunkId):
     runDir = dirs['run']
     chunkDir = os.path.join(runDir, chunkId)
     dirs['chunk'] = chunkDir
-    fastMonDir = os.path.join(chunkDir, 'fastMon',
-                              config.packages['FastMon']['version'])
+    fastMonDir = os.path.join(chunkDir, 'fastMon')
     dirs['fastMon'] = fastMonDir
-    digiMonDir = os.path.join(chunkDir, 'digiMon',
-                              config.packages['TestReport']['version'])
-    dirs['digiMon'] = digiMonDir
-    digiEorDir = os.path.join(chunkDir, 'digiEor',
-                              config.packages['Monitor']['version'])
+    digiEorDir = os.path.join(chunkDir, 'digiEor')
     dirs['digiEor'] = digiEorDir
-    reconMonDir = os.path.join(chunkDir, 'reconMon',
-                               config.packages['TestReport']['version'])
-    dirs['reconMon'] = reconMonDir
-    reconEorDir = os.path.join(chunkDir, 'reconEor',
-                               config.packages['Monitor']['version'])
+    digiTrendDir = os.path.join(chunkDir, 'digiTrend')
+    dirs['digiTrend'] = digiTrendDir
+    reconEorDir = os.path.join(chunkDir, 'reconEor')
     dirs['reconEor'] = reconEorDir
-    svacDir = os.path.join(chunkDir, 'svac',
-                           config.packages['EngineeringModelRoot']['version'])
+    reconTrendDir = os.path.join(chunkDir, 'reconTrend')
+    dirs['reconTrend'] = reconTrendDir
+    svacDir = os.path.join(chunkDir, 'svac')
     dirs['svac'] = svacDir
     return
 

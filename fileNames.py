@@ -81,12 +81,10 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=True):
                                         join(dlHead, 'digi.root'))
     files['run']['fastMon'] = os.path.join(dirs['run'], \
                                            join(dlHead, 'fastMon.root'))
-    files['run']['digiMon'] = os.path.join(dirs['run'], \
-                                           join(dlHead, 'digiMon.root'))
     files['run']['digiEor'] = os.path.join(dirs['run'], \
                                            join(dlHead, 'digiEor.root'))
-    files['run']['digiTdMon'] = os.path.join(dirs['digiTdMon'], \
-                                             join(dlHead, 'digiTd.root'))
+    files['run']['digiTrend'] = os.path.join(dirs['run'], \
+                                             join(dlHead, 'digiTrend.root'))
     files['run']['recon'] = os.path.join(dirs['run'], \
                                          join(dlHead, 'recon.root'))
     files['run']['merit'] = os.path.join(dirs['run'], \
@@ -95,12 +93,10 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=True):
                                          join(dlHead, 'ft1.fits'))
     files['run']['cal'] = os.path.join(dirs['run'], \
                                        join(dlHead, 'cal.root'))
-    files['run']['reconMon'] = os.path.join(dirs['run'],
-                                            join(dlHead, 'reconMon.root'))
     files['run']['reconEor'] = os.path.join(dirs['run'], \
                                             join(dlHead, 'reconEor.root'))
-    files['run']['reconTdMon'] = os.path.join(dirs['reconTdMon'], \
-                                              join(dlHead, 'reconTd.root'))
+    files['run']['reconTrend'] = os.path.join(dirs['run'], \
+                                              join(dlHead, 'reconTrend.root'))
     files['run']['svac'] = os.path.join(dirs['run'], join(dlHead, 'svac.root'))
     
     
@@ -117,20 +113,20 @@ def _setupChunk(dirs, chunkId, runHead):
                                  join(chunkHead, 'digi.root'))
     files['fastMon'] = os.path.join(dirs['fastMon'], \
                                     '.'.join([chunkHead, 'processed.root']))
-    files['digiMon'] = os.path.join(dirs['digiMon'], \
-                                    join(chunkHead, 'hist.root'))
     files['digiEor'] = os.path.join(dirs['digiEor'], \
                                     join(chunkHead, 'digiEor.root'))
+    files['digiTrend'] = os.path.join(dirs['digiTrend'], \
+                                      join(chunkHead, 'digiTrend.root'))
     files['recon'] = os.path.join(dirs['chunk'], \
                                   join(chunkHead, 'recon.root'))
     files['merit'] = os.path.join(dirs['chunk'], \
                                   join(chunkHead, 'merit.root'))
     files['cal'] = os.path.join(dirs['chunk'], \
                                 join(chunkHead, 'cal.root'))
-    files['reconMon'] = os.path.join(dirs['reconMon'], \
-                                     join(chunkHead, 'hist.root'))
     files['reconEor'] = os.path.join(dirs['reconEor'], \
                                      join(chunkHead, 'reconEor.root'))
+    files['reconTrend'] = os.path.join(dirs['reconTrend'], \
+                                       join(chunkHead, 'reconTrend.root'))
     files['svac'] = os.path.join(dirs['svac'], \
                                  join(chunkHead, 'svac.root'))
     files['svacHist'] = os.path.join(dirs['svac'], \

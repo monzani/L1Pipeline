@@ -114,12 +114,23 @@ Make svacTuple depend on success of all crumbs in the chunk
 Do crumb cleanup
 -------------------------------------------
 
-1.11
+1.12
 -----------------
-EM v8r1109p12
 Use GPL2 version of stageFiles.py.
 Use ISOC installation of python2.5.
 Run crumb cleanup on short.
 config.py defaults to test mode (and doesn't crash) if pipeline env vars 
 aren't set.
+-------------------------------------------
+
+1.13
+-----------------
+EM v8r1109p12
+Monitor dp20070728
+
+Don't put package versions in dir names - just L1 version at the top.
+Run digi & recon trending on chunks, use new treemerge.exe.
+Use 'Trend' instead of 'TdMon' and 'Td' in process and file names.
+
+Trending ingest is failing.
 -------------------------------------------

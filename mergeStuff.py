@@ -98,19 +98,29 @@ if numInFiles == 1:
 
 outFile = outStage.stageOut(realOutFile)
 
+inFileString = ''.join([' -i %s ' % ff for ff in inFiles])
 
-if fileType in ['digiEor', 'digiMon', 'reconEor', 'reconMon', 'fastMon']:
+if fileType in ['digiEor', 'reconEor', 'fastMon']:
     environ['LD_LIBRARY_PATH'] = ""
     environ['CMTPATH'] = config.cmtPath
-    inFileString = ''.join([' -i %s ' % ff for ff in inFiles])
     mergeConfig = config.mergeConfigs[fileType]
     cmd = "source " + config.glastSetup + " ;  source " + config.packages['TestReport']['setup'] + "  ; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:" + config.glastExt + "/xerces/2.6.0/lib:" + config.glastLocation + "/lib:" + config.rootSys + "/lib ; export LD_LIBRARY_PATH ; " + config.apps['reportMerge'] + " " + inFileString + " -o " + outFile + " -c " + mergeConfig + " ; chgrp -R glast-pipeline " + config.L1Disk
+
+
+elif fileType in ['digiTrend', 'reconTrend']:
+    setup = config.packages['Monitor']['setup']
+    app = config.apps['trendMerge']
+    treeName = 'Time'
+    cmd = '''source %(setup)s
+    %(app)s %(inFileString)s -o %(outFile)s -t %(treeName)s
+    ''' % locals()
 
 
 elif fileType in ['digi', 'recon']:
     treeName = string.capitalize(fileType)
     rootFiles.concatenate_prune(outFile, inFiles, treeName)
     cmd = 'echo Nothing to do here.'
+
 
 else:
     environ['LD_LIBRARY_PATH'] = config.haddRootSys+"/lib:"+environ['LD_LIBRARY_PATH']
