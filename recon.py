@@ -34,6 +34,6 @@ environ['calCrumbFile'] = staged.stageOut(files['crumb']['cal'])
 
 status = runner.run(config.apps['recon'] + ' ' + config.reconOptions)
 
-staged.finish()
+status |= staged.finish()
 
 sys.exit(status)

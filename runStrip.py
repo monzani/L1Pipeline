@@ -78,7 +78,7 @@ mv %(tmpOut)s %(outFile)s
 
 status = runner.run(cmd)
 
-staged.finish()
+status |= staged.finish()
 
 if 'Trend' in reportType:
     # This is a trending report, at run level.  Has to be registered.

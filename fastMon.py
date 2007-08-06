@@ -61,5 +61,5 @@ ls -lahR
 ''' % locals()
 
 status = runner.run(cmd)
-staged.finish()
+status |= staged.finish()
 sys.exit(status)

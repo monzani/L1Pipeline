@@ -35,7 +35,7 @@ else:
     pass
 print >> sys.stderr, "Test mode: %s" % testMode
 
-L1Version = "1.13"
+L1Version = "1.15"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
@@ -54,7 +54,9 @@ maxCpu = 1000
 
 #maxCrumbSize = 48000 # SVAC pipeline uses this
 #maxCrumbSize = 250   # tiny
-maxCrumbSize = 6353   # ~.5Hr on tori.  Also about half of medium q limit
+#maxCrumbSize = 6353   # ~.5Hr on tori (muons).  Also about half of medium q limit
+maxCrumbSize = 17000   # ~.5Hr on cob (skymodel).
+minCrumbCpuf = 7
 
 glastRoot = '/afs/slac.stanford.edu/g/glast'
 groundRoot = os.path.join(glastRoot, 'ground')
@@ -231,6 +233,7 @@ standardQueue = 'long'
 slowQueue = 'xlong'
 #
 reconMergeScratch = " -R &quot;select[scratch&gt;70]&quot; "
+reconCrumbCpuf = " -R &quot;select[cpuf&gt;%s]&quot; " % minCrumbCpuf
 
 if __name__ == "__main__":
     print L1Dir

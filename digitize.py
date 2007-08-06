@@ -22,6 +22,6 @@ os.environ['digiChunkFile'] = staged.stageOut(files['chunk']['digi'])
 
 status = runner.run(config.apps['digi']+' '+config.digiOptions)
 
-staged.finish()
+status |= staged.finish()
 
 sys.exit(status)

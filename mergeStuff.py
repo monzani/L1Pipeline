@@ -23,8 +23,8 @@ import stageFiles
 import rootFiles
 
 def finalize(status):
-    inStage.finish()
-    # outStage.finish()
+    status |= inStage.finish()
+    # status |= outStage.finish()
     
     registerPrep.prep(fileType, realOutFile)
     sys.exit(status)

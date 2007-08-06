@@ -31,8 +31,14 @@ stagedHistFile = staged.stageOut(files['chunk']['svacHist'])
 
 outDir = files['dirs']['chunk']
 
+if staged.setupOK:
+    workDir = staged.stageDir
+else:
+    workDir = outDir
+    pass
+
 # make an empty file to use as dummy MC
-mcFile = os.path.join(outDir, 'emptyFile')
+mcFile = os.path.join(workDir, 'emptyFile')
 open(mcFile, 'w').close()
 
 # contents of JO file
@@ -53,10 +59,16 @@ open(optionFile, 'w').write(options)
 svacTupleApp = config.apps['svacTuple']
 svacTupleCmt = config.packages['EngineeringModelRoot']['setup']
 
-cmd = "cd %(outDir)s ; printenv ; source %(svacTupleCmt)s ; printenv LD_LIBRARY_PATH ; %(svacTupleApp)s %(optionFile)s" % locals()
+cmd = """
+cd %(workDir)s
+printenv
+source %(svacTupleCmt)s
+printenv LD_LIBRARY_PATH
+%(svacTupleApp)s %(optionFile)s
+""" % locals()
 
 status = runner.run(cmd)
 
-staged.finish()
+status |= staged.finish()
 
 sys.exit(status)

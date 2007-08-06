@@ -27,6 +27,6 @@ cmd = '%(app)s %(stagedInFile)s' % locals()
 
 status = runner.run(cmd)
 
-staged.finish()
+status |= staged.finish()
 
 sys.exit(status)

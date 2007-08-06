@@ -134,3 +134,18 @@ Use 'Trend' instead of 'TdMon' and 'Td' in process and file names.
 
 Trending ingest is failing.
 -------------------------------------------
+
+1.14 (neither tagged nor comitted)
+-----------------
+Fail on bad result from stageFiles.StageSet.finish().
+Better error handling in runner.run().
+Remove TestReport stuff.
+Increase crumb size (to 17000), run recon on long.
+Fix a couple of dumb little bugs.
+-------------------------------------------
+
+1.15
+-----------------
+Move most processes to long so they don't interfere with recon.
+-------------------------------------------
+

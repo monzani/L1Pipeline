@@ -24,6 +24,7 @@ This will require keeping track either of which runs have been sent or
 """
 
 import os
+import sys
 
 import config
 
@@ -54,6 +55,8 @@ cmd = """. /u/gl/glastops/isoc_config_devel.sh
 FASTCopy.py %(send)s %(args)s
 """ % locals()
 
-runner.run(cmd)
+status = runner.run(cmd)
 
-staged.finish()
+status |= staged.finish()
+
+sys.exit(status)

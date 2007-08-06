@@ -82,7 +82,7 @@
          <variables>
             <var name="fileType">digiEor</var>
          </variables>
-         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium "   />
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "   />
          <depends>
             <after process="doChunk.digiEor" status="DONE" />
          </depends>
@@ -126,7 +126,7 @@
          <variables>
             <var name="fileType">fastMon</var>
          </variables>
-         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium "   />
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "   />
          <depends>
             <after process="doChunk.fastMon" status="DONE"/>
          </depends>
@@ -174,7 +174,7 @@
          <variables>
             <var name="fileType">reconEor</var>
          </variables>
-         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q short "   />
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "   />
          <depends>
             <after process="doChunk.reconEor" status="DONE" />
          </depends>
@@ -395,7 +395,7 @@
             <variables>
                <var name="reportType">digiEor</var>
             </variables>
-            <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q medium "   />
+            <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q long "   />
             <depends>
                <after process="digitization" status="SUCCESS" />
             </depends>
@@ -405,7 +405,7 @@
             <variables>
                <var name="reportType">digiTrend</var>
             </variables>
-            <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q medium "   />
+            <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q long "   />
             <depends>
                <after process="digitization" status="SUCCESS" />
             </depends>
@@ -425,7 +425,7 @@
             <variables>
                <var name="fileType">cal</var>
             </variables>
-            <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium "   />
+            <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "   />
             <depends>
                <after process="doCrumb.recon" status="DONE"/>
             </depends>
@@ -445,7 +445,7 @@
             <variables>
                <var name="fileType">recon</var>
             </variables>
-            <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium "   />
+            <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "   />
             <depends>
                <after process="doCrumb.recon" status="DONE"/>
             </depends>
@@ -455,7 +455,7 @@
             <variables>
                <var name="reportType">reconEor</var>
             </variables>
-            <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q medium "   />
+            <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q long "   />
             <depends>
                <after process="mergeReconCrumbs" status="SUCCESS" />
             </depends>
@@ -465,7 +465,7 @@
             <variables>
                <var name="reportType">reconTrend</var>
             </variables>
-            <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q medium "   />
+            <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q long "   />
             <depends>
                <after process="doCrumb.recon" status="SUCCESS"/>
                <after process="mergeReconCrumbs" status="SUCCESS" />
@@ -503,7 +503,6 @@
             </depends>
          </process>
 
-
          <task name="doCrumb" version="%(L1Version)s" type="Data">
 
             <prerequisites>
@@ -513,7 +512,7 @@
             </prerequisites>
 
             <process name="recon">
-               <job executable="${L1ProcROOT}/recon.py" batchOptions=" -q medium -sp 100 "   />
+               <job executable="${L1ProcROOT}/recon.py" batchOptions=" -q long -sp 100 %(reconCrumbCpuf)s "   />
             </process>
 
          </task>

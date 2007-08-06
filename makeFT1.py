@@ -36,7 +36,7 @@ cd %(workDir)s
 
 status = runner.run(cmd)
 
-staged.finish()
+status |= staged.finish()
 
 os.symlink(os.path.basename(realFt1File), files['run']['ft1Export'])
 
