@@ -147,5 +147,7 @@ Fix a couple of dumb little bugs.
 1.15
 -----------------
 Move most processes to long so they don't interfere with recon.
+Fix(?) race condition in procdirs.mkdir().
+Don't "chgrp -R glast-pipeline" the output disk every time we merge a file.
 -------------------------------------------
 

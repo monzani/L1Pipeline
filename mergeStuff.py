@@ -88,7 +88,7 @@ if numInFiles == 1:
     # 
     # Stage the input, but not the output.  This might seems wasteful
     # relative to copying the unstaged input to the unstaged output,
-    # but they're probably on the same fiesystem, and this reduces the
+    # but they're probably on the same filesystem, and this reduces the
     # load on the file server in that case.
     print >> sys.stderr, 'Single input file, copying %s to %s' % \
           (inFiles[0], realOutFile)
@@ -104,7 +104,8 @@ if fileType in ['digiEor', 'reconEor', 'fastMon']:
     environ['LD_LIBRARY_PATH'] = ""
     environ['CMTPATH'] = config.cmtPath
     mergeConfig = config.mergeConfigs[fileType]
-    cmd = "source " + config.glastSetup + " ;  source " + config.packages['TestReport']['setup'] + "  ; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:" + config.glastExt + "/xerces/2.6.0/lib:" + config.glastLocation + "/lib:" + config.rootSys + "/lib ; export LD_LIBRARY_PATH ; " + config.apps['reportMerge'] + " " + inFileString + " -o " + outFile + " -c " + mergeConfig + " ; chgrp -R glast-pipeline " + config.L1Disk
+    cmd = "source " + config.glastSetup + " ;  source " + config.packages['TestReport']['setup'] + "  ; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:" + config.glastExt + "/xerces/2.6.0/lib:" + config.glastLocation + "/lib:" + config.rootSys + "/lib ; export LD_LIBRARY_PATH ; " + config.apps['reportMerge'] + " " + inFileString + " -o " + outFile + " -c " + mergeConfig
+    # + " ; chgrp -R glast-pipeline " + config.L1Disk
 
 
 elif fileType in ['digiTrend', 'reconTrend']:
@@ -125,7 +126,8 @@ elif fileType in ['digi', 'recon']:
 else:
     environ['LD_LIBRARY_PATH'] = config.haddRootSys+"/lib:"+environ['LD_LIBRARY_PATH']
     environ['ROOTSYS'] = config.haddRootSys
-    cmd = config.hadd + (' %s' % outFile) + ((' %s' * len(inFiles)) % tuple(inFiles)) + " ;chgrp -R glast-pipeline " + config.L1Disk
+    cmd = config.hadd + (' %s' % outFile) + ((' %s' * len(inFiles)) % tuple(inFiles))
+    # + " ;chgrp -R glast-pipeline " + config.L1Disk
 
 
     pass

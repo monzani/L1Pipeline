@@ -177,9 +177,13 @@ def findPieces(fileType, dlId, runId, chunkId=None):
     files = setup(dlId, runId, chunkId, crumbId, \
                   createDirs=False)
     pattern = files[level][fileType]
-    inFiles = glob.glob(pattern)
 
+    print >> sys.stderr, "Searching for files that match [%s]." % pattern
+
+    inFiles = glob.glob(pattern)
     inFiles.sort(key=os.path.basename)
+
+    print >> sys.stderr, "Matching files are: %s" % inFiles
    
     return inFiles
 

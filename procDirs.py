@@ -87,13 +87,14 @@ def mkdir(path):
     So, basically, like 'mkdir -p $path'.
     
     """
-    if os.path.exists(path):
-        if os.path.isdir(path):
-            return
-        raise os.error
+    #if os.path.exists(path):
+    #    if os.path.isdir(path):
+    #        return
+    #    raise os.error
     # Race condition here!
     # os.makedirs(path)
-    runner.run('mkdir -p %s' % path)
+    if not os.path.exists(path):
+        runner.run('mkdir -p %s' % path)
     return
 
 
