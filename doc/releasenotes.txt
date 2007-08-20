@@ -151,3 +151,9 @@ Fix(?) race condition in procdirs.mkdir().
 Don't "chgrp -R glast-pipeline" the output disk every time we merge a file.
 -------------------------------------------
 
+1.16
+-----------------
+ft2Util v1r1p0
+
+Add Adrea's makeFt2.py
+-------------------------------------------
