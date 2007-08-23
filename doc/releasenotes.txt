@@ -153,7 +153,7 @@ Don't "chgrp -R glast-pipeline" the output disk every time we merge a file.
 
 1.16
 -----------------
-ft2Util v1r1p0
-
-Add Adrea's makeFt2.py
+ft2Util v1r1p1
+Add Adrea's makeFt2.py (renamed to ft2Entries.py).
+Get histos instead of trees from fastMon.
 -------------------------------------------

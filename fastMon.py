@@ -18,13 +18,13 @@ chunkId = os.environ['CHUNK_ID']
 files = fileNames.setup(dlId, runId, chunkId)
 realInFile = files['chunk']['event']
 realOutFile = files['chunk']['fastMon']
+tmpOutFile = files['chunk']['fastMonTmp']
 
 staged = stageFiles.StageSet()
 inFile = staged.stageIn(realInFile)
-outFile = staged.stageOut(realOutFile)
+outFile = staged.stageOut(tmpOutFile)
 
-subDir = os.path.basename(realInFile).replace('.evt', '')
-brokenName = outFile.replace('_processed', '')
+brokenName = outFile.replace('.processed', '')
 
 if staged.setupOK:
     workDir = staged.stageDir
@@ -62,4 +62,7 @@ ls -lahR
 
 status = runner.run(cmd)
 status |= staged.finish()
+
+status |= runner.run('mv %s %s' % (tmpOutFile, realOutFile))
+
 sys.exit(status)

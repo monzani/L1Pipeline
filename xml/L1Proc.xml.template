@@ -256,18 +256,25 @@
       </process>
 
       <process name="ft2Runs">
-         <job executable="${L1ProcROOT}/ft2Db.py" batchOptions=" -q express -sp 100 "   />
+         <job executable="${L1ProcROOT}/ft2Entries.py" batchOptions=" -q express -sp 100 "   />
          <depends>
             <after process="mergeDigi" status="SUCCESS" />
             <after process="mergeMeritChunks" status="SUCCESS"/>
          </depends>
       </process>
 
+      <process name="ingestFT2">
+         <job executable="${L1ProcROOT}/ft2Db.py" batchOptions=" -q express -sp 100 "   />
+         <depends>
+            <after process="ft2Runs" status="SUCCESS" />
+         </depends>
+      </process>
+
       <process name="makeFT2">
-         <job executable="${L1ProcROOT}/makeFT2.py" batchOptions=" -q express -sp 100 "   />
+         <job executable="${L1ProcROOT}/makeFT2File.py" batchOptions=" -q express -sp 100 "   />
          <depends>
             <after process="makeFT1" status="SUCCESS"/>
-            <after process="ft2Runs" status="SUCCESS"/>
+            <after process="ingestFT2" status="SUCCESS"/>
          </depends>
       </process>
 

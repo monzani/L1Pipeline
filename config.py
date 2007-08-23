@@ -78,8 +78,6 @@ glastLocation = os.path.join(releaseDir, glastName)
 gleam = os.path.join(glastLocation, 'bin', gleamPackage)
 cmtScript = os.path.join(glastLocation, releaseName, glastVersion, 'cmt',
                          'setup.sh') # do we need this?
-cmtPath = ':'.join((L1Cmt, glastLocation, glastExt))
-os.environ['CMTPATH'] = cmtPath
 #
 digiOptions = os.path.join(L1ProcROOT, 'digi.jobOpt')
 reconOptions = os.path.join(L1ProcROOT, 'recon.jobOpt')
@@ -92,6 +90,9 @@ hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-v9"
 PFILES="."
 stBinDir = os.path.join(ST, 'bin')
+
+cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
+os.environ['CMTPATH'] = cmtPath
 
 packages = {
     'configData': {
@@ -124,8 +125,12 @@ packages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r1p0',
+        'version': 'v1r1p1',
         },
+#    'fitsGen': {
+#        'repository': '',
+#        'version': 'v3r6p2',
+#        },
     }
 
 # fill in standard values for standard packages
@@ -160,12 +165,15 @@ packages['TestReport']['mergeApp'] = os.path.join(packages['TestReport']['bin'],
 
 packages['EngineeringModelRoot']['app'] = os.path.join(packages['EngineeringModelRoot']['bin'], 'RunRootAnalyzer.exe')
 
+packages['ft2Util']['app'] = os.path.join(packages['ft2Util']['bin'], 'makeFT2Entries.exe')
+
 
 apps = {
     'digi': gleam,
     'digiMon': packages['TestReport']['app'],
     'digiEor': packages['Monitor']['app'],
     'fastMon': packages['FastMon']['app'],
+    'makeFT2': packages['ft2Util']['app'],
     'makeFT1': os.path.join(stBinDir, 'makeFT1'),
     'recon': gleam,
     'reconMon': packages['TestReport']['app'],
@@ -203,7 +211,7 @@ mergeConfigs = {
     'reconMon': os.path.join(L1ProcROOT, 'merge_recon.txt'),
     }
 
-tdBin = 10
+tdBin = 15
 
 ingestor = {
     'digiTrend': '/afs/slac.stanford.edu/g/glast/ground/bin/ingestDigiTrending',

@@ -34,6 +34,11 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=True):
     @return A dictionary containing the names of various data files.
     
     """
+
+    # VERYBAD! We should not be getting this from args anymore.
+    head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+    if not dlId: head, dlId = os.path.split(head)
+    
     runHead = runId
 
     dirs = procDirs.setup(dlId, runId, chunkId, crumbId, createDirs)
@@ -100,7 +105,15 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=True):
     files['run']['svac'] = os.path.join(dirs['run'], join(dlHead, 'svac.root'))
     
     
-    files['run']['ft1Export'] = os.path.join(dirs['run'], ft1ExportName(dlId))
+    files['run']['ft1Export'] = os.path.join(dirs['run'], exportName(dlId, 'evsum'))
+
+    files['run']['m7'] = os.path.join(os.environ['DOWNLINK_RAWDIR'], 'magic7_' + dlId + '.txt')
+
+    files['run']['ft2Txt'] = os.path.join(dirs['run'], \
+                                          join(dlHead, 'ft2.txt'))
+    files['run']['ft2Fits'] = os.path.join(dirs['run'], \
+                                           join(dlHead, 'ft2.fits'))
+    files['run']['ft2Export'] = os.path.join(dirs['run'], exportName(dlId, 'pt'))
 
     return files
 
@@ -111,8 +124,10 @@ def _setupChunk(dirs, chunkId, runHead):
     files['head'] = chunkHead
     files['digi'] = os.path.join(dirs['chunk'], \
                                  join(chunkHead, 'digi.root'))
+    files['fastMonTmp'] = os.path.join(dirs['fastMon'], \
+                                       join(chunkHead, 'fastMon.processed.root'))
     files['fastMon'] = os.path.join(dirs['fastMon'], \
-                                    '.'.join([chunkHead, 'processed.root']))
+                                    join(chunkHead, 'fastMon.root'))
     files['digiEor'] = os.path.join(dirs['digiEor'], \
                                     join(chunkHead, 'digiEor.root'))
     files['digiTrend'] = os.path.join(dirs['digiTrend'], \
@@ -199,4 +214,17 @@ def ft1ExportName(dlId):
         day = '0' * (6 - lD) + day # nasty hack
 
     name = 'gll_evsum_%s_c%s_v%s.fit' % (day, contact, version)
+    return name
+
+def exportName(dlId, fileType):
+    day = dlId[:-3]
+    contact = dlId[-3:]
+    
+    version = '%.2d' % 0 # FIX THIS
+
+    lD = len(day)
+    if lD < 6:
+        day = '0' * (6 - lD) + day # nasty hack
+
+    name = 'gll_%s_%s_c%s_v%s.fit' % (fileType, day, contact, version)
     return name

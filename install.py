@@ -9,22 +9,28 @@ import config
 
 #os.chdir(config.L1ProcROOT) # ?
 
-taskFile = os.path.join(config.L1Xml, 'L1Proc-' + config.L1Version + '.xml')
-template = os.path.join(config.L1Xml, 'L1Proc.xml.template')
+taskNames = ['L1Proc', 'lciChunk', 'lciWhole']
 
-configuration = dict(config.__dict__)
+for taskName in taskNames:
+    taskFile = os.path.join(config.L1Xml, taskName + '-' + config.L1Version + '.xml')
+    template = os.path.join(config.L1Xml, taskName + '.xml.template')
 
-retireScript = os.path.join(config.L1ProcROOT, 'retireRun.py')
-configuration['retireScriptBody'] = open(retireScript).read()
+    configuration = dict(config.__dict__)
 
-placeHolderScript = os.path.join(config.L1ProcROOT, 'placeHolder.py')
-configuration['placeHolderBody'] = open(placeHolderScript).read()
+    retireScript = os.path.join(config.L1ProcROOT, 'retireRun.py')
+    configuration['retireScriptBody'] = open(retireScript).read()
 
-registerScript = os.path.join(config.L1ProcROOT, 'registerStuff.py')
-configuration['registerBody'] = open(registerScript).read()
+    placeHolderScript = os.path.join(config.L1ProcROOT, 'placeHolder.py')
+    configuration['placeHolderBody'] = open(placeHolderScript).read()
 
-expandTemplate.expand(template, taskFile, configuration)
+    registerScript = os.path.join(config.L1ProcROOT, 'registerStuff.py')
+    configuration['registerBody'] = open(registerScript).read()
 
-taskFile = os.path.abspath(taskFile)
-print >> sys.stderr, "Now upload:"
-print >> sys.stderr, taskFile
+    expandTemplate.expand(template, taskFile, configuration)
+
+    taskFile = os.path.abspath(taskFile)
+    print >> sys.stderr, "Now upload:"
+    print >> sys.stderr, taskFile
+
+    continue
+

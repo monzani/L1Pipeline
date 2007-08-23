@@ -37,19 +37,21 @@ stagedMeritFile = staged.stageIn(files['run']['merit'])
 stagedM7File=  staged.stageIn(files['run']['m7'])
 
 #output
-txtFt2File = files['run']['ft2']
-stagedFt1File = staged.stageOut(txtFt2File)
+txtFt2File = files['run']['ft2Txt']
+stagedFt2TxtFile = staged.stageOut(txtFt2File)
+fitsFt2File = files['run']['ft2Fits']
+stagedFt2FitsFile = staged.stageOut(fitsFt2File)
 
 cmd = '''
 cd %(workDir)s
-%(app)s %(stagedDigiFile)s %(stagedMeritFile)s %(stagedM7File)
+%(app)s -DigiFile %(stagedDigiFile)s -MeritFile %(stagedMeritFile)s -M7File %(stagedM7File)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s
 ''' % locals()
 
 status = runner.run(cmd)
 
 staged.finish()
 
-os.symlink(os.path.basename(txtFt2File), files['run']['ft2Export'])
+os.symlink(os.path.basename(fitsFt2File), files['run']['ft2Export'])
 
 fileType = 'FT2'
 registerPrep.prep(fileType, realFt2File)
