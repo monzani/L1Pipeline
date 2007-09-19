@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline
+   xmlns="http://glast-ground.slac.stanford.edu/pipeline"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
+
+
+<task name="LciChunk" version="%(L1Version)s" type="Data">
+
+   <variables>
+      <var name="CMTCONFIG">%(cmtConfig)s</var>
+      <var name="GLAST_EXT">%(glastExt)s</var>
+      <var name="GPL2">%(GPL2)s</var>
+      <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+      <var name="LATCalibRoot">%(LATCalibRoot)s</var>
+      <var name="LD_LIBRARY_PATH">%(libraryPath)s</var>
+      <var name="MALLOC_CHECK_">0</var>
+      <var name="PFILES">%(PFILES)s</var>
+      <var name="PYTHONPATH">%(pythonPath)s</var>
+      <var name="ROOTSYS">%(rootSys)s</var>
+      <var name="ST">%(ST)s</var>
+   </variables>
+
+   <prerequisites>
+      <prerequisite name="DOWNLINK_RAWDIR" type="string" />
+      <prerequisite name="DOWNLINK_ID" type="string" />
+   </prerequisites>
+
+   <process name="findRunDirs">
+      <job executable="${L1ProcROOT}/findRunDirs.py" batchOptions=" -q express "   />
+      <createsSubtasks>
+         <subtask>doLci</subtask>
+      </createsSubtasks>
+   </process>
+
+   <task name="doLci" version="%(L1Version)s" type="Data">
+
+      <prerequisites>
+         <prerequisite name="DOWNLINK_ID" type="string"/>
+         <prerequisite name="RUNID" type="string"/>
+         <prerequisite name="RUNSTATUS" type="string"/>
+         <prerequisite name="RUN_RAWDIR" type="string"/>
+      </prerequisites>
+
+      <process name="findChunks">
+         <job executable="${L1ProcROOT}/findChunks.py" batchOptions=" -q express -E ${L1ProcROOT}/lockFile.py "   />
+         <createsSubtasks>
+            <subtask>doChunk</subtask>
+         </createsSubtasks>
+      </process>
+
+      <process name="mergeDigi">
+         <variables>
+            <var name="fileType">digi</var>
+         </variables>
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium -sp 100 "   />
+         <depends>
+            <after process="doChunk.digitization" status="DONE"/>
+         </depends>
+      </process>
+
+      <process name="registerDigi">
+         <variables>
+            <var name="parentProcess">mergeDigi</var>
+            <var name="dataType">DIGI</var>
+         </variables>
+         <script><![CDATA[
+%(registerBody)s
+            ]]>
+         </script>
+         <depends>
+            <after process="mergeDigi" status="SUCCESS" />
+         </depends>
+      </process>
+ 
+       <process name="mergeDigiEor">
+         <variables>
+            <var name="fileType">digiEor</var>
+         </variables>
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "   />
+         <depends>
+            <after process="doChunk.digiEor" status="DONE" />
+         </depends>
+      </process>
+ 
+     <process name="registerDigiEor">
+         <variables>
+            <var name="parentProcess">mergeDigiEor</var>
+            <var name="dataType">DIGIHIST</var>
+         </variables>
+         <script><![CDATA[
+%(registerBody)s
+            ]]>
+         </script>
+         <depends>
+            <after process="mergeDigiEor" status="SUCCESS" />
+         </depends>
+      </process>
+
+      <process name="mergeFastMon">
+         <variables>
+            <var name="fileType">fastMon</var>
+         </variables>
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "   />
+         <depends>
+            <after process="doChunk.fastMon" status="DONE"/>
+         </depends>
+      </process>
+
+      <process name="registerFastMon">
+         <variables>
+            <var name="parentProcess">mergeFastMon</var>
+            <var name="dataType">FASTMON</var>
+         </variables>
+         <script><![CDATA[
+%(registerBody)s
+            ]]>
+         </script>
+         <depends>
+            <after process="mergeFastMon" status="SUCCESS" />
+         </depends>
+      </process>
+ 
+      <process name="checkRun">
+         <job executable="${L1ProcROOT}/checkRun.py" batchOptions=" -q express "   />
+         <depends>
+            <after process="doChunk.checkChunk" status="SUCCESS"/>
+            <after process="registerDigi" status="SUCCESS"/>
+            <after process="registerFastMon" status="SUCCESS"/>
+            <after process="registerDigiEor" status="SUCCESS"/>
+         </depends>
+         <createsSubtasks>
+            <subtask>cleanupCompleteRun</subtask>
+         </createsSubtasks>
+      </process>
+
+
+      <task name="cleanupCompleteRun" version="%(L1Version)s" type="Data">
+
+         <process name="cleanupChunks">
+            <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q express "   />
+         </process>
+
+         <process name="updateRunStatus">
+            <script>
+               <![CDATA[
+%(retireScriptBody)s
+]]>
+            </script>
+         </process>
+
+      </task>
+
+
+      <task name="doChunk" version="%(L1Version)s" type="Data">
+
+         <prerequisites>
+             <prerequisite name="CHUNK_ID" type="string"/>
+             <prerequisite name="EVTFILE" type="string"/>
+         </prerequisites>
+
+         <process name="digitization">
+            <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q long -sp 100 "   />
+         </process>
+ 
+         <process name="fastMon">
+            <variables>
+               <var name="reportType">fastMon</var>
+            </variables>
+            <job executable="${L1ProcROOT}/fastMon.py" batchOptions=" -q long "   />
+         </process>
+ 
+         <process name="digiEor">
+            <variables>
+               <var name="reportType">digiEor</var>
+            </variables>
+            <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q long "   />
+            <depends>
+               <after process="digitization" status="SUCCESS" />
+            </depends>
+         </process>
+ 
+         <process name="checkChunk">
+            <job executable="${L1ProcROOT}/checkChunk.py" batchOptions=" -q express "   />
+            <depends>
+               <after process="fastMon" status="SUCCESS"/>
+               <after process="digiEor" status="SUCCESS"/>
+            </depends>
+         </process>
+
+      </task>
+
+   </task>
+
+
+</task>
+</pipeline>
+

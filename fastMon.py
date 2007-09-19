@@ -33,14 +33,10 @@ else:
     pass
 
 package = config.packages['FastMon']
-
-common = config.packages['Common']
-commonPy = os.path.join(common['root'], 'python')
-
 os.environ.update(package['env'])
 
 dmRoot = config.L1Cmt
-fastMonDir = files['dirs']['fastMon']
+fastMonDir = workDir
 os.environ['FAST_MON_DIR'] = fastMonDir
 
 extra = package['extraSetup']
@@ -55,8 +51,8 @@ export DATAMONITORING_ROOT=%(dmRoot)s
 export PATH=%(newLatexDir)s:${PATH}
 %(extra)s
 source %(setup)s
-export PYTHONPATH=${PYTHONPATH}:%(fastMonDir)s:%(commonPy)s
-%(app)s -v -o %(brokenName)s -d %(workDir)s -p %(inFile)s
+export PYTHONPATH=${PYTHONPATH}:%(fastMonDir)s
+%(app)s -v -o %(brokenName)s -d %(fastMonDir)s -p %(inFile)s
 ls -lahR
 ''' % locals()
 

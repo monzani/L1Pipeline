@@ -16,6 +16,7 @@ import registerPrep
 files = fileNames.setup(os.environ['DOWNLINK_ID'], os.environ['RUNID'])
 
 staged = stageFiles.StageSet()
+#staged.setupOK = False # debugging
 
 if staged.setupOK:
 #Local Copy of NFS dir	
@@ -54,6 +55,6 @@ staged.finish()
 os.symlink(os.path.basename(fitsFt2File), files['run']['ft2Export'])
 
 fileType = 'FT2'
-registerPrep.prep(fileType, realFt2File)
+registerPrep.prep(fileType, fitsFt2File)
 
 sys.exit(status)

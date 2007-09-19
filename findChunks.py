@@ -31,7 +31,9 @@ rootDir = files['dirs']['run']
 ## Find chunk files
 # this is a contract with the halfpipe
 chunkGlob = path.join(runDir, '*.evt')
+print >> sys.stderr, 'Looking for files that match [%s].' % chunkGlob
 chunkFiles = glob.glob(chunkGlob)
+print >> sys.stderr, 'Found %s.' % chunkFiles
 
 # set up a subStream for each run
 for chunkFile in chunkFiles:

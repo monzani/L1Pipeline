@@ -156,4 +156,12 @@ Don't "chgrp -R glast-pipeline" the output disk every time we merge a file.
 ft2Util v1r1p1
 Add Adrea's makeFt2.py (renamed to ft2Entries.py).
 Get histos instead of trees from fastMon.
+Add subtask for LCI runs.
+-------------------------------------------
+
+1.17
+-----------------
+ft2Util v1r1p6
+Tweaks to PYTHONPATH and LD_LIBRARY_PATH
+Tweaks to FT2 and fastMon
 -------------------------------------------

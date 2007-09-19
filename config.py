@@ -35,7 +35,7 @@ else:
     pass
 print >> sys.stderr, "Test mode: %s" % testMode
 
-L1Version = "1.16"
+L1Version = "1.17"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
@@ -125,7 +125,7 @@ packages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r1p1',
+        'version': 'v1r1p6',
         },
 #    'fitsGen': {
 #        'repository': '',
@@ -144,6 +144,12 @@ for packName in packages:
     continue
 
 # add nonstandard package info
+packages['Common']['python'] = os.path.join(packages['Common']['root'], 'python')
+
+packages['EngineeringModelRoot']['app'] = os.path.join(packages['EngineeringModelRoot']['bin'], 'RunRootAnalyzer.exe')
+
+packages['ft2Util']['app'] = os.path.join(packages['ft2Util']['bin'], 'makeFT2Entries.exe')
+
 packages['FastMon']['app'] = os.path.join(packages['FastMon']['root'],
                                           'python', 'pDataProcessor.py')
 packages['FastMon']['env'] = {
@@ -162,10 +168,6 @@ packages['TestReport']['app'] = os.path.join(packages['TestReport']['bin'],
                                              'TestReport.exe')
 packages['TestReport']['mergeApp'] = os.path.join(packages['TestReport']['bin'],
                                                   'MergeHistFiles.exe')
-
-packages['EngineeringModelRoot']['app'] = os.path.join(packages['EngineeringModelRoot']['bin'], 'RunRootAnalyzer.exe')
-
-packages['ft2Util']['app'] = os.path.join(packages['ft2Util']['bin'], 'makeFT2Entries.exe')
 
 
 apps = {
@@ -221,18 +223,22 @@ ingestor = {
 joiner = '*'
 
 rootPath = os.path.join(rootSys, 'lib')
-xercesPath = ':'.join([glastExt, 'xerces/2.7.0/lib'])
-mysqlPath = ':'.join([glastExt, 'MYSQL/4.1.18/lib/mysql'])
+#xercesPath = ':'.join([glastExt, 'xerces/2.7.0/lib'])
+#mysqlPath = ':'.join([glastExt, 'MYSQL/4.1.18/lib/mysql'])
+clhepPath = os.path.join(glastExt, 'CLHEP/1.9.2.2/lib')
+cppunitPath = os.path.join(glastExt, 'cppunit/1.10.2/lib')
 
 libraryPath = ':'.join((os.path.join(L1Cmt, 'lib'), \
                         os.path.join(glastLocation, 'lib'), \
-                        rootPath, xercesPath, mysqlPath))
+                        rootPath, clhepPath, cppunitPath))
+#                        rootPath, xercesPath, mysqlPath))
 
 #gplPath = '/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/GPLtools/prod/python'
 GPL2 = '/nfs/slac/g/svac/focke/builds/GPLtools/dev'
 gplPath = os.path.join(GPL2, 'python')
 
-pythonPath = ':'.join([L1ProcROOT, rootPath, gplPath])
+pythonPath = ':'.join([L1ProcROOT, rootPath, gplPath,
+                       packages['Common']['python']])
 
 # LSF stuff
 # allocationGroup = 'glastdata' # don't use this anymore, policies have changed

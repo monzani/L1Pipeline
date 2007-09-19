@@ -30,6 +30,7 @@
       <job executable="${L1ProcROOT}/findRunDirs.py" batchOptions=" -q express "   />
       <createsSubtasks>
          <subtask>doRun</subtask>
+         <subtask>doLci</subtask>
          <subtask>cleanupIncompleteRun</subtask>
       </createsSubtasks>
    </process>
@@ -256,7 +257,7 @@
       </process>
 
       <process name="ft2Runs">
-         <job executable="${L1ProcROOT}/ft2Entries.py" batchOptions=" -q express -sp 100 "   />
+         <job executable="${L1ProcROOT}/ft2Entries.py" batchOptions=" -q short -sp 100 "   />
          <depends>
             <after process="mergeDigi" status="SUCCESS" />
             <after process="mergeMeritChunks" status="SUCCESS"/>
@@ -528,6 +529,165 @@
 
    </task>
 
+   <task name="doLci" version="%(L1Version)s" type="Data">
+
+      <prerequisites>
+         <prerequisite name="DOWNLINK_ID" type="string"/>
+         <prerequisite name="RUNID" type="string"/>
+         <prerequisite name="RUNSTATUS" type="string"/>
+         <prerequisite name="RUN_RAWDIR" type="string"/>
+      </prerequisites>
+
+      <process name="findChunksLci">
+         <job executable="${L1ProcROOT}/findChunks.py" batchOptions=" -q express -E ${L1ProcROOT}/lockFile.py "   />
+         <createsSubtasks>
+            <subtask>doChunkLci</subtask>
+         </createsSubtasks>
+      </process>
+
+      <process name="mergeDigiLci">
+         <variables>
+            <var name="fileType">digi</var>
+         </variables>
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium -sp 100 "   />
+         <depends>
+            <after process="doChunkLci.digitizationLci" status="DONE"/>
+         </depends>
+      </process>
+
+      <process name="registerDigiLci">
+         <variables>
+            <var name="parentProcess">mergeDigi</var>
+            <var name="dataType">DIGI</var>
+         </variables>
+         <script><![CDATA[
+%(registerBody)s
+            ]]>
+         </script>
+         <depends>
+            <after process="mergeDigiLci" status="SUCCESS" />
+         </depends>
+      </process>
+ 
+       <process name="mergeDigiEorLci">
+         <variables>
+            <var name="fileType">digiEor</var>
+         </variables>
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "   />
+         <depends>
+            <after process="doChunkLci.digiEorLci" status="DONE" />
+         </depends>
+      </process>
+ 
+     <process name="registerDigiEorLci">
+         <variables>
+            <var name="parentProcess">mergeDigiEor</var>
+            <var name="dataType">DIGIHIST</var>
+         </variables>
+         <script><![CDATA[
+%(registerBody)s
+            ]]>
+         </script>
+         <depends>
+            <after process="mergeDigiEorLci" status="SUCCESS" />
+         </depends>
+      </process>
+
+      <process name="mergeFastMonLci">
+         <variables>
+            <var name="fileType">fastMon</var>
+         </variables>
+         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "   />
+         <depends>
+            <after process="doChunkLci.fastMonLci" status="DONE"/>
+         </depends>
+      </process>
+
+      <process name="registerFastMonLci">
+         <variables>
+            <var name="parentProcess">mergeFastMon</var>
+            <var name="dataType">FASTMON</var>
+         </variables>
+         <script><![CDATA[
+%(registerBody)s
+            ]]>
+         </script>
+         <depends>
+            <after process="mergeFastMonLci" status="SUCCESS" />
+         </depends>
+      </process>
+ 
+      <process name="checkRunLci">
+         <job executable="${L1ProcROOT}/checkRun.py" batchOptions=" -q express "   />
+         <depends>
+            <after process="doChunkLci.checkChunkLci" status="SUCCESS"/>
+            <after process="registerDigiLci" status="SUCCESS"/>
+            <after process="registerFastMonLci" status="SUCCESS"/>
+            <after process="registerDigiEorLci" status="SUCCESS"/>
+         </depends>
+         <createsSubtasks>
+            <subtask>cleanupCompleteRunLci</subtask>
+         </createsSubtasks>
+      </process>
+
+
+      <task name="cleanupCompleteRunLci" version="%(L1Version)s" type="Data">
+
+         <process name="cleanupChunksLci">
+            <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q express "   />
+         </process>
+
+         <process name="updateRunStatusLci">
+            <script>
+               <![CDATA[
+%(retireScriptBody)s
+]]>
+            </script>
+         </process>
+
+      </task>
+
+
+      <task name="doChunkLci" version="%(L1Version)s" type="Data">
+
+         <prerequisites>
+             <prerequisite name="CHUNK_ID" type="string"/>
+             <prerequisite name="EVTFILE" type="string"/>
+         </prerequisites>
+
+         <process name="digitizationLci">
+            <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q long -sp 100 "   />
+         </process>
+ 
+         <process name="fastMonLci">
+            <variables>
+               <var name="reportType">fastMon</var>
+            </variables>
+            <job executable="${L1ProcROOT}/fastMon.py" batchOptions=" -q long "   />
+         </process>
+ 
+         <process name="digiEorLci">
+            <variables>
+               <var name="reportType">digiEor</var>
+            </variables>
+            <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q long "   />
+            <depends>
+               <after process="digitizationLci" status="SUCCESS" />
+            </depends>
+         </process>
+ 
+         <process name="checkChunkLci">
+            <job executable="${L1ProcROOT}/checkChunk.py" batchOptions=" -q express "   />
+            <depends>
+               <after process="fastMonLci" status="SUCCESS"/>
+               <after process="digiEorLci" status="SUCCESS"/>
+            </depends>
+         </process>
+
+      </task>
+
+   </task>
+
    <task name="cleanupIncompleteRun" version="%(L1Version)s" type="Data">
 
       <prerequisites>
@@ -535,11 +695,11 @@
          <prerequisite name="RUNSTATUS" type="string"/>
       </prerequisites>
 
-      <process name="cleanupChunks">
+      <process name="cleanupChunksInc">
          <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q express "   />
       </process>
 
-      <process name="updateRunStatus">
+      <process name="updateRunStatusInc">
          <script>
             <![CDATA[
 %(retireScriptBody)s
