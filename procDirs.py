@@ -26,6 +26,7 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=False):
     
     """
     dirs = {}
+    dirs['runId'] = runId
     runBase = os.path.join(config.L1Dir, runId)
     runDir = os.path.join(runBase, config.L1Version)
     dirs['run'] = runDir
@@ -48,8 +49,9 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=False):
 
 def _setupChunk(dirs, chunkId):
 
-    runDir = dirs['run']
-    chunkDir = os.path.join(runDir, chunkId)
+    # runStage = dirs['run']
+    runStage = getStageDir(dirs)
+    chunkDir = os.path.join(runStage, chunkId)
     dirs['chunk'] = chunkDir
     fastMonDir = os.path.join(chunkDir, 'fastMon')
     dirs['fastMon'] = fastMonDir
@@ -67,8 +69,6 @@ def _setupChunk(dirs, chunkId):
 
 
 def _setupCrumb(dirs, crumbId):
-
-    runDir = dirs['run']
     chunkDir = dirs['chunk']
     crumbDir = os.path.join(chunkDir, crumbId)
     dirs['crumb'] = crumbDir
@@ -91,8 +91,10 @@ def mkdir(path):
     #    if os.path.isdir(path):
     #        return
     #    raise os.error
-    # Race condition here!
+    # # Race condition here!
     # os.makedirs(path)
+    #
+    # # punt
     if not os.path.exists(path):
         runner.run('mkdir -p %s' % path)
     return
@@ -147,3 +149,9 @@ def findPieceDirs(dlId, runId, chunkId=None):
     pieceDirs.sort(key=os.path.basename)
    
     return pieceDirs
+
+
+def getStageDir(dirs):
+    base = config.afsStage
+    stager = os.path.join(base, dirs['runId'])
+    return stager

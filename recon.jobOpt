@@ -1,5 +1,5 @@
-#include "$LATINTEGRATIONROOT/src/jobOptions/pipeline/readigi_runrecon.txt"
-digiRootReaderAlg.digiRootFile = "$digiChunkFile";
+#include "$GLEAMROOT/src/jobOptions/pipeline/readigi_runrecon.txt"
+digiRootReaderAlg.digiRootFileList = { "$digiChunkFile" } ;
 RootIoSvc.StartingIndex = $crumbStart;
 ApplicationMgr.EvtMax = $crumbEvents;
 reconRootWriterAlg.reconRootFile = "$reconCrumbFile";

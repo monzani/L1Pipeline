@@ -39,7 +39,8 @@ if config.testMode:
     # send = ""             # noop
     send = "--send LISOC" # loopback test
 else:
-    send = "--send GSSC"  # the real deal
+    # send = "--send GSSC"  # the real deal
+    send = "--send LISOC" # always test mode for now
 pass
 
 staged = stageFiles.StageSet()
@@ -51,7 +52,9 @@ stagedFile = staged.stageIn(exportFile)
 
 args = stagedFile
 
-cmd = """. /u/gl/glastops/isoc_config_devel.sh
+isocBin = config.isocBin
+
+cmd = """eval `%(isocBin)s/isoc env --add-env=flightops`
 FASTCopy.py %(send)s %(args)s
 """ % locals()
 

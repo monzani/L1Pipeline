@@ -35,7 +35,7 @@ else:
     pass
 print >> sys.stderr, "Test mode: %s" % testMode
 
-L1Version = "1.17"
+L1Version = "1.18"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
@@ -50,11 +50,9 @@ if testMode: L1Dir = os.path.join(L1Dir, 'test')
 
 afsStage = "/afs/slac/g/glast/ground/PipelineStaging"
 
-maxCpu = 1000
-
 #maxCrumbSize = 48000 # SVAC pipeline uses this
 #maxCrumbSize = 250   # tiny
-#maxCrumbSize = 6353   # ~.5Hr on tori (muons).  Also about half of medium q limit
+#maxCrumbSize = 6353   # ~.5Hr on tori (muons).  Also about half of (old) medium q limit
 maxCrumbSize = 17000   # ~.5Hr on cob (skymodel).
 minCrumbCpuf = 7
 
@@ -68,10 +66,10 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume03')
-glastVersion = 'v8r1109p12'
-releaseName = 'EngineeringModel'
-gleamPackage = 'LatIntegration'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume07')
+glastVersion = 'v12r5'
+releaseName = 'GlastRelease'
+gleamPackage = 'Gleam'
 #
 glastName = '-'.join((releaseName, glastVersion))
 glastLocation = os.path.join(releaseDir, glastName)
@@ -87,7 +85,11 @@ haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
 
-ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-v9"
+isoc = '/afs/slac/g/glast/isoc/flightOps'
+isocPlatform = os.popen(os.path.join(isoc, 'isoc-platform')).readline().strip()
+isocBin = os.path.join(isoc, isocPlatform, 'ISOC_PROD/bin')
+
+ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-v9r2"
 PFILES="."
 stBinDir = os.path.join(ST, 'bin')
 
@@ -101,11 +103,11 @@ packages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v1r2p0',
+        'version': 'v2r1p0',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v1r1p0',
+        'version': 'v2r1p1',
         },
     'Monitor': {
         'repository': 'svac',
@@ -127,10 +129,6 @@ packages = {
         'repository': '',
         'version': 'v1r1p6',
         },
-#    'fitsGen': {
-#        'repository': '',
-#        'version': 'v3r6p2',
-#        },
     }
 
 # fill in standard values for standard packages

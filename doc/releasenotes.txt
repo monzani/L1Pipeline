@@ -165,3 +165,18 @@ ft2Util v1r1p6
 Tweaks to PYTHONPATH and LD_LIBRARY_PATH
 Tweaks to FT2 and fastMon
 -------------------------------------------
+
+1.18
+-----------------
+GlastRelease v12r5
+Common v2r1p0
+FastMon v2r1p1
+ScienceTools v9r2
+
+Stage chunks & crumbs on AFS.
+
+Add "DATASOURCE=LPA" as pipeline variable and use it as metadata when
+registering files.  User can override it when injecting MC data.
+FastCopy to LISOC even in prod mode.
+Frob makeFT1.
+-------------------------------------------

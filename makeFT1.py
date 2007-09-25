@@ -31,7 +31,7 @@ stagedFt1File = staged.stageOut(realFt1File)
 
 cmd = '''
 cd %(workDir)s
-%(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s event_classifier=Pass4_Classifier
+%(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=DEFAULT event_classifier="Pass5_Classifier" tstart=100000000 tstop=300000000
 ''' % locals()
 
 status = runner.run(cmd)

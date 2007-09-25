@@ -8,6 +8,8 @@
 <task name="L1Proc" version="%(L1Version)s" type="Data">
 
    <variables>
+      <var name="DATASOURCE">LPA</var>
+
       <var name="CMTCONFIG">%(cmtConfig)s</var>
       <var name="GLAST_EXT">%(glastExt)s</var>
       <var name="GPL2">%(GPL2)s</var>
