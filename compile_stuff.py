@@ -1,8 +1,11 @@
 #!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
 
 import os
+import sys
 
 import config
+
+sys.path.append(config.gplPath)
 
 import runner
 
@@ -31,6 +34,6 @@ for packName, package in config.packages.items():
     cmt config
     make clean
     make''' % args
-    
+
     runner.run(cmd)
     continue

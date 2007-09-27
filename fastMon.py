@@ -21,6 +21,8 @@ realOutFile = files['chunk']['fastMon']
 tmpOutFile = files['chunk']['fastMonTmp']
 
 staged = stageFiles.StageSet()
+finishOption = config.finishOption
+
 inFile = staged.stageIn(realInFile)
 outFile = staged.stageOut(tmpOutFile)
 
@@ -57,7 +59,9 @@ ls -lahR
 ''' % locals()
 
 status = runner.run(cmd)
-status |= staged.finish()
+if status: finishOption = 'wipe'
+
+status |= staged.finish(finishOption)
 
 status |= runner.run('mv %s %s' % (tmpOutFile, realOutFile))
 

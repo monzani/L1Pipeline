@@ -146,6 +146,8 @@ def _setupChunk(dirs, chunkId, runHead):
                                  join(chunkHead, 'svac.root'))
     files['svacHist'] = os.path.join(dirs['svac'], \
                                      join(chunkHead, 'svacHist.root'))
+    files['ft2Fake'] = os.path.join(dirs['chunk'], \
+                                    join(chunkHead, 'ft2Fake.fits'))
 
     files['event'] = os.environ.get('EVTFILE')
     # will not be set if we're not at chunk level

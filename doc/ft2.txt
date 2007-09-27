@@ -1,0 +1,8 @@
+
+To produce FT2 file for Gleam, using only M7 file use the --Gleam option
+example:    makeFT2Entries.exe    -M7File ./magic7_070730001.txt  -FT2_txt_File ft2-out.txt -FT2_fits_File ft2.fits --Gleam1
+you can put '--Gleam' option where you want not just at the end of the command line.
+
+To merge a FT2.txt file with 1 second entries into a 30 seconds one, use mergeFT2Entries.exe  task :
+example:    mergeFT2Entries.exe -FT2_txt_File ft2-out.txt -FT2_fits_File  ft2.fits
+

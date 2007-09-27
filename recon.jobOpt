@@ -5,3 +5,5 @@ ApplicationMgr.EvtMax = $crumbEvents;
 reconRootWriterAlg.reconRootFile = "$reconCrumbFile";
 RootTupleSvc.filename = "$meritCrumbFile";
 CalTupleAlg.tupleFilename = "$calCrumbFile";
+FluxAlg.PointingHistory = { "$fakeFT2File" };
+GlastDetSvc.xmlfile = "$(XMLGEODBSROOT)/xml/$(gleamGeometry)";

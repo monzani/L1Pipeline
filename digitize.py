@@ -17,11 +17,14 @@ chunkId = os.environ['CHUNK_ID']
 files = fileNames.setup(dlId, runId, chunkId)
 
 staged = stageFiles.StageSet()
+finishOption = config.finishOption
+
 os.environ['EVTFILE'] = staged.stageIn(os.environ['EVTFILE'])
 os.environ['digiChunkFile'] = staged.stageOut(files['chunk']['digi'])
 
 status = runner.run(config.apps['digi']+' '+config.digiOptions)
+if status: finishOption = 'wipe'
 
-status |= staged.finish()
+status |= staged.finish(finishOption)
 
 sys.exit(status)

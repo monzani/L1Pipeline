@@ -1,0 +1,15 @@
+
+        Gleam now accepts an FT2 file through the
+
+FluxAlg.PointingHistory = {"FT2.fits"};
+
+JO.
+
+        In addition, Gleam now defaults to the fligth geometry:
+
+GlastDetSvc.xmlfile = "$(XMLGEODBSROOT)/xml/flight/flightSegVols.xml";
+
+For LAT data on the ground you still need to set it to
+
+GlastDetSvc.xmlfile = "$(XMLGEODBSROOT)/xml/latAssembly/latAssemblySegVols.xml";
+

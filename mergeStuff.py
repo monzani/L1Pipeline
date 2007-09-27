@@ -23,7 +23,11 @@ import stageFiles
 import rootFiles
 
 def finalize(status):
-    status |= inStage.finish()
+    if status:
+        finishOption = 'wipe'
+    else:
+        finishOption = config.finishOption
+    status |= inStage.finish(finishOption)
     # status |= outStage.finish()
     
     registerPrep.prep(fileType, realOutFile)

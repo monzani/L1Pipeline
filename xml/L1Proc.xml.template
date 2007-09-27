@@ -259,7 +259,7 @@
       </process>
 
       <process name="ft2Runs">
-         <job executable="${L1ProcROOT}/ft2Entries.py" batchOptions=" -q short -sp 100 "   />
+         <job executable="${L1ProcROOT}/ft2Entries.py" batchOptions=" -q medium -sp 100 "   />
          <depends>
             <after process="mergeDigi" status="SUCCESS" />
             <after process="mergeMeritChunks" status="SUCCESS"/>
@@ -274,10 +274,33 @@
       </process>
 
       <process name="makeFT2">
-         <job executable="${L1ProcROOT}/makeFT2File.py" batchOptions=" -q express -sp 100 "   />
+         <job executable="${L1ProcROOT}/makeFT2File.py" batchOptions=" -q short -sp 100 "   />
          <depends>
-            <after process="makeFT1" status="SUCCESS"/>
             <after process="ingestFT2" status="SUCCESS"/>
+         </depends>
+      </process>
+
+      <process name="exportFT2">
+         <variables>
+            <var name="fileType">ft2Export</var>
+         </variables>
+         <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q express -sp 100 "   />
+         <depends>
+            <after process="makeFT2" status="SUCCESS"/>
+         </depends>
+      </process>
+
+      <process name="registerFT2">
+         <variables>
+            <var name="parentProcess">makeFT2</var>
+            <var name="dataType">FT2</var>
+         </variables>
+         <script><![CDATA[
+%(registerBody)s
+            ]]>
+         </script>
+         <depends>
+            <after process="makeFT2" status="SUCCESS" />
          </depends>
       </process>
 
@@ -287,7 +310,7 @@
          </variables>
          <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q express -sp 100 "   />
          <depends>
-            <after process="makeFT2" status="SUCCESS" />
+            <after process="makeFT1" status="SUCCESS"/>
          </depends>
       </process>
 
@@ -348,16 +371,18 @@
          <depends>
             <after process="doChunk.checkChunk" status="SUCCESS"/>
             <after process="exportFT1" status="SUCCESS"/>
-            <after process="registerCal" status="SUCCESS"/>
-            <after process="registerFT1" status="SUCCESS"/>
-            <after process="registerDigi" status="SUCCESS"/>
-            <after process="registerFastMon" status="SUCCESS"/>
-            <after process="registerDigiEor" status="SUCCESS"/>
+            <after process="exportFT2" status="SUCCESS"/>
             <after process="ingestDigiTrend" status="SUCCESS"/>
+            <after process="ingestReconTrend" status="SUCCESS"/>
+            <after process="registerCal" status="SUCCESS"/>
+            <after process="registerDigi" status="SUCCESS"/>
+            <after process="registerDigiEor" status="SUCCESS"/>
+            <after process="registerFT1" status="SUCCESS"/>
+            <after process="registerFT2" status="SUCCESS"/>
+            <after process="registerFastMon" status="SUCCESS"/>
             <after process="registerMerit" status="SUCCESS"/>
             <after process="registerRecon" status="SUCCESS"/>
             <after process="registerReconEor" status="SUCCESS"/>
-            <after process="ingestReconTrend" status="SUCCESS"/>
             <after process="registerSvacTuple" status="SUCCESS"/>
          </depends>
          <createsSubtasks>
@@ -391,7 +416,11 @@
          </prerequisites>
 
          <process name="digitization">
-            <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q long -sp 100 "   />
+            <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q medium -sp 100 "   />
+         </process>
+ 
+         <process name="fakeFT2">
+            <job executable="${L1ProcROOT}/fakeFT2.py" batchOptions=" -q medium -sp 100 "   />
          </process>
  
          <process name="fastMon">
@@ -425,6 +454,7 @@
             <job executable="${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q express -sp 100 "   />
             <depends>
                <after process="digitization" status="SUCCESS" />
+               <after process="fakeFT2" status="SUCCESS" />
             </depends>
             <createsSubtasks>
                <subtask>doCrumb</subtask>
@@ -483,7 +513,7 @@
          </process>
  
          <process name="svacTuple">
-            <job executable="${L1ProcROOT}/makeSvac.py" batchOptions=" -q long "   />
+            <job executable="${L1ProcROOT}/makeSvac.py" batchOptions=" -q long %(reconCrumbCpuf)s "   />
             <depends>
                <after process="doCrumb.recon" status="SUCCESS"/>
                <after process="mergeReconCrumbs" status="SUCCESS" />

@@ -22,6 +22,7 @@ files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'], \
                         environ['CHUNK_ID'])
 
 staged = stageFiles.StageSet()
+finishOption = config.finishOption
 
 stagedDigiFile = staged.stageIn(files['chunk']['digi'])
 stagedReconFile = staged.stageIn(files['chunk']['recon'])
@@ -68,7 +69,8 @@ printenv LD_LIBRARY_PATH
 """ % locals()
 
 status = runner.run(cmd)
+if status: finishOption = 'wipe'
 
-status |= staged.finish()
+status |= staged.finish(finishOption)
 
 sys.exit(status)

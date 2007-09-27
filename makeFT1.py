@@ -16,6 +16,7 @@ import registerPrep
 files = fileNames.setup(os.environ['DOWNLINK_ID'], os.environ['RUNID'])
 
 staged = stageFiles.StageSet()
+finishOption = config.finishOption
 
 if staged.setupOK:
     workDir = staged.stageDir
@@ -35,8 +36,9 @@ cd %(workDir)s
 ''' % locals()
 
 status = runner.run(cmd)
+if status: finishOption = 'wipe'
 
-status |= staged.finish()
+status |= staged.finish(finishOption)
 
 os.symlink(os.path.basename(realFt1File), files['run']['ft1Export'])
 

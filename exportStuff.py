@@ -44,6 +44,7 @@ else:
 pass
 
 staged = stageFiles.StageSet()
+finishOption = config.finishOption
 
 files = fileNames.setup(os.environ['DOWNLINK_ID'], os.environ['RUNID'])
 exportFile = files['run'][os.environ['fileType']]
@@ -59,7 +60,8 @@ FASTCopy.py %(send)s %(args)s
 """ % locals()
 
 status = runner.run(cmd)
+if status: finishOption = 'wipe'
 
-status |= staged.finish()
+status |= staged.finish(finishOption)
 
 sys.exit(status)

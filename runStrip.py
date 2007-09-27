@@ -31,6 +31,7 @@ else:
 files = fileNames.setup(dlId, runId, chunkId)
 
 staged = stageFiles.StageSet()
+finishOption = config.finishOption
 
 if staged.setupOK:
     workDir = staged.stageDir
@@ -77,8 +78,9 @@ mv %(tmpOut)s %(outFile)s
 """ % locals()
 
 status = runner.run(cmd)
+if status: finishOption = 'wipe'
 
-status |= staged.finish()
+status |= staged.finish(finishOption)
 
 if 'Trend' in reportType:
     # This is a trending report, at run level.  Has to be registered.

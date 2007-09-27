@@ -12,6 +12,7 @@ import runner
 import stageFiles
 
 staged = stageFiles.StageSet()
+finishOption = config.finishOption
 
 dlId = os.environ['DOWNLINK_ID']
 runId = os.environ['RUNID']
@@ -26,7 +27,8 @@ stagedInFile = staged.stageIn(realInFile)
 cmd = '%(app)s %(stagedInFile)s' % locals()
 
 status = runner.run(cmd)
+if status: finishOption = 'wipe'
 
-status |= staged.finish()
+status |= staged.finish(finishOption)
 
 sys.exit(status)

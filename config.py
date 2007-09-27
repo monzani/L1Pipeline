@@ -35,7 +35,7 @@ else:
     pass
 print >> sys.stderr, "Test mode: %s" % testMode
 
-L1Version = "1.18"
+L1Version = "1.19"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
@@ -66,8 +66,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume07')
-glastVersion = 'v12r5'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
+glastVersion = 'v12r8'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -103,11 +103,11 @@ packages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v2r1p0',
+        'version': 'v2r2p1',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v2r1p1',
+        'version': 'v2r2p0',
         },
     'Monitor': {
         'repository': 'svac',
@@ -127,7 +127,7 @@ packages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r1p6',
+        'version': 'v1r1p11',
         },
     }
 
@@ -175,6 +175,7 @@ apps = {
     'fastMon': packages['FastMon']['app'],
     'makeFT2': packages['ft2Util']['app'],
     'makeFT1': os.path.join(stBinDir, 'makeFT1'),
+    'mergeFT2': os.path.join(packages['ft2Util']['bin'], 'mergeFT2Entries.exe'),
     'recon': gleam,
     'reconMon': packages['TestReport']['app'],
     'reportMerge': packages['TestReport']['mergeApp'],
@@ -250,6 +251,9 @@ slowQueue = 'xlong'
 #
 reconMergeScratch = " -R &quot;select[scratch&gt;70]&quot; "
 reconCrumbCpuf = " -R &quot;select[cpuf&gt;%s]&quot; " % minCrumbCpuf
+
+# default option for stageFiles.stageSet.finish()
+finishOption = ''
 
 if __name__ == "__main__":
     print L1Dir

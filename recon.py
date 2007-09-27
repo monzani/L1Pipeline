@@ -8,7 +8,7 @@ here to handle staging and set JOBOPTIONS.
 @author W. Focke <focke@slac.stanford.edu>
 """
 
-from os import system, environ
+import os
 import sys
 
 import GPLinit
@@ -18,22 +18,29 @@ import fileNames
 import runner
 import stageFiles
 
-##wbf## system(config.reconApp+' '+environ['Larry_L1ProcROOT']+'/recon.jobOpt; chgrp -R glast-pipeline '+environ['TestDir']+'/'+environ['CHUNK_ID'])
-
-files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'], \
-                        environ['CHUNK_ID'], environ['CRUMB_ID'])
+files = fileNames.setup(os.environ['DOWNLINK_ID'], os.environ['RUNID'], \
+                        os.environ['CHUNK_ID'], os.environ['CRUMB_ID'])
 
 staged = stageFiles.StageSet()
+finishOption = config.finishOption
 
-environ['digiChunkFile'] = staged.stageIn(files['chunk']['digi'])
-environ['reconCrumbFile'] = staged.stageOut(files['crumb']['recon'])
-environ['meritCrumbFile'] = staged.stageOut(files['crumb']['merit'])
-environ['calCrumbFile'] = staged.stageOut(files['crumb']['cal'])
+os.environ['digiChunkFile'] = staged.stageIn(files['chunk']['digi'])
+os.environ['fakeFT2File'] = staged.stageIn(files['chunk']['ft2Fake'])
+os.environ['reconCrumbFile'] = staged.stageOut(files['crumb']['recon'])
+os.environ['meritCrumbFile'] = staged.stageOut(files['crumb']['merit'])
+os.environ['calCrumbFile'] = staged.stageOut(files['crumb']['cal'])
 
-#environ['JOBOPTIONS'] = config.reconOptions
+datasource = os.environ['DATASOURCE']
+if datasource == 'LPA':
+    geometry = 'latAssembly/latAssemblySegVols.xml'
+elif datasource == 'MC':
+    geometry = 'flight/flightSegVols.xml'
+    pass
+os.environ['gleamGeometry'] = geometry
 
 status = runner.run(config.apps['recon'] + ' ' + config.reconOptions)
+if status: finishOption = 'wipe'
 
-status |= staged.finish()
+status |= staged.finish(finishOption)
 
 sys.exit(status)

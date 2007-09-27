@@ -180,3 +180,20 @@ registering files.  User can override it when injecting MC data.
 FastCopy to LISOC even in prod mode.
 Frob makeFT1.
 -------------------------------------------
+
+1.18
+-----------------
+GlastRelease v12r8
+Common v2r2p1
+FastMon v2r2p0
+ft2Util v1r1p11
+
+Don't copy staged outputs back if processing failed.
+Munge dependencies for FT1 and FT2.
+Make bogus FT2 file for recon.
+Make 30-second FT2 file.
+Restrict svacTuple to fast hosts.
+Register data products with DATASOURCE=(LPA|LCI|MC).
+Use flight geometry for MC and ground for LPA.
+Tweak queues.
+-------------------------------------------
