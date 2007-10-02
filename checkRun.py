@@ -32,7 +32,7 @@ lockFile.unlockDir(rootDir, runId, dlId)
 #
 # Details of how this will work have not been hashed out yet.
 
-readyToRetire = False
+readyToRetire = True
 
 if readyToRetire:
     stream = 0

@@ -30,9 +30,12 @@ stagedMeritFile = staged.stageIn(files['run']['merit'])
 realFt1File = files['run']['ft1']
 stagedFt1File = staged.stageOut(realFt1File)
 
+tStart = float(os.environ['tStart'])
+tStop = float(os.environ['tStop'])
+
 cmd = '''
 cd %(workDir)s
-%(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=DEFAULT event_classifier="Pass5_Classifier" tstart=100000000 tstop=300000000
+%(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=DEFAULT event_classifier="Pass5_Classifier" tstart=%(tStart).17g tstop=%(tStop).17g
 ''' % locals()
 
 status = runner.run(cmd)
@@ -40,6 +43,8 @@ if status: finishOption = 'wipe'
 
 status |= staged.finish(finishOption)
 
+if os.path.exists(files['run']['ft1Export']):
+    os.remove(files['run']['ft1Export'])
 os.symlink(os.path.basename(realFt1File), files['run']['ft1Export'])
 
 fileType = 'FT1'

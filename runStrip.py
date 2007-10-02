@@ -57,7 +57,9 @@ outFile = staged.stageOut(realOutFile)
 if 'recon' in reportType:
     realReconFile = files[level]['recon']
     stagedReconFile = staged.stageIn(realReconFile)
-    recon = '-r %s' % stagedReconFile
+    realCalFile = files[level]['cal']
+    stagedCalFile = staged.stageIn(realCalFile)
+    recon = '-r %s -a %s' % (stagedReconFile, stagedCalFile)
 else:
     recon = ''
     pass
@@ -73,7 +75,7 @@ htmlHead = 'html'
 
 cmd = """cd %(workDir)s
 source %(setup)s
-%(app)s -b %(tdBin)s -c %(options)s -d %(digiFile)s %(recon)s -o %(tmpHead)s -g %(htmlHead)s -w %(codeDir)s -p || exit 1
+%(app)s -b %(tdBin)s -c %(options)s -d %(digiFile)s %(recon)s -o %(tmpHead)s -g %(htmlHead)s -w %(codeDir)s -p -t MCOktTest || exit 1
 mv %(tmpOut)s %(outFile)s
 """ % locals()
 

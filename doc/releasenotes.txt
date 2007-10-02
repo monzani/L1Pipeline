@@ -181,7 +181,7 @@ FastCopy to LISOC even in prod mode.
 Frob makeFT1.
 -------------------------------------------
 
-1.18
+1.19
 -----------------
 GlastRelease v12r8
 Common v2r2p1
@@ -197,3 +197,18 @@ Register data products with DATASOURCE=(LPA|LCI|MC).
 Use flight geometry for MC and ground for LPA.
 Tweak queues.
 -------------------------------------------
+
+1.20
+-----------------
+GR v12r11
+Common v2r3p1
+FastMon v2r3p2
+Monitor mk20071001
+ft2Util v1r1p19
+
+Make tStart and tStop prerequisites for doRun, and use them when registering
+files and making FT1.  Read them from file supplied by HalfPipe.
+Add run id & status, downlink id to metadata when registering files.
+Use cal file for recon EOR and trending.
+Do chunk cleanup on successfule runs if runstatus is COMPLETE or INCOMPLETE.
+rm -rf packages before checking them out when building.

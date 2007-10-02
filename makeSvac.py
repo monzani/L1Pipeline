@@ -53,7 +53,7 @@ options = \
 % locals()
 
 # write JO file
-optionFile = os.path.join(outDir, 'jobOptions.txt')
+optionFile = os.path.join(workDir, 'jobOptions.txt')
 open(optionFile, 'w').write(options)
 
 # do the work

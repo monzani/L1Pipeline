@@ -49,6 +49,8 @@ if status: finishOption = 'wipe'
 
 status |= staged.finish(finishOption)
 
+if os.path.exists(files['run']['ft2Export']):
+    os.remove(files['run']['ft2Export'])
 os.symlink(os.path.basename(fitsFt2File), files['run']['ft2Export'])
 
 fileType = 'FT2'

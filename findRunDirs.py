@@ -8,15 +8,20 @@
 import os
 import sys
 
-import pipeline
-
 import config
+
 import fileNames
+import glastTime
+import pipeline
 import runner
 
 
 dlId = os.environ['DOWNLINK_ID']
 dlRawDir = os.environ['DOWNLINK_RAWDIR']
+
+# VERYBAD!
+head, downlink = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not downlink: head, downlink = os.path.split(head)
 
 # Figure out which runs have data in this dl
 # we assume that any subdirectory of the downlink directory represents a run
@@ -34,15 +39,16 @@ for candidate in maybeIds:
         runDirs[candidate] = maybeDir
         pass
     continue
-runStatuses = dict.fromkeys(dataRuns, 'WAITING')
+runStatuses = dict.fromkeys(dataRuns, config.defaultRunStatus)
 
 print >> sys.stderr, "Presumed runs:[%s]" % dataRuns
 
 # the name of this file is a contract with the halfpipe
-retireFile = os.path.join(dlRawDir, 'retired_runs.txt')
+retireFile = os.path.join(dlRawDir, 'retired_runs_%s.txt' % downlink)
 try:
-    retireeStatus = dict([line.split() for line in open(retireFile)])
+    retireeStatus = dict(line.split() for line in open(retireFile))
 except IOError:
+    print >> sys.stderr, "Couldn't open run status file %s, all runs will have default status %s" % (retireFile, config.defaultRunStatus)
     retireeStatus = {}
     pass
 retirees = set(retireeStatus.keys())
@@ -55,13 +61,40 @@ oldRuns = retirees - dataRuns
 
 print >> sys.stderr, "Old runs:[%s]" % oldRuns
 
+# bogus placeholder start and stop times
+# Should get from acqsummary DB table
+tStartDef = 100000001.0
+tStopDef = 300000001.0
+start = {}
+stop = {}
+boundaryFile = os.path.join(dlRawDir, 'event_times_%s.txt' % downlink)
+try:
+    lines = open(boundaryFile)
+except IOError:
+    print >> sys.stderr, "Couldn't open run bouncray file %s" % boundaryFile
+    lines = []
+    pass
+for line in lines:
+    runId, tStart, tStop = line.strip().split()
+    start[runId] = glastTime.met(float(tStart))
+    stop[runId] = glastTime.met(float(tStop))
+    continue
+
 # create up a subStream for each data run
 subTask = "doRun"
 for runId in dataRuns:
     stream = runId[1:]
     runDir = runDirs[runId]
     runStatus = runStatuses[runId]
-    args = "RUNID=%(runId)s,RUN_RAWDIR=%(runDir)s,RUNSTATUS=%(runStatus)s,DOWNLINK_ID=%(dlId)s" % locals()
+    try:
+        tStart = start[runId]
+        tStop = stop[runId]
+    except KeyError:
+        tStart = tStartDef
+        tStop = tStopDef
+        print >> sys.stderr, "Couldn't get tStart, tStop for run %s, using bogus values" % runId
+        pass
+    args = "RUNID=%(runId)s,RUN_RAWDIR=%(runDir)s,RUNSTATUS=%(runStatus)s,DOWNLINK_ID=%(dlId)s,tStart=%(tStart).17g,tStop=%(tStop).17g" % locals()
     print >> sys.stderr, \
           "Creating stream [%s] of subtask [%s] with args [%s]" % \
           (stream, subTask, args)

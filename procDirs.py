@@ -26,13 +26,12 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=False):
     
     """
     dirs = {}
-    dirs['runId'] = runId
     runBase = os.path.join(config.L1Dir, runId)
     runDir = os.path.join(runBase, config.L1Version)
     dirs['run'] = runDir
 
     if chunkId is not None:
-        _setupChunk(dirs, chunkId)
+        _setupChunk(dirs, runId, chunkId)
         if crumbId is not None:
             _setupCrumb(dirs, crumbId)
             pass
@@ -47,10 +46,10 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=False):
     return dirs
 
 
-def _setupChunk(dirs, chunkId):
+def _setupChunk(dirs, runId, chunkId):
 
     # runStage = dirs['run']
-    runStage = getStageDir(dirs)
+    runStage = getStageDir(dirs, runId)
     chunkDir = os.path.join(runStage, chunkId)
     dirs['chunk'] = chunkDir
     fastMonDir = os.path.join(chunkDir, 'fastMon')
@@ -151,7 +150,7 @@ def findPieceDirs(dlId, runId, chunkId=None):
     return pieceDirs
 
 
-def getStageDir(dirs):
+def getStageDir(dirs, runId):
     base = config.afsStage
-    stager = os.path.join(base, dirs['runId'])
+    stager = os.path.join(base, runId)
     return stager

@@ -35,7 +35,7 @@ else:
     pass
 print >> sys.stderr, "Test mode: %s" % testMode
 
-L1Version = "1.19"
+L1Version = "1.20"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
@@ -56,6 +56,8 @@ afsStage = "/afs/slac/g/glast/ground/PipelineStaging"
 maxCrumbSize = 17000   # ~.5Hr on cob (skymodel).
 minCrumbCpuf = 7
 
+defaultRunStatus = 'WAITING'
+
 glastRoot = '/afs/slac.stanford.edu/g/glast'
 groundRoot = os.path.join(glastRoot, 'ground')
 glastSetup = os.path.join(groundRoot, 'scripts', 'group.sh')
@@ -66,8 +68,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
-glastVersion = 'v12r8'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume04')
+glastVersion = 'v12r11'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -103,15 +105,15 @@ packages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v2r2p1',
+        'version': 'v2r3p1',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v2r2p0',
+        'version': 'v2r3p2',
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'dp20070728',
+        'version': 'mk20071001',
         },
     'TestReport': {
         'repository': 'svac',
@@ -127,7 +129,7 @@ packages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r1p11',
+        'version': 'v1r1p19',
         },
     }
 
@@ -185,13 +187,13 @@ apps = {
 
 monitorOptions = {
     'digiEor': os.path.join(packages['Monitor']['configDir'],
-                            'monconfig_digi_v24_histos.xml'),
+                            'monconfig_digi_v26_histos.xml'),
     'digiTrend': os.path.join(packages['Monitor']['configDir'],
-                              'monconfig_digi_v24_trending.xml'),
+                              'monconfig_digi_v26_trending.xml'),
     'reconEor': os.path.join(packages['Monitor']['configDir'],
-                             'monconfig_recon_v2_histos.xml'),
+                             'monconfig_recon_v4_histos.xml'),
     'reconTrend': os.path.join(packages['Monitor']['configDir'],
-                               'monconfig_recon_v2_trending.xml'),
+                               'monconfig_recon_v3_trending.xml'),
     }
 
 monitorOutFiles = {
@@ -204,19 +206,17 @@ monitorOutFiles = {
 
 mergeConfigs = {
     'digiEor': os.path.join(packages['Monitor']['configDir'],
-                            'MergeHistos_e2e_digi.txt'),
-    'digiMon': os.path.join(L1ProcROOT, 'merge_digi.txt'),
+                            'MergeHistos_digi_v27.txt'),
     'fastMon': os.path.join(L1ProcROOT, 'fast_mon_config.txt'),
     'reconEor': os.path.join(packages['Monitor']['configDir'],
-                             'MergeHistos_e2e_recon.txt'),
-    'reconMon': os.path.join(L1ProcROOT, 'merge_recon.txt'),
+                             'MergeHistos_recon_v5.txt'),
     }
 
 tdBin = 15
 
 ingestor = {
-    'digiTrend': '/afs/slac.stanford.edu/g/glast/ground/bin/ingestDigiTrending',
-    'reconTrend': '/afs/slac.stanford.edu/g/glast/ground/bin/ingestRecoTrending',
+    'digiTrend': '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/bin/ingestDigiTrending',
+    'reconTrend': '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/bin/ingestRecoTrending',
     }
 
 joiner = '*'
@@ -232,8 +232,14 @@ libraryPath = ':'.join((os.path.join(L1Cmt, 'lib'), \
                         rootPath, clhepPath, cppunitPath))
 #                        rootPath, xercesPath, mysqlPath))
 
-#gplPath = '/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/GPLtools/prod/python'
-GPL2 = '/nfs/slac/g/svac/focke/builds/GPLtools/dev'
+#GPL2 = '/nfs/slac/g/svac/focke/builds/GPLtools/dev'
+gplBase = '/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/GPLtools'
+if testMode:
+    gplType = 'L1test'
+else:
+    gplType = 'L1prod'
+pass
+GPL2 = os.path.join(gplBase, gplType)
 gplPath = os.path.join(GPL2, 'python')
 
 pythonPath = ':'.join([L1ProcROOT, rootPath, gplPath,

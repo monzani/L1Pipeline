@@ -29,6 +29,7 @@ for packName, package in config.packages.items():
     LD_LIBRARY_PATH="" ; export LD_LIBRARY_PATH
     ROOTSYS=%(rootSys)s ; export ROOTSYS
     cd %(L1Cmt)s
+    rm -rf %(root)s
     cmt co -r %(version)s %(checkOutName)s
     cd %(cmtDir)s
     cmt config

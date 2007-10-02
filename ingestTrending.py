@@ -24,7 +24,14 @@ files = fileNames.setup(dlId, runId)
 realInFile = files['run'][reportType]
 stagedInFile = staged.stageIn(realInFile)
 
-cmd = '%(app)s %(stagedInFile)s' % locals()
+version = '0'
+
+if config.testMode:
+    db = 'dev'
+else:
+    db = 'prod'
+
+cmd = '%(app)s %(stagedInFile)s %(version)s %(db)s' % locals()
 
 status = runner.run(cmd)
 if status: finishOption = 'wipe'
