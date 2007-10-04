@@ -24,11 +24,18 @@ files = fileNames.setup(os.environ['DOWNLINK_ID'], os.environ['RUNID'], \
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
+if staged.setupOK:
+    workDir = staged.stageDir
+else:
+    workDir = files['dirs']['crumb']
+    pass
+
 os.environ['digiChunkFile'] = staged.stageIn(files['chunk']['digi'])
 os.environ['fakeFT2File'] = staged.stageIn(files['chunk']['ft2Fake'])
 os.environ['reconCrumbFile'] = staged.stageOut(files['crumb']['recon'])
 os.environ['meritCrumbFile'] = staged.stageOut(files['crumb']['merit'])
 os.environ['calCrumbFile'] = staged.stageOut(files['crumb']['cal'])
+os.environ['gcrCrumbFile'] = staged.stageOut(files['crumb']['gcr'])
 
 datasource = os.environ['DATASOURCE']
 if datasource == 'LPA':
@@ -38,7 +45,16 @@ elif datasource == 'MC':
     pass
 os.environ['gleamGeometry'] = geometry
 
-status = runner.run(config.apps['recon'] + ' ' + config.reconOptions)
+#setupScript = config.cmtScript
+app = config.apps['recon']
+options = config.reconOptions
+
+cmd = '''
+cd %(workDir)s
+%(app)s %(options)s
+''' % locals()
+
+status = runner.run(cmd)
 if status: finishOption = 'wipe'
 
 status |= staged.finish(finishOption)

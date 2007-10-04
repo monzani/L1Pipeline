@@ -129,7 +129,7 @@
       <variables>
         <var name="fileType">fastMon</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "/>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q short "/>
       <depends>
         <after process="doChunk.fastMon" status="DONE"/>
       </depends>
@@ -149,7 +149,55 @@
       </depends>
     </process>
  
-    <process name="mergeReconChunks">
+    <process name="fastMonAlarm">
+      <variables>
+        <var name="fileType">fastMon</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q express "/>
+      <depends>
+        <after process="mergeFastMon" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonReport">
+      <variables>
+        <var name="parentProcess">fastMonAlarm</var>
+        <var name="dataType">fastMonReport</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="fastMonAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="fastMonLogger">
+      <variables>
+        <var name="fileType">fastMonAlarm</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q express "/>
+      <depends>
+        <after process="fastMonAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonAlarm">
+      <variables>
+        <var name="parentProcess">fastMonLogger</var>
+        <var name="dataType">fastMonAlarm</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="fastMonLogger" status="SUCCESS"/>
+      </depends>
+    </process>
+
+     <process name="mergeReconChunks">
       <variables>
         <var name="fileType">recon</var>
       </variables>
@@ -238,6 +286,30 @@
       </script>
       <depends>
         <after process="mergeCalChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeGcrChunks">
+      <variables>
+        <var name="fileType">gcr</var>
+      </variables>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "/>
+      <depends>
+        <after process="doChunk.mergeGcrCrumbs" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerGcr">
+      <variables>
+        <var name="parentProcess">mergeGcrChunks</var>
+        <var name="dataType">GCR</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeGcrChunks" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -380,6 +452,9 @@
         <after process="registerFT1" status="SUCCESS"/>
         <after process="registerFT2" status="SUCCESS"/>
         <after process="registerFastMon" status="SUCCESS"/>
+        <after process="registerFastMonAlarm" status="SUCCESS"/>
+        <after process="registerFastMonReport" status="SUCCESS"/>
+        <after process="registerGcr" status="SUCCESS"/>
         <after process="registerMerit" status="SUCCESS"/>
         <after process="registerRecon" status="SUCCESS"/>
         <after process="registerReconEor" status="SUCCESS"/>
@@ -479,6 +554,16 @@
         </depends>
       </process>
 
+      <process name="mergeGcrCrumbs">
+        <variables>
+          <var name="fileType">gcr</var>
+        </variables>
+        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium -sp 100 "/>
+        <depends>
+          <after process="doCrumb.recon" status="DONE"/>
+        </depends>
+      </process>
+
       <process name="mergeReconCrumbs">
         <variables>
           <var name="fileType">recon</var>
@@ -495,6 +580,7 @@
         </variables>
         <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q long "/>
         <depends>
+          <after process="doCrumb.recon" status="SUCCESS"/>
           <after process="mergeReconCrumbs" status="SUCCESS"/>
         </depends>
       </process>
@@ -525,6 +611,7 @@
           <after process="mergeReconCrumbs" status="SUCCESS"/>
           <after process="mergeCalCrumbs" status="SUCCESS"/>
           <after process="mergeMeritCrumbs" status="SUCCESS"/>
+          <after process="mergeGcrCrumbs" status="SUCCESS"/>
         </depends>
       </process>
 

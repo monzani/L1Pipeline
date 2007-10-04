@@ -25,13 +25,12 @@ print >> sys.stderr, \
 lockFile.unlockDir(rootDir, runId, dlId)
 
 # Here we need to check that all the chunk locks (created by the halfpipe,
-# removed by checkChunk) are gone,
-# AND
-# that some database somewhere says that the run is as complete as it will get
-# before launching cleanup and updating run status in the data catalog.
+# removed by this script before now) are gone, AND that some database
+# somewhere (GLAST_ISOC.ACQSUMMARY) says that the run is as complete as it
+# will get, before launching cleanup and updating run status in the data
+# catalog.
 #
-# Details of how this will work have not been hashed out yet.
-
+# but for now we punt
 readyToRetire = True
 
 if readyToRetire:

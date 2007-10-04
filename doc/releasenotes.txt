@@ -213,3 +213,13 @@ Use cal file for recon EOR and trending.
 Do chunk cleanup on successfule runs if runstatus is COMPLETE or INCOMPLETE.
 rm -rf packages before checking them out when building.
 -------------------------------------------
+
+1.21
+-----------------
+GR v12r13
+Monitor dp20071002_v2
+ft2Util v1r1p20
+
+Get GCR calib crumb files.
+Run alarmHandler on fastMon output, log results to ISOC logger.
+Clean up compound comands run by scripts.

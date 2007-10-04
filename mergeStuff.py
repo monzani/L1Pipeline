@@ -6,7 +6,7 @@
 """
 
 import glob
-from os import environ
+import os
 import shutil
 import string
 import sys
@@ -33,10 +33,10 @@ def finalize(status):
     registerPrep.prep(fileType, realOutFile)
     sys.exit(status)
 
-fileType = environ['fileType']
-dlId = environ['DOWNLINK_ID']
-runId = environ['RUNID']
-chunkId = environ.get('CHUNK_ID')
+fileType = os.environ['fileType']
+dlId = os.environ['DOWNLINK_ID']
+runId = os.environ['RUNID']
+chunkId = os.environ.get('CHUNK_ID')
 
 if chunkId is None:
     mergeLevel = 'run'
@@ -101,22 +101,34 @@ if numInFiles == 1:
     pass
 
 outFile = outStage.stageOut(realOutFile)
+workDir = os.path.dirname(outFile)
+#os.chdir(workDir)
 
 inFileString = ''.join([' -i %s ' % ff for ff in inFiles])
 
 if fileType in ['digiEor', 'reconEor', 'fastMon']:
-    environ['LD_LIBRARY_PATH'] = ""
-    environ['CMTPATH'] = config.cmtPath
+    #os.environ['LD_LIBRARY_PATH'] = ""
+    #os.environ['CMTPATH'] = config.cmtPath
+    
+    setup = config.packages['TestReport']['setup']
     mergeConfig = config.mergeConfigs[fileType]
-    cmd = "source " + config.glastSetup + " ;  source " + config.packages['TestReport']['setup'] + "  ; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:" + config.glastExt + "/xerces/2.6.0/lib:" + config.glastLocation + "/lib:" + config.rootSys + "/lib ; export LD_LIBRARY_PATH ; " + config.apps['reportMerge'] + " " + inFileString + " -o " + outFile + " -c " + mergeConfig
-    # + " ; chgrp -R glast-pipeline " + config.L1Disk
+    app = config.apps['reportMerge']
 
+    #cmd = "source " + config.glastSetup + " ;  source " + config.packages['TestReport']['setup'] + "  ; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:" + config.glastExt + "/xerces/2.6.0/lib:" + config.glastLocation + "/lib:" + config.rootSys + "/lib ; export LD_LIBRARY_PATH ; " + config.apps['reportMerge'] + " " + inFileString + " -o " + outFile + " -c " + mergeConfig
+    # + " ; chgrp -R glast-pipeline " + config.L1Disk
+    cmd = """
+    cd %(workDir)s
+    source %(setup)s
+    %(app)s -c %(mergeConfig)s -o %(outFile)s %(inFileString)s
+    """ % locals()
 
 elif fileType in ['digiTrend', 'reconTrend']:
     setup = config.packages['Monitor']['setup']
     app = config.apps['trendMerge']
     treeName = 'Time'
-    cmd = '''source %(setup)s
+    cmd = '''
+    cd %(workDir)s
+    source %(setup)s
     %(app)s %(inFileString)s -o %(outFile)s -t %(treeName)s
     ''' % locals()
 
@@ -128,9 +140,9 @@ elif fileType in ['digi', 'recon']:
 
 
 else:
-    environ['LD_LIBRARY_PATH'] = config.haddRootSys+"/lib:"+environ['LD_LIBRARY_PATH']
-    environ['ROOTSYS'] = config.haddRootSys
-    cmd = config.hadd + (' %s' % outFile) + ((' %s' * len(inFiles)) % tuple(inFiles))
+    #os.environ['LD_LIBRARY_PATH'] = config.haddRootSys+"/lib:"+os.environ['LD_LIBRARY_PATH']
+    #os.environ['ROOTSYS'] = config.haddRootSys
+    cmd = 'cd %s ;' % workDir + config.hadd + (' %s' % outFile) + ((' %s' * len(inFiles)) % tuple(inFiles))
     # + " ;chgrp -R glast-pipeline " + config.L1Disk
 
 

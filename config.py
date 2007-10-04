@@ -35,7 +35,7 @@ else:
     pass
 print >> sys.stderr, "Test mode: %s" % testMode
 
-L1Version = "1.20"
+L1Version = "1.21"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
@@ -68,14 +68,19 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume04')
-glastVersion = 'v12r11'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume07')
+glastVersion = 'v12r13'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
 glastName = '-'.join((releaseName, glastVersion))
 glastLocation = os.path.join(releaseDir, glastName)
 gleam = os.path.join(glastLocation, 'bin', gleamPackage)
+# gleam = os.path.join(glastLocation,
+#                      gleamPackage,
+#                      'v6r29p20',
+#                      cmtConfig,
+#                      'Gleam.exe')
 cmtScript = os.path.join(glastLocation, releaseName, glastVersion, 'cmt',
                          'setup.sh') # do we need this?
 #
@@ -90,6 +95,15 @@ hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 isoc = '/afs/slac/g/glast/isoc/flightOps'
 isocPlatform = os.popen(os.path.join(isoc, 'isoc-platform')).readline().strip()
 isocBin = os.path.join(isoc, isocPlatform, 'ISOC_PROD/bin')
+
+# ISOC logger
+scid = 99
+if testMode:
+    netloggerDest = 'x-netlog://glastlnx06.slac.stanford.edu:15502'
+else:
+    netloggerDest = 'x-netlog://glastlnx06.slac.stanford.edu:15501'
+    pass
+netloggerLevel = 'info'
 
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-v9r2"
 PFILES="."
@@ -113,7 +127,7 @@ packages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'mk20071001',
+        'version': 'dp20071002_v2',
         },
     'TestReport': {
         'repository': 'svac',
@@ -129,7 +143,7 @@ packages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r1p19',
+        'version': 'v1r1p20',
         },
     }
 
@@ -171,6 +185,8 @@ packages['TestReport']['mergeApp'] = os.path.join(packages['TestReport']['bin'],
 
 
 apps = {
+    'alarmHandler': os.path.join(packages['Common']['python'],
+                                 'pAlarmHandler.py'),
     'digi': gleam,
     'digiMon': packages['TestReport']['app'],
     'digiEor': packages['Monitor']['app'],
@@ -187,13 +203,13 @@ apps = {
 
 monitorOptions = {
     'digiEor': os.path.join(packages['Monitor']['configDir'],
-                            'monconfig_digi_v26_histos.xml'),
+                            'monconfig_digi_v27_histos.xml'),
     'digiTrend': os.path.join(packages['Monitor']['configDir'],
-                              'monconfig_digi_v26_trending.xml'),
+                              'monconfig_digi_v27_trending.xml'),
     'reconEor': os.path.join(packages['Monitor']['configDir'],
-                             'monconfig_recon_v4_histos.xml'),
+                             'monconfig_recon_v5_histos.xml'),
     'reconTrend': os.path.join(packages['Monitor']['configDir'],
-                               'monconfig_recon_v3_trending.xml'),
+                               'monconfig_recon_v5_trending.xml'),
     }
 
 monitorOutFiles = {
@@ -207,9 +223,15 @@ monitorOutFiles = {
 mergeConfigs = {
     'digiEor': os.path.join(packages['Monitor']['configDir'],
                             'MergeHistos_digi_v27.txt'),
-    'fastMon': os.path.join(L1ProcROOT, 'fast_mon_config.txt'),
+#    'fastMon': os.path.join(L1ProcROOT, 'fast_mon_config.txt'),
+    'fastMon': os.path.join(L1ProcROOT, 'MergeHistos_FastMon.txt'),
     'reconEor': os.path.join(packages['Monitor']['configDir'],
                              'MergeHistos_recon_v5.txt'),
+    }
+#mergeConfigs['fastMon'] = mergeConfigs['digiEor']
+
+alarmConfigs = {
+    'fastMon': os.path.join(packages['Common']['root'], 'xml', 'config.xml'),
     }
 
 tdBin = 15
@@ -260,6 +282,8 @@ reconCrumbCpuf = " -R &quot;select[cpuf&gt;%s]&quot; " % minCrumbCpuf
 
 # default option for stageFiles.stageSet.finish()
 finishOption = ''
+
+python = sys.executable
 
 if __name__ == "__main__":
     print L1Dir

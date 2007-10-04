@@ -6,6 +6,7 @@
 """
 
 import os
+import re
 import sys
 
 import config
@@ -80,10 +81,20 @@ for line in lines:
     stop[runId] = glastTime.met(float(tStop))
     continue
 
+runNumRe = re.compile('([0-9]+)')
+
 # create up a subStream for each data run
 subTask = "doRun"
 for runId in dataRuns:
-    stream = runId[1:]
+    mop = runNumRe.search(runId)
+    if mop:
+        nStr = mop.group(1)
+    else:
+        print >> sys.stderr, 'runId %s is malformed.' % runId
+        nStr = runId[1:]
+        pass
+    runNumber = '%d' % int(nStr)
+    stream = runNumber
     runDir = runDirs[runId]
     runStatus = runStatuses[runId]
     try:
@@ -94,7 +105,7 @@ for runId in dataRuns:
         tStop = tStopDef
         print >> sys.stderr, "Couldn't get tStart, tStop for run %s, using bogus values" % runId
         pass
-    args = "RUNID=%(runId)s,RUN_RAWDIR=%(runDir)s,RUNSTATUS=%(runStatus)s,DOWNLINK_ID=%(dlId)s,tStart=%(tStart).17g,tStop=%(tStop).17g" % locals()
+    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUN_RAWDIR=%(runDir)s,RUNSTATUS=%(runStatus)s,DOWNLINK_ID=%(dlId)s,tStart=%(tStart).17g,tStop=%(tStop).17g" % locals()
     print >> sys.stderr, \
           "Creating stream [%s] of subtask [%s] with args [%s]" % \
           (stream, subTask, args)

@@ -1,7 +1,8 @@
 
         Gleam now accepts an FT2 file through the
 
-FluxAlg.PointingHistory = {"FT2.fits"};
+NOT! FluxAlg.PointingHistory = {"FT2.fits"};
+PtValsAlg.PointingHistory = {"$fakeFT2File","", ""};
 
 JO.
 

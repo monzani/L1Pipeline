@@ -82,39 +82,70 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=True):
 
     
     files['run']['head'] = dlHead
-    files['run']['digi'] = os.path.join(dirs['run'], \
-                                        join(dlHead, 'digi.root'))
-    files['run']['fastMon'] = os.path.join(dirs['run'], \
-                                           join(dlHead, 'fastMon.root'))
-    files['run']['digiEor'] = os.path.join(dirs['run'], \
-                                           join(dlHead, 'digiEor.root'))
-    files['run']['digiTrend'] = os.path.join(dirs['run'], \
-                                             join(dlHead, 'digiTrend.root'))
-    files['run']['recon'] = os.path.join(dirs['run'], \
-                                         join(dlHead, 'recon.root'))
-    files['run']['merit'] = os.path.join(dirs['run'], \
-                                         join(dlHead, 'merit.root'))
-    files['run']['ft1'] = os.path.join(dirs['run'], \
-                                         join(dlHead, 'ft1.fits'))
-    files['run']['cal'] = os.path.join(dirs['run'], \
+
+    files['run']['cal'] = os.path.join(dirs['run'],
                                        join(dlHead, 'cal.root'))
-    files['run']['reconEor'] = os.path.join(dirs['run'], \
+    files['run']['digi'] = os.path.join(dirs['run'],
+                                        join(dlHead, 'digi.root'))
+    files['run']['digiEor'] = os.path.join(dirs['run'],
+                                           join(dlHead, 'digiEor.root'))
+    files['run']['digiEorAlarm'] = os.path.join(dirs['run'],
+                                                join(dlHead,
+                                                     'digiEorAlarm.xml'))
+    files['run']['digiEorReoprt'] = os.path.join(dirs['run'],
+                                                 join(dlHead,
+                                                      'digiEorReport.html'))
+    files['run']['digiTrend'] = os.path.join(dirs['run'],
+                                             join(dlHead, 'digiTrend.root'))
+    files['run']['digiTrendAlarm'] = os.path.join(dirs['run'],
+                                                  join(dlHead,
+                                                       'digiTrendAlarm.xml'))
+    files['run']['digiTrendReport'] = os.path.join(dirs['run'],
+                                                   join(dlHead,
+                                                        'digiTrendReport.html'))
+    files['run']['fastMon'] = os.path.join(dirs['run'],
+                                           join(dlHead, 'fastMon.root'))
+    files['run']['fastMonAlarm'] = os.path.join(dirs['run'],
+                                                join(dlHead,
+                                                     'fastMonAlarm.xml'))
+    files['run']['fastMonReport'] = os.path.join(dirs['run'],
+                                                 join(dlHead,
+                                                      'fastMonReport.html'))
+    files['run']['ft1'] = os.path.join(dirs['run'],
+                                       join(dlHead, 'ft1.fits'))
+    files['run']['ft1Export'] = os.path.join(dirs['run'],
+                                             exportName(dlId, 'evsum'))
+    files['run']['ft2Export'] = os.path.join(dirs['run'],
+                                             exportName(dlId, 'pt'))
+    files['run']['ft2Fits'] = os.path.join(dirs['run'],
+                                           join(dlHead, 'ft2.fits'))
+    files['run']['ft2Txt'] = os.path.join(dirs['run'],
+                                          join(dlHead, 'ft2.txt'))
+    files['run']['m7'] = os.path.join(os.environ['DOWNLINK_RAWDIR'], \
+                                      'magic7_' + dlId + '.txt')
+    files['run']['merit'] = os.path.join(dirs['run'],
+                                         join(dlHead, 'merit.root'))
+    files['run']['recon'] = os.path.join(dirs['run'],
+                                         join(dlHead, 'recon.root'))
+    files['run']['reconEor'] = os.path.join(dirs['run'],
                                             join(dlHead, 'reconEor.root'))
-    files['run']['reconTrend'] = os.path.join(dirs['run'], \
+    files['run']['reconEorAlarm'] = os.path.join(dirs['run'],
+                                                 join(dlHead,
+                                                      'reconEorAlarm.xml'))
+    files['run']['reconEorReport'] = os.path.join(dirs['run'],
+                                                  join(dlHead,
+                                                       'reconEorReport.html'))
+    files['run']['reconTrend'] = os.path.join(dirs['run'],
                                               join(dlHead, 'reconTrend.root'))
+    files['run']['reconTrendAlarm'] = os.path.join(dirs['run'],
+                                                   join(dlHead,
+                                                        'reconTrendAlarm.xml'))
+    files['run']['reconTrendReport'] = os.path.join(dirs['run'],
+                                                    join(dlHead,
+                                                         'reconTrendReport.html'))
     files['run']['svac'] = os.path.join(dirs['run'], join(dlHead, 'svac.root'))
     
     
-    files['run']['ft1Export'] = os.path.join(dirs['run'], exportName(dlId, 'evsum'))
-
-    files['run']['m7'] = os.path.join(os.environ['DOWNLINK_RAWDIR'], 'magic7_' + dlId + '.txt')
-
-    files['run']['ft2Txt'] = os.path.join(dirs['run'], \
-                                          join(dlHead, 'ft2.txt'))
-    files['run']['ft2Fits'] = os.path.join(dirs['run'], \
-                                           join(dlHead, 'ft2.fits'))
-    files['run']['ft2Export'] = os.path.join(dirs['run'], exportName(dlId, 'pt'))
-
     return files
 
 
@@ -159,12 +190,14 @@ def _setupCrumb(dirs, crumbId, chunkHead):
     files = {}
     crumbHead = join(chunkHead, crumbId)
     files['head'] = crumbHead
-    files['recon'] = os.path.join(dirs['crumb'], \
-                                  join(crumbHead, 'recon.root'))
-    files['merit'] = os.path.join(dirs['crumb'], \
-                                  join(crumbHead, 'merit.root'))
     files['cal'] = os.path.join(dirs['crumb'], \
                                 join(crumbHead, 'cal.root'))
+    files['gcr'] = os.path.join(dirs['crumb'], \
+                                join(crumbHead, 'gcr.root'))
+    files['merit'] = os.path.join(dirs['crumb'], \
+                                  join(crumbHead, 'merit.root'))
+    files['recon'] = os.path.join(dirs['crumb'], \
+                                  join(crumbHead, 'recon.root'))
     return files
 
 

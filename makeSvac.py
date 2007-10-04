@@ -62,9 +62,7 @@ svacTupleCmt = config.packages['EngineeringModelRoot']['setup']
 
 cmd = """
 cd %(workDir)s
-printenv
 source %(svacTupleCmt)s
-printenv LD_LIBRARY_PATH
 %(svacTupleApp)s %(optionFile)s
 """ % locals()
 
