@@ -121,7 +121,9 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=True):
                                            join(dlHead, 'ft2.fits'))
     files['run']['ft2Txt'] = os.path.join(dirs['run'],
                                           join(dlHead, 'ft2.txt'))
-    files['run']['m7'] = os.path.join(os.environ['DOWNLINK_RAWDIR'], \
+    files['run']['gcr'] = os.path.join(dirs['run'],
+                                       join(dlHead, 'gcr.root'))
+    files['run']['m7'] = os.path.join(os.environ['DOWNLINK_RAWDIR'],
                                       'magic7_' + dlId + '.txt')
     files['run']['merit'] = os.path.join(dirs['run'],
                                          join(dlHead, 'merit.root'))
@@ -153,22 +155,28 @@ def _setupChunk(dirs, chunkId, runHead):
     files = {}
     chunkHead = join(runHead, chunkId)
     files['head'] = chunkHead
+    files['cal'] = os.path.join(dirs['chunk'], \
+                                join(chunkHead, 'cal.root'))
     files['digi'] = os.path.join(dirs['chunk'], \
                                  join(chunkHead, 'digi.root'))
-    files['fastMonTmp'] = os.path.join(dirs['fastMon'], \
-                                       join(chunkHead, 'fastMon.processed.root'))
-    files['fastMon'] = os.path.join(dirs['fastMon'], \
-                                    join(chunkHead, 'fastMon.root'))
     files['digiEor'] = os.path.join(dirs['digiEor'], \
                                     join(chunkHead, 'digiEor.root'))
     files['digiTrend'] = os.path.join(dirs['digiTrend'], \
                                       join(chunkHead, 'digiTrend.root'))
-    files['recon'] = os.path.join(dirs['chunk'], \
-                                  join(chunkHead, 'recon.root'))
+    files['event'] = os.environ.get('EVTFILE')
+    # will not be set if we're not at chunk level
+    files['fastMonTmp'] = os.path.join(dirs['fastMon'], \
+                                       join(chunkHead, 'fastMon.processed.root'))
+    files['fastMon'] = os.path.join(dirs['fastMon'], \
+                                    join(chunkHead, 'fastMon.root'))
+    files['ft2Fake'] = os.path.join(dirs['chunk'], \
+                                    join(chunkHead, 'ft2Fake.fits'))
+    files['gcr'] = os.path.join(dirs['chunk'], \
+                                join(chunkHead, 'gcr.root'))
     files['merit'] = os.path.join(dirs['chunk'], \
                                   join(chunkHead, 'merit.root'))
-    files['cal'] = os.path.join(dirs['chunk'], \
-                                join(chunkHead, 'cal.root'))
+    files['recon'] = os.path.join(dirs['chunk'], \
+                                  join(chunkHead, 'recon.root'))
     files['reconEor'] = os.path.join(dirs['reconEor'], \
                                      join(chunkHead, 'reconEor.root'))
     files['reconTrend'] = os.path.join(dirs['reconTrend'], \
@@ -177,11 +185,7 @@ def _setupChunk(dirs, chunkId, runHead):
                                  join(chunkHead, 'svac.root'))
     files['svacHist'] = os.path.join(dirs['svac'], \
                                      join(chunkHead, 'svacHist.root'))
-    files['ft2Fake'] = os.path.join(dirs['chunk'], \
-                                    join(chunkHead, 'ft2Fake.fits'))
 
-    files['event'] = os.environ.get('EVTFILE')
-    # will not be set if we're not at chunk level
 
     return files
 

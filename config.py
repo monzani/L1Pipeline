@@ -35,7 +35,7 @@ else:
     pass
 print >> sys.stderr, "Test mode: %s" % testMode
 
-L1Version = "1.21"
+L1Version = "1.22"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
@@ -68,8 +68,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume07')
-glastVersion = 'v12r13'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
+glastVersion = 'v12r15'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -105,7 +105,9 @@ else:
     pass
 netloggerLevel = 'info'
 
-ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-v9r2"
+stVersion = 'v9r2'
+ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
+stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
 PFILES="."
 stBinDir = os.path.join(ST, 'bin')
 
@@ -127,7 +129,7 @@ packages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'dp20071002_v2',
+        'version': 'dp20071004_v1',
         },
     'TestReport': {
         'repository': 'svac',

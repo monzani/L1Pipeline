@@ -29,7 +29,7 @@ def parser(inFile):
 
 
 def alarmSeverity(number):
-    if number['error']:
+    if number['error'] or number['undefined']:
         severity = log.error
     elif number['warning']:
         severity = log.warn
@@ -42,7 +42,7 @@ def alarmSeverity(number):
 def doAlarms(inFile, fileType):
     number = parser(inFile)
     severity = alarmSeverity(number)
-    message = 'errors:%(error)d, warnings:%(warning)d, undefined:%(undefined)d, clean:%(clean)d.' % number
+    message = 'data errors:%(error)d, processing errors:%(undefined)d, warnings:%(warning)d, clean:%(clean)d.' % number
 
     target = 'dk=%s;nR=%s;nD=%s' % (
         fileType,

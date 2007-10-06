@@ -223,3 +223,17 @@ ft2Util v1r1p20
 Get GCR calib crumb files.
 Run alarmHandler on fastMon output, log results to ISOC logger.
 Clean up compound comands run by scripts.
+-------------------------------------------
+
+1.22
+-----------------
+GR v12r15
+Monitor dp20071004_v1
+
+Log undefined alarms as errors.
+Use OktoberTest joboptions for recon.
+Merge gcr with pipelinedatasets.
+Clean up merging code.
+Use custom eventclassifier for FT1, run makeFT1.exe directly rather than 
+bin/makeFT1.
+-------------------------------------------

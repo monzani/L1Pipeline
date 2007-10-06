@@ -107,15 +107,9 @@ workDir = os.path.dirname(outFile)
 inFileString = ''.join([' -i %s ' % ff for ff in inFiles])
 
 if fileType in ['digiEor', 'reconEor', 'fastMon']:
-    #os.environ['LD_LIBRARY_PATH'] = ""
-    #os.environ['CMTPATH'] = config.cmtPath
-    
     setup = config.packages['TestReport']['setup']
     mergeConfig = config.mergeConfigs[fileType]
     app = config.apps['reportMerge']
-
-    #cmd = "source " + config.glastSetup + " ;  source " + config.packages['TestReport']['setup'] + "  ; LD_LIBRARY_PATH=$LD_LIBRARY_PATH:" + config.glastExt + "/xerces/2.6.0/lib:" + config.glastLocation + "/lib:" + config.rootSys + "/lib ; export LD_LIBRARY_PATH ; " + config.apps['reportMerge'] + " " + inFileString + " -o " + outFile + " -c " + mergeConfig
-    # + " ; chgrp -R glast-pipeline " + config.L1Disk
     cmd = """
     cd %(workDir)s
     source %(setup)s
@@ -133,18 +127,27 @@ elif fileType in ['digiTrend', 'reconTrend']:
     ''' % locals()
 
 
-elif fileType in ['digi', 'recon']:
-    treeName = string.capitalize(fileType)
+elif fileType in ['digi', 'recon', 'gcr']:
+    treeNames = {
+        'digi': 'Digi',
+        'recon': 'Recon',
+        'gcr': 'GcrSelect',
+        }
+    #treeName = string.capitalize(fileType)
+    treeName = treeNames[fileType]
+    print >> sys.stderr, '------------------- start merge ------------------'
     rootFiles.concatenate_prune(outFile, inFiles, treeName)
+    print >> sys.stderr, '------------------- finish merge -----------------'
     cmd = 'echo Nothing to do here.'
 
 
 else:
-    #os.environ['LD_LIBRARY_PATH'] = config.haddRootSys+"/lib:"+os.environ['LD_LIBRARY_PATH']
-    #os.environ['ROOTSYS'] = config.haddRootSys
-    cmd = 'cd %s ;' % workDir + config.hadd + (' %s' % outFile) + ((' %s' * len(inFiles)) % tuple(inFiles))
-    # + " ;chgrp -R glast-pipeline " + config.L1Disk
-
+    app = config.hadd
+    inFileString = ' %s' * len(inFiles) % tuple(inFiles)
+    cmd = '''
+    cd %(workDir)s
+    %(app)s %(outFile)s %(inFileString)s
+    ''' % locals()
 
     pass
 
