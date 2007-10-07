@@ -10,6 +10,9 @@ sys.path.append(config.gplPath)
 import runner
 
 
+#name = 'Monitor'
+#items = [(name, config.packages[name])]
+#for packName, package in items:
 for packName, package in config.packages.items():
 
     args = {

@@ -237,3 +237,11 @@ Clean up merging code.
 Use custom eventclassifier for FT1, run makeFT1.exe directly rather than 
 bin/makeFT1.
 -------------------------------------------
+
+
+v1r22p1
+-----------------
+ScienceTools v9r2p2
+ft2Util v1r1p21
+Back out v1r22 changes to the way makeFT1 is run.
+-------------------------------------------

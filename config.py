@@ -105,10 +105,10 @@ else:
     pass
 netloggerLevel = 'info'
 
-stVersion = 'v9r2'
+stVersion = 'v9r2p2'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
-PFILES="."
+PFILES=".;"
 stBinDir = os.path.join(ST, 'bin')
 
 cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
@@ -145,7 +145,7 @@ packages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r1p20',
+        'version': 'v1r1p21',
         },
     }
 
