@@ -35,7 +35,7 @@ else:
     pass
 print >> sys.stderr, "Test mode: %s" % testMode
 
-L1Version = "1.22"
+L1Version = "1.23"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
@@ -76,13 +76,13 @@ gleamPackage = 'Gleam'
 glastName = '-'.join((releaseName, glastVersion))
 glastLocation = os.path.join(releaseDir, glastName)
 gleam = os.path.join(glastLocation, 'bin', gleamPackage)
-# gleam = os.path.join(glastLocation,
-#                      gleamPackage,
-#                      'v6r29p20',
-#                      cmtConfig,
-#                      'Gleam.exe')
-cmtScript = os.path.join(glastLocation, releaseName, glastVersion, 'cmt',
-                         'setup.sh') # do we need this?
+cmtScript = os.path.join(
+    glastLocation,
+    releaseName,
+    glastVersion,
+    'cmt',
+    'setup.sh',
+    ) # do we need this?
 #
 digiOptions = os.path.join(L1ProcROOT, 'digi.jobOpt')
 reconOptions = os.path.join(L1ProcROOT, 'recon.jobOpt')
@@ -101,7 +101,8 @@ scid = 99
 if testMode:
     netloggerDest = 'x-netlog://glastlnx06.slac.stanford.edu:15502'
 else:
-    netloggerDest = 'x-netlog://glastlnx06.slac.stanford.edu:15501'
+    #netloggerDest = 'x-netlog://glastlnx06.slac.stanford.edu:15501'
+    netloggerDest = 'x-netlog://glastlnx06.slac.stanford.edu:15502'
     pass
 netloggerLevel = 'info'
 
@@ -115,10 +116,6 @@ cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 os.environ['CMTPATH'] = cmtPath
 
 packages = {
-    'configData': {
-        'repository': '',
-        'version': 'v0r2p6',
-        },
     'Common': {
         'repository': 'dataMonitoring',
         'version': 'v2r3p1',
@@ -129,15 +126,11 @@ packages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'dp20071004_v1',
-        },
-    'TestReport': {
-        'repository': 'svac',
-        'version': 'v3r7p4',
+        'version': 'dp20071008_v5',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
-        'version': 'v3r1p2',
+        'version': 'v3r3p2',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -145,7 +138,7 @@ packages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r1p21',
+        'version': 'v1r1p24',
         },
     }
 
@@ -179,26 +172,25 @@ packages['Monitor']['configDir'] = os.path.join(packages['Monitor']['root'],
                                                 'src')
 packages['Monitor']['trendMerge'] = os.path.join(packages['Monitor']['bin'],
                                                  'treemerge.exe')
+packages['Monitor']['mergeApp'] = os.path.join(packages['Monitor']['bin'],
+                                               'MergeHistFiles.exe')
 
-packages['TestReport']['app'] = os.path.join(packages['TestReport']['bin'],
-                                             'TestReport.exe')
-packages['TestReport']['mergeApp'] = os.path.join(packages['TestReport']['bin'],
-                                                  'MergeHistFiles.exe')
 
 
 apps = {
     'alarmHandler': os.path.join(packages['Common']['python'],
                                  'pAlarmHandler.py'),
     'digi': gleam,
-    'digiMon': packages['TestReport']['app'],
     'digiEor': packages['Monitor']['app'],
     'fastMon': packages['FastMon']['app'],
     'makeFT2': packages['ft2Util']['app'],
     'makeFT1': os.path.join(stBinDir, 'makeFT1'),
-    'mergeFT2': os.path.join(packages['ft2Util']['bin'], 'mergeFT2Entries.exe'),
+    'mergeFT2': os.path.join(
+        packages['ft2Util']['bin'],
+        'mergeFT2Entries.exe',
+        ),
     'recon': gleam,
-    'reconMon': packages['TestReport']['app'],
-    'reportMerge': packages['TestReport']['mergeApp'],
+    'reportMerge': packages['Monitor']['mergeApp'],
     'svacTuple': packages['EngineeringModelRoot']['app'],
     'trendMerge': packages['Monitor']['trendMerge']
     }

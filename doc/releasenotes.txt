@@ -245,3 +245,15 @@ ScienceTools v9r2p2
 ft2Util v1r1p21
 Back out v1r22 changes to the way makeFT1 is run.
 -------------------------------------------
+
+1.23 Used for OpsSim1
+-----------------
+Monitor dp20071008_v5
+EngineeringModelRoot v3r3p2
+ft2Util v1r1p24
+
+Get MergeHistFiles.exe from Monitor, not TestReport.
+Get configData from GlastRelease.
+No longer build TestReport or configData.
+Various OpsSim1-specific tweaks that will have to be backed out.
+-------------------------------------------

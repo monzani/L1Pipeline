@@ -39,10 +39,14 @@ def alarmSeverity(number):
     return severity
 
 
-def doAlarms(inFile, fileType):
+def doAlarms(inFile, fileType, runId):
     number = parser(inFile)
     severity = alarmSeverity(number)
-    message = 'data errors:%(error)d, processing errors:%(undefined)d, warnings:%(warning)d, clean:%(clean)d.' % number
+    head = '%(fileType)s monitoring for run %(runId)s had:  ' % locals()
+    message = head + 'data errors:%(error)d, processing errors:%(undefined)d, warnings:%(warning)d, clean:%(clean)d.' % number
+
+    print >> sys.stderr, 'Logging to [%s]' % config.netloggerDest
+    print >> sys.stderr, message
 
     target = 'dk=%s;nR=%s;nD=%s' % (
         fileType,

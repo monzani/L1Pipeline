@@ -10,10 +10,14 @@ sys.path.append(config.gplPath)
 import runner
 
 
-#name = 'Monitor'
-#items = [(name, config.packages[name])]
-#for packName, package in items:
-for packName, package in config.packages.items():
+if len(sys.argv) > 1:
+    names = sys.argv[1:]
+else:
+    names = config.packages.keys()
+    pass
+
+for packName in names:
+    package = config.packages[packName]
 
     args = {
         'glastSetup': config.glastSetup,
@@ -25,7 +29,8 @@ for packName, package in config.packages.items():
         }
     args.update(package)
 
-    cmd = '''source %(glastSetup)s
+    cmd = '''
+    source %(glastSetup)s
     CMTCONFIG=%(cmtConfig)s ; export CMTCONFIG
     CMTPATH=%(cmtPath)s ; export CMTPATH
     GLAST_EXT=%(glastExt)s ; export GLAST_EXT
@@ -37,7 +42,8 @@ for packName, package in config.packages.items():
     cd %(cmtDir)s
     cmt config
     make clean
-    make''' % args
+    make
+    ''' % args
 
     runner.run(cmd)
     continue

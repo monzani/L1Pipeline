@@ -107,7 +107,7 @@ workDir = os.path.dirname(outFile)
 inFileString = ''.join([' -i %s ' % ff for ff in inFiles])
 
 if fileType in ['digiEor', 'reconEor', 'fastMon']:
-    setup = config.packages['TestReport']['setup']
+    setup = config.packages['Monitor']['setup']
     mergeConfig = config.mergeConfigs[fileType]
     app = config.apps['reportMerge']
     cmd = """

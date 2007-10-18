@@ -30,7 +30,7 @@ stagedInFile = staged.stageIn(realInFile)
 workDir = os.path.dirname(stagedInFile)
 #os.chdir(workDir)
 
-alarmParser.doAlarms(stagedInFile, fileType)
+alarmParser.doAlarms(stagedInFile, fileType, runId)
 
 status = staged.finish(finishOption)
 

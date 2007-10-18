@@ -2,3 +2,5 @@
 EventSelector.StorageType = "CCSDSFILE";
 EventSelector.FileName = "$EVTFILE";
 digiRootWriterAlg.digiRootFile = "$digiChunkFile";
+
+TrgConfigSvc.configureFrom="Moot";

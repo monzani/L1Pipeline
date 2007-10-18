@@ -468,7 +468,7 @@
     <task name="cleanupCompleteRun" version="%(L1Version)s" type="Data">
 
       <process name="cleanupChunks">
-        <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q express "/>
+        <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q medium "/>
       </process>
 
       <process name="updateRunStatus">
@@ -750,7 +750,7 @@
     <task name="cleanupCompleteRunLci" version="%(L1Version)s" type="Data">
 
       <process name="cleanupChunksLci">
-        <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q express "/>
+        <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q medium "/>
       </process>
 
       <process name="updateRunStatusLci">
@@ -811,7 +811,7 @@
     </prerequisites>
 
     <process name="cleanupChunksInc">
-      <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q express "/>
+      <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q medium "/>
     </process>
 
     <process name="updateRunStatusInc">
