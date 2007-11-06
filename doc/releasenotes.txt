@@ -238,7 +238,6 @@ Use custom eventclassifier for FT1, run makeFT1.exe directly rather than
 bin/makeFT1.
 -------------------------------------------
 
-
 v1r22p1
 -----------------
 ScienceTools v9r2p2
@@ -257,3 +256,24 @@ Get configData from GlastRelease.
 No longer build TestReport or configData.
 Various OpsSim1-specific tweaks that will have to be backed out.
 -------------------------------------------
+
+1.24
+-----------------
+Common v2r4p2
+FastMon v2r4p3
+Monitor dp20071019
+
+Make some mc-related options to programs that were hardwired for OpsSim1
+depend on DATASOURCE.
+Don't keep or register alarmHandler html.
+Do keep and register fastMon tuple. And error summary.
+Register digi & recon trending files.
+Put (almost) all chunk-level files in their own subdirectories.
+Make cleanup work better with load balancing.
+Reformat a bunch of stuff.
+Handle LCI runs.
+
+Load balance between 2 AFS staging volumes.  The implementation is not good,
+it's a shell script that has a bunch of stuff hardwired the should be gotten
+from config.
+

@@ -125,9 +125,23 @@
       </depends>
     </process>
  
-    <process name="mergeFastMon">
+    <process name="registerDigiTrend">
       <variables>
-        <var name="fileType">fastMon</var>
+        <var name="parentProcess">mergeDigiTrend</var>
+        <var name="dataType">DIGITREND</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeDigiTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeFastMonHist">
+      <variables>
+        <var name="fileType">fastMonHist</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q short "/>
       <depends>
@@ -135,47 +149,57 @@
       </depends>
     </process>
 
-    <process name="registerFastMon">
+    <process name="registerFastMonHist">
       <variables>
-        <var name="parentProcess">mergeFastMon</var>
-        <var name="dataType">FASTMON</var>
+        <var name="parentProcess">mergeFastMonHist</var>
+        <var name="dataType">FASTMONHIST</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
 ]]>
       </script>
       <depends>
-        <after process="mergeFastMon" status="SUCCESS"/>
+        <after process="mergeFastMonHist" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="mergeFastMonTuple">
+      <variables>
+        <var name="fileType">fastMonTuple</var>
+      </variables>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q short "/>
+      <depends>
+        <after process="doChunk.fastMon" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonTuple">
+      <variables>
+        <var name="parentProcess">mergeFastMonTuple</var>
+        <var name="dataType">FASTMONTUPLE</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonTuple" status="SUCCESS"/>
       </depends>
     </process>
  
     <process name="fastMonAlarm">
       <variables>
-        <var name="fileType">fastMon</var>
+        <var name="fileType">fastMonHist</var>
       </variables>
       <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q express "/>
       <depends>
-        <after process="mergeFastMon" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="registerFastMonReport">
-      <variables>
-        <var name="parentProcess">fastMonAlarm</var>
-        <var name="dataType">fastMonReport</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="fastMonAlarm" status="SUCCESS"/>
+        <after process="mergeFastMonHist" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="fastMonLogger">
       <variables>
-        <var name="fileType">fastMonAlarm</var>
+        <var name="fileType">fastMonHistAlarm</var>
       </variables>
       <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q express "/>
       <depends>
@@ -185,7 +209,7 @@
 
     <process name="registerFastMonAlarm">
       <variables>
-        <var name="parentProcess">fastMonLogger</var>
+        <var name="parentProcess">fastMonAlarm</var>
         <var name="dataType">fastMonAlarm</var>
       </variables>
       <script><![CDATA[
@@ -193,11 +217,35 @@
 ]]>
       </script>
       <depends>
-        <after process="fastMonLogger" status="SUCCESS"/>
+        <after process="fastMonAlarm" status="SUCCESS"/>
       </depends>
     </process>
 
-     <process name="mergeReconChunks">
+    <process name="mergeFastMonError">
+      <variables>
+        <var name="fileType">fastMonError</var>
+      </variables>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q short "/>
+      <depends>
+        <after process="doChunk.fastMon" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonError">
+      <variables>
+        <var name="parentProcess">mergeFastMonError</var>
+        <var name="dataType">FASTMONERROR</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonError" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+      <process name="mergeReconChunks">
       <variables>
         <var name="fileType">recon</var>
       </variables>
@@ -265,6 +313,20 @@
       </depends>
     </process>
  
+    <process name="registerReconTrend">
+      <variables>
+        <var name="parentProcess">mergeReconTrend</var>
+        <var name="dataType">RECONTREND</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeReconTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="mergeCalChunks">
       <variables>
         <var name="fileType">cal</var>
@@ -323,10 +385,48 @@
       </depends>
     </process>
 
+    <process name="registerMerit">
+      <variables>
+        <var name="parentProcess">mergeMeritChunks</var>
+        <var name="dataType">MERIT</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeMeritChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
     <process name="makeFT1">
       <job executable="${L1ProcROOT}/makeFT1.py" batchOptions=" -q medium -sp 100 "/>
       <depends>
         <after process="mergeMeritChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="exportFT1">
+      <variables>
+        <var name="fileType">ft1Export</var>
+      </variables>
+      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q express -sp 100 "/>
+      <depends>
+        <after process="makeFT1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFT1">
+      <variables>
+        <var name="parentProcess">makeFT1</var>
+        <var name="dataType">FT1</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="makeFT1" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -376,44 +476,6 @@
       </depends>
     </process>
 
-    <process name="exportFT1">
-      <variables>
-        <var name="fileType">ft1Export</var>
-      </variables>
-      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q express -sp 100 "/>
-      <depends>
-        <after process="makeFT1" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="registerFT1">
-      <variables>
-        <var name="parentProcess">makeFT1</var>
-        <var name="dataType">FT1</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="makeFT1" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="registerMerit">
-      <variables>
-        <var name="parentProcess">mergeMeritChunks</var>
-        <var name="dataType">MERIT</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="mergeMeritChunks" status="SUCCESS"/>
-      </depends>
-    </process>
- 
     <process name="mergeSvacTuple">
       <variables>
         <var name="fileType">svac</var>
@@ -444,20 +506,24 @@
         <after process="doChunk.checkChunk" status="SUCCESS"/>
         <after process="exportFT1" status="SUCCESS"/>
         <after process="exportFT2" status="SUCCESS"/>
+        <after process="fastMonLogger" status="SUCCESS"/>
         <after process="ingestDigiTrend" status="SUCCESS"/>
         <after process="ingestReconTrend" status="SUCCESS"/>
         <after process="registerCal" status="SUCCESS"/>
         <after process="registerDigi" status="SUCCESS"/>
         <after process="registerDigiEor" status="SUCCESS"/>
+        <after process="registerDigiTrend" status="SUCCESS"/>
         <after process="registerFT1" status="SUCCESS"/>
         <after process="registerFT2" status="SUCCESS"/>
-        <after process="registerFastMon" status="SUCCESS"/>
         <after process="registerFastMonAlarm" status="SUCCESS"/>
-        <after process="registerFastMonReport" status="SUCCESS"/>
+        <after process="registerFastMonError" status="SUCCESS"/>
+        <after process="registerFastMonHist" status="SUCCESS"/>
+        <after process="registerFastMonTuple" status="SUCCESS"/>
         <after process="registerGcr" status="SUCCESS"/>
         <after process="registerMerit" status="SUCCESS"/>
         <after process="registerRecon" status="SUCCESS"/>
         <after process="registerReconEor" status="SUCCESS"/>
+        <after process="registerReconTrend" status="SUCCESS"/>
         <after process="registerSvacTuple" status="SUCCESS"/>
       </depends>
       <createsSubtasks>
@@ -666,7 +732,7 @@
       <variables>
         <var name="fileType">digi</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium -sp 100 "/>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium "/>
       <depends>
         <after process="doChunkLci.digitizationLci" status="DONE"/>
       </depends>
@@ -674,7 +740,7 @@
 
     <process name="registerDigiLci">
       <variables>
-        <var name="parentProcess">mergeDigi</var>
+        <var name="parentProcess">mergeDigiLci</var>
         <var name="dataType">DIGI</var>
       </variables>
       <script><![CDATA[
@@ -698,7 +764,7 @@
  
     <process name="registerDigiEorLci">
       <variables>
-        <var name="parentProcess">mergeDigiEor</var>
+        <var name="parentProcess">mergeDigiEorLci</var>
         <var name="dataType">DIGIHIST</var>
       </variables>
       <script><![CDATA[
@@ -710,9 +776,9 @@
       </depends>
     </process>
 
-    <process name="mergeFastMonLci">
+    <process name="mergeFastMonHistLci">
       <variables>
-        <var name="fileType">fastMon</var>
+        <var name="fileType">fastMonHist</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "/>
       <depends>
@@ -720,17 +786,41 @@
       </depends>
     </process>
 
-    <process name="registerFastMonLci">
+    <process name="registerFastMonHistLci">
       <variables>
-        <var name="parentProcess">mergeFastMon</var>
-        <var name="dataType">FASTMON</var>
+        <var name="parentProcess">mergeFastMonHistLci</var>
+        <var name="dataType">FASTMONHIST</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
 ]]>
       </script>
       <depends>
-        <after process="mergeFastMonLci" status="SUCCESS"/>
+        <after process="mergeFastMonHistLci" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="mergeFastMonTupleLci">
+      <variables>
+        <var name="fileType">fastMonTuple</var>
+      </variables>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "/>
+      <depends>
+        <after process="doChunkLci.fastMonLci" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonTupleLci">
+      <variables>
+        <var name="parentProcess">mergeFastMonTupleLci</var>
+        <var name="dataType">FASTMONTUPLE</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonTupleLci" status="SUCCESS"/>
       </depends>
     </process>
  
@@ -739,7 +829,8 @@
       <depends>
         <after process="doChunkLci.checkChunkLci" status="SUCCESS"/>
         <after process="registerDigiLci" status="SUCCESS"/>
-        <after process="registerFastMonLci" status="SUCCESS"/>
+        <after process="registerFastMonHistLci" status="SUCCESS"/>
+        <after process="registerFastMonTupleLci" status="SUCCESS"/>
         <after process="registerDigiEorLci" status="SUCCESS"/>
       </depends>
       <createsSubtasks>
@@ -771,7 +862,7 @@
       </prerequisites>
 
       <process name="digitizationLci">
-        <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q long -sp 100 "/>
+        <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q long "/>
       </process>
  
       <process name="fastMonLci">

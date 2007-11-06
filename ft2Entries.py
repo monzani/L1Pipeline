@@ -40,10 +40,17 @@ stagedFt2FitsFile = os.path.join(workDir, 'junkFT2.fits')
 
 setupScript = config.packages['ft2Util']['setup']
 
+datasource = os.environ['DATASOURCE']
+if datasource == 'MC':
+    mcOpt = '--MC'
+else:
+    mcOpt = ''
+    pass
+
 cmd = '''
 cd %(workDir)s
 source %(setupScript)s
-%(app)s -DigiFile %(stagedDigiFile)s -MeritFile %(stagedMeritFile)s -M7File %(stagedM7File)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s --MC
+%(app)s -DigiFile %(stagedDigiFile)s -MeritFile %(stagedMeritFile)s -M7File %(stagedM7File)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s %(mcOpt)s
 ''' % locals()
 
 status = runner.run(cmd)

@@ -35,7 +35,7 @@ else:
     pass
 print >> sys.stderr, "Test mode: %s" % testMode
 
-L1Version = "1.23"
+L1Version = "1.24"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
@@ -57,6 +57,24 @@ maxCrumbSize = 17000   # ~.5Hr on cob (skymodel).
 minCrumbCpuf = 7
 
 defaultRunStatus = 'WAITING'
+defaultDataSource = 'LPA'
+
+runSubTask = {
+    'LCI': 'doLci',
+    'LPA': 'doRun',
+    'MC': 'doRun',
+    }
+chunkSubTask = {
+    'LCI': 'doChunkLci',
+    'LPA': 'doChunk',
+    'MC': 'doChunk',
+    }
+cleanupSubTask = {
+    'LCI': 'cleanupCompleteRunLci',
+    'LPA': 'cleanupCompleteRun',
+    'MC': 'cleanupCompleteRun',
+    }
+
 
 glastRoot = '/afs/slac.stanford.edu/g/glast'
 groundRoot = os.path.join(glastRoot, 'ground')
@@ -118,15 +136,15 @@ os.environ['CMTPATH'] = cmtPath
 packages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v2r3p1',
+        'version': 'v2r4p2',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v2r3p2',
+        'version': 'v2r4p3',
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'dp20071008_v5',
+        'version': 'dp20071019',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -145,7 +163,8 @@ packages = {
 # fill in standard values for standard packages
 for packName in packages:
     package = packages[packName]
-    packages[packName]['root'] = os.path.join(L1Cmt, packName, package['version'])
+    packages[packName]['root'] = os.path.join(
+        L1Cmt, packName, package['version'])
     package['bin'] = os.path.join(package['root'], cmtConfig)
     package['cmtDir'] = os.path.join(package['root'], 'cmt')
     package['setup'] = os.path.join(package['cmtDir'], 'setup.sh')
@@ -153,42 +172,44 @@ for packName in packages:
     continue
 
 # add nonstandard package info
-packages['Common']['python'] = os.path.join(packages['Common']['root'], 'python')
+packages['Common']['python'] = os.path.join(
+    packages['Common']['root'], 'python')
 
-packages['EngineeringModelRoot']['app'] = os.path.join(packages['EngineeringModelRoot']['bin'], 'RunRootAnalyzer.exe')
+packages['EngineeringModelRoot']['app'] = os.path.join(
+    packages['EngineeringModelRoot']['bin'], 'RunRootAnalyzer.exe')
 
-packages['ft2Util']['app'] = os.path.join(packages['ft2Util']['bin'], 'makeFT2Entries.exe')
+packages['ft2Util']['app'] = os.path.join(
+    packages['ft2Util']['bin'], 'makeFT2Entries.exe')
 
-packages['FastMon']['app'] = os.path.join(packages['FastMon']['root'],
-                                          'python', 'pDataProcessor.py')
+packages['FastMon']['app'] = os.path.join(
+    packages['FastMon']['root'], 'python', 'pDataProcessor.py')
 packages['FastMon']['env'] = {
     'XML_CONFIG_DIR': os.path.join(packages['FastMon']['root'], 'xml'),
     }
 packages['FastMon']['extraSetup'] = 'eval `/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/isoc isoc_env --add-env=flightops --add-env=root`'
 
-packages['Monitor']['app'] = os.path.join(packages['Monitor']['bin'],
-                                          'runStrip_t.exe')
-packages['Monitor']['configDir'] = os.path.join(packages['Monitor']['root'],
-                                                'src')
-packages['Monitor']['trendMerge'] = os.path.join(packages['Monitor']['bin'],
-                                                 'treemerge.exe')
-packages['Monitor']['mergeApp'] = os.path.join(packages['Monitor']['bin'],
-                                               'MergeHistFiles.exe')
+packages['Monitor']['app'] = os.path.join(
+    packages['Monitor']['bin'], 'runStrip_t.exe')
+packages['Monitor']['configDir'] = os.path.join(
+    packages['Monitor']['root'], 'src')
+packages['Monitor']['trendMerge'] = os.path.join(
+    packages['Monitor']['bin'], 'treemerge.exe')
+packages['Monitor']['mergeApp'] = os.path.join(
+    packages['Monitor']['bin'], 'MergeHistFiles.exe')
 
 
 
 apps = {
-    'alarmHandler': os.path.join(packages['Common']['python'],
-                                 'pAlarmHandler.py'),
+    'alarmHandler': os.path.join(
+        packages['Common']['python'], 'pAlarmHandler.py'),
     'digi': gleam,
     'digiEor': packages['Monitor']['app'],
+    'errorMerger': os.path.join(L1ProcROOT, 'errorParser.py'),
     'fastMon': packages['FastMon']['app'],
     'makeFT2': packages['ft2Util']['app'],
     'makeFT1': os.path.join(stBinDir, 'makeFT1'),
     'mergeFT2': os.path.join(
-        packages['ft2Util']['bin'],
-        'mergeFT2Entries.exe',
-        ),
+        packages['ft2Util']['bin'], 'mergeFT2Entries.exe'),
     'recon': gleam,
     'reportMerge': packages['Monitor']['mergeApp'],
     'svacTuple': packages['EngineeringModelRoot']['app'],
@@ -196,14 +217,14 @@ apps = {
     }
 
 monitorOptions = {
-    'digiEor': os.path.join(packages['Monitor']['configDir'],
-                            'monconfig_digi_v27_histos.xml'),
-    'digiTrend': os.path.join(packages['Monitor']['configDir'],
-                              'monconfig_digi_v27_trending.xml'),
-    'reconEor': os.path.join(packages['Monitor']['configDir'],
-                             'monconfig_recon_v5_histos.xml'),
-    'reconTrend': os.path.join(packages['Monitor']['configDir'],
-                               'monconfig_recon_v5_trending.xml'),
+    'digiEor': os.path.join(
+        packages['Monitor']['configDir'], 'monconfig_digi_v27_histos.xml'),
+    'digiTrend': os.path.join(
+        packages['Monitor']['configDir'], 'monconfig_digi_v27_trending.xml'),
+    'reconEor': os.path.join(
+        packages['Monitor']['configDir'], 'monconfig_recon_v5_histos.xml'),
+    'reconTrend': os.path.join(
+        packages['Monitor']['configDir'], 'monconfig_recon_v5_trending.xml'),
     }
 
 monitorOutFiles = {
@@ -215,17 +236,17 @@ monitorOutFiles = {
     }
 
 mergeConfigs = {
-    'digiEor': os.path.join(packages['Monitor']['configDir'],
-                            'MergeHistos_digi_v27.txt'),
-#    'fastMon': os.path.join(L1ProcROOT, 'fast_mon_config.txt'),
-    'fastMon': os.path.join(L1ProcROOT, 'MergeHistos_FastMon.txt'),
-    'reconEor': os.path.join(packages['Monitor']['configDir'],
-                             'MergeHistos_recon_v5.txt'),
+    'digiEor': os.path.join(
+        packages['Monitor']['configDir'], 'MergeHistos_digi_v27.txt'),
+    'fastMonHist': os.path.join(
+        L1ProcROOT, 'MergeHistos_FastMon.txt'),
+    'reconEor': os.path.join(
+        packages['Monitor']['configDir'], 'MergeHistos_recon_v5.txt'),
     }
-#mergeConfigs['fastMon'] = mergeConfigs['digiEor']
 
 alarmConfigs = {
-    'fastMon': os.path.join(packages['Common']['root'], 'xml', 'config.xml'),
+    'fastMonHist': os.path.join(
+        packages['Common']['root'], 'xml', 'config.xml'),
     }
 
 tdBin = 15
@@ -243,10 +264,10 @@ rootPath = os.path.join(rootSys, 'lib')
 clhepPath = os.path.join(glastExt, 'CLHEP/1.9.2.2/lib')
 cppunitPath = os.path.join(glastExt, 'cppunit/1.10.2/lib')
 
-libraryPath = ':'.join((os.path.join(L1Cmt, 'lib'), \
-                        os.path.join(glastLocation, 'lib'), \
-                        rootPath, clhepPath, cppunitPath))
-#                        rootPath, xercesPath, mysqlPath))
+libraryPath = ':'.join(
+    (os.path.join(L1Cmt, 'lib'), 
+     os.path.join(glastLocation, 'lib'), 
+     rootPath, clhepPath, cppunitPath))
 
 #GPL2 = '/nfs/slac/g/svac/focke/builds/GPLtools/dev'
 gplBase = '/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/GPLtools'
@@ -258,8 +279,8 @@ pass
 GPL2 = os.path.join(gplBase, gplType)
 gplPath = os.path.join(GPL2, 'python')
 
-pythonPath = ':'.join([L1ProcROOT, rootPath, gplPath,
-                       packages['Common']['python']])
+pythonPath = ':'.join(
+    [L1ProcROOT, rootPath, gplPath, packages['Common']['python']])
 
 # LSF stuff
 # allocationGroup = 'glastdata' # don't use this anymore, policies have changed

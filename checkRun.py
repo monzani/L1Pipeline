@@ -9,6 +9,7 @@ import os
 import sys
 import time
 
+import config
 import fileNames
 import lockFile
 import pipeline
@@ -31,11 +32,13 @@ lockFile.unlockDir(rootDir, runId, dlId)
 # catalog.
 #
 # but for now we punt
-readyToRetire = True
+readyToRetire = False
+
+subTask = config.cleanupSubTask[os.environ['DATASOURCE']]
 
 if readyToRetire:
     stream = 0
     args = ''
-    pipeline.createSubStream("cleanupCompleteRun", stream, args)
+    pipeline.createSubStream(subTask, stream, args)
     pass
 

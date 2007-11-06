@@ -17,16 +17,17 @@ runId = os.environ['RUNID']
 chunkId = os.environ['CHUNK_ID']
 files = fileNames.setup(dlId, runId, chunkId)
 realInFile = files['chunk']['event']
-realOutFile = files['chunk']['fastMon']
-tmpOutFile = files['chunk']['fastMonTmp']
+realErrorFile = files['chunk']['fastMonError']
+realHistFile = files['chunk']['fastMonHist']
+realTupleFile = files['chunk']['fastMonTuple']
 
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
 inFile = staged.stageIn(realInFile)
-outFile = staged.stageOut(tmpOutFile)
-
-brokenName = outFile.replace('.processed', '')
+errorFile = staged.stageOut(realErrorFile)
+histFile = staged.stageOut(realHistFile)
+tupleFile = staged.stageOut(realTupleFile)
 
 if staged.setupOK:
     workDir = staged.stageDir
@@ -38,8 +39,6 @@ package = config.packages['FastMon']
 os.environ.update(package['env'])
 
 dmRoot = config.L1Cmt
-fastMonDir = workDir
-os.environ['FAST_MON_DIR'] = fastMonDir
 
 extra = package['extraSetup']
 setup = package['setup']
@@ -50,11 +49,11 @@ newLatexDir = config.installBin
 cmd = '''
 cd %(workDir)s
 export DATAMONITORING_ROOT=%(dmRoot)s
-export PATH=%(newLatexDir)s:${PATH}
+export FAST_MON_DIR=%(workDir)s
 %(extra)s
 source %(setup)s
-export PYTHONPATH=${PYTHONPATH}:%(fastMonDir)s
-%(app)s -v -o %(brokenName)s -d %(fastMonDir)s -p %(inFile)s
+export PYTHONPATH=${PYTHONPATH}:%(workDir)s
+%(app)s -o %(tupleFile)s -p %(histFile)s -e %(errorFile)s %(inFile)s
 ls -lahR
 ''' % locals()
 
@@ -62,7 +61,5 @@ status = runner.run(cmd)
 if status: finishOption = 'wipe'
 
 status |= staged.finish(finishOption)
-
-status |= runner.run('mv %s %s' % (tmpOutFile, realOutFile))
 
 sys.exit(status)

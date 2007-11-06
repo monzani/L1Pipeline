@@ -19,3 +19,23 @@ where it crashes?
 
 Ciao
 Carmelo
+
+
+
+we are implementing the agreed modifications the the FastMon. The first important one is how to run it: as required by
+Warren, you MUST now explicitly write the output ntuple file path (using the -o option) and the histograms file path (using
+the -p option). The -d option no longer exists.
+Here is an example, if you run the command:
+
+./pDataProcessor.py -c ../xml/config.xml -o /data/outfiles/test.root -p /data/outfiles/histograms.root
+/data/evtfiles/test.evt
+
+you will run it on the input file: "/data/evtfiles/test.evt"
+and you will create the ntuple output file: "/data/outfiles/test.root"
+and the histograms output file: "/data/outfiles/histograms.root"
+the error file will be: "/data/outfiles/test.error.pickle" (this will change, do you want to explicitly set the name?)
+
+Important notices:
+- the two root files must be different! (pDataProcessor will exit otherwise)
+- the last version includes the correct absolute timestamp calculation.
+

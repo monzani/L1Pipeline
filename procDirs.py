@@ -52,18 +52,20 @@ def _setupChunk(dirs, runId, chunkId):
     runStage = getStageDir(dirs, runId)
     chunkDir = os.path.join(runStage, chunkId)
     dirs['chunk'] = chunkDir
-    fastMonDir = os.path.join(chunkDir, 'fastMon')
-    dirs['fastMon'] = fastMonDir
-    digiEorDir = os.path.join(chunkDir, 'digiEor')
-    dirs['digiEor'] = digiEorDir
-    digiTrendDir = os.path.join(chunkDir, 'digiTrend')
-    dirs['digiTrend'] = digiTrendDir
-    reconEorDir = os.path.join(chunkDir, 'reconEor')
-    dirs['reconEor'] = reconEorDir
-    reconTrendDir = os.path.join(chunkDir, 'reconTrend')
-    dirs['reconTrend'] = reconTrendDir
-    svacDir = os.path.join(chunkDir, 'svac')
-    dirs['svac'] = svacDir
+
+    dirs['cal'] = os.path.join(chunkDir, 'cal')
+    dirs['digi'] = os.path.join(chunkDir, 'digi')
+    dirs['digiEor'] = os.path.join(chunkDir, 'digiEor')
+    dirs['digiTrend'] = os.path.join(chunkDir, 'digiTrend')
+    dirs['fastMon'] = os.path.join(chunkDir, 'fastMon')
+    dirs['gcr'] = os.path.join(chunkDir, 'gcr')
+    dirs['ft2Fake'] = os.path.join(chunkDir, 'ft2Fake')
+    dirs['merit'] = os.path.join(chunkDir, 'merit')
+    dirs['recon'] = os.path.join(chunkDir, 'recon')
+    dirs['reconEor'] = os.path.join(chunkDir, 'reconEor')
+    dirs['reconTrend'] = os.path.join(chunkDir, 'reconTrend')
+    dirs['svac'] = os.path.join(chunkDir, 'svac')
+    
     return
 
 

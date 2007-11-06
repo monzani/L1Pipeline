@@ -32,6 +32,17 @@ os.environ['digiChunkFile'] = staged.stageOut(files['chunk']['digi'])
 app = config.apps['digi']
 options =  config.digiOptions
 
+dataSource = os.environ['DATASOURCE']
+if dataSource == 'LCI':
+    trigEngine = ''
+    trigConfig = 'Default'
+else:
+    trigEngine = 'TrgConfigSvc'
+    trigConfig = 'Moot'
+    pass
+os.environ['trigEngine'] = trigEngine
+os.environ['trigConfig'] = trigConfig
+
 cmd = '''
 cd %(workDir)s
 %(app)s %(options)s

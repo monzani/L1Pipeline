@@ -24,6 +24,11 @@ dlRawDir = os.environ['DOWNLINK_RAWDIR']
 head, downlink = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not downlink: head, downlink = os.path.split(head)
 
+# also fairly bad
+app = os.path.join(config.L1ProcROOT, 'balance')
+cmd = '%(app)s %(dlRawDir)s' % locals()
+runner.run(cmd)
+
 # Figure out which runs have data in this dl
 # we assume that any subdirectory of the downlink directory represents a run
 # this is a contract with the halfpipe
@@ -72,7 +77,7 @@ boundaryFile = os.path.join(dlRawDir, 'event_times_%s.txt' % downlink)
 try:
     lines = open(boundaryFile)
 except IOError:
-    print >> sys.stderr, "Couldn't open run bouncray file %s" % boundaryFile
+    print >> sys.stderr, "Couldn't open run boundary file %s" % boundaryFile
     lines = []
     pass
 for line in lines:
@@ -81,11 +86,29 @@ for line in lines:
     stop[runId] = glastTime.met(float(tStop))
     continue
 
-runNumRe = re.compile('([0-9]+)')
+# parse run type
+deliveredEvents = {}
+heldBackEvents = {}
+dataSource = {}
+# the name of this file is a contract with the halfpipe
+deliveredFile = os.path.join(dlRawDir, 'delivered_events_%s.txt' % downlink)
+try:
+    dfp = open(deliveredFile)
+except IOError:
+    print >> sys.stderr, "Couldn't open delivered event file %s, all runs will haver default dataSource %s" % (boundaryFile, config.defaultDataSource)
+    pass
+for line in dfp:
+    runId, delivered, heldBack, source = line.split()
+    deliveredEvents[runId] = int(delivered)
+    heldBackEvents[runId] = int(heldBack)
+    dataSource[runId] = source
+    continue
 
+runNumRe = re.compile('([0-9]+)')
 # create up a subStream for each data run
-subTask = "doRun"
 for runId in dataRuns:
+    source = dataSource.get(runId, config.defaultDataSource)
+    subTask = config.runSubTask[source]
     mop = runNumRe.search(runId)
     if mop:
         nStr = mop.group(1)
@@ -105,7 +128,7 @@ for runId in dataRuns:
         tStop = tStopDef
         print >> sys.stderr, "Couldn't get tStart, tStop for run %s, using bogus values" % runId
         pass
-    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUN_RAWDIR=%(runDir)s,RUNSTATUS=%(runStatus)s,DOWNLINK_ID=%(dlId)s,tStart=%(tStart).17g,tStop=%(tStop).17g" % locals()
+    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUN_RAWDIR=%(runDir)s,RUNSTATUS=%(runStatus)s,DOWNLINK_ID=%(dlId)s,tStart=%(tStart).17g,tStop=%(tStop).17g,DATASOURCE=%(source)s" % locals()
     print >> sys.stderr, \
           "Creating stream [%s] of subtask [%s] with args [%s]" % \
           (stream, subTask, args)

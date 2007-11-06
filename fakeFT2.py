@@ -45,7 +45,7 @@ setupScript = config.packages['ft2Util']['setup']
 cmd = '''
 cd %(workDir)s
 source %(setupScript)s
-%(app)s -M7File %(stagedM7File)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s --Gleam --MC
+%(app)s -M7File %(stagedM7File)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s --Gleam
 ''' % locals()
 
 status = runner.run(cmd)

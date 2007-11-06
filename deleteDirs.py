@@ -33,7 +33,11 @@ if level == 'chunk' and runStatus not in ['COMPLETE', 'INCOMPLETE']:
 goners = procDirs.findPieceDirs(dlId, runId, chunkId)
 
 for goner in goners:
-    print >> sys.stderr, "Running: 'rm -rf %s'." % goner
-    runner.run('rm -rf %s' % goner)
+    print >> sys.stderr, "Deleting %s." % goner
+    cmd = '''
+    find %(goner)s -follow -depth -type f -print | xargs rm
+    find %(goner)s -follow -depth -type d -print | xargs rmdir
+    ''' % locals()
+    runner.run(cmd)
     print >> sys.stderr, '%s has left the building.' % goner
     continue

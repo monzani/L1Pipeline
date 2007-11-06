@@ -20,7 +20,6 @@ import config
 import fileNames
 import registerPrep
 import stageFiles
-import rootFiles
 
 def finalize(status):
     if status:
@@ -106,7 +105,11 @@ workDir = os.path.dirname(outFile)
 
 inFileString = ''.join([' -i %s ' % ff for ff in inFiles])
 
-if fileType in ['digiEor', 'reconEor', 'fastMon']:
+
+print >> sys.stderr, '------------------- start merge ------------------'
+status = 0
+
+if fileType in ['digiEor', 'reconEor', 'fastMonHist']:
     setup = config.packages['Monitor']['setup']
     mergeConfig = config.mergeConfigs[fileType]
     app = config.apps['reportMerge']
@@ -115,6 +118,8 @@ if fileType in ['digiEor', 'reconEor', 'fastMon']:
     source %(setup)s
     %(app)s -c %(mergeConfig)s -o %(outFile)s %(inFileString)s
     """ % locals()
+    status |= runner.run(cmd)
+
 
 elif fileType in ['digiTrend', 'reconTrend']:
     setup = config.packages['Monitor']['setup']
@@ -125,9 +130,11 @@ elif fileType in ['digiTrend', 'reconTrend']:
     source %(setup)s
     %(app)s %(inFileString)s -o %(outFile)s -t %(treeName)s
     ''' % locals()
+    status |= runner.run(cmd)
 
 
 elif fileType in ['digi', 'recon', 'gcr']:
+    import rootFiles
     treeNames = {
         'digi': 'Digi',
         'recon': 'Recon',
@@ -135,10 +142,15 @@ elif fileType in ['digi', 'recon', 'gcr']:
         }
     #treeName = string.capitalize(fileType)
     treeName = treeNames[fileType]
-    print >> sys.stderr, '------------------- start merge ------------------'
     rootFiles.concatenate_prune(outFile, inFiles, treeName)
-    print >> sys.stderr, '------------------- finish merge -----------------'
-    cmd = 'echo Nothing to do here.'
+
+
+elif fileType in ['fastMonError']:
+    app = config.apps['errorMerger']
+    cmd = '''
+    %(app)s -o %(outFile)s %(inFileString)s
+    ''' % locals()
+    status |= runner.run(cmd)
 
 
 else:
@@ -148,9 +160,11 @@ else:
     cd %(workDir)s
     %(app)s %(outFile)s %(inFileString)s
     ''' % locals()
+    status = runner.run(cmd)
+
 
     pass
 
-status = runner.run(cmd)
+print >> sys.stderr, '------------------- finish merge -----------------'
 
 finalize(status)

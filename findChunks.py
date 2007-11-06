@@ -7,7 +7,7 @@
 
 import sys
 import glob
-from os import path, environ
+import os
 import re
 
 import config
@@ -20,17 +20,19 @@ import pipeline
 #chunkRe = re.compile('^(r[0-9]*)-(e[0-9]*)\.evt$')
 chunkRe = re.compile('^(.[0-9]*)-(.[0-9]*)\.evt$')
 
-dlId = environ['DOWNLINK_ID']
-runId = environ['RUNID']
-runDir = environ['RUN_RAWDIR']
+dlId = os.environ['DOWNLINK_ID']
+runId = os.environ['RUNID']
+runDir = os.environ['RUN_RAWDIR']
 
 files = fileNames.setup(dlId, runId)
 
 rootDir = files['dirs']['run']
 
+subTask = config.chunkSubTask[os.environ['DATASOURCE']]
+
 ## Find chunk files
 # this is a contract with the halfpipe
-chunkGlob = path.join(runDir, '*.evt')
+chunkGlob = os.path.join(runDir, '*.evt')
 print >> sys.stderr, 'Looking for files that match [%s].' % chunkGlob
 chunkFiles = glob.glob(chunkGlob)
 print >> sys.stderr, 'Found %s.' % chunkFiles
@@ -38,7 +40,7 @@ print >> sys.stderr, 'Found %s.' % chunkFiles
 # set up a subStream for each run
 for chunkFile in chunkFiles:
 
-    fileBase = path.basename(chunkFile)
+    fileBase = os.path.basename(chunkFile)
     match = chunkRe.match(fileBase)
     if match:
         runIdFromFile, chunkId = match.groups()
@@ -47,5 +49,5 @@ for chunkFile in chunkFiles:
         continue
     stream = chunkId[1:]
     args = "EVTFILE=%(chunkFile)s,CHUNK_ID=%(chunkId)s" % locals()
-    pipeline.createSubStream("doChunk", stream, args)
+    pipeline.createSubStream(subTask, stream, args)
     continue

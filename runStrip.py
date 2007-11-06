@@ -68,6 +68,13 @@ tdBin = config.tdBin
 
 codeDir = config.packages['Monitor']['bin']
 
+datasource = os.environ['DATASOURCE']
+if datasource == 'MC':
+    mcOpt = '-t MCOktTest'
+else:
+    mcOpt = ''
+    pass
+
 # CHANGE THIS!
 tmpHead = 'temp'
 tmpOut = tmpHead + '_time.root'
@@ -75,7 +82,7 @@ htmlHead = 'html'
 
 cmd = """cd %(workDir)s
 source %(setup)s
-%(app)s -b %(tdBin)s -c %(options)s -d %(digiFile)s %(recon)s -o %(tmpHead)s -g %(htmlHead)s -w %(codeDir)s -p -t MCOktTest || exit 1
+%(app)s -b %(tdBin)s -c %(options)s -d %(digiFile)s %(recon)s -o %(tmpHead)s -g %(htmlHead)s -w %(codeDir)s -p %(mcOpt)s || exit 1
 mv %(tmpOut)s %(outFile)s
 """ % locals()
 
