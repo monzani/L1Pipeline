@@ -272,6 +272,7 @@ Put (almost) all chunk-level files in their own subdirectories.
 Make cleanup work better with load balancing.
 Reformat a bunch of stuff.
 Handle LCI runs.
+Determine LPA, LCI, or MC from delivered_events file.
 
 Load balance between 2 AFS staging volumes.  The implementation is not good,
 it's a shell script that has a bunch of stuff hardwired the should be gotten
