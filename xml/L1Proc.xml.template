@@ -115,16 +115,6 @@
       </depends>
     </process>
  
-    <process name="ingestDigiTrend">
-      <variables>
-        <var name="reportType">digiTrend</var>
-      </variables>
-      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q long "/>
-      <depends>
-        <after process="mergeDigiTrend" status="SUCCESS"/>
-      </depends>
-    </process>
- 
     <process name="registerDigiTrend">
       <variables>
         <var name="parentProcess">mergeDigiTrend</var>
@@ -139,6 +129,16 @@
       </depends>
     </process>
 
+    <process name="ingestDigiTrend">
+      <variables>
+        <var name="reportType">digiTrend</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q long "/>
+      <depends>
+        <after process="mergeDigiTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
     <process name="mergeFastMonHist">
       <variables>
         <var name="fileType">fastMonHist</var>
@@ -245,88 +245,6 @@
       </depends>
     </process>
  
-      <process name="mergeReconChunks">
-      <variables>
-        <var name="fileType">recon</var>
-      </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long %(reconMergeScratch)s "/>
-      <depends>
-        <after process="doChunk.mergeReconCrumbs" status="DONE"/>
-      </depends>
-    </process>
-
-    <process name="registerRecon">
-      <variables>
-        <var name="parentProcess">mergeReconChunks</var>
-        <var name="dataType">RECON</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="mergeReconChunks" status="SUCCESS"/>
-      </depends>
-    </process>
-
-     <process name="mergeReconEor">
-      <variables>
-        <var name="fileType">reconEor</var>
-      </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "/>
-      <depends>
-        <after process="doChunk.reconEor" status="DONE"/>
-      </depends>
-    </process>
- 
-    <process name="registerReconEor">
-      <variables>
-        <var name="parentProcess">mergeReconEor</var>
-        <var name="dataType">RECONHIST</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="mergeReconEor" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="mergeReconTrend">
-      <variables>
-        <var name="fileType">reconTrend</var>
-      </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "/>
-      <depends>
-        <after process="doChunk.reconTrend" status="DONE"/>
-      </depends>
-    </process>
- 
-    <process name="ingestReconTrend">
-      <variables>
-        <var name="reportType">reconTrend</var>
-      </variables>
-      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q long "/>
-      <depends>
-        <after process="mergeReconTrend" status="SUCCESS"/>
-      </depends>
-    </process>
- 
-    <process name="registerReconTrend">
-      <variables>
-        <var name="parentProcess">mergeReconTrend</var>
-        <var name="dataType">RECONTREND</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="mergeReconTrend" status="SUCCESS"/>
-      </depends>
-    </process>
-
     <process name="mergeCalChunks">
       <variables>
         <var name="fileType">cal</var>
@@ -473,6 +391,88 @@
       </script>
       <depends>
         <after process="makeFT2" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeReconTrend">
+      <variables>
+        <var name="fileType">reconTrend</var>
+      </variables>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "/>
+      <depends>
+        <after process="doChunk.reconTrend" status="DONE"/>
+      </depends>
+    </process>
+ 
+    <process name="registerReconTrend">
+      <variables>
+        <var name="parentProcess">mergeReconTrend</var>
+        <var name="dataType">RECONTREND</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeReconTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestReconTrend">
+      <variables>
+        <var name="reportType">reconTrend</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q long "/>
+      <depends>
+        <after process="mergeReconTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="mergeReconEor">
+      <variables>
+        <var name="fileType">reconEor</var>
+      </variables>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "/>
+      <depends>
+        <after process="doChunk.reconEor" status="DONE"/>
+      </depends>
+    </process>
+ 
+    <process name="registerReconEor">
+      <variables>
+        <var name="parentProcess">mergeReconEor</var>
+        <var name="dataType">RECONHIST</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeReconEor" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeReconChunks">
+      <variables>
+        <var name="fileType">recon</var>
+      </variables>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long %(reconMergeScratch)s "/>
+      <depends>
+        <after process="doChunk.mergeReconCrumbs" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerRecon">
+      <variables>
+        <var name="parentProcess">mergeReconChunks</var>
+        <var name="dataType">RECON</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeReconChunks" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -647,6 +647,7 @@
         <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q long "/>
         <depends>
           <after process="doCrumb.recon" status="SUCCESS"/>
+          <after process="mergeCalCrumbs" status="SUCCESS"/>
           <after process="mergeReconCrumbs" status="SUCCESS"/>
         </depends>
       </process>
@@ -658,6 +659,7 @@
         <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q long "/>
         <depends>
           <after process="doCrumb.recon" status="SUCCESS"/>
+          <after process="mergeCalCrumbs" status="SUCCESS"/>
           <after process="mergeReconCrumbs" status="SUCCESS"/>
         </depends>
       </process>

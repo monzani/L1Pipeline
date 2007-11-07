@@ -274,7 +274,13 @@ Reformat a bunch of stuff.
 Handle LCI runs.
 Determine LPA, LCI, or MC from delivered_events file.
 
-Load balance between 2 AFS staging volumes.  The implementation is not good,
-it's a shell script that has a bunch of stuff hardwired the should be gotten
-from config.
+Load balance chunks (not crumbs yet) between 2 AFS staging volumes.  The
+implementation is not good, it's a shell script that has a bunch of stuff
+hardwired the should be gotten from config.
+-------------------------------------------
 
+1.25
+-----------------
+Use variable crumb sizes and a fixed number of crumbs/chunk.
+Make reconEor and reconTrend depend on mergeCalCrumbs.
+Reorder stuff in XML.
