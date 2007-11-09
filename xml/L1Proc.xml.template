@@ -778,6 +778,30 @@
       </depends>
     </process>
 
+    <process name="mergeFastMonErrorLci">
+      <variables>
+        <var name="fileType">fastMonError</var>
+      </variables>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q short "/>
+      <depends>
+        <after process="doChunkLci.fastMonLci" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonErrorLci">
+      <variables>
+        <var name="parentProcess">mergeFastMonErrorLci</var>
+        <var name="dataType">FASTMONERROR</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonErrorLci" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="mergeFastMonHistLci">
       <variables>
         <var name="fileType">fastMonHist</var>
@@ -831,6 +855,7 @@
       <depends>
         <after process="doChunkLci.checkChunkLci" status="SUCCESS"/>
         <after process="registerDigiLci" status="SUCCESS"/>
+        <after process="registerFastMonErrorLci" status="SUCCESS"/>
         <after process="registerFastMonHistLci" status="SUCCESS"/>
         <after process="registerFastMonTupleLci" status="SUCCESS"/>
         <after process="registerDigiEorLci" status="SUCCESS"/>

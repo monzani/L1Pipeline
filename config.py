@@ -35,7 +35,7 @@ else:
     pass
 print >> sys.stderr, "Test mode: %s" % testMode
 
-L1Version = "1.25"
+L1Version = "1.26"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
@@ -48,7 +48,10 @@ L1Dir = os.path.join(L1Disk, 'rootData')
 
 if testMode: L1Dir = os.path.join(L1Dir, 'test')
 
-afsStage = "/afs/slac/g/glast/ground/PipelineStaging"
+stageDisks = ["/afs/slac/g/glast/ground/PipelineStaging",
+              "/afs/slac/g/glast/ground/PipelineStaging2"]
+stageBase = 'l1Stage'
+stageDirs = [os.path.join(disk, stageBase) for disk in stageDisks]
 
 #maxCrumbSize = 48000 # SVAC pipeline uses this
 #maxCrumbSize = 250   # tiny
@@ -116,11 +119,12 @@ isocBin = os.path.join(isoc, isocPlatform, 'ISOC_PROD/bin')
 
 # ISOC logger
 scid = 99
+netLoggerDev = 'x-netlog://glastlnx06.slac.stanford.edu:15502'
+netloggerProd = 'x-netlog://glastlnx06.slac.stanford.edu:15501'
 if testMode:
-    netloggerDest = 'x-netlog://glastlnx06.slac.stanford.edu:15502'
+    netloggerDest = netLoggerDev
 else:
-    #netloggerDest = 'x-netlog://glastlnx06.slac.stanford.edu:15501'
-    netloggerDest = 'x-netlog://glastlnx06.slac.stanford.edu:15502'
+    netloggerDest = netLoggerDev
     pass
 netloggerLevel = 'info'
 

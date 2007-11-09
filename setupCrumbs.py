@@ -10,13 +10,18 @@ from os import path, environ
 import sys
 
 import config
+
+import balance
 import crumble
 import fileNames
 import pipeline
 import rootFiles
 
-files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'], \
-                        environ['CHUNK_ID'])
+dlId = environ['DOWNLINK_ID']
+runId = environ['RUNID']
+chunkId = environ['CHUNK_ID']
+
+files = fileNames.setup(dlId, runId, chunkId)
 
 digiFile = files['chunk']['digi']
 chunkDir = files['dirs']['chunk']
@@ -41,10 +46,10 @@ else:
     cDigits = int(math.ceil(math.log(biggest) / math.log(10)))
 cForm = 'b%0' + `cDigits` + 'd'
 
-for iCrumb in range(nCrumbs):
-    start = crumbStarts[iCrumb]
-    crumbId = cForm % start
-    nEvents = crumbSizes[iCrumb]
+crumbIds = [cForm % start for start in crumbStarts]
+balance.balance(crumbIds, runId, chunkId)
+
+for start, crumbId, nEvents in zip(crumbStarts, crumbIds, crumbSizes):
     stream = crumbId[1:]
     args = 'CRUMB_ID=%(crumbId)s,crumbStart=%(start)s,crumbEvents=%(nEvents)s' % locals()
     pipeline.createSubStream("doCrumb", stream, args)

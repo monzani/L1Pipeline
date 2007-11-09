@@ -24,11 +24,6 @@ dlRawDir = os.environ['DOWNLINK_RAWDIR']
 head, downlink = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not downlink: head, downlink = os.path.split(head)
 
-# also fairly bad
-app = os.path.join(config.L1ProcROOT, 'balance')
-cmd = '%(app)s %(dlRawDir)s' % locals()
-runner.run(cmd)
-
 # Figure out which runs have data in this dl
 # we assume that any subdirectory of the downlink directory represents a run
 # this is a contract with the halfpipe

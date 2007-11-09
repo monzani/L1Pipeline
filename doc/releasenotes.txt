@@ -284,3 +284,11 @@ hardwired the should be gotten from config.
 Use variable crumb sizes and a fixed number of crumbs/chunk.
 Make reconEor and reconTrend depend on mergeCalCrumbs.
 Reorder stuff in XML.
+-------------------------------------------
+
+1.26
+-----------------
+Reimplement load balancing of temp files in python.
+Load balance crumbs as well as chunks.
+Frob organization of temp dirs.
+Merge & keep FastMon error summary for LCI runs.

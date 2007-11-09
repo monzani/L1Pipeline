@@ -11,6 +11,8 @@ import os
 import re
 
 import config
+
+import balance
 import fileNames
 import lockFile
 import pipeline
@@ -37,9 +39,9 @@ print >> sys.stderr, 'Looking for files that match [%s].' % chunkGlob
 chunkFiles = glob.glob(chunkGlob)
 print >> sys.stderr, 'Found %s.' % chunkFiles
 
-# set up a subStream for each run
+# build a list of chunkIds
+goodChunks = {}
 for chunkFile in chunkFiles:
-
     fileBase = os.path.basename(chunkFile)
     match = chunkRe.match(fileBase)
     if match:
@@ -47,6 +49,16 @@ for chunkFile in chunkFiles:
     else:
         print >> sys.stderr, 'Bad chunk file name %s' % fileBase
         continue
+    goodChunks[chunkId] = chunkFile
+    continue
+
+# set up load balancing
+chunkIds = goodChunks.keys()
+chunkIds.sort()
+balance.balance(chunkIds, runId)
+
+# set up a subStream for each chunk
+for chunkId, chunkFile in goodChunks.items():
     stream = chunkId[1:]
     args = "EVTFILE=%(chunkFile)s,CHUNK_ID=%(chunkId)s" % locals()
     pipeline.createSubStream(subTask, stream, args)
