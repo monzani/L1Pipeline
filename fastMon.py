@@ -44,7 +44,7 @@ extra = package['extraSetup']
 setup = package['setup']
 app = config.apps['fastMon']
 
-newLatexDir = config.installBin
+python = config.python
 
 cmd = '''
 cd %(workDir)s
@@ -53,8 +53,7 @@ export FAST_MON_DIR=%(workDir)s
 %(extra)s
 source %(setup)s
 export PYTHONPATH=${PYTHONPATH}:%(workDir)s
-%(app)s -o %(tupleFile)s -p %(histFile)s -e %(errorFile)s %(inFile)s
-ls -lahR
+%(python)s %(app)s -o %(tupleFile)s -p %(histFile)s -e %(errorFile)s %(inFile)s
 ''' % locals()
 
 status = runner.run(cmd)

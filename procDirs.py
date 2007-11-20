@@ -4,6 +4,7 @@
 """
 
 import glob
+import hashlib
 import os
 import re
 import sys
@@ -152,9 +153,11 @@ def findPieceDirs(dlId, runId, chunkId=None):
    
     return pieceDirs
 
+def myHash(str):
+    return int(hashlib.md5(str).hexdigest(), 16)
 
 def getRunStageBase(dirs, runId):
-    index = hash(runId) % len(config.stageDirs)
+    index = myHash(runId) % len(config.stageDirs)
     base = config.stageDirs[index]
     stager = os.path.join(base, runId)
     return stager

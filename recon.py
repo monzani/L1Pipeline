@@ -47,7 +47,7 @@ os.environ['gleamGeometry'] = geometry
 
 #setupScript = config.cmtScript
 app = config.apps['recon']
-options = config.reconOptions
+options = config.reconOptions[datasource]
 
 cmd = '''
 cd %(workDir)s

@@ -35,12 +35,26 @@ else:
     pass
 print >> sys.stderr, "Test mode: %s" % testMode
 
-L1Version = "1.26"
+L1Version = "1.27"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
 
 LATCalibRoot = '/afs/slac/g/glast/ground/releases/calibrations/'
+
+calibFlavors = { # not using this now, have separate JO files for LPA & MC
+    'LPA': {
+        'Acd': 'vanilla',
+        'Cal': 'vanilla',
+        'Tkr': 'vanilla',
+        },
+    'MC': {
+        'Acd': 'MC_OktoberFest07-L1Proc-recon',
+        'Cal': 'MC_OktoberFest07',
+        'Tkr': 'MC_OktoberFest07',
+        }
+    }
+
 L1Cmt = os.path.join(installRoot, 'builds')
 
 L1Disk = '/nfs/farm/g/glast/u40/L1'
@@ -106,7 +120,10 @@ cmtScript = os.path.join(
     ) # do we need this?
 #
 digiOptions = os.path.join(L1ProcROOT, 'digi.jobOpt')
-reconOptions = os.path.join(L1ProcROOT, 'recon.jobOpt')
+reconOptions = {
+    'LPA': os.path.join(L1ProcROOT, 'recon.jobOpt'),
+    'MC': os.path.join(L1ProcROOT, 'recon.jobOpt.mc'),
+}
 
 rootSys = os.path.join(glastExt, 'ROOT/v5.14.00g/root')
 haddRootSys = rootSys
@@ -148,7 +165,7 @@ packages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'dp20071019',
+        'version': 'dp20071114',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',

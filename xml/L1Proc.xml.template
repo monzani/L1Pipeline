@@ -245,30 +245,6 @@
       </depends>
     </process>
  
-    <process name="mergeCalChunks">
-      <variables>
-        <var name="fileType">cal</var>
-      </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "/>
-      <depends>
-        <after process="doChunk.mergeCalCrumbs" status="DONE"/>
-      </depends>
-    </process>
-
-    <process name="registerCal">
-      <variables>
-        <var name="parentProcess">mergeCalChunks</var>
-        <var name="dataType">CAL</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="mergeCalChunks" status="SUCCESS"/>
-      </depends>
-    </process>
-
     <process name="mergeGcrChunks">
       <variables>
         <var name="fileType">gcr</var>
@@ -391,6 +367,30 @@
       </script>
       <depends>
         <after process="makeFT2" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeCalChunks">
+      <variables>
+        <var name="fileType">cal</var>
+      </variables>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "/>
+      <depends>
+        <after process="doChunk.mergeCalCrumbs" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerCal">
+      <variables>
+        <var name="parentProcess">mergeCalChunks</var>
+        <var name="dataType">CAL</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeCalChunks" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -600,11 +600,11 @@
         </createsSubtasks>
       </process>
 
-      <process name="mergeCalCrumbs">
+      <process name="mergeGcrCrumbs">
         <variables>
-          <var name="fileType">cal</var>
+          <var name="fileType">gcr</var>
         </variables>
-        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "/>
+        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium -sp 100 "/>
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
         </depends>
@@ -620,11 +620,11 @@
         </depends>
       </process>
 
-      <process name="mergeGcrCrumbs">
+      <process name="mergeCalCrumbs">
         <variables>
-          <var name="fileType">gcr</var>
+          <var name="fileType">cal</var>
         </variables>
-        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium -sp 100 "/>
+        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "/>
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
         </depends>

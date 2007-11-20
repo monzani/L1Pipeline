@@ -292,3 +292,15 @@ Reimplement load balancing of temp files in python.
 Load balance crumbs as well as chunks.
 Frob organization of temp dirs.
 Merge & keep FastMon error summary for LCI runs.
+-------------------------------------------
+
+1.27
+-----------------
+Monitor dp20071114
+
+More XML reordering.
+Use a better hash (MD5 instead of python hash) to balance runs.
+Select calibrations for MC or LPA.
+Export to GSSC on prod.
+Specify python interpreter when running FastMon.
+
