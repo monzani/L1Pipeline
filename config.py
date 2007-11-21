@@ -35,7 +35,7 @@ else:
     pass
 print >> sys.stderr, "Test mode: %s" % testMode
 
-L1Version = "1.27"
+L1Version = "1.28"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
@@ -177,7 +177,7 @@ packages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r1p24',
+        'version': 'v1r1p25',
         },
     }
 

@@ -167,7 +167,7 @@
       <variables>
         <var name="fileType">fastMonTuple</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q short "/>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium "/>
       <depends>
         <after process="doChunk.fastMon" status="DONE"/>
       </depends>
@@ -325,7 +325,7 @@
     </process>
 
     <process name="ft2Runs">
-      <job executable="${L1ProcROOT}/ft2Entries.py" batchOptions=" -q medium -sp 100 "/>
+      <job executable="${L1ProcROOT}/ft2Entries.py" batchOptions=" -q long -sp 100 "/>
       <depends>
         <after process="mergeDigi" status="SUCCESS"/>
         <after process="mergeMeritChunks" status="SUCCESS"/>

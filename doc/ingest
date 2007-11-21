@@ -9,5 +9,9 @@ The following are the scripts to invoke: turns out they are shell scripts. Hope 
  
 
  
+It should take three arguments:
 
-They take a single argument, the full path of the file to process.
+1- The file to ingest
+2- The version (not sure if you are using it)
+3- The database: prod/dev
+

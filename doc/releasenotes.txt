@@ -304,3 +304,9 @@ Select calibrations for MC or LPA.
 Export to GSSC on prod.
 Specify python interpreter when running FastMon.
 
+-------------------------------------------
+
+1.28
+-----------------
+ft2Util v1r1p25
+Tweak queues.

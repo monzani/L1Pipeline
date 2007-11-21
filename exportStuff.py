@@ -34,6 +34,9 @@ import fileNames
 import runner
 import stageFiles
 
+dlId = os.environ['DOWNLINK_ID']
+runId = os.environ['RUNID']
+
 # Where do we send the data?
 if config.testMode:
     # send = ""             # noop
@@ -46,7 +49,7 @@ pass
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
-files = fileNames.setup(os.environ['DOWNLINK_ID'], os.environ['RUNID'])
+files = fileNames.setup(dlId, runId)
 exportFile = files['run'][os.environ['fileType']]
 
 stagedFile = staged.stageIn(exportFile)
