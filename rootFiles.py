@@ -5,10 +5,7 @@
 @author W. Focke <focke@slac.stanford.edu>
 """
 
-from os import environ
 import sys
-
-import config
 
 import ROOT
 ROOT.gSystem.Load('libcommonRootData.so')
@@ -79,3 +76,17 @@ def concatenate_prune(outputFileName, fileNames, treeName='Digi', expectedEntrie
     #print >> sys.stderr, outputFileName, ' created\n'
 
     return retCode
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 4:
+        print >> sys.stderr, 'usage: rootFiles.py treeName outFile inFile1 ...'
+        sys.exit(1)
+        pass
+    
+    treeName = sys.argv[1]
+    outFile = sys.argv[2]
+    inFiles = sys.argv[3:]
+    
+    concatenate_prune(outFile, inFiles, treeName)
+    

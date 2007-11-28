@@ -177,7 +177,7 @@ packages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r1p25',
+        'version': 'v1r1p26',
         },
     }
 
