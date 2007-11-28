@@ -65,6 +65,7 @@ finishOption = config.finishOption
 
 files = fileNames.setup(dlId, runId)
 inputFile = files['run'][fileType]
+inputDir, inputBase = os.path.split(inputFile)
 
 # figure out the version number
 values = {
@@ -74,7 +75,9 @@ values = {
     }
 runDir = files['dirs']['run']
 oldTemplate = os.path.join(runDir, template % values)
+print >> sys.stderr, 'Looking for %s' % oldTemplate
 oldFiles = glob.glob(oldTemplate)
+print >> sys.stderr, 'Found %s' % oldFiles
 if oldFiles:
     oldFiles.sort()
     last = oldFiles[-1]
@@ -82,13 +85,15 @@ if oldFiles:
     if mob:
         version = int(mob.group(1)) + 1
     else:
-        raise OSError, "Can't parse version form %s" % last, last
+        raise OSError, "Can't parse version from %s" % last, last
 else:
     version = 0
     pass
 values['ver'] = vForm % version
-exportFile = template % values
-os.symlink(inputFile, exportFile)
+exportFile = os.path.join(inputDir, template % values)
+print >> sys.stderr, 'Input name is %s' % inputBase
+print >> sys.stderr, 'Output name is %s' % exportFile
+os.symlink(inputBase, exportFile)
 
 stagedFile = staged.stageIn(exportFile)
 

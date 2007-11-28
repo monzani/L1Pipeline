@@ -108,7 +108,7 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=True):
         dirs['run'], exportName(dlId, 'evsum'))
     files['run']['ft2Export'] = os.path.join(
         dirs['run'], exportName(dlId, 'pt'))
-    files['run']['ft2Fits'] = os.path.join(
+    files['run']['ft2'] = os.path.join(
         dirs['run'], join(dlHead, 'ft2.fits'))
     files['run']['ft2Txt'] = os.path.join(
         dirs['run'], join(dlHead, 'ft2.txt'))

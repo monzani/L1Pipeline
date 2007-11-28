@@ -33,7 +33,7 @@ txtFt2File = files['run']['ft2Txt']
 stagedFt2TxtFile = staged.stageIn(txtFt2File)
 
 # output
-fitsFt2File = files['run']['ft2Fits']
+fitsFt2File = files['run']['ft2']
 stagedFt2FitsFile = staged.stageOut(fitsFt2File)
 
 setupScript = config.packages['ft2Util']['setup']

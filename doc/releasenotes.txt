@@ -308,5 +308,10 @@ Specify python interpreter when running FastMon.
 
 1.28
 -----------------
-ft2Util v1r1p25
+ft2Util v1r1p26
+Allow use of rootFiles.py as a hadd-like tree merger.
+Make proper version numbers for export files.
 Tweak queues.
+Start work on assigning each chunk a list of preferred hosts to increase
+chance of sharing AFS cache.
+
