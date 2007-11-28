@@ -49,12 +49,6 @@ if status: finishOption = 'wipe'
 
 status |= staged.finish(finishOption)
 
-ft1Export = files['run']['ft1Export']
-if os.path.lexists(ft1Export):
-    os.remove(ft1Export)
-    pass
-os.symlink(os.path.basename(realFt1File), ft1Export)
-
 fileType = 'FT1'
 registerPrep.prep(fileType, realFt1File)
 

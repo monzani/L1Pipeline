@@ -302,7 +302,7 @@
 
     <process name="exportFT1">
       <variables>
-        <var name="fileType">ft1Export</var>
+        <var name="fileType">ft1</var>
       </variables>
       <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q express -sp 100 "/>
       <depends>
@@ -348,7 +348,7 @@
 
     <process name="exportFT2">
       <variables>
-        <var name="fileType">ft2Export</var>
+        <var name="fileType">ft2</var>
       </variables>
       <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q express -sp 100 "/>
       <depends>

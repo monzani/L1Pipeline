@@ -23,7 +23,9 @@ This will require keeping track either of which runs have been sent or
 @author W. Focke <focke@slac.stanford.edu>
 """
 
+import glob
 import os
+import re
 import sys
 
 import config
@@ -34,8 +36,15 @@ import fileNames
 import runner
 import stageFiles
 
+template = 'gll_%(tag)s_%(run)s_v%(ver)s.fits'
+rex = re.compile('gll_[^_]+_[^_]+_v([0-9]+)\.fits')
+
+vForm = '%.3d'
+
+
 dlId = os.environ['DOWNLINK_ID']
 runId = os.environ['RUNID']
+fileType = os.environ['fileType']
 
 # Where do we send the data?
 if config.testMode:
@@ -46,11 +55,40 @@ else:
     # send = "--send LISOC" # always test mode for now
 pass
 
+tags = {
+    'ft1': 'evsum',
+    'ft2': 'pt',
+    }
+
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
 files = fileNames.setup(dlId, runId)
-exportFile = files['run'][os.environ['fileType']]
+inputFile = files['run'][fileType]
+
+# figure out the version number
+values = {
+    'run': runId,
+    'tag': tags[fileType],
+    'ver': '*',
+    }
+runDir = files['dirs']['run']
+oldTemplate = os.path.join(runDir, template % values)
+oldFiles = glob.glob(oldTemplate)
+if oldFiles:
+    oldFiles.sort()
+    last = oldFiles[-1]
+    mob = rex.search(last)
+    if mob:
+        version = int(mob.group(1)) + 1
+    else:
+        raise OSError, "Can't parse version form %s" % last, last
+else:
+    version = 0
+    pass
+values['ver'] = vForm % version
+exportFile = template % values
+os.symlink(inputFile, exportFile)
 
 stagedFile = staged.stageIn(exportFile)
 
