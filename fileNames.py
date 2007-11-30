@@ -104,10 +104,6 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=True):
         dirs['run'], join(dlHead, 'fastMonTuple.root'))
     files['run']['ft1'] = os.path.join(
         dirs['run'], join(dlHead, 'ft1.fits'))
-    files['run']['ft1Export'] = os.path.join(
-        dirs['run'], exportName(dlId, 'evsum'))
-    files['run']['ft2Export'] = os.path.join(
-        dirs['run'], exportName(dlId, 'pt'))
     files['run']['ft2'] = os.path.join(
         dirs['run'], join(dlHead, 'ft2.fits'))
     files['run']['ft2Txt'] = os.path.join(
@@ -227,29 +223,3 @@ def findPieces(fileType, dlId, runId, chunkId=None):
    
     return inFiles
 
-
-def ft1ExportName(dlId):
-    day = dlId[:-3]
-    contact = dlId[-3:]
-    
-    version = '%.2d' % 0 # FIX THIS
-
-    lD = len(day)
-    if lD < 6:
-        day = '0' * (6 - lD) + day # nasty hack
-
-    name = 'gll_evsum_%s_c%s_v%s.fit' % (day, contact, version)
-    return name
-
-def exportName(dlId, fileType):
-    day = dlId[:-3]
-    contact = dlId[-3:]
-    
-    version = '%.2d' % 0 # FIX THIS
-
-    lD = len(day)
-    if lD < 6:
-        day = '0' * (6 - lD) + day # nasty hack
-
-    name = 'gll_%s_%s_c%s_v%s.fit' % (fileType, day, contact, version)
-    return name

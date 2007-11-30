@@ -36,20 +36,29 @@ def concatenate_prune(outputFileName, fileNames, treeName='Digi', expectedEntrie
         print >> sys.stderr, "Expect %d entries." % expectedEntries
         pass
 
-    for name in fileNames:
-        print >> sys.stderr, "Adding [%s] " % name
+    scanEntries = 0
+    for iFile, name in enumerate(fileNames):
+        print >> sys.stderr, "Adding %d [%s]" % (iFile, name),
+        fileEntries = getFileEvents(name, treeName)
+        print >> sys.stderr, "%d entries." % fileEntries
+        scanEntries += fileEntries
         addCode = c.Add(name, 0)
         if not addCode: # TChain.Add returns 1 for success, 0 for failure
             return 1
         pass
+    print >> sys.stderr, 'scanEntries = ', scanEntries
+    if expectedEntries is not None:
+        if scanEntries != expectedEntries:
+            print >> sys.stderr, "Bad # entries after input scan."
+            return 1
+        pass
+    expectedEntries = scanEntries
     
     numChainEntries = c.GetEntries()
     print >> sys.stderr, 'numChainEntries = ', numChainEntries
-    if expectedEntries is not None:
-        if numChainEntries != expectedEntries:
-            print >> sys.stderr, "Bad # entries after chain creation."
-            return 1
-        pass
+    if numChainEntries != expectedEntries:
+        print >> sys.stderr, "Bad # entries after chain creation."
+        return 1
     
     gSystem.Load('libpipelineDatasets.so')
 
@@ -67,11 +76,9 @@ def concatenate_prune(outputFileName, fileNames, treeName='Digi', expectedEntrie
 
     numChainEntries = getFileEvents(outputFileName, treeName)
     print >> sys.stderr, 'numChainEntries = ', numChainEntries
-    if expectedEntries is not None:
-        if numChainEntries != expectedEntries:
-            print >> sys.stderr, "Bad # entries after merge."
-            return 1
-        pass
+    if numChainEntries != expectedEntries:
+        print >> sys.stderr, "Bad # entries after merge."
+        return 1
     
     #print >> sys.stderr, outputFileName, ' created\n'
 
