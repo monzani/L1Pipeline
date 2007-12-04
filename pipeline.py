@@ -15,11 +15,11 @@ def setVariable(varName, value):
     if len(value) > maxVarLength:
         print >> sys.stderr, 'Variable is probably too long to work correctly (max %s).' % maxVarLength
         pass
-    cmd = 'pipelineSet %s %s' % (varName, value)
+    cmd = "pipelineSet %s '%s'" % (varName, value)
     status = runner.run(cmd)
     return status
 
 def createSubStream(subTask, stream=-1, args=''):
-    cmd = 'pipelineCreateStream %s %s %s' % (subTask, stream, args)
+    cmd = "pipelineCreateStream %s %s '%s'" % (subTask, stream, args)
     status = runner.run(cmd)
     return status
