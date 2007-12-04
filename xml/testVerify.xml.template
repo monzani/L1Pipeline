@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline
+  xmlns="http://glast-ground.slac.stanford.edu/pipeline"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
+
+<task name="testVerify" version="%(L1Version)s" type="Data">
+
+  <variables>
+    <var name="DATASOURCE">LPA</var>
+    <var name="CMTCONFIG">%(cmtConfig)s</var>
+    <var name="GLAST_EXT">%(glastExt)s</var>
+    <var name="GPL2">%(GPL2)s</var>
+    <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+    <var name="LATCalibRoot">%(LATCalibRoot)s</var>
+    <var name="LD_LIBRARY_PATH">%(libraryPath)s</var>
+    <var name="MALLOC_CHECK_">0</var>
+    <var name="PFILES">%(PFILES)s</var>
+    <var name="PYTHONPATH">%(pythonPath)s</var>
+    <var name="ROOTSYS">%(rootSys)s</var>
+    <var name="ST">%(ST)s</var>
+  </variables>
+
+  <prerequisites>
+    <prerequisite name="DOWNLINK_RAWDIR" type="string"/>
+    <prerequisite name="DOWNLINK_ID" type="string"/>
+    <prerequisite name="RUNID" type="string"/>
+  </prerequisites>
+
+  <process name="verify">
+    <job executable="${L1ProcROOT}/verify.py" batchOptions=" -q long "/>
+  </process>
+
+
+</task>
+</pipeline>

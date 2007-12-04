@@ -9,7 +9,7 @@ import config
 
 #os.chdir(config.L1ProcROOT) # ?
 
-taskNames = ['L1Proc', 'lciChunk', 'lciWhole']
+taskNames = ['L1Proc', 'lciChunk', 'lciWhole', 'testVerify']
 
 for taskName in taskNames:
     taskFile = os.path.join(config.L1Xml, taskName + '-' + config.L1Version + '.xml')
