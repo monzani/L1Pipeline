@@ -56,7 +56,7 @@ else:
 pass
 
 tags = {
-    'ft1': 'evsum',
+    'ft1': 'ev',
     'ft2': 'pt',
     }
 

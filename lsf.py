@@ -1,5 +1,6 @@
 
 import os
+import random
 import string
 import sys
 
@@ -41,23 +42,27 @@ def hostList():
     
     # find host types and info
     types = {}
-    nHosts = {}
-    hosts = []
+    hostsByType = {}
     for line in lines:
         hostName = line[0]
         ht = hostType(hostName)
         if ht not in types:
             types[ht] = hostInfo(hostName)
             pass
-        hosts.append(types[ht] + (hostName,))
-        nHosts[ht] = nHosts.get(ht, 0) + 1
+        hostsByType.setdefault(ht, []).append(hostName)
         continue
-    for ht, num in nHosts.items():
-        print >> sys.stderr, '%s: %d hosts' % (ht, num)
+    hosts = []
+    # sort host types by desireability (cores, factor)
+    for ht in sorted(types.keys(), key=lambda x:types[x]):
+        hl = hostsByType[ht]
+        print >> sys.stderr, ht, '%d hosts' % len(hl)
+        # randomize order of hosts of the same type
+        random.shuffle(hl)
+        hosts.extend((host,)+types[ht] for host in hl)
         continue
 
-    # sort by (slots, cpuf)
-    hosts.sort()
+    # put more-desireable hosts at the front of the list
+    hosts.reverse()
     
     return hosts
 
