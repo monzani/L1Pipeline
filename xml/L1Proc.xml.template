@@ -590,7 +590,7 @@
       </process>
  
       <process name="setupCrumbs">
-        <job executable="${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q express -sp 100 "/>
+        <job executable="${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q short -sp 100 "/>
         <depends>
           <after process="digitization" status="SUCCESS"/>
           <after process="fakeFT2" status="SUCCESS"/>

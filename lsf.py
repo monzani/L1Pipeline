@@ -1,4 +1,5 @@
 
+import bisect
 import os
 import random
 import string
@@ -53,6 +54,7 @@ def hostList():
         continue
     hosts = []
     # sort host types by desireability (cores, factor)
+    # not sure this is actually a good idea
     for ht in sorted(types.keys(), key=lambda x:types[x]):
         hl = hostsByType[ht]
         print >> sys.stderr, ht, '%d hosts' % len(hl)
@@ -66,3 +68,35 @@ def hostList():
     
     return hosts
 
+
+def balance(chunks):
+    hosts = hostList()
+    buckets = [[0, ic, chunk, []] for ic, chunk in enumerate(chunks)]
+    # ic ensures that buckets is presorted while preserving the original
+    # order of chunks within groups that are assigned the same number of slots
+    # and lets us recover the original order
+    for host, slots, factor in hosts:
+        least = buckets.pop(0)
+        least[0] += slots
+        least[-1].append(host)
+        bisect.insort(buckets, least)
+        continue
+    outies = [None] * len(chunks)
+    for slots, ic, chunk, cHosts in buckets:
+        outies[ic] =  makeMList(cHosts)
+        continue
+    return outies
+
+
+maxHosts = 10
+def makeMList(hosts):
+    if hosts:
+        usableHosts = hosts[:maxHosts]
+        nHosts = len(usableHosts)
+        prefs = ['%s+%d' % (host, nHosts-ih)
+                 for ih, host in enumerate(usableHosts)]
+        prefs.append('others')
+        prefStr = ' '.join(prefs)
+    else:
+        return 'genfarm'
+    return prefStr

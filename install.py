@@ -34,3 +34,23 @@ for taskName in taskNames:
 
     continue
 
+def bEnv(name, value):
+    line = '%s="%s" ; export %s\n' % (name, value, name)
+    return line
+
+def cEnv(name, value):
+    line = 'setenv %s "%s"\n' % (name, value)
+    return line
+
+ofp = open('setup.sh', 'w')
+
+ofp.write(bEnv("CMTCONFIG", config.cmtConfig))
+ofp.write(bEnv("GLAST_EXT", config.glastExt))
+ofp.write(bEnv("LATCalibRoot", config.LATCalibRoot))
+ofp.write(bEnv("LD_LIBRARY_PATH", config.libraryPath))
+ofp.write(bEnv("MALLOC_CHECK_", "0"))
+ofp.write(bEnv("PFILES", config.PFILES))
+ofp.write(bEnv("PYTHONPATH", config.pythonPath))
+ofp.write(bEnv("ROOTSYS", config.rootSys))
+ofp.write(bEnv("CMTPATH", config.cmtPath))
+#ofp.write(bEnv(, config.))

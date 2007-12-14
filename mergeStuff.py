@@ -105,9 +105,17 @@ workDir = os.path.dirname(outFile)
 
 inFileString = ''.join([' -i %s ' % ff for ff in inFiles])
 
+treeNames = {
+    'cal': 'CalTuple',
+    'digi': 'Digi',
+    'gcr': 'GcrSelect',
+    'recon': 'Recon',
+    }
 
 print >> sys.stderr, '------------------- start merge ------------------'
 status = 0
+
+
 
 if fileType in ['digiEor', 'reconEor', 'fastMonHist']:
     setup = config.packages['Monitor']['setup']
@@ -135,14 +143,14 @@ elif fileType in ['digiTrend', 'reconTrend']:
 
 elif fileType in ['digi', 'recon', 'gcr']:
     import rootFiles
-    treeNames = {
-        'digi': 'Digi',
-        'recon': 'Recon',
-        'gcr': 'GcrSelect',
-        }
-    #treeName = string.capitalize(fileType)
     treeName = treeNames[fileType]
     rootFiles.concatenate_prune(outFile, inFiles, treeName)
+
+
+elif fileType in ['cal'] and mergeLevel == 'chunk':
+    import rootFiles
+    treeName = treeNames[fileType]
+    rootFiles.concatenate_cal(outFile, inFiles, treeName)
 
 
 elif fileType in ['fastMonError']:

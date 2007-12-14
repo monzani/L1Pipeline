@@ -85,6 +85,71 @@ def concatenate_prune(outputFileName, fileNames, treeName='Digi', expectedEntrie
     return retCode
 
 
+def concatenate_cal(outputFileName, fileNames, treeName='Digi', expectedEntries=None):
+
+    from ROOT import TChain, gSystem
+    
+    c = TChain(treeName)
+    c.SetMaxTreeSize(500000000000)
+
+    if expectedEntries is not None:
+        print >> sys.stderr, "Expect %d entries." % expectedEntries
+        pass
+
+    scanEntries = 0
+    for iFile, name in enumerate(fileNames):
+        print >> sys.stderr, "Adding %d [%s]" % (iFile, name),
+        fileEntries = getFileEvents(name, treeName)
+        print >> sys.stderr, "%d entries." % fileEntries
+        scanEntries += fileEntries
+        addCode = c.Add(name, 0)
+        if not addCode: # TChain.Add returns 1 for success, 0 for failure
+            return 1
+        pass
+    print >> sys.stderr, 'scanEntries = ', scanEntries
+    if expectedEntries is not None:
+        if scanEntries != expectedEntries:
+            print >> sys.stderr, "Bad # entries after input scan."
+            return 1
+        pass
+    expectedEntries = scanEntries
+    
+    numChainEntries = c.GetEntries()
+    print >> sys.stderr, 'numChainEntries = ', numChainEntries
+    if numChainEntries != expectedEntries:
+        print >> sys.stderr, "Bad # entries after chain creation."
+        return 1
+    
+    print >> sys.stderr, "Merging..."
+
+    #basketSize = 32000 # default
+    basketSize = 1000000 # recommended by Rene
+    option = ''
+    #option = 'fast'
+    otf = ROOT.TFile.Open(outputFileName, "RECREATE")
+    nFiles = c.Merge(otf, basketSize, option)
+    retCode = nFiles != 1
+
+    numChainEntries = getFileEvents(outputFileName, treeName)
+    print >> sys.stderr, 'numChainEntries = ', numChainEntries
+    if numChainEntries != expectedEntries:
+        print >> sys.stderr, "Bad # entries after merge."
+        return 1
+    
+    #print >> sys.stderr, outputFileName, ' created\n'
+
+    return retCode
+
+
+def copyHeader(inFileName, outTFile):
+    headerName = 'header'
+    inTFile = ROOT.TFile.Open(inFileName)
+    header = inTFile.Get(headerName)
+    outTFile.cd()
+    header.Write(headerName)
+    return
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 4:
         print >> sys.stderr, 'usage: rootFiles.py treeName outFile inFile1 ...'

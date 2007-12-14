@@ -310,8 +310,11 @@ Specify python interpreter when running FastMon.
 -----------------
 ft2Util v1r1p26
 Allow use of rootFiles.py as a hadd-like tree merger.
-Make proper version numbers for export files.
+Add caode to change basket size while merging trees.
+Use rebasketizing merge for cal crumbs.
+Make better version numbers for export files.
 Tweak queues.
 Start work on assigning each chunk a list of preferred hosts to increase
 chance of sharing AFS cache.
+install.py makes a setup.sh script.
 
