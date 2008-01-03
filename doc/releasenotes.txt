@@ -318,3 +318,9 @@ Start work on assigning each chunk a list of preferred hosts to increase
 chance of sharing AFS cache.
 install.py makes a setup.sh script.
 
+-------------------------------------------
+
+1.29 (used for DITL 1)
+-----------------
+Don't run cleanupIncompleteRun.
+

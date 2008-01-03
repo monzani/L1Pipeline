@@ -137,7 +137,7 @@ for runId in oldRuns:
     runStatus = runStatuses[runId]
     args = "RUNID=%(runId)s,RUNSTATUS=%(runStatus)s" % locals()
     print >> sys.stderr, \
-          "Creating stream [%s] of subtask [%s] with args [%s]" % \
+          "NOT Creating stream [%s] of subtask [%s] with args [%s]" % \
           (stream, subTask, args)
-    pipeline.createSubStream(subTask, stream, args)
+    #pipeline.createSubStream(subTask, stream, args)
     continue

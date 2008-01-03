@@ -51,8 +51,8 @@ if config.testMode:
     # send = ""             # noop
     send = "--send LISOC" # loopback test
 else:
-    send = "--send GSSC"  # the real deal
-    # send = "--send LISOC" # always test mode for now
+    #send = "--send GSSC"  # the real deal
+    send = "--send LISOC" # always test mode for now
 pass
 
 tags = {
