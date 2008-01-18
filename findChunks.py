@@ -32,25 +32,30 @@ rootDir = files['dirs']['run']
 
 subTask = config.chunkSubTask[os.environ['DATASOURCE']]
 
-## Find chunk files
-# this is a contract with the halfpipe
-chunkGlob = os.path.join(runDir, '*.evt')
-print >> sys.stderr, 'Looking for files that match [%s].' % chunkGlob
-chunkFiles = glob.glob(chunkGlob)
-print >> sys.stderr, 'Found %s.' % chunkFiles
+def findChunkFiles(runDir):
+    # # Find chunk files
+    # this is a contract with the halfpipe
+    chunkGlob = os.path.join(runDir, '*.evt')
+    print >> sys.stderr, 'Looking for files that match [%s].' % chunkGlob
+    chunkFiles = glob.glob(chunkGlob)
+    print >> sys.stderr, 'Found %s.' % chunkFiles
 
-# build a list of chunkIds
-goodChunks = {}
-for chunkFile in chunkFiles:
-    fileBase = os.path.basename(chunkFile)
-    match = chunkRe.match(fileBase)
-    if match:
-        runIdFromFile, chunkId = match.groups()
-    else:
-        print >> sys.stderr, 'Bad chunk file name %s' % fileBase
+    # build a list of chunkIds
+    goodChunks = {}
+    for chunkFile in chunkFiles:
+        fileBase = os.path.basename(chunkFile)
+        match = chunkRe.match(fileBase)
+        if match:
+            runIdFromFile, chunkId = match.groups()
+        else:
+            print >> sys.stderr, 'Bad chunk file name %s' % fileBase
+            continue
+        goodChunks[chunkId] = chunkFile
         continue
-    goodChunks[chunkId] = chunkFile
-    continue
+
+    return goodChunks
+
+goodChunks = findChunkFiles(runDir)
 
 # set up load balancing
 chunkIds = goodChunks.keys()

@@ -27,9 +27,17 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=False):
     
     """
     dirs = {}
-    runBase = os.path.join(config.L1Dir, runId)
-    runDir = os.path.join(runBase, config.L1Version)
-    dirs['run'] = runDir
+
+    dlSub = os.path.join('downlinks', dlId)
+    dlDir = getStageBase(dirs, dlSub)
+    dirs['downlink'] = dlDir
+    dirs['ft2Fake'] = os.path.join(dlDir, 'ft2Fake')
+
+    if runId is not None:
+        runBase = os.path.join(config.L1Dir, runId)
+        runDir = os.path.join(runBase, config.L1Version)
+        dirs['run'] = runDir
+        pass
 
     if chunkId is not None:
         _setupChunk(dirs, runId, chunkId)
@@ -50,7 +58,7 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=False):
 def _setupChunk(dirs, runId, chunkId):
 
     # runStage = dirs['run']
-    runStage = getRunStageBase(dirs, runId)
+    runStage = getStageBase(dirs, runId)
     chunkDir = os.path.join(runStage, 'chunkLinks', chunkId)
     dirs['chunk'] = chunkDir
 
@@ -60,7 +68,6 @@ def _setupChunk(dirs, runId, chunkId):
     dirs['digiTrend'] = os.path.join(chunkDir, 'digiTrend')
     dirs['fastMon'] = os.path.join(chunkDir, 'fastMon')
     dirs['gcr'] = os.path.join(chunkDir, 'gcr')
-    dirs['ft2Fake'] = os.path.join(chunkDir, 'ft2Fake')
     dirs['merit'] = os.path.join(chunkDir, 'merit')
     dirs['recon'] = os.path.join(chunkDir, 'recon')
     dirs['reconEor'] = os.path.join(chunkDir, 'reconEor')
@@ -72,7 +79,7 @@ def _setupChunk(dirs, runId, chunkId):
 
 def _setupCrumb(dirs, runId, chunkId, crumbId):
     #chunkDir = dirs['chunk']
-    runStage = getRunStageBase(dirs, runId)
+    runStage = getStageBase(dirs, runId)
     crumbDir = os.path.join(runStage, 'crumbLinks', chunkId, crumbId)
     dirs['crumb'] = crumbDir
     return
@@ -156,7 +163,8 @@ def findPieceDirs(dlId, runId, chunkId=None):
 def myHash(str):
     return int(hashlib.md5(str).hexdigest(), 16)
 
-def getRunStageBase(dirs, runId):
+
+def getStageBase(dirs, runId):
     index = myHash(runId) % len(config.stageDirs)
     base = config.stageDirs[index]
     stager = os.path.join(base, runId)

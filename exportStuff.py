@@ -30,14 +30,16 @@ import sys
 
 import config
 
+import pyfits
+
 import GPLinit
 
 import fileNames
 import runner
 import stageFiles
 
-template = 'gll_%(tag)s_%(run)s_v%(ver)s.fits'
-rex = re.compile('gll_[^_]+_[^_]+_v([0-9]+)\.fits')
+template = 'gll_%(tag)s_%(run)s_v%(ver)s.fit'
+rex = re.compile('gll_[^_]+_[^_]+_v([0-9]+)\.fit')
 
 vForm = '%.3d'
 
@@ -56,8 +58,9 @@ else:
 pass
 
 tags = {
-    'ft1': 'ev',
+    'ft1': 'ph',
     'ft2': 'pt',
+    'ls3': 'lt',
     }
 
 staged = stageFiles.StageSet()
@@ -90,14 +93,20 @@ else:
     version = 0
     pass
 values['ver'] = vForm % version
-exportFile = os.path.join(inputDir, template % values)
+exportBase = template % values
+exportFile = os.path.join(inputDir, exportBase)
 print >> sys.stderr, 'Input name is %s' % inputBase
 print >> sys.stderr, 'Output name is %s' % exportFile
-os.symlink(inputBase, exportFile)
+#os.symlink(inputBase, exportFile)
 
-stagedFile = staged.stageIn(exportFile)
+stagedInFile = staged.stageIn(inputFile)
+stagedOutFile = staged.stageOut(exportFile)
 
-args = stagedFile
+hduList = pyfits.open(stagedInFile)
+hduList[0].header.update('filename', exportBase)
+hduList.writeto(stagedOutFile)
+
+args = stagedOutFile
 
 isocBin = config.isocBin
 

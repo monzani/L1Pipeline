@@ -16,27 +16,26 @@ import stageFiles
 import pipeline
 import registerPrep
 
-files = fileNames.setup(os.environ['DOWNLINK_ID'], os.environ['RUNID'], os.environ['CHUNK_ID'])
+files = fileNames.setup(os.environ['DOWNLINK_ID'])
 
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
 if staged.setupOK:
-#Local Copy of NFS dir	
     workDir = staged.stageDir
 else:
-    workDir = files['dirs']['run']
+    workDir = files['dirs']['ft2Fake']
     pass
 
 app = config.apps['makeFT2']
 
 #input file
 #for fake FT2 M7
-stagedM7File=  staged.stageIn(files['run']['m7'])
+stagedM7File=  staged.stageIn(files['downlink']['m7'])
 
 #output
 stagedFt2TxtFile = os.path.join(workDir, 'junkFT2.txt')
-fakeFt2File = files['chunk']['ft2Fake']
+fakeFt2File = files['downlink']['ft2Fake']
 stagedFt2FitsFile = staged.stageOut(fakeFt2File)
 
 

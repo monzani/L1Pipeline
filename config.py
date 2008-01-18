@@ -35,7 +35,7 @@ else:
     pass
 print >> sys.stderr, "Test mode: %s" % testMode
 
-L1Version = "1.29"
+L1Version = "1.30"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
@@ -57,7 +57,7 @@ calibFlavors = { # not using this now, have separate JO files for LPA & MC
 
 L1Cmt = os.path.join(installRoot, 'builds')
 
-L1Disk = '/nfs/farm/g/glast/u40/L1'
+L1Disk = '/nfs/farm/g/glast/u52/L1'
 L1Dir = os.path.join(L1Disk, 'rootData')
 
 if testMode: L1Dir = os.path.join(L1Dir, 'test')
@@ -145,7 +145,7 @@ else:
     pass
 netloggerLevel = 'info'
 
-stVersion = 'v9r2p2'
+stVersion = 'v9r4'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
 PFILES=".;"
@@ -165,7 +165,7 @@ packages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'dp20071114',
+        'version': 'dp20080116',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -177,7 +177,7 @@ packages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r1p26',
+        'version': 'v1r1p29',
         },
     }
 
@@ -227,8 +227,9 @@ apps = {
     'digiEor': packages['Monitor']['app'],
     'errorMerger': os.path.join(L1ProcROOT, 'errorParser.py'),
     'fastMon': packages['FastMon']['app'],
-    'makeFT2': packages['ft2Util']['app'],
     'makeFT1': os.path.join(stBinDir, 'makeFT1'),
+    'makeFT2': packages['ft2Util']['app'],
+    'makeLS3': os.path.join(stBinDir, 'gtltcube'),
     'mergeFT2': os.path.join(
         packages['ft2Util']['bin'], 'mergeFT2Entries.exe'),
     'recon': gleam,
@@ -284,19 +285,21 @@ rootPath = os.path.join(rootSys, 'lib')
 #mysqlPath = ':'.join([glastExt, 'MYSQL/4.1.18/lib/mysql'])
 clhepPath = os.path.join(glastExt, 'CLHEP/1.9.2.2/lib')
 cppunitPath = os.path.join(glastExt, 'cppunit/1.10.2/lib')
+oraclePath = '/afs/slac/package/oracle/new/lib'
 
 libraryPath = ':'.join(
     (os.path.join(L1Cmt, 'lib'), 
      os.path.join(glastLocation, 'lib'), 
-     rootPath, clhepPath, cppunitPath))
+     rootPath, clhepPath, cppunitPath, oraclePath))
 
 #GPL2 = '/nfs/slac/g/svac/focke/builds/GPLtools/dev'
 gplBase = '/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/GPLtools'
-if testMode:
-    gplType = 'L1test'
-else:
-    gplType = 'L1prod'
-pass
+# if testMode:
+#     gplType = 'L1test'
+# else:
+#     gplType = 'L1prod'
+#     pass
+gplType = 'L1prod'
 GPL2 = os.path.join(gplBase, gplType)
 gplPath = os.path.join(GPL2, 'python')
 
@@ -312,6 +315,8 @@ reconQueue = 'medium'
 #standardQueue = 'glastdataq'
 standardQueue = 'long'
 slowQueue = 'xlong'
+#
+highPriority = 75
 #
 reconMergeScratch = " -R &quot;select[scratch&gt;70]&quot; "
 reconCrumbCpuf = " -R &quot;select[cpuf&gt;%s]&quot; " % minCrumbCpuf

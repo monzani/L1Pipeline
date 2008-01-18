@@ -20,7 +20,7 @@ def join(*args):
     return joined
 
 
-def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=True):
+def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=False):
     """@brief Setup data directory names.
 
     @arg dlId The dowlink ID.
@@ -47,8 +47,15 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=True):
 
     files['dirs'] = dirs
 
-    #files['downlink'] = {}
+    files['downlink'] = {}
     #files['downlink']['runList'] = os.path.join(dirs['downlink'], 'runList')
+    files['downlink']['ft2Fake'] = os.path.join(
+        dirs['ft2Fake'], join(dlId, 'ft2Fake.fits'))
+    files['downlink']['m7'] = os.path.join(
+        os.environ['DOWNLINK_RAWDIR'], 'magic7_%s.txt' % dlId)
+
+    if runId is None:
+        return files
 
     if chunkId is not None:
         files['chunk'] = _setupChunk(dirs, chunkId, runHead)
@@ -71,6 +78,11 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=True):
         # a given run/downlink combo, and should sort into time order
         # (of file creation time), which should put the most-complete
         # version of a file highest.
+        #
+        # But if some processes get rolled back without rolling back the whole
+        # doRun stream, the new versions of the file have the same name as the
+        # old one. => BAD
+        #
         lockData = lockFile.readLock(runDir, runId, dlId)
         timeStamp = glastTime.timeStamp(lockData['time'])
         dlHead = join(runHead, timeStamp)
@@ -110,8 +122,8 @@ def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=True):
         dirs['run'], join(dlHead, 'ft2.txt'))
     files['run']['gcr'] = os.path.join(
         dirs['run'], join(dlHead, 'gcr.root'))
-    files['run']['m7'] = os.path.join(
-        os.environ['DOWNLINK_RAWDIR'], 'magic7_%s.txt' % dlId)
+    files['run']['ls3'] = os.path.join(
+        dirs['run'], join(dlHead, 'ls3.fits'))
     files['run']['merit'] = os.path.join(
         dirs['run'], join(dlHead, 'merit.root'))
     files['run']['recon'] = os.path.join(
@@ -150,8 +162,6 @@ def _setupChunk(dirs, chunkId, runHead):
         dirs['fastMon'], join(chunkHead, 'fastMonHist.root'))
     files['fastMonTuple'] = os.path.join(
         dirs['fastMon'], join(chunkHead, 'fastMonTuple.root'))
-    files['ft2Fake'] = os.path.join(
-        dirs['ft2Fake'], join(chunkHead, 'ft2Fake.fits'))
     files['gcr'] = os.path.join(
         dirs['gcr'], join(chunkHead, 'gcr.root'))
     files['merit'] = os.path.join(
@@ -222,4 +232,5 @@ def findPieces(fileType, dlId, runId, chunkId=None):
     print >> sys.stderr, "Matching files are: %s" % inFiles
    
     return inFiles
+
 

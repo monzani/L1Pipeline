@@ -303,24 +303,58 @@ Use a better hash (MD5 instead of python hash) to balance runs.
 Select calibrations for MC or LPA.
 Export to GSSC on prod.
 Specify python interpreter when running FastMon.
-
 -------------------------------------------
 
 1.28
 -----------------
 ft2Util v1r1p26
 Allow use of rootFiles.py as a hadd-like tree merger.
-Add caode to change basket size while merging trees.
+Add code to change basket size while merging trees.
 Use rebasketizing merge for cal crumbs.
 Make better version numbers for export files.
 Tweak queues.
 Start work on assigning each chunk a list of preferred hosts to increase
 chance of sharing AFS cache.
 install.py makes a setup.sh script.
-
 -------------------------------------------
 
 1.29 (used for DITL 1)
 -----------------
 Don't run cleanupIncompleteRun.
+
+-------------------------------------------
+
+1.30
+-----------------
+ScienceTools v9r4
+ft2Util v1r1p29
+Monitor dp20080116
+
+Output data on u52.
+
+fakeFT2 runs at downlink level instead of chunk.  There is no way to specify
+the dependency for this, so recon jobs will fail if there is a problem with
+fakeFT2.
+
+Exported files end in '.fit', not '.fits'.
+
+Correct FILENAME keyword in exported files.  This breaks HDU checksums; I'm
+looking for a way to fix them with PyFits, as we don't depend on FTOOLS
+currently.
+
+Exported files are copies, not links.
+
+Make and export LS-003 (livetimecube) files.
+
+Don't create output directories in setup functions, it's handled by stageFiles
+now.
+
+Don't put L1test in GPLtools pythonpath.
+
+Run high-priority jobs at 75 instead of 100, and make it a symbolic parameter.
+
+Work on LSF host balancing.  Still not used.
+
+Add (not yet used) fileNamesNew module which will replace fileNames, procDirs,
+and balance.
 

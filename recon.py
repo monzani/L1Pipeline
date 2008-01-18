@@ -31,7 +31,7 @@ else:
     pass
 
 os.environ['digiChunkFile'] = staged.stageIn(files['chunk']['digi'])
-os.environ['fakeFT2File'] = staged.stageIn(files['chunk']['ft2Fake'])
+os.environ['fakeFT2File'] = staged.stageIn(files['downlink']['ft2Fake'])
 os.environ['reconCrumbFile'] = staged.stageOut(files['crumb']['recon'])
 os.environ['meritCrumbFile'] = staged.stageOut(files['crumb']['merit'])
 os.environ['calCrumbFile'] = staged.stageOut(files['crumb']['cal'])

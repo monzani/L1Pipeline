@@ -70,6 +70,8 @@ def lockData(id):
 
 def lockDir(directory, base, id):
 
+    if not os.path.isdir(directory): os.system('mkdir -p %s' % directory)
+
     # Make a hopefully unique file name.
     uniqFile = os.path.join(directory, uniqName())
 

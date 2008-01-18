@@ -31,7 +31,7 @@ app = config.apps['makeFT2']
 #for FT2 digi merit M7
 stagedDigiFile = staged.stageIn(files['run']['digi'])
 stagedMeritFile = staged.stageIn(files['run']['merit'])
-stagedM7File=  staged.stageIn(files['run']['m7'])
+stagedM7File=  staged.stageIn(files['downlink']['m7'])
 
 #output
 txtFt2File = files['run']['ft2Txt']

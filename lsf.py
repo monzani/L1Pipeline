@@ -69,18 +69,26 @@ def hostList():
     return hosts
 
 
+maxSlots = 20
 def balance(chunks):
     hosts = hostList()
     buckets = [[0, ic, chunk, []] for ic, chunk in enumerate(chunks)]
+    full = []
+    lists = [buckets, full]
     # ic ensures that buckets is presorted while preserving the original
     # order of chunks within groups that are assigned the same number of slots
     # and lets us recover the original order
     for host, slots, factor in hosts:
-        least = buckets.pop(0)
+        try:
+            least = buckets.pop(0)
+        except IndexError:
+            break
         least[0] += slots
         least[-1].append(host)
-        bisect.insort(buckets, least)
+        which = lists[least[0] >= maxSlots]
+        bisect.insort(which, least)
         continue
+    buckets += full
     outies = [None] * len(chunks)
     for slots, ic, chunk, cHosts in buckets:
         outies[ic] =  makeMList(cHosts)

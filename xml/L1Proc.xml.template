@@ -27,7 +27,7 @@
   </prerequisites>
 
   <process name="findRunDirs">
-    <job executable="${L1ProcROOT}/findRunDirs.py" batchOptions=" -q express "/>
+    <job executable="${L1ProcROOT}/findRunDirs.py" batchOptions=" -q express -sp %(highPriority)d " />
     <createsSubtasks>
       <subtask>doRun</subtask>
       <subtask>doLci</subtask>
@@ -35,6 +35,10 @@
     </createsSubtasks>
   </process>
 
+  <process name="fakeFT2">
+    <job executable="${L1ProcROOT}/fakeFT2.py" batchOptions=" -q medium -sp %(highPriority)d " />
+  </process>
+ 
   <process name="ft2Gaps">
     <job executable="${L1ProcROOT}/ft2Db.py" batchOptions=" -q express "/>
   </process>
@@ -51,7 +55,7 @@
    </prerequisites>
 
     <process name="findChunks">
-      <job executable="${L1ProcROOT}/findChunks.py" batchOptions=" -q express -E ${L1ProcROOT}/lockFile.py "/>
+      <job executable="${L1ProcROOT}/findChunks.py" batchOptions=" -q express -E ${L1ProcROOT}/lockFile.py -sp %(highPriority)d " />
       <createsSubtasks>
         <subtask>doChunk</subtask>
       </createsSubtasks>
@@ -61,7 +65,7 @@
       <variables>
         <var name="fileType">digi</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium -sp 100 "/>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium -sp %(highPriority)d " />
       <depends>
         <after process="doChunk.digitization" status="DONE"/>
       </depends>
@@ -273,7 +277,7 @@
       <variables>
         <var name="fileType">merit</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium -sp 100 "/>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium -sp %(highPriority)d " />
       <depends>
         <after process="doChunk.mergeMeritCrumbs" status="DONE"/>
       </depends>
@@ -294,7 +298,7 @@
     </process>
  
     <process name="makeFT1">
-      <job executable="${L1ProcROOT}/makeFT1.py" batchOptions=" -q medium -sp 100 "/>
+      <job executable="${L1ProcROOT}/makeFT1.py" batchOptions=" -q medium -sp %(highPriority)d " />
       <depends>
         <after process="mergeMeritChunks" status="SUCCESS"/>
       </depends>
@@ -304,7 +308,7 @@
       <variables>
         <var name="fileType">ft1</var>
       </variables>
-      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q express -sp 100 "/>
+      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q express -sp %(highPriority)d " />
       <depends>
         <after process="makeFT1" status="SUCCESS"/>
       </depends>
@@ -325,7 +329,7 @@
     </process>
 
     <process name="ft2Runs">
-      <job executable="${L1ProcROOT}/ft2Entries.py" batchOptions=" -q long -sp 100 "/>
+      <job executable="${L1ProcROOT}/ft2Entries.py" batchOptions=" -q long -sp %(highPriority)d " />
       <depends>
         <after process="mergeDigi" status="SUCCESS"/>
         <after process="mergeMeritChunks" status="SUCCESS"/>
@@ -333,14 +337,14 @@
     </process>
 
     <process name="ingestFT2">
-      <job executable="${L1ProcROOT}/ft2Db.py" batchOptions=" -q express -sp 100 "/>
+      <job executable="${L1ProcROOT}/ft2Db.py" batchOptions=" -q express -sp %(highPriority)d " />
       <depends>
         <after process="ft2Runs" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="makeFT2">
-      <job executable="${L1ProcROOT}/makeFT2File.py" batchOptions=" -q short -sp 100 "/>
+      <job executable="${L1ProcROOT}/makeFT2File.py" batchOptions=" -q short -sp %(highPriority)d " />
       <depends>
         <after process="ingestFT2" status="SUCCESS"/>
       </depends>
@@ -350,7 +354,7 @@
       <variables>
         <var name="fileType">ft2</var>
       </variables>
-      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q express -sp 100 "/>
+      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q express -sp %(highPriority)d " />
       <depends>
         <after process="makeFT2" status="SUCCESS"/>
       </depends>
@@ -367,6 +371,38 @@
       </script>
       <depends>
         <after process="makeFT2" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="makeLS3">
+      <job executable="${L1ProcROOT}/makeLS3.py" batchOptions=" -q medium -sp %(highPriority)d " />
+      <depends>
+        <after process="makeFT1" status="SUCCESS"/>
+        <after process="makeFT2" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="exportLS3">
+      <variables>
+        <var name="fileType">ls3</var>
+      </variables>
+      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q express -sp %(highPriority)d " />
+      <depends>
+        <after process="makeLS3" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerLS3">
+      <variables>
+        <var name="parentProcess">makeLS3</var>
+        <var name="dataType">LS3</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="makeLS3" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -506,6 +542,7 @@
         <after process="doChunk.checkChunk" status="SUCCESS"/>
         <after process="exportFT1" status="SUCCESS"/>
         <after process="exportFT2" status="SUCCESS"/>
+        <after process="exportLS3" status="SUCCESS"/>
         <after process="fastMonLogger" status="SUCCESS"/>
         <after process="ingestDigiTrend" status="SUCCESS"/>
         <after process="ingestReconTrend" status="SUCCESS"/>
@@ -515,6 +552,7 @@
         <after process="registerDigiTrend" status="SUCCESS"/>
         <after process="registerFT1" status="SUCCESS"/>
         <after process="registerFT2" status="SUCCESS"/>
+        <after process="registerLS3" status="SUCCESS"/>
         <after process="registerFastMonAlarm" status="SUCCESS"/>
         <after process="registerFastMonError" status="SUCCESS"/>
         <after process="registerFastMonHist" status="SUCCESS"/>
@@ -555,11 +593,7 @@
       </prerequisites>
 
       <process name="digitization">
-        <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q medium -sp 100 "/>
-      </process>
- 
-      <process name="fakeFT2">
-        <job executable="${L1ProcROOT}/fakeFT2.py" batchOptions=" -q medium -sp 100 "/>
+        <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q medium -sp %(highPriority)d " />
       </process>
  
       <process name="fastMon">
@@ -590,10 +624,9 @@
       </process>
  
       <process name="setupCrumbs">
-        <job executable="${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q short -sp 100 "/>
+        <job executable="${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q short -sp %(highPriority)d " />
         <depends>
           <after process="digitization" status="SUCCESS"/>
-          <after process="fakeFT2" status="SUCCESS"/>
         </depends>
         <createsSubtasks>
           <subtask>doCrumb</subtask>
@@ -604,7 +637,7 @@
         <variables>
           <var name="fileType">gcr</var>
         </variables>
-        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium -sp 100 "/>
+        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium "/>
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
         </depends>
@@ -614,7 +647,7 @@
         <variables>
           <var name="fileType">merit</var>
         </variables>
-        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium -sp 100 "/>
+        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q medium -sp %(highPriority)d " />
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
         </depends>
@@ -705,7 +738,7 @@
         </prerequisites>
 
         <process name="recon">
-          <job executable="${L1ProcROOT}/recon.py" batchOptions=" -q long -sp 100 %(reconCrumbCpuf)s "/>
+          <job executable="${L1ProcROOT}/recon.py" batchOptions=" -q long -sp %(highPriority)d %(reconCrumbCpuf)s " />
         </process>
 
       </task>
