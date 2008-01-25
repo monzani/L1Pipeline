@@ -8,36 +8,39 @@
 import os
 import sys
 
-import procDirs
+import fileNames
 import runner
 
-runId = os.environ['RUNID']
-runStatus = os.environ['RUNSTATUS']
+head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not dlId: head, dlId = os.path.split(head)
 
-try:
-    chunkId = os.environ['CHUNK_ID']
-    dlId = os.environ['DOWNLINK_ID']
-    level = 'crumb'
-except KeyError:
-    chunkId = None
-    dlId = '*'
-    level = 'chunk'
+runId = os.environ.get('RUNID')
+if runId is not None:
+    runStatus = os.environ['RUNSTATUS']
+
+    chunkId = os.environ.get('CHUNK_ID')
+    if chunkId is not None:
+        level = 'chunk'
+    else:
+        level = 'run'
+        dlId = '*'
+        pass
+else:
+    level = 'downlink'
     pass
 
-if level == 'chunk' and runStatus not in ['COMPLETE', 'INCOMPLETE']:
+# This decision should be made at a higher level.
+if level == 'run' and runStatus not in ['COMPLETE', 'INCOMPLETE']:
     print >> sys.stderr, 'Run %s has status %s, not deleting chunks.' \
           % (runId, runStatus)
     sys.exit(0)
     pass
 
-goners = procDirs.findPieceDirs(dlId, runId, chunkId)
+goners = fileNames.findPieces(None, dlId, runId, chunkId)
 
 for goner in goners:
     print >> sys.stderr, "Deleting %s." % goner
-    cmd = '''
-    find %(goner)s -follow -depth -type f -print | xargs rm
-    find %(goner)s -follow -depth -type d -print | xargs rmdir
-    ''' % locals()
+    cmd = 'rm -rf %(goner)s' % locals()
     runner.run(cmd)
     print >> sys.stderr, '%s has left the building.' % goner
     continue

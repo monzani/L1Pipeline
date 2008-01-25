@@ -46,4 +46,10 @@ for packName in names:
     ''' % args
 
     runner.run(cmd)
+
+    if packName == "Monitor":
+        cmd = os.path.join(config.L1ProcROOT, 'compileRunStrip.py')
+        runner.run(cmd)
+        pass
+    
     continue

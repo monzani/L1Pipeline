@@ -32,10 +32,12 @@ def finalize(status):
     registerPrep.prep(fileType, realOutFile)
     sys.exit(status)
 
-fileType = os.environ['fileType']
-dlId = os.environ['DOWNLINK_ID']
+head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 chunkId = os.environ.get('CHUNK_ID')
+
+fileType = os.environ['fileType']
 
 if chunkId is None:
     mergeLevel = 'run'
@@ -45,17 +47,22 @@ else:
     stageDirPieces = [dlId, runId, chunkId, fileType]
     pass
 
-files = fileNames.setup(dlId, runId, chunkId)
-
-realInFiles = fileNames.findPieces(fileType, dlId, runId, chunkId)
-realOutFile = files[mergeLevel][fileType]
-
+expectedInFiles = fileNames.findPieces(fileType, dlId, runId, chunkId)
+realInFiles = []
+for inFile in expectedInFiles:
+    if os.path.isfile(inFile):
+        realInFiles.append(inFile)
+    else:
+        print >> sys.stderr, "Couldn't find input file %s" % inFile
+        pass
+    continue
 numInFiles = len(realInFiles)
-
 if numInFiles == 0:
     print >> sys.stderr, "No input files, cannot continue."
     sys.exit(1)
     pass
+
+realOutFile = fileNames.fileName(fileType, dlId, runId, chunkId, next=True)
 
 inStage = stageFiles.StageSet()
 
@@ -64,6 +71,7 @@ outStageDir = '_'.join(stageDirPieces)
 outStage = inStage
 
 inFiles = [inStage.stageIn(iFile) for iFile in realInFiles]
+
 # inFiles = []
 # for realInFile in realInFiles[::-1]:
 #     # Stage in input files in reverse order.  Then, if we run out of space

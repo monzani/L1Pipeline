@@ -13,12 +13,11 @@ import config
 import GPLinit
 
 import fileNames
-#import pipeline
-import registerPrep
 import runner
 import stageFiles
 
-dlId = os.environ['DOWNLINK_ID']
+head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 chunkId = os.environ.get('CHUNK_ID') # might not be set
 
@@ -28,24 +27,16 @@ else:
     level = 'chunk'
     pass
 
-files = fileNames.setup(dlId, runId, chunkId)
-
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
-
-if staged.setupOK:
-    workDir = staged.stageDir
-else:
-    workDir = files['dirs']['run']
-    pass
 
 reportType = os.environ['reportType']
 
 options = config.monitorOptions[reportType]
 fileType = config.monitorOutFiles[reportType]
 
-realDigiFile = files[level]['digi']
-realOutFile = files[level][reportType]
+realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId)
+realOutFile = fileNames.fileName(reportType, dlId, runId, chunkId)
 
 package = config.packages['Monitor']
 setup = package['setup']
@@ -54,10 +45,12 @@ app = package['app']
 digiFile = staged.stageIn(realDigiFile)
 outFile = staged.stageOut(realOutFile)
 
+workDir = os.path.dirname(outFile)
+
 if 'recon' in reportType:
-    realReconFile = files[level]['recon']
+    realReconFile = fileNames.fileName('recon', dlId, runId, chunkId)
     stagedReconFile = staged.stageIn(realReconFile)
-    realCalFile = files[level]['cal']
+    realCalFile = fileNames.fileName('cal', dlId, runId, chunkId)
     stagedCalFile = staged.stageIn(realCalFile)
     recon = '-r %s -a %s' % (stagedReconFile, stagedCalFile)
 else:
@@ -67,6 +60,8 @@ else:
 tdBin = config.tdBin
 
 codeDir = config.packages['Monitor']['bin']
+
+zOpt = '-z' # don't use a temp file
 
 datasource = os.environ['DATASOURCE']
 if datasource == 'MC':
@@ -82,7 +77,7 @@ htmlHead = 'html'
 
 cmd = """cd %(workDir)s
 source %(setup)s
-%(app)s -b %(tdBin)s -c %(options)s -d %(digiFile)s %(recon)s -o %(tmpHead)s -g %(htmlHead)s -w %(codeDir)s -p %(mcOpt)s || exit 1
+%(app)s %(zOpt)s -b %(tdBin)s -c %(options)s -d %(digiFile)s %(recon)s -o %(tmpHead)s -g %(htmlHead)s -w %(codeDir)s -p %(mcOpt)s || exit 1
 mv %(tmpOut)s %(outFile)s
 """ % locals()
 
@@ -90,10 +85,5 @@ status = runner.run(cmd)
 if status: finishOption = 'wipe'
 
 status |= staged.finish(finishOption)
-
-if 'Trend' in reportType:
-    # This is a trending report, at run level.  Has to be registered.
-    registerPrep.prep(fileType, realOutFile)
-    pass
 
 sys.exit(status)

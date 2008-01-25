@@ -35,7 +35,7 @@ else:
     pass
 print >> sys.stderr, "Test mode: %s" % testMode
 
-L1Version = "1.30"
+L1Version = "1.31"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
@@ -103,8 +103,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
-glastVersion = 'v12r15'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume08')
+glastVersion = 'v13r9p1'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -125,7 +125,7 @@ reconOptions = {
     'MC': os.path.join(L1ProcROOT, 'recon.jobOpt.mc'),
 }
 
-rootSys = os.path.join(glastExt, 'ROOT/v5.14.00g/root')
+rootSys = os.path.join(glastExt, 'ROOT/v5.16.00-gl1/root')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
@@ -157,19 +157,19 @@ os.environ['CMTPATH'] = cmtPath
 packages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v2r4p2',
+        'version': 'v2r5p0',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v2r4p3',
+        'version': 'v2r5p0',
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'dp20080116',
+        'version': 'dp20080118v2',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
-        'version': 'v3r3p2',
+        'version': 'v3r10p1',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',

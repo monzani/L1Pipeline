@@ -14,10 +14,11 @@ import config
 import fileNames
 import lockFile
 
-dlId = os.environ['DOWNLINK_ID']
+head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 chunkId = os.environ['CHUNK_ID']
-files = fileNames.setup(dlId, runId, chunkId)
+
 
 # # This is probably not the right location for these locks.
 # # They need to be put in a run-level (independent of downlink)

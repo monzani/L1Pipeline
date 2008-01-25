@@ -43,13 +43,19 @@
     <job executable="${L1ProcROOT}/ft2Db.py" batchOptions=" -q express "/>
   </process>
 
+  <process name="cleanupDl">
+    <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q express " />
+    <depends>
+      <after process="doRun.checkRun" status="SUCCESS"/>
+    </depends>
+  </process>
+
   <task name="doRun" version="%(L1Version)s" type="Data">
 
     <prerequisites>
-      <prerequisite name="DOWNLINK_ID" type="string"/>
       <prerequisite name="RUNID" type="string"/>
-      <prerequisite name="RUNSTATUS" type="string"/>
       <prerequisite name="RUN_RAWDIR" type="string"/>
+      <prerequisite name="RUNSTATUS" type="string"/>
       <prerequisite name="tStart" type="float"/>
       <prerequisite name="tStop" type="float"/>
    </prerequisites>
@@ -191,7 +197,7 @@
       </depends>
     </process>
  
-    <process name="fastMonAlarm">
+    <process name="fastMonHistAlarm">
       <variables>
         <var name="fileType">fastMonHist</var>
       </variables>
@@ -201,27 +207,27 @@
       </depends>
     </process>
 
-    <process name="fastMonLogger">
+    <process name="fastMonHistLogger">
       <variables>
         <var name="fileType">fastMonHistAlarm</var>
       </variables>
       <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q express "/>
       <depends>
-        <after process="fastMonAlarm" status="SUCCESS"/>
+        <after process="fastMonHistAlarm" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="registerFastMonAlarm">
+    <process name="registerFastMonHistAlarm">
       <variables>
-        <var name="parentProcess">fastMonAlarm</var>
-        <var name="dataType">fastMonAlarm</var>
+        <var name="parentProcess">fastMonHistAlarm</var>
+        <var name="dataType">fastMonHistAlarm</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
 ]]>
       </script>
       <depends>
-        <after process="fastMonAlarm" status="SUCCESS"/>
+        <after process="fastMonHistAlarm" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -298,6 +304,9 @@
     </process>
  
     <process name="makeFT1">
+      <variables>
+        <var name="fileType">ft1</var>
+      </variables>
       <job executable="${L1ProcROOT}/makeFT1.py" batchOptions=" -q medium -sp %(highPriority)d " />
       <depends>
         <after process="mergeMeritChunks" status="SUCCESS"/>
@@ -325,6 +334,40 @@
       </script>
       <depends>
         <after process="makeFT1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="makeLS1">
+      <variables>
+        <var name="fileType">ls1</var>
+      </variables>
+      <job executable="${L1ProcROOT}/makeFT1.py" batchOptions=" -q medium -sp %(highPriority)d " />
+      <depends>
+        <after process="mergeMeritChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="exportLS1">
+      <variables>
+        <var name="fileType">ls1</var>
+      </variables>
+      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q express -sp %(highPriority)d " />
+      <depends>
+        <after process="makeLS1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerLS1">
+      <variables>
+        <var name="parentProcess">makeLS1</var>
+        <var name="dataType">LS1</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="makeLS1" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -542,6 +585,7 @@
         <after process="doChunk.checkChunk" status="SUCCESS"/>
         <after process="exportFT1" status="SUCCESS"/>
         <after process="exportFT2" status="SUCCESS"/>
+        <after process="exportLS1" status="SUCCESS"/>
         <after process="exportLS3" status="SUCCESS"/>
         <after process="fastMonLogger" status="SUCCESS"/>
         <after process="ingestDigiTrend" status="SUCCESS"/>
@@ -552,6 +596,7 @@
         <after process="registerDigiTrend" status="SUCCESS"/>
         <after process="registerFT1" status="SUCCESS"/>
         <after process="registerFT2" status="SUCCESS"/>
+        <after process="registerLS1" status="SUCCESS"/>
         <after process="registerLS3" status="SUCCESS"/>
         <after process="registerFastMonAlarm" status="SUCCESS"/>
         <after process="registerFastMonError" status="SUCCESS"/>
@@ -750,7 +795,6 @@
   <task name="doLci" version="%(L1Version)s" type="Data">
 
     <prerequisites>
-      <prerequisite name="DOWNLINK_ID" type="string"/>
       <prerequisite name="RUNID" type="string"/>
       <prerequisite name="RUNSTATUS" type="string"/>
       <prerequisite name="RUN_RAWDIR" type="string"/>

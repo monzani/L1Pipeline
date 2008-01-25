@@ -13,22 +13,19 @@ import registerPrep
 import runner
 import stageFiles
 
-level = 'run'
-
-dlId = os.environ['DOWNLINK_ID']
+head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
-files = fileNames.setup(dlId, runId)
 
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
 fileType = os.environ['fileType']
 
-realInFile = files[level][fileType]
+realInFile = fileNames.fileName(fileType, dlId, runId)
 stagedInFile = staged.stageIn(realInFile)
 
 workDir = os.path.dirname(stagedInFile)
-#os.chdir(workDir)
 
 alarmParser.doAlarms(stagedInFile, fileType, runId)
 

@@ -6,27 +6,35 @@
 """
 
 import math
-from os import path, environ
+import os
 import sys
 
 import config
 
-import balance
+import GPLinit
+
 import crumble
 import fileNames
 import pipeline
 import rootFiles
+import stageFiles
 
-dlId = environ['DOWNLINK_ID']
-runId = environ['RUNID']
-chunkId = environ['CHUNK_ID']
+status = 0
 
-files = fileNames.setup(dlId, runId, chunkId)
+head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not dlId: head, dlId = os.path.split(head)
+runId = os.environ['RUNID']
+chunkId = os.environ['CHUNK_ID']
 
-digiFile = files['chunk']['digi']
-chunkDir = files['dirs']['chunk']
+staged = stageFiles.StageSet()
+finishOption = config.finishOption
 
-chunkEvents = rootFiles.getFileEvents(digiFile)
+realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId)
+stagedDigiFile = staged.stageIn(realDigiFile)
+realCrumbList = fileNames.fileName('crumbList', dlId, runId, chunkId)
+stagedCrumbList = staged.stageOut(realCrumbList)
+
+chunkEvents = rootFiles.getFileEvents(stagedDigiFile)
 print >> sys.stderr, "Chunk has %d events." % chunkEvents
 
 crumbSizes = crumble.crumble(chunkEvents, config.maxCrumbSize)
@@ -47,10 +55,18 @@ else:
 cForm = 'b%0' + `cDigits` + 'd'
 
 crumbIds = [cForm % start for start in crumbStarts]
-balance.balance(crumbIds, runId, chunkId)
+
+# write crumb list
+open(stagedCrumbList, 'w').writelines(
+    ('%s\n' % crumbId for crumbId in crumbIds))
 
 for start, crumbId, nEvents in zip(crumbStarts, crumbIds, crumbSizes):
     stream = crumbId[1:]
     args = 'CRUMB_ID=%(crumbId)s,crumbStart=%(start)s,crumbEvents=%(nEvents)s' % locals()
     pipeline.createSubStream("doCrumb", stream, args)
     pass
+
+if status: finishOption = 'wipe'
+status |= staged.finish(finishOption)
+
+sys.exit(status)

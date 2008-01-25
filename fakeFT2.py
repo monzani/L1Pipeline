@@ -16,28 +16,24 @@ import stageFiles
 import pipeline
 import registerPrep
 
-files = fileNames.setup(os.environ['DOWNLINK_ID'])
+head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not dlId: head, dlId = os.path.split(head)
 
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
-
-if staged.setupOK:
-    workDir = staged.stageDir
-else:
-    workDir = files['dirs']['ft2Fake']
-    pass
 
 app = config.apps['makeFT2']
 
 #input file
 #for fake FT2 M7
-stagedM7File=  staged.stageIn(files['downlink']['m7'])
+realM7File = os.path.join(os.environ['DOWNLINK_RAWDIR'], 'magic7_%s.txt' % dlId)
+stagedM7File = staged.stageIn(realM7File)
 
 #output
-stagedFt2TxtFile = os.path.join(workDir, 'junkFT2.txt')
-fakeFt2File = files['downlink']['ft2Fake']
+fakeFt2File = fileNames.fileName('ft2Fake', dlId)
 stagedFt2FitsFile = staged.stageOut(fakeFt2File)
-
+workDir = os.path.dirname(stagedFt2FitsFile)
+stagedFt2TxtFile = os.path.join(workDir, 'junkFT2.txt')
 
 setupScript = config.packages['ft2Util']['setup']
 

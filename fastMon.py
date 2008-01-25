@@ -12,14 +12,15 @@ import runner
 import stageFiles
 
 
-dlId = os.environ['DOWNLINK_ID']
+head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 chunkId = os.environ['CHUNK_ID']
-files = fileNames.setup(dlId, runId, chunkId)
-realInFile = files['chunk']['event']
-realErrorFile = files['chunk']['fastMonError']
-realHistFile = files['chunk']['fastMonHist']
-realTupleFile = files['chunk']['fastMonTuple']
+
+realInFile = os.environ['EVTFILE']
+realErrorFile = fileNames.fileName('fastMonError', dlId, runId, chunkId)
+realHistFile = fileNames.fileName('fastMonHist', dlId, runId, chunkId)
+realTupleFile = fileNames.fileName('fastMonTuple', dlId, runId, chunkId)
 
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
@@ -29,11 +30,7 @@ errorFile = staged.stageOut(realErrorFile)
 histFile = staged.stageOut(realHistFile)
 tupleFile = staged.stageOut(realTupleFile)
 
-if staged.setupOK:
-    workDir = staged.stageDir
-else:
-    workDir = files['chunk']['dirs']['fastMon']
-    pass
+workDir = os.path.dirname(errorFile)
 
 package = config.packages['FastMon']
 os.environ.update(package['env'])

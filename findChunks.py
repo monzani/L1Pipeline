@@ -12,23 +12,30 @@ import re
 
 import config
 
-import balance
+import GPLinit
+
 import fileNames
 import lockFile
 import pipeline
+import stageFiles
+
+status = 0
 
 # recognize and parse a chunk
 # this is a contract with the halfpipe
 #chunkRe = re.compile('^(r[0-9]*)-(e[0-9]*)\.evt$')
 chunkRe = re.compile('^(.[0-9]*)-(.[0-9]*)\.evt$')
 
-dlId = os.environ['DOWNLINK_ID']
+head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 runDir = os.environ['RUN_RAWDIR']
 
-files = fileNames.setup(dlId, runId)
+staged = stageFiles.StageSet()
+finishOption = config.finishOption
 
-rootDir = files['dirs']['run']
+realChunkList = fileNames.fileName('chunkList', dlId, runId)
+stagedChunkList = staged.stageOut(realChunkList)
 
 subTask = config.chunkSubTask[os.environ['DATASOURCE']]
 
@@ -56,11 +63,12 @@ def findChunkFiles(runDir):
     return goodChunks
 
 goodChunks = findChunkFiles(runDir)
-
-# set up load balancing
 chunkIds = goodChunks.keys()
 chunkIds.sort()
-balance.balance(chunkIds, runId)
+
+# Make chunkList
+open(stagedChunkList, 'w').writelines(
+    ('%s\n' % chunkId for chunkId in chunkIds))
 
 # set up a subStream for each chunk
 for chunkId, chunkFile in goodChunks.items():
@@ -68,3 +76,8 @@ for chunkId, chunkFile in goodChunks.items():
     args = "EVTFILE=%(chunkFile)s,CHUNK_ID=%(chunkId)s" % locals()
     pipeline.createSubStream(subTask, stream, args)
     continue
+
+if status: finishOption = 'wipe'
+status |= staged.finish(finishOption)
+
+sys.exit(status)

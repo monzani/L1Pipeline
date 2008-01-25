@@ -358,3 +358,23 @@ Work on LSF host balancing.  Still not used.
 Add (not yet used) fileNamesNew module which will replace fileNames, procDirs,
 and balance.
 
+-------------------------------------------
+
+1.31
+-----------------
+Common v2r5p0
+FastMon v2r5p0
+Monitor dp20080118v2
+
+Make and export LS-001 (merit lite) files.  Still don't have the real
+dictionary, but infrastructure is there to drop it in when we get it.
+
+Switch to new fileNames module:
+New version scheme.
+All staged files assigned to random-but-repeatable disk.
+Exported files are created with the proper name in the first place.
+Merge input files are predicted rather than scanned.
+
+Do downlink cleanup (just ft2Fake for now).
+
+Run runStrip with -z option.

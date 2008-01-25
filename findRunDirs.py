@@ -11,13 +11,11 @@ import sys
 
 import config
 
-import fileNames
 import glastTime
 import pipeline
 import runner
 
 
-dlId = os.environ['DOWNLINK_ID']
 dlRawDir = os.environ['DOWNLINK_RAWDIR']
 
 # VERYBAD!
@@ -123,7 +121,7 @@ for runId in dataRuns:
         tStop = tStopDef
         print >> sys.stderr, "Couldn't get tStart, tStop for run %s, using bogus values" % runId
         pass
-    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUN_RAWDIR=%(runDir)s,RUNSTATUS=%(runStatus)s,DOWNLINK_ID=%(dlId)s,tStart=%(tStart).17g,tStop=%(tStop).17g,DATASOURCE=%(source)s" % locals()
+    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUN_RAWDIR=%(runDir)s,RUNSTATUS=%(runStatus)s,tStart=%(tStart).17g,tStop=%(tStop).17g,DATASOURCE=%(source)s" % locals()
     print >> sys.stderr, \
           "Creating stream [%s] of subtask [%s] with args [%s]" % \
           (stream, subTask, args)

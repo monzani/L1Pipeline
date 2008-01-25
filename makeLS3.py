@@ -10,29 +10,26 @@ import GPLinit
 import fileNames
 import runner
 import stageFiles
-#import pipeline
 import registerPrep
 
-files = fileNames.setup(os.environ['DOWNLINK_ID'], os.environ['RUNID'])
+head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not dlId: head, dlId = os.path.split(head)
+runId = os.environ['RUNID']
 
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
-if staged.setupOK:
-    workDir = staged.stageDir
-else:
-    workDir = files['dirs']['run']
-    pass
-
 app = config.apps['makeLS3']
 
-realFt1File = files['run']['ft1']
+realFt1File = fileNames.fileName('ft1', dlId, runId)
 stagedFt1File = staged.stageIn(realFt1File)
-realFt2File = files['run']['ft2']
+realFt2File = fileNames.fileName('ft2', dlId, runId)
 stagedFt2File = staged.stageIn(realFt2File)
 
-realLs3File = files['run']['ls3']
+realLs3File = fileNames.fileName('ls3', dlId, runId, next=True)
 stagedLs3File = staged.stageOut(realLs3File)
+
+workDir = os.path.dirname(stagedLs3File)
 
 stSetup = config.stSetup
 makeLS3Setup = os.path.join('$FITSGENROOT', 'cmt', 'setup.sh')

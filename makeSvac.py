@@ -18,25 +18,25 @@ import stageFiles
 import config
 
 
-files = fileNames.setup(environ['DOWNLINK_ID'], environ['RUNID'], \
-                        environ['CHUNK_ID'])
+head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not dlId: head, dlId = os.path.split(head)
+runId = os.environ['RUNID']
+chunkId = os.environ['CHUNK_ID']
 
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
-stagedDigiFile = staged.stageIn(files['chunk']['digi'])
-stagedReconFile = staged.stageIn(files['chunk']['recon'])
+realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId)
+stagedDigiFile = staged.stageIn(realDigiFile)
+realReconFile = fileNames.fileName('recon', dlId, runId, chunkId)
+stagedReconFile = staged.stageIn(realReconFile)
 
-stagedOutFile = staged.stageOut(files['chunk']['svac'])
-stagedHistFile = staged.stageOut(files['chunk']['svacHist'])
+realSvacFile = fileNames.fileName('svac', dlId, runId, chunkId)
+stagedSvacFile = staged.stageOut(realSvacFile)
+realHistFile = fileNames.fileName('svacHist', dlId, runId, chunkId)
+stagedHistFile = staged.stageOut(realHistFile)
 
-outDir = files['dirs']['chunk']
-
-if staged.setupOK:
-    workDir = staged.stageDir
-else:
-    workDir = outDir
-    pass
+workDir = os.path.dirname(stagedSvacFile)
 
 # make an empty file to use as dummy MC
 mcFile = os.path.join(workDir, 'emptyFile')
@@ -47,7 +47,7 @@ options = \
 """%(mcFile)s
 %(stagedDigiFile)s
 %(stagedReconFile)s
-%(stagedOutFile)s
+%(stagedSvacFile)s
 %(stagedHistFile)s
 """ \
 % locals()

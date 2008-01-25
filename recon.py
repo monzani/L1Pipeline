@@ -18,24 +18,31 @@ import fileNames
 import runner
 import stageFiles
 
-files = fileNames.setup(os.environ['DOWNLINK_ID'], os.environ['RUNID'], \
-                        os.environ['CHUNK_ID'], os.environ['CRUMB_ID'])
+head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not dlId: head, dlId = os.path.split(head)
+runId = os.environ['RUNID']
+chunkId = os.environ['CHUNK_ID']
+crumbId = os.environ['CRUMB_ID']
 
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
-if staged.setupOK:
-    workDir = staged.stageDir
-else:
-    workDir = files['dirs']['crumb']
-    pass
+realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId)
+os.environ['digiChunkFile'] = staged.stageIn(realDigiFile)
+realFT2Fake = fileNames.fileName('ft2Fake', dlId)
+os.environ['fakeFT2File'] = staged.stageIn(realFT2Fake)
 
-os.environ['digiChunkFile'] = staged.stageIn(files['chunk']['digi'])
-os.environ['fakeFT2File'] = staged.stageIn(files['downlink']['ft2Fake'])
-os.environ['reconCrumbFile'] = staged.stageOut(files['crumb']['recon'])
-os.environ['meritCrumbFile'] = staged.stageOut(files['crumb']['merit'])
-os.environ['calCrumbFile'] = staged.stageOut(files['crumb']['cal'])
-os.environ['gcrCrumbFile'] = staged.stageOut(files['crumb']['gcr'])
+realReconFile = fileNames.fileName('recon', dlId, runId, chunkId, crumbId)
+stagedReconFile = staged.stageOut(realReconFile)
+os.environ['reconCrumbFile'] = stagedReconFile
+realMeritFile = fileNames.fileName('merit', dlId, runId, chunkId, crumbId)
+os.environ['meritCrumbFile'] = staged.stageOut(realMeritFile)
+realCalFile = fileNames.fileName('cal', dlId, runId, chunkId, crumbId)
+os.environ['calCrumbFile'] = staged.stageOut(realCalFile)
+realGcrFile = fileNames.fileName('gcr', dlId, runId, chunkId, crumbId)
+os.environ['gcrCrumbFile'] = staged.stageOut(realGcrFile)
+
+workDir = os.path.dirname(stagedReconFile)
 
 datasource = os.environ['DATASOURCE']
 if datasource == 'LPA':

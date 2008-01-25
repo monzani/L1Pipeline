@@ -4,203 +4,143 @@
 """
 
 import glob
+import hashlib
 import os
 import sys
-import time
 
 import config
 
-import glastTime
-import lockFile
-import procDirs
+
+fileTypes = {
+    'cal': 'root',
+    'chunkList': 'txt',
+    'crumbList': 'txt',
+    'digi': 'root',
+    'digiEor': 'root',
+    'digiTrend': 'root',
+    'fastMonError': 'xml',
+    'fastMonHist': 'root',
+    'fastMonHistAlarm': 'xml',
+    'fastMonTuple': 'root',
+    'ft1': 'fit',
+    'ft2': 'fit',
+    'ft2Fake': 'fit',
+    'ft2Txt': 'txt',
+    'gcr': 'root',
+    'ls1': 'fit',
+    'ls3': 'fit',
+    'merit': 'root',
+    'recon': 'root',
+    'reconEor': 'root',
+    'reconTrend': 'root',
+    'svac': 'root',
+    'svacHist': 'root',
+    }
+
+exportTags = {
+    'ft1': 'gll_ph',
+    'ft2': 'gll_pt',
+    'ls1': 'gll_ev',
+    'ls3': 'gll_lt',
+    }
 
 
-def join(*args):
-    joined = '_'.join(args)
-    return joined
+def fileName(dsType, dlId, runId=None, chunkId=None, crumbId=None, next=False):
 
+    fields = []
 
-def setup(dlId, runId=None, chunkId=None, crumbId=None, createDirs=False):
-    """@brief Setup data directory names.
-
-    @arg dlId The dowlink ID.
-
-    @arg [runId] The run ID.
-
-    @arg [chunkId] The chunk ID.
-
-    @arg [crumbId] The crumb ID.
-
-    @return A dictionary containing the names of various data files.
-    
-    """
-
-    # VERYBAD! We should not be getting this from args anymore.
-    head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
-    if not dlId: head, dlId = os.path.split(head)
-    
-    runHead = runId
-
-    dirs = procDirs.setup(dlId, runId, chunkId, crumbId, createDirs)
-    files = {}
-    files['run'] = {}
-
-    files['dirs'] = dirs
-
-    files['downlink'] = {}
-    #files['downlink']['runList'] = os.path.join(dirs['downlink'], 'runList')
-    files['downlink']['ft2Fake'] = os.path.join(
-        dirs['ft2Fake'], join(dlId, 'ft2Fake.fits'))
-    files['downlink']['m7'] = os.path.join(
-        os.environ['DOWNLINK_RAWDIR'], 'magic7_%s.txt' % dlId)
-
-    if runId is None:
-        return files
-
-    if chunkId is not None:
-        files['chunk'] = _setupChunk(dirs, chunkId, runHead)
-        if crumbId is not None:
-            chunkHead = files['chunk']['head']
-            files['crumb'] = _setupCrumb(dirs, crumbId, chunkHead)
+    if runId is not None:
+        level = 'run'
+        fields.append(runId)
+        if chunkId is not None:
+            level = 'chunk'
+            fields.append(chunkId)
+            if crumbId is not None:
+                level = 'crumb'
+                fields.append(crumbId)
+                pass
             pass
         pass
-
-
-    # # This doesn't work, it gets generated differently for different
-    # # processes in the same stream.  So makeFT1 can't find the merit file.
-    # timestamp = '%09d' % int(glastTime.met())
-    # dlHead = join(runHead, timestamp, dlId)
-
-    runDir = files['dirs']['run']
-    try:
-        # This picks up the time (MET) at which the run lock was created,
-        # just before starting findChunks.  So it should be fixed for
-        # a given run/downlink combo, and should sort into time order
-        # (of file creation time), which should put the most-complete
-        # version of a file highest.
-        #
-        # But if some processes get rolled back without rolling back the whole
-        # doRun stream, the new versions of the file have the same name as the
-        # old one. => BAD
-        #
-        lockData = lockFile.readLock(runDir, runId, dlId)
-        timeStamp = glastTime.timeStamp(lockData['time'])
-        dlHead = join(runHead, timeStamp)
-    except:
-        # Use downlink ID as a fallback.
-        print >> sys.stderr, "Problem reading lock from [%s]." % runDir
-        dlHead = join(runHead, dlId)
+    else:
+        level = 'downlink'
+        fields.append(dlId)
         pass
 
-    files['run']['head'] = dlHead
-
-    files['run']['cal'] = os.path.join(
-        dirs['run'], join(dlHead, 'cal.root'))
-    files['run']['digi'] = os.path.join(
-        dirs['run'], join(dlHead, 'digi.root'))
-    files['run']['digiEor'] = os.path.join(
-        dirs['run'], join(dlHead, 'digiEor.root'))
-    files['run']['digiEorAlarm'] = os.path.join(
-        dirs['run'], join(dlHead, 'digiEorAlarm.xml'))
-    files['run']['digiTrend'] = os.path.join(
-        dirs['run'], join(dlHead, 'digiTrend.root'))
-    files['run']['digiTrendAlarm'] = os.path.join(
-        dirs['run'], join(dlHead, 'digiTrendAlarm.xml'))
-    files['run']['fastMonError'] = os.path.join(
-        dirs['run'], join(dlHead, 'fastMonError.xml'))
-    files['run']['fastMonHist'] = os.path.join(
-        dirs['run'], join(dlHead, 'fastMonHist.root'))
-    files['run']['fastMonHistAlarm'] = os.path.join(
-        dirs['run'], join(dlHead, 'fastMonAlarm.xml'))
-    files['run']['fastMonTuple'] = os.path.join(
-        dirs['run'], join(dlHead, 'fastMonTuple.root'))
-    files['run']['ft1'] = os.path.join(
-        dirs['run'], join(dlHead, 'ft1.fits'))
-    files['run']['ft2'] = os.path.join(
-        dirs['run'], join(dlHead, 'ft2.fits'))
-    files['run']['ft2Txt'] = os.path.join(
-        dirs['run'], join(dlHead, 'ft2.txt'))
-    files['run']['gcr'] = os.path.join(
-        dirs['run'], join(dlHead, 'gcr.root'))
-    files['run']['ls3'] = os.path.join(
-        dirs['run'], join(dlHead, 'ls3.fits'))
-    files['run']['merit'] = os.path.join(
-        dirs['run'], join(dlHead, 'merit.root'))
-    files['run']['recon'] = os.path.join(
-        dirs['run'], join(dlHead, 'recon.root'))
-    files['run']['reconEor'] = os.path.join(
-        dirs['run'], join(dlHead, 'reconEor.root'))
-    files['run']['reconEorAlarm'] = os.path.join(
-        dirs['run'], join(dlHead, 'reconEorAlarm.xml'))
-    files['run']['reconTrend'] = os.path.join(
-        dirs['run'], join(dlHead, 'reconTrend.root'))
-    files['run']['reconTrendAlarm'] = os.path.join(
-        dirs['run'], join(dlHead, 'reconTrendAlarm.xml'))
-    files['run']['svac'] = os.path.join(
-        dirs['run'], join(dlHead, 'svac.root'))
+    subDir = subDirectory(dsType, dlId, runId, chunkId, crumbId)
     
-    return files
+    if level == 'run':
+        baseDir = config.L1Dir
+        runDir = os.path.join(baseDir, subDir)
+
+        if dsType in ['chunkList']:
+            verStr = dlId
+        else:
+            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            # This will not work without the global run lock!
+            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            # 
+            versionFile = os.path.join(runDir, dsType+'.version')
+            print >> sys.stderr, 'Trying to read version from %s' % versionFile
+            try:
+                verNum = int(open(versionFile).readline().strip())
+                print >> sys.stderr, 'Read %d' % verNum
+            except IOError:
+                if next:
+                    print >> sys.stderr, 'First version'
+                    verNum = -1
+                else:
+                    print >> sys.stderr, """
+                    Drat.
+                    We really should not be here.
+                    Someone promised that there would be a version file, but it ain't there.
+                    Maybe the caller forgot to specify 'next=True'?
+                    Or the file got deleted?
+                    """
+                    raise
+                pass
+            if next:
+                verNum += 1
+                print >> sys.stderr, 'Writing new version %d to %s' % \
+                      (verNum, versionFile)
+                open(versionFile, 'w').write('%d\n' % verNum)
+                pass
+            verStr = 'v%03d' % verNum
+            pass
+        fields.append(verStr)
+        pass
+
+    if dsType in exportTags:
+        tag = exportTags[dsType]
+        pos = 0
+    else:
+        tag = dsType
+        pos = len(fields)
+        pass
+    fields.insert(pos, tag)
+
+    baseName = '.'.join(['_'.join(fields), fileTypes[dsType]])
+    relativePath = os.path.join(subDir, baseName)
+
+    if level != 'run':
+        # temporary staging; load balance
+        index = myHash(relativePath) % len(config.stageDirs)
+        baseDir = config.stageDirs[index]
+        pass
+
+    fullName = os.path.join(baseDir, relativePath)
+
+    return fullName
 
 
-def _setupChunk(dirs, chunkId, runHead):
-    files = {}
-    chunkHead = join(runHead, chunkId)
-    files['head'] = chunkHead
-    
-    files['cal'] = os.path.join(
-        dirs['cal'], join(chunkHead, 'cal.root'))
-    files['digi'] = os.path.join(
-        dirs['digi'], join(chunkHead, 'digi.root'))
-    files['digiEor'] = os.path.join(
-        dirs['digiEor'], join(chunkHead, 'digiEor.root'))
-    files['digiTrend'] = os.path.join(
-        dirs['digiTrend'], join(chunkHead, 'digiTrend.root'))
-    files['event'] = os.environ.get('EVTFILE') # only set if at chunk level
-    files['fastMonError'] = os.path.join(
-        dirs['fastMon'], join(chunkHead, 'fastMonError.xml'))
-    files['fastMonHist'] = os.path.join(
-        dirs['fastMon'], join(chunkHead, 'fastMonHist.root'))
-    files['fastMonTuple'] = os.path.join(
-        dirs['fastMon'], join(chunkHead, 'fastMonTuple.root'))
-    files['gcr'] = os.path.join(
-        dirs['gcr'], join(chunkHead, 'gcr.root'))
-    files['merit'] = os.path.join(
-        dirs['merit'], join(chunkHead, 'merit.root'))
-    files['recon'] = os.path.join(
-        dirs['recon'], join(chunkHead, 'recon.root'))
-    files['reconEor'] = os.path.join(
-        dirs['reconEor'], join(chunkHead, 'reconEor.root'))
-    files['reconTrend'] = os.path.join(
-        dirs['reconTrend'], join(chunkHead, 'reconTrend.root'))
-    files['svac'] = os.path.join(
-        dirs['svac'], join(chunkHead, 'svac.root'))
-    files['svacHist'] = os.path.join(
-        dirs['svac'], join(chunkHead, 'svacHist.root'))
-
-    return files
+def myHash(str):
+    return int(hashlib.md5(str).hexdigest(), 16)
 
 
-def _setupCrumb(dirs, crumbId, chunkHead):
-    files = {}
-    crumbHead = join(chunkHead, crumbId)
-    files['head'] = crumbHead
-    
-    files['cal'] = os.path.join(
-        dirs['crumb'], join(crumbHead, 'cal.root'))
-    files['gcr'] = os.path.join(
-        dirs['crumb'], join(crumbHead, 'gcr.root'))
-    files['merit'] = os.path.join(
-        dirs['crumb'], join(crumbHead, 'merit.root'))
-    files['recon'] = os.path.join(
-        dirs['crumb'], join(crumbHead, 'recon.root'))
-
-    return files
-
-
-def findPieces(fileType, dlId, runId, chunkId=None):
+def findPieces(fileType, dlId, runId=None, chunkId=None):
     """@brief find chunks or crumbs to merge.
 
     @arg fileType The type of file we're merging ('digi', 'reconMon', etc.)
+    If this is None, will return a list of directories.
 
     @arg dlId
 
@@ -211,26 +151,85 @@ def findPieces(fileType, dlId, runId, chunkId=None):
     @return A sequence of file names
     """
 
-    if chunkId is None:
-        chunkId = '*'
-        crumbId = None
-        level = 'chunk'
+    if runId is None:
+        # We're not merging anything, just finding downlink dirs to delete.
+        argSets = [(fileType, dlId)]
+    elif chunkId is None:
+        # We are merging chunk files into a run file.
+        # We have to find a file listing chunks for each downlink.
+        dlId = '*'
+        pattern = fileName('chunkList', dlId, runId)
+        print >> sys.stderr, 'Looking for files of form %s' % pattern
+        chunkFiles = glob.glob(pattern)
+        print >> sys.stderr, 'Found %s' % chunkFiles
+        chunkIds = []
+        for chunkFile in chunkFiles:
+            these = readList(chunkFile)
+            chunkIds.extend(these)
+            print >> sys.stderr, '%s: %s' % (chunkFile, these)
+            continue
+        chunkIds.sort()
+        argSets = [(fileType, dlId, runId, chunkId)
+                   for chunkId in chunkIds]
     else:
-        crumbId = '*'
-        level = 'crumb'
+        # We are either merging crumb files into chunk files or
+        # deleting crumb directories.
+        # We know the name of the file listing the crumbs.
+        crumbFile = fileName('crumbList', dlId, runId, chunkId)
+        crumbIds = readList(crumbFile)
+        crumbIds.sort()
+        argSets = [(fileType, dlId, runId, chunkId, crumbId)
+                   for crumbId in crumbIds]
+        pass
+    
+    if fileType is None:
+        funk = subDirectory
+    else:
+        funk = fileName
         pass
 
-    files = setup(dlId, runId, chunkId, crumbId, \
-                  createDirs=False)
-    pattern = files[level][fileType]
+    pieces = [funk(*args) for args in argSets]
 
-    print >> sys.stderr, "Searching for files that match [%s]." % pattern
+    if fileType is None:
+        pieces = [os.path.join(baseDir, piece)
+                  for piece in pieces
+                  for baseDir in config.stageDirs]
+        pass
 
-    inFiles = glob.glob(pattern)
-    inFiles.sort(key=os.path.basename)
-
-    print >> sys.stderr, "Matching files are: %s" % inFiles
-   
-    return inFiles
+    return pieces
 
 
+def readList(inFile):
+    items = [line.strip().split()[0] for line in open(inFile)]
+    return items
+
+
+def subDirectory(dsType, dlId, runId=None, chunkId=None, crumbId=None):
+
+    dirs = []
+
+    if runId is not None:
+        level = 'run'
+        # dirs.extend([runId, config.L1Version])
+        dirs.extend([runId])
+        if chunkId is not None:
+            level = 'chunk'
+            dirs.append(chunkId)
+            if crumbId is not None:
+                level = 'crumb'
+                dirs.append(crumbId)
+                pass
+            pass
+        pass
+    else:
+        level = 'downlink'
+        dirs.extend(['downlinks', dlId])
+        pass
+
+    if level in ['chunk'] and dsType is not None:
+        dirs.append(dsType)
+        pass
+
+    dirName = os.path.join(*dirs)
+    
+    return dirName

@@ -14,14 +14,14 @@ import stageFiles
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
-dlId = os.environ['DOWNLINK_ID']
+head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 reportType = os.environ['reportType']
 
 app = config.ingestor[reportType]
 
-files = fileNames.setup(dlId, runId)
-realInFile = files['run'][reportType]
+realInFile = fileNames.fileName(reportType, dlId, runId)
 stagedInFile = staged.stageIn(realInFile)
 
 version = '0'

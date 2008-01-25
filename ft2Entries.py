@@ -10,32 +10,32 @@ import GPLinit
 import fileNames
 import runner
 import stageFiles
-import pipeline
 import registerPrep
 
-files = fileNames.setup(os.environ['DOWNLINK_ID'], os.environ['RUNID'])
+head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not dlId: head, dlId = os.path.split(head)
+runId = os.environ['RUNID']
 
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
-
-if staged.setupOK:
-#Local Copy of NFS dir	
-    workDir = staged.stageDir
-else:
-    workDir = files['dirs']['run']
-    pass
 
 app = config.apps['makeFT2']
 
 #input file
 #for FT2 digi merit M7
-stagedDigiFile = staged.stageIn(files['run']['digi'])
-stagedMeritFile = staged.stageIn(files['run']['merit'])
-stagedM7File=  staged.stageIn(files['downlink']['m7'])
+realDigiFile = fileNames.fileName('digi', dlId, runId)
+stagedDigiFile = staged.stageIn(realDigiFile)
+realMeritFile = fileNames.fileName('merit', dlId, runId)
+stagedMeritFile = staged.stageIn(realMeritFile)
+realM7File = os.path.join(os.environ['DOWNLINK_RAWDIR'], 'magic7_%s.txt' % dlId)
+stagedM7File=  staged.stageIn(realM7File)
 
 #output
-txtFt2File = files['run']['ft2Txt']
+txtFt2File = fileNames.fileName('ft2Txt', dlId, runId, next=True)
 stagedFt2TxtFile = staged.stageOut(txtFt2File)
+
+workDir = os.path.dirname(stagedFt2TxtFile)
+
 stagedFt2FitsFile = os.path.join(workDir, 'junkFT2.fits')
 
 setupScript = config.packages['ft2Util']['setup']

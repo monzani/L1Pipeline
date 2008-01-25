@@ -11,22 +11,20 @@ import fileNames
 import runner
 import stageFiles
 
-dlId = os.environ['DOWNLINK_ID']
+head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 chunkId = os.environ['CHUNK_ID']
-files = fileNames.setup(dlId, runId, chunkId)
 
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
-if staged.setupOK:
-    workDir = staged.stageDir
-else:
-    workDir = files['chunk']['digi']
-    pass
-
 os.environ['EVTFILE'] = staged.stageIn(os.environ['EVTFILE'])
-os.environ['digiChunkFile'] = staged.stageOut(files['chunk']['digi'])
+realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId)
+stagedDigiFile = staged.stageOut(realDigiFile)
+os.environ['digiChunkFile'] = stagedDigiFile
+
+workDir = os.path.dirname(stagedDigiFile)
 
 #setupScript = config.cmtScript
 app = config.apps['digi']

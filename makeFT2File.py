@@ -12,29 +12,24 @@ import registerPrep
 import runner
 import stageFiles
 
-dlId = os.environ['DOWNLINK_ID']
+head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
-files = fileNames.setup(dlId, runId)
 
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
-if staged.setupOK:
-#Local Copy of NFS dir	
-    workDir = staged.stageDir
-else:
-    workDir = files['dirs']['run']
-    pass
-
 app = config.apps['mergeFT2']
 
 # input
-txtFt2File = files['run']['ft2Txt']
+txtFt2File = fileNames.fileName('ft2Txt', dlId, runId)
 stagedFt2TxtFile = staged.stageIn(txtFt2File)
 
 # output
-fitsFt2File = files['run']['ft2']
+fitsFt2File = fileNames.fileName('ft2', dlId, runId, next=True)
 stagedFt2FitsFile = staged.stageOut(fitsFt2File)
+
+workDir = os.path.dirname(stagedFt2FitsFile)
 
 setupScript = config.packages['ft2Util']['setup']
 

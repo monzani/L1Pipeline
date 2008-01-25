@@ -141,10 +141,10 @@ def readLock(directory, base, id):
 if __name__ == "__main__":
     import config
     import fileNames
-    dlId = os.environ['DOWNLINK_ID']
+    head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+    if not dlId: head, dlId = os.path.split(head)
     runId = os.environ['RUNID']
-    files = fileNames.setup(dlId, runId)
-    runDir = files['dirs']['run']
+    runDir = os.path.dirname(fileNames.fileName('chunkList', dlId, runId)) #bleh
     print >> sys.stderr, "Attempting to lock directory [%s] at [%s]" % \
           (runDir, time.ctime())
     lockDir(runDir, runId, dlId)
