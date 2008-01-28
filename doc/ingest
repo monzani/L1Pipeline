@@ -15,3 +15,16 @@ It should take three arguments:
 2- The version (not sure if you are using it)
 3- The database: prod/dev
 
+
+2008/01/25
+
+I have installed the new script.
+It is called "ingestTrendingFile".
+It takes the five arguments:
+
+- filename The file to ingeset
+- version  So far we have used "v0"
+- database  prod/dev  
+- process: Recon/Digi  
+- frequency  15secs/5mins
+

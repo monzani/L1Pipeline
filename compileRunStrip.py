@@ -19,17 +19,18 @@ os.mkdir(workDir)
 
 codeDir = config.packages['Monitor']['bin']
 
-#digiFile = os.path.join(config.L1ProcROOT, 'data', 'r0192524537_e00000000000000978971_digi.root')
-#reconFile = os.path.join(config.L1ProcROOT, 'data', 'r0192524537_e00000000000000978971_recon.root')
-digiFile = '/nfs/farm/g/glast/u33/borgland/Releases/GlastRelease-v12r11/Data/processing-Orbit-1_25k/digi.root'
-reconFile = '/nfs/farm/g/glast/u33/borgland/Releases/GlastRelease-v12r11/Data/processing-Orbit-1_25k/recon.root'
-calFile = '/nfs/farm/g/glast/u33/borgland/Releases/GlastRelease-v12r11/Data/processing-Orbit-1_25k/caltuple.root'
+digiFile = '/no/such/directory/no_such_file.root'
+reconFile = digiFile
+calFile = digiFile
 
-reportTypes = ['digiEor', 'digiTrend', 'reconEor', 'reconTrend']
+reportTypes = [
+    'digiEor', 'digiTrend',
+    'reconEor', 'reconTrend',
+    'calEor', 'calTrend',
+    ]
 for reportType in reportTypes:
 
     options = config.monitorOptions[reportType]
-    fileType = config.monitorOutFiles[reportType]
 
     package = config.packages['Monitor']
     setup = package['setup']

@@ -49,3 +49,121 @@ The new options are
 -p for running on the old shared libraries without any writing to the -w directory.
 The new tag is svac/Monitor mk20070712 .
 
+
+
+===================================================
+20080118
+===================================================
+dp20080118v2
+
+You can specify the directory where to store the TFile (temporal) file for intermediate TTree with option -u
+
+that is:
+
+runStrip_t.exe -u TmpDir -c configfile ....
+
+If you do not specify anything, then the directory "./" will be used.
+
+If you run with the "-z" option, then the TTree will NOT be saved on disk, regardless whether you specify or not a directory
+name.
+
+That is:
+
+runStrip_t.exe -z -u TmpDir -c configfile ....
+
+Will not save anything under TmpDir/. The TTree will be memory-resident. You could use that for digi/recon jobs.
+
+
+This tag also contains the changes on the CondArrival histograms, and ALSO (I had initially forgotten !!!)
+changes in MergeHistFiles.cxx program and NEW ascii files with the names (and loops) of the histograms to be merged:
+
+MergeHistos_recon_v5.txt
+MergeHistos_digi_v27.txt
+MergeHistos_digi_CalLongTime_v2.txt
+
+
+
+===================================================
+20080125
+===================================================
+the new tag is
+
+dp20080124_v1
+
+I run all jobs (digi/recon/cal long for trending and histos) and it went fine.
+Let me know whether you find problems.
+
+As mentioned before, in order for the pedestal mean/widths to make sense, the calculations need to be done on chunks of data
+that are big enough so that we can remove outliers properly. If chunks of data are small,  the Mean/RMS computed for the
+single crystals/ranges will be affected by fluctuations, and the merging of the histograms will not have a physical sense. I
+would guess that the minimum required would be 100 pedestal events per channel. Obviously, the more data the better the
+quantities will be computed.
+
+At the end of the e-mail you find examples for running the different jobs. I used only 10000 evts to be quick... but it
+should work for as many data as you want...
+
+Cheers,
+D.
+
+
+CAL HISTOS
+---------------
+
+runStrip_t.exe -n 10000 -w DirTests_SO_20080111 -b 30000000 -c /nfs/
+farm/g/glast/u33/dpaneque/DataMonitoring/20080111/svac/Monitor/src/monconfig_digi_CalLongTime_v2_histos.xml -d
+/nfs/farm/g/glast/u40/Integration/rootData/077016369/v13r6p1/digi/digitization-v4r0p0_077016369_digi_DIGI.root  -o
+test_2008Jan/Long_Histos/Cal_Long_v2_Histos_rootTEST -g test_2008Jan/Long_Histos/Cal_Long_v2_Histos_html >
+test_2008Jan/Long_Histos/LogTEST.txt
+
+
+CAL TRENDING
+---------------
+
+runStrip_t.exe -n 10000 -w DirTests_SO_20080111 -b 300 -c /nfs/farm/g/
+glast/u33/dpaneque/DataMonitoring/20080111/svac/Monitor/src/monconfig_digi_CalLongTime_v2_Trending.xml -d
+/nfs/farm/g/glast/u40/Integration/rootData/077016369/v13r6p1/digi/digitization-v4r0p0_077016369_digi_DIGI.root  -o
+test_2008Jan/Long_Trending/Cal_Long_v2_Trending_rootTEST -g test_2008Jan/Long_Trending/Cal_Long_v2_Trending_html >
+test_2008Jan/Long_Trending/LogTEST.txt
+
+
+RECON HISTOS
+----------------------
+
+runStrip_t.exe -z -n 10000 -w DirTests_SO_20080111 -b 15 -c /nfs/farm/
+g/glast/u33/dpaneque/DataMonitoring/20080111/svac/Monitor/src/monconfig_recon_v5_histos.xml -d
+/nfs/farm/g/glast/u40/Integration/rootData/077016283/v13r6p1/digi/digitization-v4r0p0_077016283_digi_DIGI.root  -r
+/nfs/farm/g/glast/u40/Integration/rootData/077016283/v13r6p1/recon/recon-v4r0p0_077016283_recon_RECON.root -a
+/nfs/farm/g/glast/u40/Integration/rootData/077016283/v13r6p1/recon/recon-v4r0p0_077016283_cal_ntuple.root -o test_2008Jan/
+Recon_v5_Histos_rootTEST -g  test_2008Jan/Recon_Histos_html > test_2008Jan/Log_Recon_HistosTEST.txt
+
+
+RECON TRENDING
+----------------------
+
+runStrip_t.exe -z -n 10000 -w DirTests_SO_20080111 -b 15 -c /nfs/farm/
+g/glast/u33/dpaneque/DataMonitoring/20080111/svac/Monitor/src/monconfig_recon_v5_trending.xml -d
+/nfs/farm/g/glast/u40/Integration/rootData/077016283/v13r6p1/digi/digitization-v4r0p0_077016283_digi_DIGI.root -r
+/nfs/farm/g/glast/u40/Integration/rootData/077016283/v13r6p1/recon/recon-v4r0p0_077016283_recon_RECON.root -a
+/nfs/farm/g/glast/u40/Integration/rootData/077016283/v13r6p1/recon/recon-v4r0p0_077016283_cal_ntuple.root -o test_2008Jan/
+Recon_v5_Trending_rootTEST -g  test_2008Jan/Recon_Trending_html > test_2008Jan/Log_Recon_TrendingTEST.txt
+
+
+
+DIGI TRENDING
+----------------
+
+runStrip_t.exe -z -n 1000 -w DirTests_SO_20080111 -b 15 -c /nfs/farm/
+g/glast/u33/dpaneque/DataMonitoring/20080111/svac/Monitor/src/monconfig_digi_v27_trending.xml -d
+/nfs/farm/g/glast/u40/Integration/rootData/077016283/v13r6p1/digi/digitization-v4r0p0_077016283_digi_DIGI.root -o
+test_2008Jan/Digi_v27_Trending_rootTEST -g  test_2008Jan/Digi_html > test_2008Jan/LogTEST.txt ; date
+
+
+DIGI HISTO
+---------------
+
+runStrip_t.exe -z -n 10000 -w DirTests_SO_20080111 -b 15 -c /nfs/farm/
+g/glast/u33/dpaneque/DataMonitoring/20080111/svac/Monitor/src/monconfig_digi_v27_histos.xml -d
+/nfs/farm/g/glast/u40/Integration/rootData/077016283/v13r6p1/digi/digitization-v4r0p0_077016283_digi_DIGI.root  -o
+test_2008Jan/Digi_v27_Histos_rootTEST -g  test_2008Jan/Digi_Histos_html > test_2008Jan/Log_HistosTEST.txt ; date
+
+

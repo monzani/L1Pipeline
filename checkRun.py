@@ -14,12 +14,11 @@ import fileNames
 import lockFile
 import pipeline
 
-dlId = os.environ['DOWNLINK_ID']
+head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 
-files = fileNames.setup(dlId, runId)
-
-rootDir = files['dirs']['run']
+rootDir = os.path.dirname(fileNames.fileName('chunkList', dlId, runId)) #bleh
 
 print >> sys.stderr, \
       "Attempting to remove lock from [%s] at [%s]" % (rootDir, time.ctime())

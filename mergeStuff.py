@@ -125,7 +125,7 @@ status = 0
 
 
 
-if fileType in ['digiEor', 'reconEor', 'fastMonHist']:
+if fileType in ['calEor', 'digiEor', 'reconEor', 'fastMonHist']:
     setup = config.packages['Monitor']['setup']
     mergeConfig = config.mergeConfigs[fileType]
     app = config.apps['reportMerge']
@@ -137,7 +137,7 @@ if fileType in ['digiEor', 'reconEor', 'fastMonHist']:
     status |= runner.run(cmd)
 
 
-elif fileType in ['digiTrend', 'reconTrend']:
+elif fileType in ['calTrend', 'digiTrend', 'reconTrend']:
     setup = config.packages['Monitor']['setup']
     app = config.apps['trendMerge']
     treeName = 'Time'
@@ -155,10 +155,10 @@ elif fileType in ['digi', 'recon', 'gcr']:
     rootFiles.concatenate_prune(outFile, inFiles, treeName)
 
 
-elif fileType in ['cal'] and mergeLevel == 'chunk':
-    import rootFiles
-    treeName = treeNames[fileType]
-    rootFiles.concatenate_cal(outFile, inFiles, treeName)
+# elif fileType in ['cal'] and mergeLevel == 'chunk':
+#     import rootFiles
+#     treeName = treeNames[fileType]
+#     rootFiles.concatenate_cal(outFile, inFiles, treeName)
 
 
 elif fileType in ['fastMonError']:

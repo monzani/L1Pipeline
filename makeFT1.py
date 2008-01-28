@@ -14,7 +14,7 @@ import registerPrep
 
 dicts = {
     'ft1': 'DEFAULT',
-    'ls1': os.path.join(config.L1ProcROOT, 'LS1variables'),
+    'ls1': os.path.join(config.L1ProcROOT, 'data', 'LS1variables'),
     }
 
 head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
@@ -40,13 +40,8 @@ tStop = float(os.environ['tStop'])
 
 dictionary = dicts[fileType]
 
-stSetup = config.stSetup
-makeFT1Setup = os.path.join('$FITSGENROOT', 'cmt', 'setup.sh')
-
 cmd = '''
 cd %(workDir)s
-#source %(stSetup)s
-#source %(makeFT1Setup)s
 %(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=DEFAULT event_classifier="Pass5_Classifier" tstart=%(tStart).17g tstop=%(tStop).17g dict_file=%(dictionary)s
 ''' % locals()
 

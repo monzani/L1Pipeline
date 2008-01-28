@@ -19,19 +19,31 @@ if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 reportType = os.environ['reportType']
 
-app = config.ingestor[reportType]
+#app = config.ingestor[reportType]
+app = config.trendIngestor
 
 realInFile = fileNames.fileName(reportType, dlId, runId)
 stagedInFile = staged.stageIn(realInFile)
 
-version = '0'
+version = fileNames.version(realInFile)
 
 if config.testMode:
     db = 'dev'
 else:
     db = 'prod'
+    pass
 
-cmd = '%(app)s %(stagedInFile)s %(version)s %(db)s' % locals()
+if 'cal' in reportType:
+    process = 'CalPed'
+elif 'digi' in reportType:
+    process = 'Digi'
+elif 'recon' in reportType:
+    process = 'Recon'
+    pass
+
+tdBin = {15: "15secs", 300: "5mins"}[config.tdBin[reportType]]
+
+cmd = '%(app)s %(stagedInFile)s %(version)s %(db)s %(process)s %(tdBin)s' % locals()
 
 status = runner.run(cmd)
 if status: finishOption = 'wipe'

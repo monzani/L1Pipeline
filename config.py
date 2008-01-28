@@ -157,15 +157,15 @@ os.environ['CMTPATH'] = cmtPath
 packages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v2r5p0',
+        'version': 'v2r5p1',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v2r5p0',
+        'version': 'v2r5p1',
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'dp20080118v2',
+        'version': 'dp20080125',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -239,6 +239,10 @@ apps = {
     }
 
 monitorOptions = {
+    'calEor': os.path.join(
+        packages['Monitor']['configDir'], 'monconfig_digi_CalLongTime_v2_histos.xml'),
+    'calTrend': os.path.join(
+        packages['Monitor']['configDir'], 'monconfig_digi_CalLongTime_v2_Trending.xml'),
     'digiEor': os.path.join(
         packages['Monitor']['configDir'], 'monconfig_digi_v27_histos.xml'),
     'digiTrend': os.path.join(
@@ -249,15 +253,9 @@ monitorOptions = {
         packages['Monitor']['configDir'], 'monconfig_recon_v5_trending.xml'),
     }
 
-monitorOutFiles = {
-    'fastMon': 'FASTMON',
-    'digiEor': 'DIGIHIST',
-    'digiTrend': 'tripe',
-    'reconEor': 'RECONHIST',
-    'reconTrend': 'tripe',
-    }
-
 mergeConfigs = {
+    'calEor': os.path.join(
+        packages['Monitor']['configDir'], 'MergeHistos_digi_CalLongTime_v2.txt'),
     'digiEor': os.path.join(
         packages['Monitor']['configDir'], 'MergeHistos_digi_v27.txt'),
     'fastMonHist': os.path.join(
@@ -271,14 +269,27 @@ alarmConfigs = {
         packages['Common']['root'], 'xml', 'config.xml'),
     }
 
-tdBin = 15
-
-ingestor = {
-    'digiTrend': '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/bin/ingestDigiTrending',
-    'reconTrend': '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/bin/ingestRecoTrending',
+tdBin = {
+    'calEor': 30000000,
+    'calTrend': 300,
+    'digiEor': 15,
+    'digiTrend': 15,
+    'reconEor': 15,
+    'reconTrend': 15,
     }
 
-joiner = '*'
+# ingestor = {
+#     'calTrend': '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/bin/ingestDigiTrending',
+#     'digiTrend': '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/bin/ingestDigiTrending',
+#     'reconTrend': '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/bin/ingestRecoTrending',
+#     }
+# ingestor = {
+# #    'calTrend': '/bin/true',
+#     'calTrend': '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/bin/ingestTrendingFile',
+#     'digiTrend': '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/bin/ingestTrendingFile',
+#     'reconTrend': '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/bin/ingestTrendingFile',
+#     }
+trendIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/bin/ingestTrendingFile'
 
 rootPath = os.path.join(rootSys, 'lib')
 #xercesPath = ':'.join([glastExt, 'xerces/2.7.0/lib'])

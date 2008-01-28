@@ -31,13 +31,8 @@ stagedLs3File = staged.stageOut(realLs3File)
 
 workDir = os.path.dirname(stagedLs3File)
 
-stSetup = config.stSetup
-makeLS3Setup = os.path.join('$FITSGENROOT', 'cmt', 'setup.sh')
-
 cmd = '''
 cd %(workDir)s
-#source %(stSetup)s
-#source %(makeLS3Setup)s
 %(app)s evfile=%(stagedFt1File)s scfile=%(stagedFt2File)s outfile=%(stagedLs3File)s dcostheta=0.025 binsize=1
 ''' % locals()
 

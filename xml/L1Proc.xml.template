@@ -149,6 +149,64 @@
       </depends>
     </process>
  
+    <process name="mergeCalEor">
+      <variables>
+        <var name="fileType">calEor</var>
+      </variables>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "/>
+      <depends>
+        <after process="doChunk.calEor" status="DONE"/>
+      </depends>
+    </process>
+ 
+    <process name="registerCalEor">
+      <variables>
+        <var name="parentProcess">mergeCalEor</var>
+        <var name="dataType">CALHIST</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeCalEor" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeCalTrend">
+      <variables>
+        <var name="fileType">calTrend</var>
+      </variables>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q long "/>
+      <depends>
+        <after process="doChunk.calTrend" status="DONE"/>
+      </depends>
+    </process>
+ 
+    <process name="registerCalTrend">
+      <variables>
+        <var name="parentProcess">mergeCalTrend</var>
+        <var name="dataType">CALTREND</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeCalTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestCalTrend">
+      <variables>
+        <var name="reportType">calTrend</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q long "/>
+      <depends>
+        <after process="mergeCalTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
     <process name="mergeFastMonHist">
       <variables>
         <var name="fileType">fastMonHist</var>
@@ -587,10 +645,13 @@
         <after process="exportFT2" status="SUCCESS"/>
         <after process="exportLS1" status="SUCCESS"/>
         <after process="exportLS3" status="SUCCESS"/>
-        <after process="fastMonLogger" status="SUCCESS"/>
+        <after process="fastMonHistLogger" status="SUCCESS"/>
+        <after process="ingestCalTrend" status="SUCCESS"/>
         <after process="ingestDigiTrend" status="SUCCESS"/>
         <after process="ingestReconTrend" status="SUCCESS"/>
         <after process="registerCal" status="SUCCESS"/>
+        <after process="registerCalEor" status="SUCCESS"/>
+        <after process="registerCalTrend" status="SUCCESS"/>
         <after process="registerDigi" status="SUCCESS"/>
         <after process="registerDigiEor" status="SUCCESS"/>
         <after process="registerDigiTrend" status="SUCCESS"/>
@@ -598,9 +659,9 @@
         <after process="registerFT2" status="SUCCESS"/>
         <after process="registerLS1" status="SUCCESS"/>
         <after process="registerLS3" status="SUCCESS"/>
-        <after process="registerFastMonAlarm" status="SUCCESS"/>
         <after process="registerFastMonError" status="SUCCESS"/>
         <after process="registerFastMonHist" status="SUCCESS"/>
+        <after process="registerFastMonHistAlarm" status="SUCCESS"/>
         <after process="registerFastMonTuple" status="SUCCESS"/>
         <after process="registerGcr" status="SUCCESS"/>
         <after process="registerMerit" status="SUCCESS"/>
@@ -661,6 +722,26 @@
       <process name="digiTrend">
         <variables>
           <var name="reportType">digiTrend</var>
+        </variables>
+        <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q long "/>
+        <depends>
+          <after process="digitization" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="calEor">
+        <variables>
+          <var name="reportType">calEor</var>
+        </variables>
+        <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q long "/>
+        <depends>
+          <after process="digitization" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="calTrend">
+        <variables>
+          <var name="reportType">calTrend</var>
         </variables>
         <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q long "/>
         <depends>
@@ -764,6 +845,8 @@
       <process name="checkChunk">
         <job executable="${L1ProcROOT}/checkChunk.py" batchOptions=" -q express "/>
         <depends>
+          <after process="calEor" status="SUCCESS"/>
+          <after process="calTrend" status="SUCCESS"/>
           <after process="fastMon" status="SUCCESS"/>
           <after process="cleanupCrumbs" status="SUCCESS"/>
           <after process="digiEor" status="SUCCESS"/>

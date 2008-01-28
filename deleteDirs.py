@@ -27,6 +27,7 @@ if runId is not None:
         pass
 else:
     level = 'downlink'
+    chunkId = None
     pass
 
 # This decision should be made at a higher level.

@@ -6,6 +6,7 @@
 """
 
 import sys
+import time
 
 import ROOT
 ROOT.gSystem.Load('libcommonRootData.so')
@@ -36,6 +37,10 @@ def concatenate_prune(outputFileName, fileNames, treeName='Digi', expectedEntrie
         print >> sys.stderr, "Expect %d entries." % expectedEntries
         pass
 
+    now = time.time()
+    print >> sys.stderr, 'Start scan at', time.ctime(now)
+    then = now
+
     scanEntries = 0
     for iFile, name in enumerate(fileNames):
         print >> sys.stderr, "Adding %d [%s]" % (iFile, name),
@@ -46,6 +51,11 @@ def concatenate_prune(outputFileName, fileNames, treeName='Digi', expectedEntrie
         if not addCode: # TChain.Add returns 1 for success, 0 for failure
             return 1
         pass
+
+    now = time.time()
+    print >> sys.stderr, 'End scan at', time.ctime(now), '(%f elapsed)' % (now - then)
+    then = now
+
     print >> sys.stderr, 'scanEntries = ', scanEntries
     if expectedEntries is not None:
         if scanEntries != expectedEntries:
@@ -61,8 +71,6 @@ def concatenate_prune(outputFileName, fileNames, treeName='Digi', expectedEntrie
         return 1
     
     gSystem.Load('libpipelineDatasets.so')
-
-
     from ROOT import pruneTuple
 
     print >> sys.stderr, "Merging..."
@@ -72,7 +80,12 @@ def concatenate_prune(outputFileName, fileNames, treeName='Digi', expectedEntrie
     # we don't really care if this succeeds or not...
     junk = pt.copyHeader(fileNames[0])
 
+    # Here's where the real work happens
     retCode = pt.prune()
+
+    now = time.time()
+    print >> sys.stderr, 'End merge at', time.ctime(now), '(%f elapsed)' % (now - then)
+    then = now
 
     numChainEntries = getFileEvents(outputFileName, treeName)
     print >> sys.stderr, 'numChainEntries = ', numChainEntries
@@ -80,7 +93,7 @@ def concatenate_prune(outputFileName, fileNames, treeName='Digi', expectedEntrie
         print >> sys.stderr, "Bad # entries after merge."
         return 1
     
-    #print >> sys.stderr, outputFileName, ' created\n'
+    print >> sys.stderr, outputFileName, ' created\n'
 
     return retCode
 

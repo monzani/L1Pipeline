@@ -6,6 +6,7 @@
 import glob
 import hashlib
 import os
+import re
 import sys
 
 import config
@@ -13,6 +14,8 @@ import config
 
 fileTypes = {
     'cal': 'root',
+    'calEor': 'root',
+    'calTrend': 'root',
     'chunkList': 'txt',
     'crumbList': 'txt',
     'digi': 'root',
@@ -78,7 +81,11 @@ def fileName(dsType, dlId, runId=None, chunkId=None, crumbId=None, next=False):
             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             # This will not work without the global run lock!
             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            # 
+            #
+            # And it blows for so many reasons on top of that.
+            # Replace with something based on the filess that are
+            # already present.
+            #
             versionFile = os.path.join(runDir, dsType+'.version')
             print >> sys.stderr, 'Trying to read version from %s' % versionFile
             try:
@@ -233,3 +240,13 @@ def subDirectory(dsType, dlId, runId=None, chunkId=None, crumbId=None):
     dirName = os.path.join(*dirs)
     
     return dirName
+
+
+versRe = re.compile('_v([0-9]+)[\._][^/]+$')
+def version(fileName):
+    mob = versRe.search(os.path.basename(fileName))
+    if mob:
+        vers = int(mob.group(1))
+    else:
+        raise ValueError, "Can't parse version from %s" % fileName
+    return vers

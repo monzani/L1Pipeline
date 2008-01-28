@@ -33,7 +33,6 @@ finishOption = config.finishOption
 reportType = os.environ['reportType']
 
 options = config.monitorOptions[reportType]
-fileType = config.monitorOutFiles[reportType]
 
 realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId)
 realOutFile = fileNames.fileName(reportType, dlId, runId, chunkId)
@@ -57,11 +56,15 @@ else:
     recon = ''
     pass
 
-tdBin = config.tdBin
+tdBin = config.tdBin[reportType]
 
 codeDir = config.packages['Monitor']['bin']
 
-zOpt = '-z' # don't use a temp file
+if reportType in ['calEor', 'calTrend']:
+    zOpt = '' # keep transient data in a temp file
+else:
+    zOpt = '-z' # keep transient data in memory
+    pass
 
 datasource = os.environ['DATASOURCE']
 if datasource == 'MC':
