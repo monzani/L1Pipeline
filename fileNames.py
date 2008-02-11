@@ -3,6 +3,7 @@
 @author W. Focke <focke@slac.stanford.edu>
 """
 
+import cPickle
 import glob
 import hashlib
 import os
@@ -83,8 +84,10 @@ def fileName(dsType, dlId, runId=None, chunkId=None, crumbId=None, next=False):
             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             #
             # And it blows for so many reasons on top of that.
-            # Replace with something based on the filess that are
+            # Replace with something based on the files that are
             # already present.
+            # Or not.
+            # It has to work this way to use xrootd and not data catalog.
             #
             versionFile = os.path.join(runDir, dsType+'.version')
             print >> sys.stderr, 'Trying to read version from %s' % versionFile
@@ -171,7 +174,7 @@ def findPieces(fileType, dlId, runId=None, chunkId=None):
         print >> sys.stderr, 'Found %s' % chunkFiles
         chunkIds = []
         for chunkFile in chunkFiles:
-            these = readList(chunkFile)
+            these = readList(chunkFile).keys()
             chunkIds.extend(these)
             print >> sys.stderr, '%s: %s' % (chunkFile, these)
             continue
@@ -183,7 +186,7 @@ def findPieces(fileType, dlId, runId=None, chunkId=None):
         # deleting crumb directories.
         # We know the name of the file listing the crumbs.
         crumbFile = fileName('crumbList', dlId, runId, chunkId)
-        crumbIds = readList(crumbFile)
+        crumbIds = readList(crumbFile).keys()
         crumbIds.sort()
         argSets = [(fileType, dlId, runId, chunkId, crumbId)
                    for crumbId in crumbIds]
@@ -206,9 +209,18 @@ def findPieces(fileType, dlId, runId=None, chunkId=None):
     return pieces
 
 
-def readList(inFile):
+def readListOld(inFile):
     items = [line.strip().split()[0] for line in open(inFile)]
     return items
+
+def readListNew(inFile):
+    return cPickle.load(open(inFile))
+
+def writeList(data, outFile):
+    cPickle.dump(data, open(outFile, 'w'))
+    return
+
+readList = readListNew
 
 
 def subDirectory(dsType, dlId, runId=None, chunkId=None, crumbId=None):

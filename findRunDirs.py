@@ -11,46 +11,61 @@ import sys
 
 import config
 
+import GPLinit
+
+import fileNames
+import finders
 import glastTime
+import lsf
 import pipeline
 import runner
+import stageFiles
 
 
 dlRawDir = os.environ['DOWNLINK_RAWDIR']
 
-# VERYBAD!
-head, downlink = os.path.split(os.environ['DOWNLINK_RAWDIR'])
-if not downlink: head, downlink = os.path.split(head)
+# VERYBAD!  Or maybe not.  Embrace it.
+head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not dlId: head, dlId = os.path.split(head)
 
-# Figure out which runs have data in this dl
-# we assume that any subdirectory of the downlink directory represents a run
-# this is a contract with the halfpipe
-maybeIds = os.listdir(dlRawDir)
+staged = stageFiles.StageSet()
 
-print >> sys.stderr, "Possible runs:[%s]" % maybeIds
-
-dataRuns = set()
-runDirs = {}
-for candidate in maybeIds:
-    maybeDir = os.path.join(dlRawDir, candidate)
-    if os.path.isdir(maybeDir):
-        dataRuns.add(candidate)
-        runDirs[candidate] = maybeDir
-        pass
-    continue
-runStatuses = dict.fromkeys(dataRuns, config.defaultRunStatus)
-
+runDirs = finders.findRunDirs(dlRawDir)
+dataRuns = set(runDirs)
 print >> sys.stderr, "Presumed runs:[%s]" % dataRuns
 
+chunkKeys = []
+chunkLists = {}
+for runId, runData in runDirs.items():
+    runDir = runData['runDir']
+    chunkListData = finders.findChunkFiles(runDir)
+    chunkKeys.extend((runId, chunkId) for chunkId in chunkListData)
+    chunkLists[runId] = chunkListData
+    continue
+
+hostLists = lsf.balance(chunkKeys)
+
+for (runId, chunkId), hostList in hostLists:
+    chunkLists[runId][chunkId]['hostList'] = hostList
+    continue
+
+for runId, chunkListData in chunkLists.items():
+    realChunkList = fileNames.fileName('chunkList', dlId, runId)
+    stagedChunkList = staged.stageOut(realChunkList)
+    fileNames.writeList(chunkListData, stagedChunkList)
+    continue
+
+runStatuses = dict.fromkeys(dataRuns, config.defaultRunStatus)
+
 # the name of this file is a contract with the halfpipe
-retireFile = os.path.join(dlRawDir, 'retired_runs_%s.txt' % downlink)
+retireFile = os.path.join(dlRawDir, 'retired_runs_%s.txt' % dlId)
 try:
     retireeStatus = dict(line.split() for line in open(retireFile))
 except IOError:
     print >> sys.stderr, "Couldn't open run status file %s, all runs will have default status %s" % (retireFile, config.defaultRunStatus)
     retireeStatus = {}
     pass
-retirees = set(retireeStatus.keys())
+retirees = set(retireeStatus)
 
 print >> sys.stderr, "Retiring runs:[%s]" % retirees
 
@@ -66,7 +81,7 @@ tStartDef = 100000001.0
 tStopDef = 300000001.0
 start = {}
 stop = {}
-boundaryFile = os.path.join(dlRawDir, 'event_times_%s.txt' % downlink)
+boundaryFile = os.path.join(dlRawDir, 'event_times_%s.txt' % dlId)
 try:
     lines = open(boundaryFile)
 except IOError:
@@ -84,7 +99,7 @@ deliveredEvents = {}
 heldBackEvents = {}
 dataSource = {}
 # the name of this file is a contract with the halfpipe
-deliveredFile = os.path.join(dlRawDir, 'delivered_events_%s.txt' % downlink)
+deliveredFile = os.path.join(dlRawDir, 'delivered_events_%s.txt' % dlId)
 try:
     dfp = open(deliveredFile)
 except IOError:
@@ -111,7 +126,7 @@ for runId in dataRuns:
         pass
     runNumber = '%d' % int(nStr)
     stream = runNumber
-    runDir = runDirs[runId]
+    runDir = runDirs[runId]['runDir']
     runStatus = runStatuses[runId]
     try:
         tStart = start[runId]
@@ -121,7 +136,7 @@ for runId in dataRuns:
         tStop = tStopDef
         print >> sys.stderr, "Couldn't get tStart, tStop for run %s, using bogus values" % runId
         pass
-    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUN_RAWDIR=%(runDir)s,RUNSTATUS=%(runStatus)s,tStart=%(tStart).17g,tStop=%(tStop).17g,DATASOURCE=%(source)s" % locals()
+    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUNSTATUS=%(runStatus)s,tStart=%(tStart).17g,tStop=%(tStop).17g,DATASOURCE=%(source)s" % locals()
     print >> sys.stderr, \
           "Creating stream [%s] of subtask [%s] with args [%s]" % \
           (stream, subTask, args)
@@ -139,3 +154,5 @@ for runId in oldRuns:
           (stream, subTask, args)
     #pipeline.createSubStream(subTask, stream, args)
     continue
+
+staged.finish()

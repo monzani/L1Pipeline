@@ -57,8 +57,10 @@ cForm = 'b%0' + `cDigits` + 'd'
 crumbIds = [cForm % start for start in crumbStarts]
 
 # write crumb list
-open(stagedCrumbList, 'w').writelines(
-    ('%s\n' % crumbId for crumbId in crumbIds))
+#open(stagedCrumbList, 'w').writelines(
+#    ('%s\n' % crumbId for crumbId in crumbIds))
+crumbListData = dict((crumbId, {}) for crumbId in crumbIds)
+fileNames.writeList(crumbListData, stagedCrumbList)
 
 for start, crumbId, nEvents in zip(crumbStarts, crumbIds, crumbSizes):
     stream = crumbId[1:]

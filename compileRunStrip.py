@@ -43,7 +43,7 @@ for reportType in reportTypes:
         recon = ''
         pass
 
-    tdBin = config.tdBin
+    tdBin = config.tdBin[reportType]
 
     # CHANGE THIS!
     tmpHead = 'temp'

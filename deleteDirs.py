@@ -8,6 +8,8 @@
 import os
 import sys
 
+import config
+
 import fileNames
 import runner
 
@@ -40,8 +42,12 @@ if level == 'run' and runStatus not in ['COMPLETE', 'INCOMPLETE']:
 goners = fileNames.findPieces(None, dlId, runId, chunkId)
 
 for goner in goners:
-    print >> sys.stderr, "Deleting %s." % goner
-    cmd = 'rm -rf %(goner)s' % locals()
-    runner.run(cmd)
-    print >> sys.stderr, '%s has left the building.' % goner
+    if config.doCleanup:
+        print >> sys.stderr, "Deleting %s." % goner
+        cmd = 'rm -rf %(goner)s' % locals()
+        runner.run(cmd)
+        print >> sys.stderr, '%s has left the building.' % goner
+    else:
+        print >> sys.stderr, "NOT Deleting %s." % goner
+        pass
     continue

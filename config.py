@@ -5,6 +5,9 @@
 @author W. Focke <focke@slac.stanford.edu>
 """
 
+L1Version = "1.32"
+doCleanup = True
+
 import os
 import sys
 
@@ -35,7 +38,6 @@ else:
     pass
 print >> sys.stderr, "Test mode: %s" % testMode
 
-L1Version = "1.31"
 installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
@@ -132,7 +134,7 @@ hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
 isoc = '/afs/slac/g/glast/isoc/flightOps'
 isocPlatform = os.popen(os.path.join(isoc, 'isoc-platform')).readline().strip()
-isocBin = os.path.join(isoc, isocPlatform, 'ISOC_PROD/bin')
+isocBin = os.path.join(isoc, isocPlatform, 'ISOC_PROD', 'bin')
 
 # ISOC logger
 scid = 99
@@ -145,27 +147,26 @@ else:
     pass
 netloggerLevel = 'info'
 
-stVersion = 'v9r4'
+stVersion = 'v9r4p1'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
-PFILES=".;"
+PFILES = ".;"
 stBinDir = os.path.join(ST, 'bin')
 
 cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
-os.environ['CMTPATH'] = cmtPath
 
 packages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v2r5p1',
+        'version': 'v2r9p0',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v2r5p1',
+        'version': 'v2r7p0',
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'dp20080125',
+        'version': 'dp20080207_v2',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -177,7 +178,7 @@ packages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r1p29',
+        'version': 'v1r1p30',
         },
     }
 
@@ -265,8 +266,12 @@ mergeConfigs = {
     }
 
 alarmConfigs = {
+    'digiEor': os.path.join(
+        packages['Common']['root'], 'xml', 'digi_eor_alarms.xml'),
     'fastMonHist': os.path.join(
-        packages['Common']['root'], 'xml', 'config.xml'),
+        packages['Common']['root'], 'xml', 'fastmon_eor_alarms.xml'),
+    'reconEor': os.path.join(
+        packages['Common']['root'], 'xml', 'recon_eor_alarms.xml'),
     }
 
 tdBin = {
@@ -278,17 +283,6 @@ tdBin = {
     'reconTrend': 15,
     }
 
-# ingestor = {
-#     'calTrend': '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/bin/ingestDigiTrending',
-#     'digiTrend': '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/bin/ingestDigiTrending',
-#     'reconTrend': '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/bin/ingestRecoTrending',
-#     }
-# ingestor = {
-# #    'calTrend': '/bin/true',
-#     'calTrend': '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/bin/ingestTrendingFile',
-#     'digiTrend': '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/bin/ingestTrendingFile',
-#     'reconTrend': '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/bin/ingestTrendingFile',
-#     }
 trendIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/bin/ingestTrendingFile'
 
 rootPath = os.path.join(rootSys, 'lib')
@@ -305,17 +299,18 @@ libraryPath = ':'.join(
 
 #GPL2 = '/nfs/slac/g/svac/focke/builds/GPLtools/dev'
 gplBase = '/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/GPLtools'
-# if testMode:
-#     gplType = 'L1test'
-# else:
-#     gplType = 'L1prod'
-#     pass
-gplType = 'L1prod'
+if testMode:
+    gplType = 'L1test'
+else:
+    gplType = 'L1prod'
+    pass
+# gplType = 'L1prod'
 GPL2 = os.path.join(gplBase, gplType)
 gplPath = os.path.join(GPL2, 'python')
 
-pythonPath = ':'.join(
-    [L1ProcROOT, rootPath, gplPath, packages['Common']['python']])
+ppComponents = [L1ProcROOT, rootPath, gplPath, packages['Common']['python']]
+pythonPath = ':'.join(ppComponents)
+sys.path.extend(ppComponents)
 
 # LSF stuff
 # allocationGroup = 'glastdata' # don't use this anymore, policies have changed
@@ -327,6 +322,15 @@ reconQueue = 'medium'
 standardQueue = 'long'
 slowQueue = 'xlong'
 #
+# expressQ = 'express'
+# mediumQ = 'medium'
+# shortQ = 'short'
+# longQ = 'long'
+expressQ = 'glastdataq'
+mediumQ = 'glastdataq'
+shortQ = 'glastdataq'
+longQ = 'glastdataq'
+#
 highPriority = 75
 #
 reconMergeScratch = " -R &quot;select[scratch&gt;70]&quot; "
@@ -336,6 +340,18 @@ reconCrumbCpuf = " -R &quot;select[cpuf&gt;%s]&quot; " % minCrumbCpuf
 finishOption = ''
 
 python = sys.executable
+
+
+os.environ['CMTCONFIG'] = cmtConfig
+os.environ['CMTPATH'] = cmtPath
+os.environ['GLAST_EXT'] = glastExt
+os.environ['GPL2'] = GPL2
+os.environ['LATCalibRoot'] = LATCalibRoot
+os.environ['MALLOC_CHECK_'] = '0'
+os.environ['PFILES'] = PFILES
+os.environ['PYTHONPATH'] = pythonPath
+os.environ['ROOTSYS'] = rootSys
+
 
 if __name__ == "__main__":
     print L1Dir

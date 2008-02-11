@@ -11,9 +11,10 @@ here to handle staging and set JOBOPTIONS.
 import os
 import sys
 
+import config
+
 import GPLinit
 
-import config
 import fileNames
 import runner
 import stageFiles

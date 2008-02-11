@@ -4,18 +4,17 @@
 
 @author W. Focke <focke@slac.stanford.edu>
 """
-from os import environ
-import os
 
+import os
 import sys
+
+import config
 
 import GPLinit
 
 import fileNames
 import runner
 import stageFiles
-
-import config
 
 
 head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])

@@ -11,14 +11,13 @@ import shutil
 import string
 import sys
 
-import GPLinit
-
-import runner
-
 import config
+
+import GPLinit
 
 import fileNames
 import registerPrep
+import runner
 import stageFiles
 
 def finalize(status):

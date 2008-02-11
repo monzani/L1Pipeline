@@ -3,9 +3,9 @@
 import os
 import sys
 
-import GPLinit
-
 import config
+
+import GPLinit
 
 import alarmParser
 import fileNames

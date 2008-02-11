@@ -6,7 +6,8 @@ import string
 import sys
 
 goodStates = ['ok', 'closed_Full']
-hostsToQuery = 'genfarm'
+#hostsToQuery = 'genfarm'
+hostsToQuery = 'glastcobs glastyilis'
 
 
 def hostInfo(hostName):
@@ -55,6 +56,9 @@ def hostList():
     hosts = []
     # sort host types by desireability (cores, factor)
     # not sure this is actually a good idea
+    # it optimizes for the single-downlink case
+    # but it would be better to randomize them all
+    # for multiple downlinks
     for ht in sorted(types.keys(), key=lambda x:types[x]):
         hl = hostsByType[ht]
         print >> sys.stderr, ht, '%d hosts' % len(hl)
@@ -70,6 +74,7 @@ def hostList():
 
 
 maxSlots = 20
+maxHosts = 10
 def balance(chunks):
     hosts = hostList()
     buckets = [[0, ic, chunk, []] for ic, chunk in enumerate(chunks)]
@@ -85,26 +90,26 @@ def balance(chunks):
             break
         least[0] += slots
         least[-1].append(host)
-        which = lists[least[0] >= maxSlots]
+        nHosts = len(least[-1])
+        condition = (least[0] >= maxSlots) or (nHosts >= maxHosts)
+        which = lists[condition]
         bisect.insort(which, least)
         continue
     buckets += full
     outies = [None] * len(chunks)
     for slots, ic, chunk, cHosts in buckets:
-        outies[ic] =  makeMList(cHosts)
+        outies[ic] = (chunk, makeMList(cHosts))
         continue
     return outies
 
 
-maxHosts = 10
 def makeMList(hosts):
     if hosts:
-        usableHosts = hosts[:maxHosts]
-        nHosts = len(usableHosts)
+        nHosts = len(hosts)
         prefs = ['%s+%d' % (host, nHosts-ih)
-                 for ih, host in enumerate(usableHosts)]
+                 for ih, host in enumerate(hosts)]
         prefs.append('others')
         prefStr = ' '.join(prefs)
     else:
-        return 'genfarm'
+        return hostsToQuery
     return prefStr

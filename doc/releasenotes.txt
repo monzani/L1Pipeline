@@ -360,7 +360,7 @@ and balance.
 
 -------------------------------------------
 
-1.31
+1.31 2008/01/26 OrbSim1, TVAC Opp ETE
 -----------------
 Common v2r5p1
 FastMon v2r5p1
@@ -381,5 +381,25 @@ Do cal EOR and trending.
 Run runStrip with -z option for recon & digi, but not for cal.
 compileRunStrip supplies nonexistant input files.
 
-COde cleanup.
+Code cleanup.
 
+-------------------------------------------
+
+1.32
+-----------------
+ScienceTools v9r4p1
+Common v2r9p0
+FastMon v2r7p0
+Monitor dp20080207_v2
+ft2Util v1r1p30
+EngineeringModelRoot v3r10p1 (For a while. Not sure since when.)
+
+Use LSF host balancing with glastcobs,glastyilis. Doesn't seem to do much.
+Move pipeline module to GPLtools.
+Use glastdataq for everything.
+Require sufficient scratch space.  Don't have good examples for all types.
+Import config before GPLinit so logging works.
+Don't use -z with runStrip.
+Set environment variables (except LD_LIB...) in config, not XML.
+Put a switch in config to disable cleanup.
+Eliminate RUN_RAWDIR variable.

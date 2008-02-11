@@ -14,7 +14,10 @@ def crumble_equal(total, maxCrumb):
 
 
 def crumble_exp(total, maxCrumb):
-    nCrumbs = 7
+    minCrumbSize = 2500
+    maxCrumbs = 7
+    minCrumbs = max(1, int(math.floor(float(total) / minCrumbSize)))
+    nCrumbs = min(maxCrumbs, minCrumbs)
     factor = 0.95
     scales = []
     totScale = 0
