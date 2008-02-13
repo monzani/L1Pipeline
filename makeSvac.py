@@ -21,18 +21,19 @@ head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 chunkId = os.environ['CHUNK_ID']
+crumbId = os.environ.get('CRUMB_ID')
 
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
-realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId)
+realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId, crumbId)
 stagedDigiFile = staged.stageIn(realDigiFile)
-realReconFile = fileNames.fileName('recon', dlId, runId, chunkId)
+realReconFile = fileNames.fileName('recon', dlId, runId, chunkId, crumbId)
 stagedReconFile = staged.stageIn(realReconFile)
 
-realSvacFile = fileNames.fileName('svac', dlId, runId, chunkId)
+realSvacFile = fileNames.fileName('svac', dlId, runId, chunkId, crumbId)
 stagedSvacFile = staged.stageOut(realSvacFile)
-realHistFile = fileNames.fileName('svacHist', dlId, runId, chunkId)
+realHistFile = fileNames.fileName('svacHist', dlId, runId, chunkId, crumbId)
 stagedHistFile = staged.stageOut(realHistFile)
 
 workDir = os.path.dirname(stagedSvacFile)

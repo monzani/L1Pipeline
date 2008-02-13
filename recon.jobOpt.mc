@@ -1,7 +1,7 @@
 #include "$GLEAMROOT/src/jobOptions/pipeline/readigi_runrecon.txt"
 digiRootReaderAlg.digiRootFileList = { "$digiChunkFile" } ;
-RootIoSvc.StartingIndex = $crumbStart;
-ApplicationMgr.EvtMax = $crumbEvents;
+//RootIoSvc.StartingIndex = $crumbStart;
+//ApplicationMgr.EvtMax = $crumbEvents;
 reconRootWriterAlg.reconRootFile = "$reconCrumbFile";
 RootTupleSvc.filename = "$meritCrumbFile";
 CalTupleAlg.tupleFilename = "$calCrumbFile";

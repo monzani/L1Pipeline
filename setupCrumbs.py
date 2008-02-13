@@ -42,7 +42,7 @@ nCrumbs = len(crumbSizes)
 crumbStarts = [0] * nCrumbs
 for iCrumb in range(nCrumbs-1):
     crumbStarts[iCrumb+1] = crumbStarts[iCrumb] + crumbSizes[iCrumb]
-    pass
+    continue
 
 biggest = max(crumbStarts)
 
@@ -62,11 +62,18 @@ crumbIds = [cForm % start for start in crumbStarts]
 crumbListData = dict((crumbId, {}) for crumbId in crumbIds)
 fileNames.writeList(crumbListData, stagedCrumbList)
 
+crumbData = []
 for start, crumbId, nEvents in zip(crumbStarts, crumbIds, crumbSizes):
+    digiCrumbFile = fileNames.fileName('digi', dlId, runId, chunkId, crumbId)
+    stagedCrumbFile = staged.stageOut(digiCrumbFile)
+    crumbData.append((stagedCrumbFile, nEvents, start))
+    
     stream = crumbId[1:]
     args = 'CRUMB_ID=%(crumbId)s,crumbStart=%(start)s,crumbEvents=%(nEvents)s' % locals()
     pipeline.createSubStream("doCrumb", stream, args)
-    pass
+    continue
+
+rootFiles.hSplit(stagedDigiFile, 'Digi', crumbData)
 
 if status: finishOption = 'wipe'
 status |= staged.finish(finishOption)

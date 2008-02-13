@@ -33,10 +33,19 @@
     <job executable="${L1ProcROOT}/ft2Db.py" batchOptions=" -q %(expressQ)s "/>
   </process>
 
+  <process name="kludgeAsp">
+    <job executable="${L1ProcROOT}/kludgeAsp.py" batchOptions=" -q %(expressQ)s " />
+    <depends>
+      <after process="doRun.registerFT1" status="SUCCESS"/>
+      <after process="doRun.registerFT2" status="SUCCESS"/>
+    </depends>
+  </process>
+
   <process name="cleanupDl">
     <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(expressQ)s " />
     <depends>
       <after process="doRun.checkRun" status="SUCCESS"/>
+      <after process="kludgeAsp" status="SUCCESS"/>
     </depends>
   </process>
 
@@ -307,7 +316,7 @@
       <variables>
         <var name="fileType">gcr</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;0.02]&quot; "/>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <after process="doChunk.mergeGcrCrumbs" status="DONE"/>
       </depends>
@@ -355,7 +364,7 @@
       <variables>
         <var name="fileType">ft1</var>
       </variables>
-      <job executable="${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;0.06]&quot; " />
+      <job executable="${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
         <after process="mergeMeritChunks" status="SUCCESS"/>
       </depends>
@@ -365,7 +374,7 @@
       <variables>
         <var name="fileType">ft1</var>
       </variables>
-      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;0.06]&quot; " />
+      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
         <after process="makeFT1" status="SUCCESS"/>
       </depends>
@@ -525,7 +534,7 @@
       <variables>
         <var name="fileType">reconTrend</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;0.02]&quot; "/>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <after process="doChunk.reconTrend" status="DONE"/>
       </depends>
@@ -549,7 +558,7 @@
       <variables>
         <var name="reportType">reconTrend</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;0.02]&quot; "/>
+      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <after process="mergeReconTrend" status="SUCCESS"/>
       </depends>
@@ -559,7 +568,7 @@
       <variables>
         <var name="fileType">reconEor</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;0.003]&quot; "/>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <after process="doChunk.reconEor" status="DONE"/>
       </depends>
@@ -603,19 +612,19 @@
       </depends>
     </process>
 
-    <process name="mergeSvacTuple">
+    <process name="mergeSvacChunks">
       <variables>
         <var name="fileType">svac</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;6]&quot; "/>
       <depends>
-        <after process="doChunk.svacTuple" status="DONE"/>
+        <after process="doChunk.mergeSvacCrumbs" status="DONE"/>
       </depends>
     </process>
 
     <process name="registerSvacTuple">
       <variables>
-        <var name="parentProcess">mergeSvacTuple</var>
+        <var name="parentProcess">mergeSvacChunks</var>
         <var name="dataType">SVAC</var>
       </variables>
       <script><![CDATA[
@@ -623,7 +632,7 @@
 ]]>
       </script>
       <depends>
-        <after process="mergeSvacTuple" status="SUCCESS"/>
+        <after process="mergeSvacChunks" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -690,7 +699,7 @@
       </prerequisites>
 
       <process name="digitization">
-        <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;0.2]&quot; " />
+        <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
       </process>
  
       <process name="fastMon">
@@ -741,7 +750,7 @@
       </process>
  
       <process name="setupCrumbs">
-        <job executable="${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; " />
+        <job executable="${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
         <depends>
           <after process="digitization" status="SUCCESS"/>
         </depends>
@@ -754,7 +763,7 @@
         <variables>
           <var name="fileType">gcr</var>
         </variables>
-        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;0.002]&quot; "/>
+        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
         </depends>
@@ -764,7 +773,7 @@
         <variables>
           <var name="fileType">merit</var>
         </variables>
-        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;0.1]&quot; " />
+        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
         </depends>
@@ -774,7 +783,7 @@
         <variables>
           <var name="fileType">cal</var>
         </variables>
-        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;0.2]&quot; "/>
+        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
         </depends>
@@ -787,6 +796,16 @@
         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
+        </depends>
+      </process>
+
+      <process name="mergeSvacCrumbs">
+        <variables>
+          <var name="fileType">svac</var>
+        </variables>
+        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="doCrumb.svacTuple" status="DONE"/>
         </depends>
       </process>
 
@@ -814,22 +833,15 @@
         </depends>
       </process>
  
-      <process name="svacTuple">
-        <job executable="${L1ProcROOT}/makeSvac.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;0.3]&quot; "/>
-        <depends>
-          <after process="doCrumb.recon" status="SUCCESS"/>
-          <after process="mergeReconCrumbs" status="SUCCESS"/>
-        </depends>
-      </process>
-
       <process name="cleanupCrumbs">
         <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(shortQ)s "/>
         <depends>
-          <after process="doCrumb.recon" status="SUCCESS"/>
-          <after process="mergeReconCrumbs" status="SUCCESS"/>
+          <after process="doCrumb.svacTuple" status="SUCCESS"/>
           <after process="mergeCalCrumbs" status="SUCCESS"/>
-          <after process="mergeMeritCrumbs" status="SUCCESS"/>
           <after process="mergeGcrCrumbs" status="SUCCESS"/>
+          <after process="mergeMeritCrumbs" status="SUCCESS"/>
+          <after process="mergeReconCrumbs" status="SUCCESS"/>
+          <after process="mergeSvacCrumbs" status="SUCCESS"/>
         </depends>
       </process>
 
@@ -844,7 +856,6 @@
           <after process="digiTrend" status="SUCCESS"/>
           <after process="reconEor" status="SUCCESS"/>
           <after process="reconTrend" status="SUCCESS"/>
-          <after process="svacTuple" status="SUCCESS"/>
         </depends>
       </process>
 
@@ -857,7 +868,14 @@
         </prerequisites>
 
         <process name="recon">
-          <job executable="${L1ProcROOT}/recon.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;0.2]&quot; " />
+          <job executable="${L1ProcROOT}/recon.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
+        </process>
+
+        <process name="svacTuple">
+          <job executable="${L1ProcROOT}/makeSvac.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+          <depends>
+            <after process="recon" status="SUCCESS"/>
+          </depends>
         </process>
 
       </task>
@@ -1040,7 +1058,7 @@
       </prerequisites>
 
       <process name="digitizationLci">
-        <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;0.2]&quot; "/>
+        <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
       </process>
  
       <process name="fastMonLci">

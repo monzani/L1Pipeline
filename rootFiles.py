@@ -163,6 +163,31 @@ def copyHeader(inFileName, outTFile):
     return
 
 
+def hSplit(inFile, treeName, crumbData):
+
+    selection = ""
+    option = "fast"
+
+    oldFP = ROOT.TFile(inFile)
+    oldTree = oldFP.Get(treeName)
+
+    for outFile, numEvents, firstEvent in crumbData:
+
+        print >> sys.stderr, outFile, numEvents, firstEvent,
+        start = time.time()
+
+        newFP = ROOT.TFile(outFile, "recreate")
+        newTree = oldTree.CopyTree(selection, option, numEvents, firstEvent)
+        newTree.AutoSave();
+        newFP.Close()
+
+        print >> sys.stderr, time.time() - start
+
+        continue
+
+    return
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 4:
         print >> sys.stderr, 'usage: rootFiles.py treeName outFile inFile1 ...'

@@ -5,8 +5,8 @@
 @author W. Focke <focke@slac.stanford.edu>
 """
 
-L1Version = "1.32"
-doCleanup = True
+L1Version = "1.33"
+doCleanup = False
 
 import os
 import sys
@@ -138,12 +138,12 @@ isocBin = os.path.join(isoc, isocPlatform, 'ISOC_PROD', 'bin')
 
 # ISOC logger
 scid = 99
-netLoggerDev = 'x-netlog://glastlnx06.slac.stanford.edu:15502'
-netloggerProd = 'x-netlog://glastlnx06.slac.stanford.edu:15501'
+netLoggerFlight = 'x-netlog://glastlnx06.slac.stanford.edu:15502'
+netloggerIAndT = 'x-netlog://glastlnx06.slac.stanford.edu:15501'
 if testMode:
-    netloggerDest = netLoggerDev
+    netloggerDest = netLoggerFlight
 else:
-    netloggerDest = netLoggerDev
+    netloggerDest = netLoggerFlight
     pass
 netloggerLevel = 'info'
 
@@ -158,11 +158,11 @@ cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 packages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v2r9p0',
+        'version': 'v2r10p0',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v2r7p0',
+        'version': 'v2r8p0',
         },
     'Monitor': {
         'repository': 'svac',

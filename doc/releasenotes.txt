@@ -385,7 +385,7 @@ Code cleanup.
 
 -------------------------------------------
 
-1.32
+1.32 Reprocess most OrbSim1 runs
 -----------------
 ScienceTools v9r4p1
 Common v2r9p0
@@ -403,3 +403,17 @@ Don't use -z with runStrip.
 Set environment variables (except LD_LIB...) in config, not XML.
 Put a switch in config to disable cleanup.
 Eliminate RUN_RAWDIR variable.
+Make a minimum crumb size of 2500.
+
+-------------------------------------------
+
+1.33
+-----------------
+Common v2r10p0
+FastMon v2r8p0
+
+Crumble digi file.
+Run svacTuple at crumb level.
+Supply proper VERSION keyword for ls1, ls2.
+Set disk space requirements to a minimum of 1GB.
+Launch ASP when all FT[12] in a downlink are registered.

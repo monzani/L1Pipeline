@@ -40,9 +40,11 @@ tStop = float(os.environ['tStop'])
 
 dictionary = dicts[fileType]
 
+version = fileNames.version(realFt1File)
+
 cmd = '''
 cd %(workDir)s
-%(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=DEFAULT event_classifier="Pass5_Classifier" tstart=%(tStart).17g tstop=%(tStop).17g dict_file=%(dictionary)s
+%(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=DEFAULT event_classifier="Pass5_Classifier" tstart=%(tStart).17g tstop=%(tStop).17g dict_file=%(dictionary)s file_version=%(version)s
 ''' % locals()
 
 status = runner.run(cmd)

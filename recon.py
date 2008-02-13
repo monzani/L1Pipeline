@@ -28,7 +28,7 @@ crumbId = os.environ['CRUMB_ID']
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
-realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId)
+realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId, crumbId)
 os.environ['digiChunkFile'] = staged.stageIn(realDigiFile)
 realFT2Fake = fileNames.fileName('ft2Fake', dlId)
 os.environ['fakeFT2File'] = staged.stageIn(realFT2Fake)
