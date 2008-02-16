@@ -62,6 +62,12 @@ L1Cmt = os.path.join(installRoot, 'builds')
 L1Disk = '/nfs/farm/g/glast/u52/L1'
 L1Dir = os.path.join(L1Disk, 'rootData')
 
+dataCatDir = '/Data/OpsSim2/Level1'
+
+xrootGlast = 'root://glast-rdr.slac.stanford.edu//glast'
+xrootSubDir = '%s/%s/%s' % (dataCatDir, mode, L1Version)
+xrootBase = xrootGlast + xrootSubDir
+
 if testMode: L1Dir = os.path.join(L1Dir, 'test')
 
 stageDisks = ["/afs/slac/g/glast/ground/PipelineStaging",
@@ -138,10 +144,12 @@ isocBin = os.path.join(isoc, isocPlatform, 'ISOC_PROD', 'bin')
 
 # ISOC logger
 scid = 99
-netLoggerFlight = 'x-netlog://glastlnx06.slac.stanford.edu:15502'
-netloggerIAndT = 'x-netlog://glastlnx06.slac.stanford.edu:15501'
+#netLoggerFlight = 'x-netlog://glastlnx06.slac.stanford.edu:15502'
+netLoggerFlight = None
+#netloggerIAndT = 'x-netlog://glastlnx06.slac.stanford.edu:15501'
+netLoggerTest = 'x-netlog://glastlnx25.slac.stanford.edu:15502'
 if testMode:
-    netloggerDest = netLoggerFlight
+    netloggerDest = netLoggerTest
 else:
     netloggerDest = netLoggerFlight
     pass
@@ -182,7 +190,7 @@ packages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r1p30',
+        'version': 'v1r1p34',
         },
     }
 
