@@ -100,14 +100,16 @@ def fileName(dsType, dlId, runId=None, chunkId=None, crumbId=None, next=False):
             verStr = dlId
         else:
             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            # This will not work without the global run lock!
+            # This has horrible concurrency issues.
+            # It is protected by the global run lock.
             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             #
             # And it blows for so many reasons on top of that.
             # Replace with something based on the files that are
             # already present.
             # Or not.
-            # It has to work this way to use xrootd and not data catalog.
+            # It has to work this way to use xrootd and not data catalog lookup.
+            # So it has to stay for now.
             #
             versionFile = os.path.join(runDir, dsType+'.version')
             print >> sys.stderr, 'Trying to read version from %s' % versionFile

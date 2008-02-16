@@ -38,7 +38,7 @@ else:
     pass
 print >> sys.stderr, "Test mode: %s" % testMode
 
-installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
+installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
 
@@ -368,6 +368,4 @@ os.environ['ROOTSYS'] = rootSys
 
 
 if __name__ == "__main__":
-    print L1Dir
-    print reconApp
-    
+    print L1ProcROOT
