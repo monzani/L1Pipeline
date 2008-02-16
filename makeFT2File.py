@@ -33,6 +33,8 @@ workDir = os.path.dirname(stagedFt2FitsFile)
 
 setupScript = config.packages['ft2Util']['setup']
 
+version = fileNames.version(fitsFt2File)
+
 cmd = '''
 cd %(workDir)s
 source %(setupScript)s

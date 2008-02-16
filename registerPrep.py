@@ -3,6 +3,7 @@
 import os
 import sys
 
+import fileNames
 import pipeline
 
 def prep(fileType, fileName):
@@ -12,11 +13,10 @@ def prep(fileType, fileName):
     This sets up some pipeline variables so the scriptlet knows what to do.
     """
 
-    fileType = fileType.upper()
-    junk, base = os.path.split(fileName)
-    logipath = '/'.join(['/L1Proc', fileType, base])
-    print >> sys.stderr, "logipath=[%s], filepath=[%s]" % (logipath, fileName)
-    pipeline.setVariable('REGISTER_LOGIPATH', logipath)
-    pipeline.setVariable('REGISTER_FILEPATH', fileName)
+    logiPath = fileNames.dataCatName(fileType, fileName)
+    filePath = fileNames.sitedName(fileName)
+    print >> sys.stderr, "logipath=[%s], filepath=[%s]" % (logiPath, filePath)
+    pipeline.setVariable('REGISTER_LOGIPATH', logiPath)
+    pipeline.setVariable('REGISTER_FILEPATH', filePath)
 
     return

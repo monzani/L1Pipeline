@@ -7,8 +7,11 @@ import PipelineNetlogger
 
 import config
 
-#log = PipelineNetlogger.PNetlogger.getLogger()
-log = PipelineNetlogger.PNetlogger(config.netloggerDest, config.netloggerLevel)
+if config.netloggerDest:
+    log = PipelineNetlogger.PNetlogger(config.netloggerDest, config.netloggerLevel)
+else:
+    log = PipelineNetlogger.PNetlogger.getLogger()
+    pass
 
 loggableTypes = ['clean', 'error', 'undefined', 'warning']
 
@@ -48,14 +51,25 @@ def doAlarms(inFile, fileType, runId):
     print >> sys.stderr, 'Logging to [%s]' % config.netloggerDest
     print >> sys.stderr, message
 
+    dlNumber = os.environ['DOWNLINK_ID']
+    runNumber = os.environ['runNumber']
+
     target = 'dk=%s;nR=%s;nD=%s' % (
         fileType,
-        os.environ['runNumber'],
-        os.environ['DOWNLINK_ID'],
+        runNumber,
+        dlNumber,
         )
+    link = target
+
+    tags = {
+        "tag_downlinkId": int(dlNumber),
+        "tag_runId": int(runNumber),
+        }
 
     timeStamp = None
     
-    severity(eventType, message, target, timeStamp, config.scid)
+    severity(eventType, message,
+             link=link, tgt=target, timestamp=timeStamp, scid=config.scid,
+             **tags)
 
     return

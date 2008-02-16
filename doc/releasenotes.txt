@@ -411,9 +411,14 @@ Make a minimum crumb size of 2500.
 -----------------
 Common v2r10p0
 FastMon v2r8p0
+ft2Util v1r1p34
 
 Crumble digi file.
 Run svacTuple at crumb level.
 Supply proper VERSION keyword for ls1, ls2.
 Set disk space requirements to a minimum of 1GB.
 Launch ASP when all FT[12] in a downlink are registered.
+
+Use xroot for run-level products.
+Use new netlogging features.
+Munge data catalog names.

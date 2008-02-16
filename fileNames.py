@@ -48,6 +48,21 @@ exportTags = {
     'ls3': 'gll_lt',
     }
 
+xrootFileTypes = ['fit', 'root']
+
+
+def dataCatName(fileType, fileName):
+    dsType = fileType.upper()
+    junk, baseName = os.path.split(fileName)
+    name = '%s/%s:%s' % (config.dataCatDir, dsType, baseName)
+    return name
+
+sites = ['SLAC', 'SLAC_XROOT']
+def sitedName(fileName):
+    site = sites[fileName.startswith('root:')]
+    filePath = '%s@%s' % (fileName, site)
+    return filePath
+
 
 def fileName(dsType, dlId, runId=None, chunkId=None, crumbId=None, next=False):
 
@@ -73,9 +88,14 @@ def fileName(dsType, dlId, runId=None, chunkId=None, crumbId=None, next=False):
     subDir = subDirectory(dsType, dlId, runId, chunkId, crumbId)
     
     if level == 'run':
-        baseDir = config.L1Dir
-        runDir = os.path.join(baseDir, subDir)
-
+        runDir = os.path.join(config.L1Dir, subDir)
+        if fileTypes[dsType] in xrootFileTypes:
+            subDir = xrootSubDirectory(dsType, dlId, runId)
+            baseDir = config.xrootBase
+        else:
+            baseDir = config.L1Dir
+            pass
+        
         if dsType in ['chunkList']:
             verStr = dlId
         else:
@@ -252,6 +272,10 @@ def subDirectory(dsType, dlId, runId=None, chunkId=None, crumbId=None):
     dirName = os.path.join(*dirs)
     
     return dirName
+
+def xrootSubDirectory(dsType, dlId, runId=None):
+    subDir = dsType
+    return subDir
 
 
 versRe = re.compile('_v([0-9]+)[\._][^/]+$')
