@@ -38,7 +38,8 @@ else:
     pass
 print >> sys.stderr, "Test mode: %s" % testMode
 
-installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
+#installRoot = "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
+installRoot = "/nfs/farm/g/glast/u33/monzani/svac/L1Pipeline/"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
 
@@ -180,6 +181,10 @@ packages = {
         'repository': 'svac',
         'version': 'v3r10p1',
         },
+    'TestReport': {
+        'repository': 'svac',
+        'version': 'v5r0',
+        },
     'pipelineDatasets': {
         'repository': 'users/richard',
         'version': 'v0r4',
@@ -244,7 +249,9 @@ apps = {
     'recon': gleam,
     'reportMerge': packages['Monitor']['mergeApp'],
     'svacTuple': packages['EngineeringModelRoot']['app'],
-    'trendMerge': packages['Monitor']['trendMerge']
+    'trendMerge': packages['Monitor']['trendMerge'],
+    'runVerify': os.path.join(
+        packages['TestReport']['bin'], 'RunVerify.exe'),
     }
 
 monitorOptions = {

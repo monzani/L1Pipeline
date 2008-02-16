@@ -422,3 +422,6 @@ Launch ASP when all FT[12] in a downlink are registered.
 Use xroot for run-level products.
 Use new netlogging features.
 Munge data catalog names.
+
+Added initial version of run Verification. Not actually running it yet.
+
