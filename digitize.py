@@ -40,6 +40,13 @@ else:
     pass
 os.environ['trigEngine'] = trigEngine
 os.environ['trigConfig'] = trigConfig
+if dataSource == 'LPA':
+    geometry = 'latAssembly/latAssemblySegVols.xml'
+elif dataSource == 'MC':
+    geometry = 'flight/flightSegVols.xml'
+    pass
+os.environ['gleamGeometry'] = geometry
+options = config.digiOptions[dataSource]
 
 cmd = '''
 cd %(workDir)s

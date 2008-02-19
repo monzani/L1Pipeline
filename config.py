@@ -6,7 +6,7 @@
 """
 
 L1Version = "1.33"
-doCleanup = False
+doCleanup = True
 
 import os
 import sys
@@ -111,8 +111,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume08')
-glastVersion = 'v13r9p1'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
+glastVersion = 'v13r11p1'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -127,7 +127,10 @@ cmtScript = os.path.join(
     'setup.sh',
     ) # do we need this?
 #
-digiOptions = os.path.join(L1ProcROOT, 'digi.jobOpt')
+digiOptions = {
+    'LPA': os.path.join(L1ProcROOT, 'digi.jobOpt'),
+    'MC': os.path.join(L1ProcROOT, 'digi.jobOpt.mc'),
+    }
 reconOptions = {
     'LPA': os.path.join(L1ProcROOT, 'recon.jobOpt'),
     'MC': os.path.join(L1ProcROOT, 'recon.jobOpt.mc'),

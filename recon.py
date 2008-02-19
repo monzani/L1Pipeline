@@ -45,17 +45,17 @@ os.environ['gcrCrumbFile'] = staged.stageOut(realGcrFile)
 
 workDir = os.path.dirname(stagedReconFile)
 
-datasource = os.environ['DATASOURCE']
-if datasource == 'LPA':
+dataSource = os.environ['DATASOURCE']
+if dataSource == 'LPA':
     geometry = 'latAssembly/latAssemblySegVols.xml'
-elif datasource == 'MC':
+elif dataSource == 'MC':
     geometry = 'flight/flightSegVols.xml'
     pass
 os.environ['gleamGeometry'] = geometry
 
 #setupScript = config.cmtScript
 app = config.apps['recon']
-options = config.reconOptions[datasource]
+options = config.reconOptions[dataSource]
 
 cmd = '''
 cd %(workDir)s

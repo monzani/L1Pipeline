@@ -1,16 +1,13 @@
-#include "$GLEAMROOT/src/jobOptions/pipeline/readigi_runrecon.txt"
-digiRootReaderAlg.digiRootFileList = { "$digiChunkFile" } ;
-//RootIoSvc.StartingIndex = $crumbStart;
-//ApplicationMgr.EvtMax = $crumbEvents;
-reconRootWriterAlg.reconRootFile = "$reconCrumbFile";
-RootTupleSvc.filename = "$meritCrumbFile";
-CalTupleAlg.tupleFilename = "$calCrumbFile";
-gcrSelectRootWriterAlg.gcrSelectRootFile = "$gcrCrumbFile";
-PtValsAlg.PointingHistory = {"$fakeFT2File","", ""};
+#include "$GLEAMROOT/src/jobOptions/pipeline/ldf2digi.txt"
+EventSelector.StorageType = "CCSDSFILE";
+EventSelector.FileName = "$EVTFILE";
+digiRootWriterAlg.digiRootFile = "$digiChunkFile";
 GlastDetSvc.xmlfile = "$(XMLGEODBSROOT)/xml/$(gleamGeometry)";
 
-CalibDataSvc.CalibFlavorList = {"vanilla","ideal","MC_OktoberFest07"};
-AcdCalibSvc.DefaultFlavor = "MC_OktoberFest07";
+TriggerAlg.engine = "$trigEngine";
+TrgConfigSvc.configureFrom = "$trigConfig";
+
+OnboardFilter.FilterList = {0,1,2,3};
 
 CalibMySQLCnvSvc.DbName           = "calib";
 CalibMySQLCnvSvc.QualityList      = {"PROD"};
@@ -20,9 +17,8 @@ AcdCalibSvc.FlavorCoherentNoise   = "ideal";
 TkrCalibAlg.calibFlavor           = "MC_OktoberFest07";
 TkrCalibAlg.deadStripsCalibFlavor = "MC_OktoberFest07";
 TkrSplitsSvc.defaultMaxStrips     = "14";
+CalibDataSvc.CalibFlavorList      = {"ideal", "MC_OktoberFest07"};
 CalCalibSvc.DefaultFlavor         = "MC_OktoberFest07";
 OnboardFilter.FileNamePeds        = "cal_db_pedestals_flight";
 OnboardFilter.FileNameGains       = "cal_db_gains_flight";
 OnboardFilter.DgnConfig           = "DGN_gem";
-
-GcrReconAlg.HFC_Or_TriggerEng4 = "TriggerEng4";
