@@ -5,7 +5,7 @@
 @author W. Focke <focke@slac.stanford.edu>
 """
 
-L1Version = "1.33"
+L1Version = "1.34"
 doCleanup = True
 
 import os
@@ -193,7 +193,7 @@ packages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r1p34',
+        'version': 'v1r1p35',
         },
     }
 

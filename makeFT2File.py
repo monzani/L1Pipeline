@@ -38,7 +38,7 @@ version = fileNames.version(fitsFt2File)
 cmd = '''
 cd %(workDir)s
 source %(setupScript)s
-%(app)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s
+%(app)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s -Version %(version)s
 ''' % locals()
 
 status = runner.run(cmd)

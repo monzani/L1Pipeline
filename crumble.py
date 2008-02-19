@@ -1,5 +1,10 @@
 #!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
 
+"""@brief A hideous mess of historical issues.
+Function arguments and constants need revision.
+
+"""
+
 
 import math
 
@@ -13,7 +18,7 @@ def crumble_equal(total, maxCrumb):
     return crumbs
 
 
-def crumble_exp(total, maxCrumb):
+def crumble_exp_old(total, maxCrumb):
     minCrumbSize = 2500
     maxCrumbs = 7
     minCrumbs = max(1, int(math.floor(float(total) / minCrumbSize)))
@@ -32,7 +37,27 @@ def crumble_exp(total, maxCrumb):
     return crumbSizes
 
 
-crumble = crumble_exp
+def crumble_exp_new(total, ignored):
+    maxCrumb = 4e3 # largest average crumb size
+    mmr = 2.0 # largestCrumb / smallestCrumb
+    #
+    total = int(total)
+    nCrumbs = int(math.ceil(float(total) / maxCrumb))
+    factor = math.exp(-math.log(mmr) / nCrumbs)
+    scales = []
+    totScale = 0
+    for iCrumb in range(nCrumbs):
+        scale = factor ** iCrumb
+        scales.append(scale)
+        totScale += scale
+        continue
+    scales.reverse()
+    topCrumb = total / totScale
+    crumbSizes = [int(math.ceil(topCrumb * scale)) for scale in scales]
+    return crumbSizes
+
+
+crumble = crumble_exp_new
 
 if __name__ == "__main__":
     import operator, sys

@@ -425,3 +425,12 @@ Munge data catalog names.
 
 Added initial version of run Verification. Not actually running it yet.
 
+-------------------------------------------
+
+1.34
+-----------------
+GR v9r11p1
+ft2Util v1r1p35
+
+Make lots of little crumbs.
+Supply proper VERSION keyword for ls5 (=ft2).
