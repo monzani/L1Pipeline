@@ -3,9 +3,9 @@ import os
 import sys
 import xml.dom.minidom as md
 
-import PipelineNetlogger
-
 import config
+
+import PipelineNetlogger
 
 if config.netloggerDest:
     log = PipelineNetlogger.PNetlogger(config.netloggerDest, config.netloggerLevel)
@@ -46,7 +46,7 @@ def doAlarms(inFile, fileType, runId):
     number = parser(inFile)
     severity = alarmSeverity(number)
     head = '%(fileType)s monitoring for run %(runId)s had:  ' % locals()
-    message = head + 'data errors:%(error)d, processing errors:%(undefined)d, warnings:%(warning)d, clean:%(clean)d.' % number
+    message = head + 'errors:%(error)d, warnings:%(warning)d, clean:%(clean)d, undefined:%(undefined)d.' % number
 
     print >> sys.stderr, 'Logging to [%s]' % config.netloggerDest
     print >> sys.stderr, message
@@ -65,7 +65,8 @@ def doAlarms(inFile, fileType, runId):
         "tag_downlinkId": int(dlNumber),
         "tag_runId": int(runNumber),
         }
-
+    print >> sys.stderr, tags
+    
     timeStamp = None
     
     severity(eventType, message,

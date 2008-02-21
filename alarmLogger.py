@@ -31,6 +31,4 @@ alarmParser.doAlarms(stagedInFile, fileType, runId)
 
 status = staged.finish(finishOption)
 
-registerPrep.prep(fileType, realInFile)
-
 sys.exit(status)

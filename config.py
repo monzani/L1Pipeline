@@ -5,7 +5,7 @@
 @author W. Focke <focke@slac.stanford.edu>
 """
 
-L1Version = "1.34"
+L1Version = "1.35"
 doCleanup = True
 
 import os
@@ -169,11 +169,11 @@ cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 packages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v2r10p0',
+        'version': 'v2r11p0',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v2r8p0',
+        'version': 'v2r9p0',
         },
     'Monitor': {
         'repository': 'svac',
@@ -193,7 +193,7 @@ packages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r1p35',
+        'version': 'v1r1p37',
         },
     }
 

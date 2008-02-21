@@ -434,3 +434,13 @@ ft2Util v1r1p35
 
 Make lots of little crumbs.
 Supply proper VERSION keyword for ls5 (=ft2).
+-------------------------------------------
+
+1.35
+-----------------
+Common v2r11p0
+FastMon v2r9p0
+ft2Util v1r1p37
+
+Run alarms on digiEor, reconEor.
+

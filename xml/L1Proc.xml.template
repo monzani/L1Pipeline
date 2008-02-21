@@ -113,6 +113,40 @@
         <after process="mergeDigiEor" status="SUCCESS"/>
       </depends>
     </process>
+ 
+    <process name="digiEorAlarm">
+      <variables>
+        <var name="fileType">digiEor</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="mergeDigiEor" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="digiEorLogger">
+      <variables>
+        <var name="fileType">digiEorAlarm</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="digiEorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerDigiEorAlarm">
+      <variables>
+        <var name="parentProcess">digiEorAlarm</var>
+        <var name="dataType">digiEorAlarm</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="digiEorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
 
     <process name="mergeDigiTrend">
       <variables>
@@ -587,6 +621,40 @@
         <after process="mergeReconEor" status="SUCCESS"/>
       </depends>
     </process>
+ 
+    <process name="reconEorAlarm">
+      <variables>
+        <var name="fileType">reconEor</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="mergeReconEor" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="reconEorLogger">
+      <variables>
+        <var name="fileType">reconEorAlarm</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="reconEorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerReconEorAlarm">
+      <variables>
+        <var name="parentProcess">reconEorAlarm</var>
+        <var name="dataType">reconEorAlarm</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="reconEorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
 
     <process name="mergeReconChunks">
       <variables>
@@ -640,6 +708,7 @@
       <job executable="${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="doChunk.checkChunk" status="SUCCESS"/>
+        <after process="digiEorLogger" status="SUCCESS"/>
         <after process="exportFT1" status="SUCCESS"/>
         <after process="exportFT2" status="SUCCESS"/>
         <after process="exportLS1" status="SUCCESS"/>
@@ -648,11 +717,13 @@
         <after process="ingestCalTrend" status="SUCCESS"/>
         <after process="ingestDigiTrend" status="SUCCESS"/>
         <after process="ingestReconTrend" status="SUCCESS"/>
+        <after process="reconEorLogger" status="SUCCESS"/>
         <after process="registerCal" status="SUCCESS"/>
         <after process="registerCalEor" status="SUCCESS"/>
         <after process="registerCalTrend" status="SUCCESS"/>
         <after process="registerDigi" status="SUCCESS"/>
         <after process="registerDigiEor" status="SUCCESS"/>
+        <after process="registerDigiEorAlarm" status="SUCCESS"/>
         <after process="registerDigiTrend" status="SUCCESS"/>
         <after process="registerFT1" status="SUCCESS"/>
         <after process="registerFT2" status="SUCCESS"/>
@@ -666,6 +737,7 @@
         <after process="registerMerit" status="SUCCESS"/>
         <after process="registerRecon" status="SUCCESS"/>
         <after process="registerReconEor" status="SUCCESS"/>
+        <after process="registerReconEorAlarm" status="SUCCESS"/>
         <after process="registerReconTrend" status="SUCCESS"/>
         <after process="registerSvacTuple" status="SUCCESS"/>
       </depends>
