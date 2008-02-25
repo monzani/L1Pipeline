@@ -23,6 +23,7 @@ fileTypes = {
     'digiEor': 'root',
     'digiEorAlarm': 'xml',
     'digiTrend': 'root',
+    'digiTrendAlarm': 'xml',
     'fastMonError': 'xml',
     'fastMonHist': 'root',
     'fastMonHistAlarm': 'xml',
@@ -39,6 +40,7 @@ fileTypes = {
     'reconEor': 'root',
     'reconEorAlarm': 'xml',
     'reconTrend': 'root',
+    'reconTrendAlarm': 'xml',
     'svac': 'root',
     'svacHist': 'root',
     }

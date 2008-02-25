@@ -102,7 +102,8 @@ if numInFiles == 1:
     # load on the file server in that case.
     print >> sys.stderr, 'Single input file, copying %s to %s' % \
           (inFiles[0], realOutFile)
-    shutil.copyfile(inFiles[0], realOutFile)
+    #shutil.copyfile(inFiles[0], realOutFile) # Dude, we've got an INTERFACE for that!
+    stageFiles.fileCopy(inFiles[0], realOutFile) # Much better.
     finalize(0)
     pass
 
@@ -151,7 +152,7 @@ elif fileType in ['calTrend', 'digiTrend', 'reconTrend']:
 elif fileType in ['digi', 'recon', 'gcr']:
     import rootFiles
     treeName = treeNames[fileType]
-    rootFiles.concatenate_prune(outFile, inFiles, treeName)
+    status |= rootFiles.concatenate_prune(outFile, inFiles, treeName)
 
 
 # elif fileType in ['cal'] and mergeLevel == 'chunk':

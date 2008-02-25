@@ -443,4 +443,18 @@ FastMon v2r9p0
 ft2Util v1r1p37
 
 Run alarms on digiEor, reconEor.
+-------------------------------------------
 
+1.36
+-----------------
+Common v2r12p2
+ft2Util v1r1p39
+EngineeringModelRoot v3r11
+
+Run alarms on digiTrend, reconTrend.
+Do run cleanup.  Hardwired since OpsSim2 gives complete runs.
+Crumb size tweakage.
+Move DOWNLINK_RAWDIR to long-term storage when dl is complete.
+Use fileNames.fileCopy for single-crumb merges, thus automatically creating
+output dir.
+Pay attention to return status on tree merges.

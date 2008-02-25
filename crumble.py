@@ -38,7 +38,7 @@ def crumble_exp_old(total, maxCrumb):
 
 
 def crumble_exp_new(total, ignored):
-    maxCrumb = 4e3 # largest average crumb size
+    maxCrumb = 5e3 # smallest average crumb size
     mmr = 2.0 # largestCrumb / smallestCrumb
     #
     total = int(total)

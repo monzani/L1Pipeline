@@ -5,7 +5,7 @@
 @author W. Focke <focke@slac.stanford.edu>
 """
 
-L1Version = "1.35"
+L1Version = "1.36"
 doCleanup = True
 
 import os
@@ -169,7 +169,7 @@ cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 packages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v2r11p0',
+        'version': 'v2r12p2',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
@@ -181,7 +181,7 @@ packages = {
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
-        'version': 'v3r10p1',
+        'version': 'v3r11',
         },
     'TestReport': {
         'repository': 'svac',
@@ -193,7 +193,7 @@ packages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r1p37',
+        'version': 'v1r1p39',
         },
     }
 
@@ -285,10 +285,14 @@ mergeConfigs = {
 alarmConfigs = {
     'digiEor': os.path.join(
         packages['Common']['root'], 'xml', 'digi_eor_alarms.xml'),
+    'digiTrend': os.path.join(
+        packages['Common']['root'], 'xml', 'digi_trend_alarms.xml'),
     'fastMonHist': os.path.join(
         packages['Common']['root'], 'xml', 'fastmon_eor_alarms.xml'),
     'reconEor': os.path.join(
         packages['Common']['root'], 'xml', 'recon_eor_alarms.xml'),
+    'reconTrend': os.path.join(
+        packages['Common']['root'], 'xml', 'recon_trend_alarms.xml'),
     }
 
 tdBin = {

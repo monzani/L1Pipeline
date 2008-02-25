@@ -181,7 +181,41 @@
         <after process="mergeDigiTrend" status="SUCCESS"/>
       </depends>
     </process>
- 
+
+    <process name="digiTrendAlarm">
+      <variables>
+        <var name="fileType">digiTrend</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="mergeDigiTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="digiTrendLogger">
+      <variables>
+        <var name="fileType">digiTrendAlarm</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="digiTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerDigiTrendAlarm">
+      <variables>
+        <var name="parentProcess">digiTrendAlarm</var>
+        <var name="dataType">digiTrendAlarm</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="digiTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="mergeCalEor">
       <variables>
         <var name="fileType">calEor</var>
@@ -598,6 +632,40 @@
       </depends>
     </process>
  
+    <process name="reconTrendAlarm">
+      <variables>
+        <var name="fileType">reconTrend</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="mergeReconTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="reconTrendLogger">
+      <variables>
+        <var name="fileType">reconTrendAlarm</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="reconTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerReconTrendAlarm">
+      <variables>
+        <var name="parentProcess">reconTrendAlarm</var>
+        <var name="dataType">reconTrendAlarm</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="reconTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
     <process name="mergeReconEor">
       <variables>
         <var name="fileType">reconEor</var>
@@ -709,6 +777,7 @@
       <depends>
         <after process="doChunk.checkChunk" status="SUCCESS"/>
         <after process="digiEorLogger" status="SUCCESS"/>
+        <after process="digiTrendLogger" status="SUCCESS"/>
         <after process="exportFT1" status="SUCCESS"/>
         <after process="exportFT2" status="SUCCESS"/>
         <after process="exportLS1" status="SUCCESS"/>
@@ -718,6 +787,7 @@
         <after process="ingestDigiTrend" status="SUCCESS"/>
         <after process="ingestReconTrend" status="SUCCESS"/>
         <after process="reconEorLogger" status="SUCCESS"/>
+        <after process="reconTrendLogger" status="SUCCESS"/>
         <after process="registerCal" status="SUCCESS"/>
         <after process="registerCalEor" status="SUCCESS"/>
         <after process="registerCalTrend" status="SUCCESS"/>
@@ -725,6 +795,7 @@
         <after process="registerDigiEor" status="SUCCESS"/>
         <after process="registerDigiEorAlarm" status="SUCCESS"/>
         <after process="registerDigiTrend" status="SUCCESS"/>
+        <after process="registerDigiTrendAlarm" status="SUCCESS"/>
         <after process="registerFT1" status="SUCCESS"/>
         <after process="registerFT2" status="SUCCESS"/>
         <after process="registerLS1" status="SUCCESS"/>
@@ -739,6 +810,7 @@
         <after process="registerReconEor" status="SUCCESS"/>
         <after process="registerReconEorAlarm" status="SUCCESS"/>
         <after process="registerReconTrend" status="SUCCESS"/>
+        <after process="registerReconTrendAlarm" status="SUCCESS"/>
         <after process="registerSvacTuple" status="SUCCESS"/>
       </depends>
       <createsSubtasks>

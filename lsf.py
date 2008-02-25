@@ -7,7 +7,7 @@ import sys
 
 goodStates = ['ok', 'closed_Full']
 #hostsToQuery = 'genfarm'
-hostsToQuery = 'glastcobs glastyilis'
+hostsToQuery = 'glastcobs glastyilis preemptfarm'
 
 
 def hostInfo(hostName):

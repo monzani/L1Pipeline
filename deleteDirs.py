@@ -13,7 +13,10 @@ import config
 import fileNames
 import runner
 
-head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+status = 0
+
+dlRawDir = os.environ['DOWNLINK_RAWDIR']
+head, dlId = os.path.split(dlRawDir)
 if not dlId: head, dlId = os.path.split(head)
 
 runId = os.environ.get('RUNID')
@@ -41,13 +44,22 @@ if level == 'run' and runStatus not in ['COMPLETE', 'INCOMPLETE']:
 
 goners = fileNames.findPieces(None, dlId, runId, chunkId)
 
-for goner in goners:
+totG = len(goners)
+for ig, goner in enumerate(goners):
     if config.doCleanup:
-        print >> sys.stderr, "Deleting %s." % goner
+        print >> sys.stderr, "Deleting %s. (%d/%d)" % (goner, ig+1, totG)
         cmd = 'rm -rf %(goner)s' % locals()
-        runner.run(cmd)
+        status |= runner.run(cmd)
         print >> sys.stderr, '%s has left the building.' % goner
     else:
         print >> sys.stderr, "NOT Deleting %s." % goner
         pass
     continue
+
+if level == 'downlink':
+    dlStorage = '/nfs/farm/g/glast/u52/L1/rootData/dl'
+    cmd = 'mv %(dlRawDir)s %(dlStorage)s' % locals()
+    status |= runner.run(cmd)
+    pass
+
+sys.exit(status)
