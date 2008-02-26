@@ -31,14 +31,12 @@ app = config.apps['digi']
 options =  config.digiOptions
 
 dataSource = os.environ['DATASOURCE']
-if dataSource == 'LCI':
-    trigEngine = ''
-    trigConfig = 'Default'
-else:
-    trigEngine = 'TrgConfigSvc'
-    trigConfig = 'Moot'
-    pass
-os.environ['trigEngine'] = trigEngine
+# if dataSource == 'LCI':
+#     trigConfig = 'Default'
+# else:
+#     trigConfig = 'Moot'
+#     pass
+trigConfig = 'Default'
 os.environ['trigConfig'] = trigConfig
 if dataSource == 'LPA':
     geometry = 'latAssembly/latAssemblySegVols.xml'

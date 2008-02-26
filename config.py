@@ -5,7 +5,7 @@
 @author W. Focke <focke@slac.stanford.edu>
 """
 
-L1Version = "1.36"
+L1Version = "1.37"
 doCleanup = True
 
 import os
@@ -62,7 +62,7 @@ L1Cmt = os.path.join(installRoot, 'builds')
 L1Disk = '/nfs/farm/g/glast/u52/L1'
 L1Dir = os.path.join(L1Disk, 'rootData')
 
-dataCatDir = '/Data/OpsSim2/Level1'
+dataCatDir = '/Data/IandT/Level1'
 
 xrootGlast = 'root://glast-rdr.slac.stanford.edu//glast'
 xrootSubDir = '%s/%s/%s' % (dataCatDir, mode, L1Version)
@@ -193,7 +193,7 @@ packages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r1p39',
+        'version': 'v1r1p44',
         },
     }
 

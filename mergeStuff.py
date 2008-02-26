@@ -28,7 +28,7 @@ def finalize(status):
     status |= inStage.finish(finishOption)
     # status |= outStage.finish()
     
-    registerPrep.prep(fileType, realOutFile)
+    if not status: registerPrep.prep(fileType, realOutFile)
     sys.exit(status)
 
 head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
@@ -103,7 +103,7 @@ if numInFiles == 1:
     print >> sys.stderr, 'Single input file, copying %s to %s' % \
           (inFiles[0], realOutFile)
     #shutil.copyfile(inFiles[0], realOutFile) # Dude, we've got an INTERFACE for that!
-    stageFiles.fileCopy(inFiles[0], realOutFile) # Much better.
+    stageFiles.copy(inFiles[0], realOutFile) # Much better.
     finalize(0)
     pass
 

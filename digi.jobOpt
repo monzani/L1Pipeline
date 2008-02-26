@@ -3,5 +3,4 @@ EventSelector.StorageType = "CCSDSFILE";
 EventSelector.FileName = "$EVTFILE";
 digiRootWriterAlg.digiRootFile = "$digiChunkFile";
 
-TriggerAlg.engine = "$trigEngine";
 TrgConfigSvc.configureFrom = "$trigConfig";
