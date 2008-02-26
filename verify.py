@@ -4,53 +4,45 @@ import os
 import sys
 
 import config
-
 import GPLinit
 
 import fileNames
 import runner
 import stageFiles
+import registerPrep
 
-dlId = os.environ['DOWNLINK_ID']
+
+head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
-chunkId = os.environ['CHUNK_ID']
-files = fileNames.setup(dlId, runId, chunkId)
 
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
-if staged.setupOK:
-    workDir = staged.stageDir
-else:
-    workDir = files['chunk']['digi']
-    pass
+realDigiFile = fileNames.fileName('digi', dlId, runId, next=False)
+stagedDigiFile = staged.stageIn(realDigiFile)
 
-os.environ['EVTFILE'] = staged.stageIn(os.environ['EVTFILE'])
-os.environ['digiChunkFile'] = staged.stageOut(files['chunk']['digi'])
+realVerifyLogFile = fileNames.fileName('verifyLog', dlId, runId, next=True)
+verifyLogFile = staged.stageOut(realVerifyLogFile)
+realVerifyHistoFile = fileNames.fileName('verifyHisto', dlId, runId, next=True)
+verifyHistoFile = staged.stageOut(realVerifyHistoFile)
 
-#setupScript = config.cmtScript
-app = config.apps['digi']
-options =  config.digiOptions
+workDir = os.path.dirname(verifyLogFile)
 
-dataSource = os.environ['DATASOURCE']
-if dataSource == 'LCI':
-    trigEngine = ''
-    trigConfig = 'Default'
-else:
-    trigEngine = 'TrgConfigSvc'
-    trigConfig = 'Moot'
-    pass
-os.environ['trigEngine'] = trigEngine
-os.environ['trigConfig'] = trigConfig
+setupScript = config.cmtScript
+app = config.apps['runVerify']
 
 cmd = '''
 cd %(workDir)s
-%(app)s %(options)s
+source %(setupScript)s
+%(app)s -d %(stagedDigiFile)s -x %(verifyLogFile)s -r %(verifyHistoFile)s
 ''' % locals()
 
 status = runner.run(cmd)
 if status: finishOption = 'wipe'
 
 status |= staged.finish(finishOption)
+
+registerPrep.prep('verifyHisto', realVerifyHistoFile)
 
 sys.exit(status)

@@ -28,7 +28,25 @@
   </prerequisites>
 
   <process name="verify">
-    <job executable="${L1ProcROOT}/verify.py" batchOptions=" -q long "/>
+    <job executable="${L1ProcROOT}/verify.py" batchOptions=" -q medium "/>
+  </process>
+
+  <process name="registerVerifyHisto">
+    <variables>
+      <var name="tStart">257826120</var>
+      <var name="tStop">257831880</var>
+      <var name="DATASOURCE">LPA</var>
+      <var name="parentProcess">verify</var>
+      <var name="dataType">VERIFYHISTO</var>
+      <var name="RUNSTATUS">WAITING</var> 
+    </variables>
+    <script><![CDATA[
+%(registerBody)s
+]]>
+    </script>
+    <depends>
+      <after process="verify" status="SUCCESS"/>
+    </depends>
   </process>
 
 

@@ -43,6 +43,8 @@ fileTypes = {
     'reconTrendAlarm': 'xml',
     'svac': 'root',
     'svacHist': 'root',
+    'verifyLog': 'xml',
+    'verifyHisto': 'root',
     }
 
 exportTags = {

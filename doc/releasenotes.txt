@@ -423,7 +423,7 @@ Use xroot for run-level products.
 Use new netlogging features.
 Munge data catalog names.
 
-Added initial version of run Verification. Not actually running it yet.
+Added some variables for run Verification. Not actually running it yet.
 
 -------------------------------------------
 
@@ -458,3 +458,5 @@ Move DOWNLINK_RAWDIR to long-term storage when dl is complete.
 Use fileNames.fileCopy for single-crumb merges, thus automatically creating
 output dir.
 Pay attention to return status on tree merges.
+
+Initial version of run Verification (including output files). Not actually running it yet.

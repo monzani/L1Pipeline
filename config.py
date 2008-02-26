@@ -185,7 +185,7 @@ packages = {
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'v5r0',
+        'version': 'v5r3',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
