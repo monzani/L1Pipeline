@@ -31,7 +31,7 @@ lockFile.unlockDir(rootDir, runId, dlId)
 # catalog.
 #
 # but for now we punt
-readyToRetire = False
+readyToRetire = True
 
 subTask = config.cleanupSubTask[os.environ['DATASOURCE']]
 

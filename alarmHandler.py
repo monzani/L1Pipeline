@@ -46,6 +46,6 @@ if status: finishOption = 'wipe'
 
 status |= staged.finish(finishOption)
 
-registerPrep.prep(alarmFileType, realAlarmFile)
+if not status: registerPrep.prep(alarmFileType, realAlarmFile)
 
 sys.exit(status)

@@ -903,31 +903,11 @@
         </createsSubtasks>
       </process>
 
-      <process name="mergeGcrCrumbs">
-        <variables>
-          <var name="fileType">gcr</var>
-        </variables>
-        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
-        <depends>
-          <after process="doCrumb.recon" status="DONE"/>
-        </depends>
-      </process>
-
       <process name="mergeMeritCrumbs">
         <variables>
           <var name="fileType">merit</var>
         </variables>
         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
-        <depends>
-          <after process="doCrumb.recon" status="DONE"/>
-        </depends>
-      </process>
-
-      <process name="mergeCalCrumbs">
-        <variables>
-          <var name="fileType">cal</var>
-        </variables>
-        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
         </depends>
@@ -940,6 +920,29 @@
         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
+          <after process="mergeMeritCrumbs" status="DONE"/>
+        </depends>
+      </process>
+
+      <process name="mergeCalCrumbs">
+        <variables>
+          <var name="fileType">cal</var>
+        </variables>
+        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="doCrumb.recon" status="DONE"/>
+          <after process="mergeReconCrumbs" status="DONE"/>
+        </depends>
+      </process>
+
+      <process name="mergeGcrCrumbs">
+        <variables>
+          <var name="fileType">gcr</var>
+        </variables>
+        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="doCrumb.recon" status="DONE"/>
+          <after process="mergeCalCrumbs" status="DONE"/>
         </depends>
       </process>
 

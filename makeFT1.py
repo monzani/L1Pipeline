@@ -52,6 +52,6 @@ if status: finishOption = 'wipe'
 
 status |= staged.finish(finishOption)
 
-registerPrep.prep(fileType, realFt1File)
+if not status: registerPrep.prep(fileType, realFt1File)
 
 sys.exit(status)

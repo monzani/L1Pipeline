@@ -4,7 +4,6 @@ EventSelector.FileName = "$EVTFILE";
 digiRootWriterAlg.digiRootFile = "$digiChunkFile";
 GlastDetSvc.xmlfile = "$(XMLGEODBSROOT)/xml/$(gleamGeometry)";
 
-TriggerAlg.engine = "$trigEngine";
 TrgConfigSvc.configureFrom = "$trigConfig";
 
 OnboardFilter.FilterList = {0,1,2,3};

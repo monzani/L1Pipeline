@@ -37,7 +37,7 @@ stagedCrumbList = staged.stageOut(realCrumbList)
 chunkEvents = rootFiles.getFileEvents(stagedDigiFile)
 print >> sys.stderr, "Chunk has %d events." % chunkEvents
 
-crumbSizes = crumble.crumble(chunkEvents, config.maxCrumbSize)
+crumbSizes = crumble.crumble(chunkEvents)
 nCrumbs = len(crumbSizes)
 crumbStarts = [0] * nCrumbs
 for iCrumb in range(nCrumbs-1):

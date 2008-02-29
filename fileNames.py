@@ -57,6 +57,12 @@ exportTags = {
 xrootFileTypes = ['fit', 'root']
 
 
+stageDirs = [os.path.join(disk, config.stageBase)
+             for disk, weight in config.stageDisks
+             for ii in range(weight)]
+uniqueStageDirs = set(stageDirs)
+
+
 def dataCatName(fileType, fileName):
     dsType = fileType.upper()
     junk, baseName = os.path.split(fileName)
@@ -161,8 +167,9 @@ def fileName(dsType, dlId, runId=None, chunkId=None, crumbId=None, next=False):
 
     if level != 'run':
         # temporary staging; load balance
-        index = myHash(relativePath) % len(config.stageDirs)
-        baseDir = config.stageDirs[index]
+        #index = myHash(relativePath) % len(config.stageDirs)
+        #baseDir = config.stageDirs[index]
+        baseDir = stageBalance(relativePath)
         pass
 
     fullName = os.path.join(baseDir, relativePath)
@@ -172,6 +179,11 @@ def fileName(dsType, dlId, runId=None, chunkId=None, crumbId=None, next=False):
 
 def myHash(str):
     return int(hashlib.md5(str).hexdigest(), 16)
+
+def stageBalance(str):
+    index = myHash(str) % len(stageDirs)
+    baseDir = stageDirs[index]
+    return baseDir
 
 
 def findPieces(fileType, dlId, runId=None, chunkId=None):
@@ -231,7 +243,7 @@ def findPieces(fileType, dlId, runId=None, chunkId=None):
     if fileType is None:
         pieces = [os.path.join(baseDir, piece)
                   for piece in pieces
-                  for baseDir in config.stageDirs]
+                  for baseDir in uniqueStageDirs]
         pass
 
     return pieces

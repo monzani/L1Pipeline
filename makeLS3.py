@@ -31,9 +31,11 @@ stagedLs3File = staged.stageOut(realLs3File)
 
 workDir = os.path.dirname(stagedLs3File)
 
+version = fileNames.version(realLs3File)
+
 cmd = '''
 cd %(workDir)s
-%(app)s evfile=%(stagedFt1File)s scfile=%(stagedFt2File)s outfile=%(stagedLs3File)s dcostheta=0.025 binsize=1
+%(app)s evfile=%(stagedFt1File)s scfile=%(stagedFt2File)s outfile=%(stagedLs3File)s dcostheta=0.025 binsize=1 file_version=%(version)s
 ''' % locals()
 
 status = runner.run(cmd)
@@ -42,6 +44,6 @@ if status: finishOption = 'wipe'
 status |= staged.finish(finishOption)
 
 fileType = 'LS3'
-registerPrep.prep(fileType, realLs3File)
+if not status: registerPrep.prep(fileType, realLs3File)
 
 sys.exit(status)

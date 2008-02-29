@@ -7,9 +7,13 @@ Function arguments and constants need revision.
 
 
 import math
+import sys
+
+import config
 
 
-def crumble_equal(total, maxCrumb):
+def crumble_equal(total):
+    maxCrumb = config.crumbSize
     total = int(total)
     nCrumbs = int(math.ceil(float(total) / maxCrumb))
     crumbSize = total / nCrumbs
@@ -18,9 +22,9 @@ def crumble_equal(total, maxCrumb):
     return crumbs
 
 
-def crumble_exp_old(total, maxCrumb):
-    minCrumbSize = 2500
-    maxCrumbs = 7
+def crumble_exp_old(total):
+    minCrumbSize = config.crumbSize
+    maxCrumbs = config.maxCrumbs
     minCrumbs = max(1, int(math.floor(float(total) / minCrumbSize)))
     nCrumbs = min(maxCrumbs, minCrumbs)
     factor = 0.95
@@ -37,13 +41,15 @@ def crumble_exp_old(total, maxCrumb):
     return crumbSizes
 
 
-def crumble_exp_new(total, ignored):
-    maxCrumb = 25e3 # largest average crumb size
-    mmr = 2.0 # largestCrumb / smallestCrumb
+def crumble_exp_new(total):
+    maxCrumb = config.crumbSize # largest average crumb size
+    mmr = config.crumbMmr # largestCrumb / smallestCrumb
     #
     total = int(total)
     nCrumbs = int(math.ceil(float(total) / maxCrumb))
+    print >> sys.stderr, 'nCrumbs = %d' % nCrumbs
     factor = math.exp(-math.log(mmr) / nCrumbs)
+    print >> sys.stderr, 'Crumb growth factor = %g' % factor
     scales = []
     totScale = 0
     for iCrumb in range(nCrumbs):
@@ -61,7 +67,11 @@ crumble = crumble_exp_new
 
 if __name__ == "__main__":
     import operator, sys
-    total, maxCrumb = [int(x) for x in sys.argv[1:]]
-    crumbs = crumble(total, maxCrumb)
+    total = int(sys.argv[1])
+    if len(sys.argv) > 2:
+        maxCrumb = int(sys.argv[2])
+        config.crumbSize = maxCrumb # dirty
+        pass
+    crumbs = crumble(total)
     print crumbs, reduce(operator.add, crumbs)
     

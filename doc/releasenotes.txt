@@ -462,7 +462,7 @@ Crumb size tweakage.
 Move DOWNLINK_RAWDIR to long-term storage when dl is complete.
 -------------------------------------------
 
-1.37 ETE4
+1.37 ETE4, OrbSim3
 -----------------
 ft2Util v1r1p44
 
@@ -474,3 +474,22 @@ Use bigger crumbs (25e3 max avg).
 Put data in IandT instead of OpsSim2 in datacat&xroot.
 Export to GSSC on prod.
 Don't do run cleanup.
+-------------------------------------------
+
+1.38
+-----------------
+ScienceTools v9r4p2
+Common v2r13p0
+FastMon v2r10p0
+Monitor mk20080227
+
+Move option files to $L1ProcRoot/data.
+Allow (integer) weights on staging dirs, add 2 nfs volumes at half weight.
+Don't save SVAC histogram files.
+Serialize crumb merges: merit, recon, cal, gcr.
+Don't run registerPrep on failed anything.
+Move crumble params to config.
+
+Do run cleanup.
+Put data in OpsSim2 in datacat&xroot.
+Back to 5k max avg crumb.

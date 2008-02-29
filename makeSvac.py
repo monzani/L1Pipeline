@@ -33,10 +33,12 @@ stagedReconFile = staged.stageIn(realReconFile)
 
 realSvacFile = fileNames.fileName('svac', dlId, runId, chunkId, crumbId)
 stagedSvacFile = staged.stageOut(realSvacFile)
-realHistFile = fileNames.fileName('svacHist', dlId, runId, chunkId, crumbId)
-stagedHistFile = staged.stageOut(realHistFile)
 
 workDir = os.path.dirname(stagedSvacFile)
+
+realHistFile = fileNames.fileName('svacHist', dlId, runId, chunkId, crumbId)
+#stagedHistFile = staged.stageOut(realHistFile) # don't want to keep this
+stagedHistFile = os.path.join(workDir, os.path.basename(realHistFile))
 
 # make an empty file to use as dummy MC
 mcFile = os.path.join(workDir, 'emptyFile')

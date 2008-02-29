@@ -5,7 +5,7 @@
 @author W. Focke <focke@slac.stanford.edu>
 """
 
-L1Version = "1.37"
+L1Version = "1.38"
 doCleanup = True
 
 import os
@@ -41,6 +41,7 @@ print >> sys.stderr, "Test mode: %s" % testMode
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
+L1Data = os.path.join(L1ProcROOT, 'data')
 
 LATCalibRoot = '/afs/slac/g/glast/ground/releases/calibrations/'
 
@@ -62,7 +63,7 @@ L1Cmt = os.path.join(installRoot, 'builds')
 L1Disk = '/nfs/farm/g/glast/u52/L1'
 L1Dir = os.path.join(L1Disk, 'rootData')
 
-dataCatDir = '/Data/IandT/Level1'
+dataCatDir = '/Data/OpsSim2/Level1'
 
 xrootGlast = 'root://glast-rdr.slac.stanford.edu//glast'
 xrootSubDir = '%s/%s/%s' % (dataCatDir, mode, L1Version)
@@ -70,16 +71,23 @@ xrootBase = xrootGlast + xrootSubDir
 
 if testMode: L1Dir = os.path.join(L1Dir, 'test')
 
-stageDisks = ["/afs/slac/g/glast/ground/PipelineStaging",
-              "/afs/slac/g/glast/ground/PipelineStaging2"]
+stageDisks = [ # staging buffers with integer weights
+    ("/afs/slac/g/glast/ground/PipelineStaging", 2),
+    ("/afs/slac/g/glast/ground/PipelineStaging2", 2),
+    (L1Dir, 1),
+    ('/nfs/farm/g/glast/u29', 1),
+    ]
 stageBase = 'l1Stage'
-stageDirs = [os.path.join(disk, stageBase) for disk in stageDisks]
+#stageDirs = [os.path.join(disk, stageBase) for disk in stageDisks]
 
 #maxCrumbSize = 48000 # SVAC pipeline uses this
 #maxCrumbSize = 250   # tiny
 #maxCrumbSize = 6353   # ~.5Hr on tori (muons).  Also about half of (old) medium q limit
-maxCrumbSize = 17000   # ~.5Hr on cob (skymodel).
+#maxCrumbSize = 17000   # ~.5Hr on cob (skymodel).
 minCrumbCpuf = 7
+maxCrumbs = 7 # Maximum number of crumbs/chunk. Not used by current algorithm.
+crumbSize = 5000 # typical crumb size
+crumbMmr = 2.0 # largestCrumb / smallestCrumb
 
 defaultRunStatus = 'WAITING'
 defaultDataSource = 'LPA'
@@ -128,12 +136,12 @@ cmtScript = os.path.join(
     ) # do we need this?
 #
 digiOptions = {
-    'LPA': os.path.join(L1ProcROOT, 'digi.jobOpt'),
-    'MC': os.path.join(L1ProcROOT, 'digi.jobOpt.mc'),
+    'LPA': os.path.join(L1Data, 'digi.jobOpt'),
+    'MC': os.path.join(L1Data, 'digi.jobOpt.mc'),
     }
 reconOptions = {
-    'LPA': os.path.join(L1ProcROOT, 'recon.jobOpt'),
-    'MC': os.path.join(L1ProcROOT, 'recon.jobOpt.mc'),
+    'LPA': os.path.join(L1Data, 'recon.jobOpt'),
+    'MC': os.path.join(L1Data, 'recon.jobOpt.mc'),
 }
 
 rootSys = os.path.join(glastExt, 'ROOT/v5.16.00-gl1/root')
@@ -158,7 +166,7 @@ else:
     pass
 netloggerLevel = 'info'
 
-stVersion = 'v9r4p1'
+stVersion = 'v9r4p2'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
 PFILES = ".;"
@@ -169,15 +177,15 @@ cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 packages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v2r12p2',
+        'version': 'v2r13p0',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v2r9p0',
+        'version': 'v2r10p0',
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'dp20080207_v2',
+        'version': 'mk20080227',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -228,7 +236,7 @@ packages['FastMon']['extraSetup'] = 'eval `/afs/slac/g/glast/isoc/flightOps/rhel
 packages['Monitor']['app'] = os.path.join(
     packages['Monitor']['bin'], 'runStrip_t.exe')
 packages['Monitor']['configDir'] = os.path.join(
-    packages['Monitor']['root'], 'src')
+    packages['Monitor']['root'], 'config')
 packages['Monitor']['trendMerge'] = os.path.join(
     packages['Monitor']['bin'], 'treemerge.exe')
 packages['Monitor']['mergeApp'] = os.path.join(
@@ -258,28 +266,28 @@ apps = {
 
 monitorOptions = {
     'calEor': os.path.join(
-        packages['Monitor']['configDir'], 'monconfig_digi_CalLongTime_v2_histos.xml'),
+        packages['Monitor']['configDir'], 'monconfig_digi_CalLongTime_histos.xml'),
     'calTrend': os.path.join(
-        packages['Monitor']['configDir'], 'monconfig_digi_CalLongTime_v2_Trending.xml'),
+        packages['Monitor']['configDir'], 'monconfig_digi_CalLongTime_Trending.xml'),
     'digiEor': os.path.join(
-        packages['Monitor']['configDir'], 'monconfig_digi_v27_histos.xml'),
+        packages['Monitor']['configDir'], 'monconfig_digi_histos.xml'),
     'digiTrend': os.path.join(
-        packages['Monitor']['configDir'], 'monconfig_digi_v27_trending.xml'),
+        packages['Monitor']['configDir'], 'monconfig_digi_trending.xml'),
     'reconEor': os.path.join(
-        packages['Monitor']['configDir'], 'monconfig_recon_v5_histos.xml'),
+        packages['Monitor']['configDir'], 'monconfig_recon_histos.xml'),
     'reconTrend': os.path.join(
-        packages['Monitor']['configDir'], 'monconfig_recon_v5_trending.xml'),
+        packages['Monitor']['configDir'], 'monconfig_recon_trending.xml'),
     }
 
 mergeConfigs = {
     'calEor': os.path.join(
-        packages['Monitor']['configDir'], 'MergeHistos_digi_CalLongTime_v2.txt'),
+        packages['Monitor']['configDir'], 'MergeHistos_digi_CalLongTime.txt'),
     'digiEor': os.path.join(
-        packages['Monitor']['configDir'], 'MergeHistos_digi_v27.txt'),
+        packages['Monitor']['configDir'], 'MergeHistos_digi.txt'),
     'fastMonHist': os.path.join(
-        L1ProcROOT, 'MergeHistos_FastMon.txt'),
+        L1Data, 'MergeHistos_FastMon.txt'),
     'reconEor': os.path.join(
-        packages['Monitor']['configDir'], 'MergeHistos_recon_v5.txt'),
+        packages['Monitor']['configDir'], 'MergeHistos_recon.txt'),
     }
 
 alarmConfigs = {

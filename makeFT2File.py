@@ -47,6 +47,6 @@ if status: finishOption = 'wipe'
 status |= staged.finish(finishOption)
 
 fileType = 'FT2'
-registerPrep.prep(fileType, fitsFt2File)
+if not status: registerPrep.prep(fileType, fitsFt2File)
 
 sys.exit(status)
