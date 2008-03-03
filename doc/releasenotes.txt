@@ -493,3 +493,15 @@ Move crumble params to config.
 Do run cleanup.
 Put data in OpsSim2 in datacat&xroot.
 Back to 5k max avg crumb.
+-------------------------------------------
+
+1.39 OpsSim2, take 2
+-----------------
+Monitor dp20080229_v4
+
+FastMon reads magic7 file and does IGRF monitoring.  But I think the results
+don't get merged.
+Implemented FastMon trending, but it's all commented out.
+Stage input digi even if it's on afs to avoid reading it multiple times.
+
+Delete DOWNLINK_RAWDIR in cleanupDl.

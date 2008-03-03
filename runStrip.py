@@ -34,26 +34,31 @@ reportType = os.environ['reportType']
 
 options = config.monitorOptions[reportType]
 
-realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId)
-realOutFile = fileNames.fileName(reportType, dlId, runId, chunkId)
-
 package = config.packages['Monitor']
 setup = package['setup']
 app = package['app']
 
-digiFile = staged.stageIn(realDigiFile)
+realOutFile = fileNames.fileName(reportType, dlId, runId, chunkId)
 outFile = staged.stageOut(realOutFile)
 
 workDir = os.path.dirname(outFile)
 
-if 'recon' in reportType:
-    realReconFile = fileNames.fileName('recon', dlId, runId, chunkId)
-    stagedReconFile = staged.stageIn(realReconFile)
-    realCalFile = fileNames.fileName('cal', dlId, runId, chunkId)
-    stagedCalFile = staged.stageIn(realCalFile)
-    recon = '-r %s -a %s' % (stagedReconFile, stagedCalFile)
+if 'fastMon' not in reportType:
+    realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId)
+    stagedDigiFile = staged.stageIn(realDigiFile)
+    inFileOpts = '-d %s' % stagedDigiFile
+    if 'recon' in reportType:
+        realReconFile = fileNames.fileName('recon', dlId, runId, chunkId)
+        stagedReconFile = staged.stageIn(realReconFile)
+        realCalFile = fileNames.fileName('cal', dlId, runId, chunkId)
+        stagedCalFile = staged.stageIn(realCalFile)
+        inFileOpts += ' -r %s -a %s' % (stagedReconFile, stagedCalFile)
+        pass
+    pass
 else:
-    recon = ''
+    realFmt = fileNames.fileName('fastMonTuple', dlId, runId, chunkId)
+    stagedFmt = staged.stageIn(realFmt)
+    inFileOpts = '-f %s' % stagedFmt
     pass
 
 tdBin = config.tdBin[reportType]
@@ -81,7 +86,7 @@ htmlHead = 'html'
 
 cmd = """cd %(workDir)s
 source %(setup)s
-%(app)s %(zOpt)s -b %(tdBin)s -c %(options)s -d %(digiFile)s %(recon)s -o %(tmpHead)s -g %(htmlHead)s -w %(codeDir)s -p %(mcOpt)s || exit 1
+%(app)s %(zOpt)s -b %(tdBin)s -c %(options)s %(inFileOpts)s -o %(tmpHead)s -g %(htmlHead)s -w %(codeDir)s -p %(mcOpt)s || exit 1
 mv %(tmpOut)s %(outFile)s
 """ % locals()
 

@@ -379,7 +379,75 @@
         <after process="mergeFastMonError" status="SUCCESS"/>
       </depends>
     </process>
+<!--
+    <process name="mergeFastMonTrend">
+      <variables>
+        <var name="fileType">fastMonTrend</var>
+      </variables>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="doChunk.fastMonTrend" status="DONE"/>
+      </depends>
+    </process>
  
+    <process name="registerFastMonTrend">
+      <variables>
+        <var name="parentProcess">mergeFastMonTrend</var>
+        <var name="dataType">FASTMONTREND</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestFastMonTrend">
+      <variables>
+        <var name="reportType">fastMonTrend</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="mergeFastMonTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="fastMonTrendAlarm">
+      <variables>
+        <var name="fileType">fastMonTrend</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="mergeFastMonTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="fastMonTrendLogger">
+      <variables>
+        <var name="fileType">fastMonTrendAlarm</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="fastMonTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonTrendAlarm">
+      <variables>
+        <var name="parentProcess">fastMonTrendAlarm</var>
+        <var name="dataType">fastMonTrendAlarm</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="fastMonTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+ -->
     <process name="mergeGcrChunks">
       <variables>
         <var name="fileType">gcr</var>
@@ -852,7 +920,17 @@
         </variables>
         <job executable="${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
       </process>
- 
+ <!--
+      <process name="fastMonTrend">
+        <variables>
+          <var name="reportType">fastMonTrend</var>
+        </variables>
+        <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="fastMon" status="SUCCESS"/>
+        </depends>
+      </process>
+ -->
       <process name="digiEor">
         <variables>
           <var name="reportType">digiEor</var>

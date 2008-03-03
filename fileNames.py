@@ -27,6 +27,8 @@ fileTypes = {
     'fastMonError': 'xml',
     'fastMonHist': 'root',
     'fastMonHistAlarm': 'xml',
+    'fastMonTrend': 'root',
+    'fastMonTrendAlarm': 'xml',
     'fastMonTuple': 'root',
     'ft1': 'fit',
     'ft2': 'fit',

@@ -18,6 +18,7 @@ runId = os.environ['RUNID']
 chunkId = os.environ['CHUNK_ID']
 
 realInFile = os.environ['EVTFILE']
+realM7File = os.path.join(os.environ['DOWNLINK_RAWDIR'], 'magic7_%s.txt' % dlId)
 realErrorFile = fileNames.fileName('fastMonError', dlId, runId, chunkId)
 realHistFile = fileNames.fileName('fastMonHist', dlId, runId, chunkId)
 realTupleFile = fileNames.fileName('fastMonTuple', dlId, runId, chunkId)
@@ -26,6 +27,7 @@ staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
 inFile = staged.stageIn(realInFile)
+m7File = staged.stageIn(realM7File)
 errorFile = staged.stageOut(realErrorFile)
 histFile = staged.stageOut(realHistFile)
 tupleFile = staged.stageOut(realTupleFile)
@@ -50,7 +52,7 @@ export FAST_MON_DIR=%(workDir)s
 %(extra)s
 source %(setup)s
 export PYTHONPATH=${PYTHONPATH}:%(workDir)s
-%(python)s %(app)s -o %(tupleFile)s -p %(histFile)s -e %(errorFile)s %(inFile)s
+%(python)s %(app)s -o %(tupleFile)s -p %(histFile)s -e %(errorFile)s -m %(m7File)s %(inFile)s
 ''' % locals()
 
 status = runner.run(cmd)

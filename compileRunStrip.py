@@ -22,9 +22,11 @@ codeDir = config.packages['Monitor']['bin']
 digiFile = '/no/such/directory/no_such_file.root'
 reconFile = digiFile
 calFile = digiFile
+fastMonFile = digiFile
 
 reportTypes = [
     'digiEor', 'digiTrend',
+    #'fastMonTrend',
     'reconEor', 'reconTrend',
     'calEor', 'calTrend',
     ]
@@ -37,10 +39,14 @@ for reportType in reportTypes:
     app = package['app']
 
 
-    if 'recon' in reportType:
-        recon = '-r %s -a %s' % (reconFile, calFile)
+    if 'fastMon' not in reportType:
+        inFileOpts = '-d %s' % digiFile
+        if 'recon' in reportType:
+            inFileOpts += ' -r %s -a %s' % (reconFile, calFile)
+            pass
+        pass
     else:
-        recon = ''
+        inFileOpts = '-f %s' % fastMonFile
         pass
 
     tdBin = config.tdBin[reportType]
@@ -52,7 +58,7 @@ for reportType in reportTypes:
 
     cmd = """cd %(workDir)s
 source %(setup)s
-%(app)s -b %(tdBin)s -c %(options)s -d %(digiFile)s %(recon)s -o %(tmpHead)s -g %(htmlHead)s -w %(codeDir)s -q || exit 1
+%(app)s -b %(tdBin)s -c %(options)s %(inFileOpts)s -o %(tmpHead)s -g %(htmlHead)s -w %(codeDir)s -q || exit 1
 """ % locals()
 
     status = runner.run(cmd)

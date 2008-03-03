@@ -26,7 +26,8 @@ if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 chunkId = os.environ['CHUNK_ID']
 
-staged = stageFiles.StageSet()
+# Stage input digi even if it's on afs to avoid reading it multiple times.
+staged = stageFiles.StageSet(excludeIn=None)
 finishOption = config.finishOption
 
 realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId)

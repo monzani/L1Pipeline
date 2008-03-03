@@ -5,7 +5,7 @@
 @author W. Focke <focke@slac.stanford.edu>
 """
 
-L1Version = "1.38"
+L1Version = "1.39"
 doCleanup = True
 
 import os
@@ -185,7 +185,7 @@ packages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'mk20080227',
+        'version': 'dp20080229_v4',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -242,6 +242,11 @@ packages['Monitor']['trendMerge'] = os.path.join(
 packages['Monitor']['mergeApp'] = os.path.join(
     packages['Monitor']['bin'], 'MergeHistFiles.exe')
 
+igrfRoot = os.path.join(L1Cmt, 'IGRF')
+packages['IGRF'] = {
+    'root': igrfRoot,
+    'python': os.path.join(igrfRoot, 'python'),
+    }
 
 
 apps = {
@@ -273,6 +278,8 @@ monitorOptions = {
         packages['Monitor']['configDir'], 'monconfig_digi_histos.xml'),
     'digiTrend': os.path.join(
         packages['Monitor']['configDir'], 'monconfig_digi_trending.xml'),
+    'fastMonTrend': os.path.join(
+        packages['Monitor']['configDir'], 'monconfig_fastmon_trending.xml'),
     'reconEor': os.path.join(
         packages['Monitor']['configDir'], 'monconfig_recon_histos.xml'),
     'reconTrend': os.path.join(
@@ -297,6 +304,8 @@ alarmConfigs = {
         packages['Common']['root'], 'xml', 'digi_trend_alarms.xml'),
     'fastMonHist': os.path.join(
         packages['Common']['root'], 'xml', 'fastmon_eor_alarms.xml'),
+    'fastMonTrend': os.path.join(
+        packages['Common']['root'], 'xml', 'fastmon_trend_alarms.xml'),
     'reconEor': os.path.join(
         packages['Common']['root'], 'xml', 'recon_eor_alarms.xml'),
     'reconTrend': os.path.join(
@@ -308,6 +317,7 @@ tdBin = {
     'calTrend': 300,
     'digiEor': 15,
     'digiTrend': 15,
+    'fastMonTrend': 15,
     'reconEor': 15,
     'reconTrend': 15,
     }
@@ -337,7 +347,13 @@ else:
 GPL2 = os.path.join(gplBase, gplType)
 gplPath = os.path.join(GPL2, 'python')
 
-ppComponents = [L1ProcROOT, rootPath, gplPath, packages['Common']['python']]
+ppComponents = [
+    L1ProcROOT,
+    rootPath,
+    gplPath,
+    packages['Common']['python'],
+    packages['IGRF']['python']
+    ]
 pythonPath = ':'.join(ppComponents)
 sys.path.extend(ppComponents)
 
