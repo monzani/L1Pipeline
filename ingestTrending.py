@@ -33,15 +33,19 @@ else:
     db = 'prod'
     pass
 
-if 'cal' in reportType:
-    process = 'CalPed'
-elif 'digi' in reportType:
-    process = 'Digi'
-elif 'recon' in reportType:
-    process = 'Recon'
-    pass
+processes = {
+    'calTrend': 'CalPed',
+    'digiTrend': 'Digi',
+    'fastMonTrend': 'FastMon',
+    'reconTrend': 'Recon',
+    }
+process = processes.get(reportType, 'UnknownProcess')
 
-tdBin = {15: "15secs", 300: "5mins"}[config.tdBin[reportType]]
+timeBins = {
+    15: "15secs",
+    300: "5mins",
+    }
+tdBin = timeBins.get(config.tdBin[reportType], 'UnknownTimeBin')
 
 cmd = '%(app)s %(stagedInFile)s %(version)s %(db)s %(process)s %(tdBin)s' % locals()
 

@@ -5,7 +5,7 @@
 @author W. Focke <focke@slac.stanford.edu>
 """
 
-L1Version = "1.39"
+L1Version = "1.40"
 doCleanup = True
 
 import os
@@ -171,21 +171,22 @@ ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % st
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
 PFILES = ".;"
 stBinDir = os.path.join(ST, 'bin')
+aspLauncher = '/nfs/farm/g/glast/u33/ASP/ASP/AspLauncher/v1/rh9_gcc32/aspLauncher.sh'
 
 cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 
 packages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v2r13p0',
+        'version': 'v2r13p3',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v2r10p0',
+        'version': 'v2r11p0',
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'dp20080229_v4',
+        'version': 'dp20080304',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -250,6 +251,8 @@ packages['IGRF'] = {
 
 
 apps = {
+    'acdPlot': os.path.join(
+        packages['Monitor']['bin'], 'MakeACDNicePlots.exe'),
     'alarmHandler': os.path.join(
         packages['Common']['python'], 'pAlarmHandler.py'),
     'digi': gleam,
@@ -292,7 +295,7 @@ mergeConfigs = {
     'digiEor': os.path.join(
         packages['Monitor']['configDir'], 'MergeHistos_digi.txt'),
     'fastMonHist': os.path.join(
-        L1Data, 'MergeHistos_FastMon.txt'),
+        packages['FastMon']['root'], 'xml', 'MergeHistos_FastMon.txt'),
     'reconEor': os.path.join(
         packages['Monitor']['configDir'], 'MergeHistos_recon.txt'),
     }

@@ -505,3 +505,15 @@ Implemented FastMon trending, but it's all commented out.
 Stage input digi even if it's on afs to avoid reading it multiple times.
 
 Delete DOWNLINK_RAWDIR in cleanupDl.
+-------------------------------------------
+
+1.40 OpsSim2, live portion
+-----------------
+Common v2r13p3
+FastMon v2r11p0
+Monitor dp20080304
+
+FastMon trending.
+Launch ASP.
+
+Use goofy threshholds in digi & recon (MC only).

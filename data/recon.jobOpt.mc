@@ -9,7 +9,6 @@ gcrSelectRootWriterAlg.gcrSelectRootFile = "$gcrCrumbFile";
 PtValsAlg.PointingHistory = {"$fakeFT2File","", ""};
 GlastDetSvc.xmlfile = "$(XMLGEODBSROOT)/xml/$(gleamGeometry)";
 
-CalibDataSvc.CalibFlavorList = {"vanilla","ideal","MC_OktoberFest07"};
 AcdCalibSvc.DefaultFlavor = "MC_OktoberFest07";
 
 CalibMySQLCnvSvc.DbName           = "calib";
@@ -26,3 +25,7 @@ OnboardFilter.FileNameGains       = "cal_db_gains_flight";
 OnboardFilter.DgnConfig           = "DGN_gem";
 
 GcrReconAlg.HFC_Or_TriggerEng4 = "TriggerEng4";
+
+CalibDataSvc.CalibFlavorList = {"vanilla","ideal","MC_OktoberFest07", "MC_OktoberFest07-rnd"};
+AcdCalibSvc.FlavorGain            = "MC_OktoberFest07-rnd";
+CalCalibSvc.FlavorTholdCI         = "MC_OktoberFest07-rnd";

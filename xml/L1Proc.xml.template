@@ -44,6 +44,7 @@
   <process name="cleanupDl">
     <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(expressQ)s " />
     <depends>
+<!--      <after process="doLci.checkRunLci" status="SUCCESS"/>  -->
       <after process="doRun.checkRun" status="SUCCESS"/>
       <after process="kludgeAsp" status="SUCCESS"/>
     </depends>
@@ -379,7 +380,7 @@
         <after process="mergeFastMonError" status="SUCCESS"/>
       </depends>
     </process>
-<!--
+
     <process name="mergeFastMonTrend">
       <variables>
         <var name="fileType">fastMonTrend</var>
@@ -447,7 +448,7 @@
         <after process="fastMonTrendAlarm" status="SUCCESS"/>
       </depends>
     </process>
- -->
+
     <process name="mergeGcrChunks">
       <variables>
         <var name="fileType">gcr</var>
@@ -672,6 +673,8 @@
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
+        <after process="doChunk.mergeCalCrumbs" status="DONE"/>
+        <after process="doChunk.mergeReconCrumbs" status="DONE"/>
         <after process="doChunk.reconTrend" status="DONE"/>
       </depends>
     </process>
@@ -740,6 +743,8 @@
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
+        <after process="doChunk.mergeCalCrumbs" status="DONE"/>
+        <after process="doChunk.mergeReconCrumbs" status="DONE"/>
         <after process="doChunk.reconEor" status="DONE"/>
       </depends>
     </process>
@@ -851,8 +856,10 @@
         <after process="exportLS1" status="SUCCESS"/>
         <after process="exportLS3" status="SUCCESS"/>
         <after process="fastMonHistLogger" status="SUCCESS"/>
+        <after process="fastMonTrendLogger" status="SUCCESS"/>
         <after process="ingestCalTrend" status="SUCCESS"/>
         <after process="ingestDigiTrend" status="SUCCESS"/>
+        <after process="ingestFastMonTrend" status="SUCCESS"/>
         <after process="ingestReconTrend" status="SUCCESS"/>
         <after process="reconEorLogger" status="SUCCESS"/>
         <after process="reconTrendLogger" status="SUCCESS"/>
@@ -871,6 +878,8 @@
         <after process="registerFastMonError" status="SUCCESS"/>
         <after process="registerFastMonHist" status="SUCCESS"/>
         <after process="registerFastMonHistAlarm" status="SUCCESS"/>
+        <after process="registerFastMonTrend" status="SUCCESS"/>
+        <after process="registerFastMonTrendAlarm" status="SUCCESS"/>
         <after process="registerFastMonTuple" status="SUCCESS"/>
         <after process="registerGcr" status="SUCCESS"/>
         <after process="registerMerit" status="SUCCESS"/>
@@ -920,7 +929,7 @@
         </variables>
         <job executable="${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
       </process>
- <!--
+
       <process name="fastMonTrend">
         <variables>
           <var name="reportType">fastMonTrend</var>
@@ -930,7 +939,7 @@
           <after process="fastMon" status="SUCCESS"/>
         </depends>
       </process>
- -->
+
       <process name="digiEor">
         <variables>
           <var name="reportType">digiEor</var>
@@ -998,7 +1007,7 @@
         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
-          <after process="mergeMeritCrumbs" status="DONE"/>
+          <after process="mergeMeritCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
         </depends>
       </process>
 
@@ -1009,7 +1018,7 @@
         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
-          <after process="mergeReconCrumbs" status="DONE"/>
+          <after process="mergeReconCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
         </depends>
       </process>
 
@@ -1020,7 +1029,7 @@
         <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
-          <after process="mergeCalCrumbs" status="DONE"/>
+          <after process="mergeCalCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
         </depends>
       </process>
 
@@ -1076,6 +1085,7 @@
           <after process="calEor" status="SUCCESS"/>
           <after process="calTrend" status="SUCCESS"/>
           <after process="fastMon" status="SUCCESS"/>
+          <after process="fastMonTrend" status="SUCCESS"/>
           <after process="cleanupCrumbs" status="SUCCESS"/>
           <after process="digiEor" status="SUCCESS"/>
           <after process="digiTrend" status="SUCCESS"/>

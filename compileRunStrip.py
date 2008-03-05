@@ -26,7 +26,7 @@ fastMonFile = digiFile
 
 reportTypes = [
     'digiEor', 'digiTrend',
-    #'fastMonTrend',
+    'fastMonTrend',
     'reconEor', 'reconTrend',
     'calEor', 'calTrend',
     ]

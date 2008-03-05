@@ -44,6 +44,10 @@ if level == 'run' and runStatus not in ['COMPLETE', 'INCOMPLETE']:
 
 goners = fileNames.findPieces(None, dlId, runId, chunkId)
 
+if level == 'downlink':
+    goners.append(dlRawDir)
+    pass
+
 totG = len(goners)
 for ig, goner in enumerate(goners):
     if config.doCleanup:
@@ -56,11 +60,10 @@ for ig, goner in enumerate(goners):
         pass
     continue
 
-if level == 'downlink':
-    dlStorage = '/nfs/farm/g/glast/u52/L1/rootData/downlinks'
-    #cmd = 'mv %(dlRawDir)s %(dlStorage)s' % locals()
-    cmd = 'rm -rf %(dlRawDir)s' % locals()
-    status |= runner.run(cmd)
-    pass
+# if level == 'downlink':
+#     dlStorage = '/nfs/farm/g/glast/u52/L1/rootData/downlinks'
+#     cmd = 'mv %(dlRawDir)s %(dlStorage)s' % locals()
+#     status |= runner.run(cmd)
+#     pass
 
 sys.exit(status)

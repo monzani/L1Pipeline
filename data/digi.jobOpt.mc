@@ -16,8 +16,10 @@ AcdCalibSvc.FlavorCoherentNoise   = "ideal";
 TkrCalibAlg.calibFlavor           = "MC_OktoberFest07";
 TkrCalibAlg.deadStripsCalibFlavor = "MC_OktoberFest07";
 TkrSplitsSvc.defaultMaxStrips     = "14";
-CalibDataSvc.CalibFlavorList      = {"ideal", "MC_OktoberFest07"};
 CalCalibSvc.DefaultFlavor         = "MC_OktoberFest07";
 OnboardFilter.FileNamePeds        = "cal_db_pedestals_flight";
 OnboardFilter.FileNameGains       = "cal_db_gains_flight";
 OnboardFilter.DgnConfig           = "DGN_gem";
+
+CalibDataSvc.CalibFlavorList      = {"ideal", "MC_OktoberFest07", "MC_OktoberFest07-rnd"};
+CalCalibSvc.FlavorTholdCI         = "MC_OktoberFest07-rnd";
