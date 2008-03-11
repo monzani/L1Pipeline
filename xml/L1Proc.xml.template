@@ -4,7 +4,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
 
-<task name="L1Proc" version="%(L1Version)s" type="Data">
+<task name="%(L1Name)s" version="%(L1Version)s" type="Data">
 
   <variables>
     <var name="L1ProcROOT">%(L1ProcROOT)s</var>

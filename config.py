@@ -5,11 +5,14 @@
 @author W. Focke <focke@slac.stanford.edu>
 """
 
-L1Version = "1.40"
-doCleanup = True
-
 import os
 import sys
+
+L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
+L1Version = os.environ.get('L1_TASK_VERSION') or "1.41"
+installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
+
+doCleanup = True
 
 mode = False
 if not mode:
@@ -38,7 +41,6 @@ else:
     pass
 print >> sys.stderr, "Test mode: %s" % testMode
 
-installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
 L1Data = os.path.join(L1ProcROOT, 'data')
@@ -178,11 +180,11 @@ cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 packages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v2r13p3',
+        'version': 'v2r14p0',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v2r11p0',
+        'version': 'v2r11p2',
         },
     'Monitor': {
         'repository': 'svac',
