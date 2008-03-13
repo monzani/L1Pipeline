@@ -909,6 +909,45 @@
         </script>
       </process>
 
+      <process name="verify">
+        <job executable="${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s "/>
+      </process>
+
+      <process name="registerVerifyHisto">
+        <variables>
+          <var name="parentProcess">verify</var>
+	  <var name="dataType">VERIFYHISTO</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="verify" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="verifyLog">
+        <job executable="${L1ProcROOT}/verifyLog.py" batchOptions=" -q %(shortQ)s "/>
+        <depends>
+          <after process="verify" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="registerVerifyLog">
+        <variables>
+          <var name="parentProcess">verifyLog</var>
+          <var name="dataType">VERIFYLOG</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="verifyLog" status="SUCCESS"/>
+        </depends>
+      </process>
+
     </task>
 
     <task name="doChunk" version="%(L1Version)s" type="Data">
