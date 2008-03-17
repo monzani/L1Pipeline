@@ -11,13 +11,15 @@ import fileNames
 import runner
 import stageFiles
 
+status = 0
+finishOption = config.finishOption
+
 head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 chunkId = os.environ['CHUNK_ID']
 
 staged = stageFiles.StageSet()
-finishOption = config.finishOption
 
 os.environ['EVTFILE'] = staged.stageIn(os.environ['EVTFILE'])
 realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId)
@@ -26,22 +28,24 @@ os.environ['digiChunkFile'] = stagedDigiFile
 
 workDir = os.path.dirname(stagedDigiFile)
 
-#setupScript = config.cmtScript
 app = config.apps['digi']
 options =  config.digiOptions
 
 dataSource = os.environ['DATASOURCE']
-# if dataSource == 'LCI':
-#     trigConfig = 'Default'
-# else:
-#     trigConfig = 'Moot'
-#     pass
-trigConfig = 'Default'
+if dataSource == 'LCI':
+    trigConfig = 'Default'
+else:
+    trigConfig = 'Moot'
+    pass
+#trigConfig = 'Default'
 os.environ['trigConfig'] = trigConfig
-if dataSource == 'LPA':
+if dataSource in ['LPA', 'LCI']:
     geometry = 'latAssembly/latAssemblySegVols.xml'
-elif dataSource == 'MC':
+elif dataSource in ['MC']:
     geometry = 'flight/flightSegVols.xml'
+else:
+    print >> sys.stderr, 'Bad DATASOURCE %s' % dataSource
+    status = 1
     pass
 os.environ['gleamGeometry'] = geometry
 options = config.digiOptions[dataSource]
@@ -51,7 +55,7 @@ cd %(workDir)s
 %(app)s %(options)s
 ''' % locals()
 
-status = runner.run(cmd)
+if not status: status |= runner.run(cmd)
 if status: finishOption = 'wipe'
 
 status |= staged.finish(finishOption)

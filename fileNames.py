@@ -14,6 +14,7 @@ import config
 
 
 fileTypes = {
+    'acdPlots': 'tar',
     'cal': 'root',
     'calEor': 'root',
     'calTrend': 'root',
@@ -37,6 +38,7 @@ fileTypes = {
     'gcr': 'root',
     'ls1': 'fit',
     'ls3': 'fit',
+    'magic7': 'txt',
     'merit': 'root',
     'recon': 'root',
     'reconEor': 'root',
@@ -103,6 +105,10 @@ def fileName(dsType, dlId, runId=None, chunkId=None, crumbId=None, next=False):
     
     if level == 'run':
         runDir = os.path.join(config.L1Dir, subDir)
+
+        if dsType is None:
+            return runDir
+        
         if fileTypes[dsType] in xrootFileTypes:
             subDir = xrootSubDirectory(dsType, dlId, runId)
             baseDir = config.xrootBase
@@ -110,7 +116,7 @@ def fileName(dsType, dlId, runId=None, chunkId=None, crumbId=None, next=False):
             baseDir = config.L1Dir
             pass
         
-        if dsType in ['chunkList']:
+        if dsType in ['chunkList', 'magic7']:
             verStr = dlId
         else:
             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

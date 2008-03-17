@@ -517,10 +517,27 @@ FastMon trending.
 Launch ASP.
 
 Use goofy threshholds in digi & recon (MC only).
+-------------------------------------------
 
 1.41 post OpsSim2
 -----------------
-
+AlarmsCfg v1r0p0
+DigiReconCalMeritCfg v1r0p0
+FastMonCfg v1r0p0
+Common v3r0p0
+FastMon v3r0p0
+Monitor v1r0p0
+IGRF v1r0p0
 
 RunVerify stuff added to L1Proc.
+Make and register ACD plot tarball.
+Separate FastMon tuple and histograms.
+Alarm exceptions.
+Use monitoring configs from separate packages.
+Use environment variables to override task name & version and builds dir.
+cleanupDl depends on doLci.checkRunLci, but not kludgeAsp.
+Use MOOT for trigger config in digitization.
+Use LCI config for fastMonLci.
+Copy magic7 file to run directory (and register it).
 
+Don't do run cleanup.

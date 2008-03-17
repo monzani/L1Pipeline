@@ -59,14 +59,25 @@ def hostList():
     # it optimizes for the single-downlink case
     # but it would be better to randomize them all
     # for multiple downlinks
+    totHosts = 0
+    totCores = 0
+    totCpu = 0.0
     for ht in sorted(types.keys(), key=lambda x:types[x]):
         hl = hostsByType[ht]
-        print >> sys.stderr, ht, '%d hosts' % len(hl)
+        nht = len(hl)
+        slots, factor = types[ht]
+        totHosts += nht
+        cores = nht * slots
+        totCores += cores
+        cpu = nht * slots * factor
+        totCpu += cpu
+        print >> sys.stderr, '%s: %d hosts %d cores %f cpu' % (ht, nht, cores, cpu)
         # randomize order of hosts of the same type
         random.shuffle(hl)
         hosts.extend((host,)+types[ht] for host in hl)
         continue
 
+    print >> sys.stderr, 'TOTAL: %d hosts %d cores %f cpu' % (totHosts, totCores, totCpu)
     # put more-desireable hosts at the front of the list
     hosts.reverse()
     

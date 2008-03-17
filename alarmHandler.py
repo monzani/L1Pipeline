@@ -35,10 +35,11 @@ workDir = os.path.dirname(stagedAlarmFile)
 python = config.python
 app = config.apps['alarmHandler']
 configFile = config.alarmConfigs[fileType]
+exceptionFile = config.alarmExceptions[fileType]
 
 cmd = '''
 cd %(workDir)s
-%(python)s %(app)s -c %(configFile)s -o %(stagedAlarmFile)s %(stagedInFile)s
+%(python)s %(app)s -c %(configFile)s -x %(exceptionFile)s -o %(stagedAlarmFile)s %(stagedInFile)s
 ''' % locals()
 
 status = runner.run(cmd)

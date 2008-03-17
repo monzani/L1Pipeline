@@ -9,7 +9,6 @@ import GPLinit
 
 import fileNames
 import registerPrep
-import runner
 import stageFiles
 
 status = 0
@@ -19,26 +18,18 @@ head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 
+fileType = 'magic7'
+
 staged = stageFiles.StageSet()
 
-fileType = 'acdPlots'
-
-realInFile = fileNames.fileName('digiEor', dlId, runId)
+realInFile = os.path.join(os.environ['DOWNLINK_RAWDIR'], 'magic7_%s.txt' % dlId)
 stagedInFile = staged.stageIn(realInFile)
 
-realOutFile = fileNames.fileName(fileType, dlId, runId, next=True)
-stagedOutFile = staged.stageOut(realOutFile)
+#outDir = fileNames.fileName(None, dlId, runId)
+#outBase = os.path.basename(realInFile)
+realOutFile = fileNames.fileName(fileType, dlId, runId)
 
-app = config.apps['acdPlots']
-
-libraryPath = config.libraryPath
-
-cmd = '''
-export LD_LIBRARY_PATH=%(libraryPath)s
-%(app)s -i %(stagedInFile)s -t %(stagedOutFile)s
-''' % locals()
-
-status |= runner.run(cmd)
+if not status: status |= stageFiles.copy(stagedInFile, realOutFile)
 
 if status: finishOption = 'wipe'
 status |= staged.finish(finishOption)

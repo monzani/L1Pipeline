@@ -12,6 +12,9 @@ L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
 L1Version = os.environ.get('L1_TASK_VERSION') or "1.41"
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 
+#L1Cmt = os.path.join(installRoot, 'builds')
+L1Cmt = os.environ.get('L1_BUILD_DIR') or '/afs/slac/g/glast/ground/releases/volume03/L1Proc'
+
 doCleanup = True
 
 mode = False
@@ -60,7 +63,6 @@ calibFlavors = { # not using this now, have separate JO files for LPA & MC
         }
     }
 
-L1Cmt = os.path.join(installRoot, 'builds')
 
 L1Disk = '/nfs/farm/g/glast/u52/L1'
 L1Dir = os.path.join(L1Disk, 'rootData')
@@ -121,8 +123,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
-glastVersion = 'v13r11p1'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
+glastVersion = 'v13r11p3'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -138,6 +140,7 @@ cmtScript = os.path.join(
     ) # do we need this?
 #
 digiOptions = {
+    'LCI': os.path.join(L1Data, 'digi.jobOpt'),
     'LPA': os.path.join(L1Data, 'digi.jobOpt'),
     'MC': os.path.join(L1Data, 'digi.jobOpt.mc'),
     }
@@ -170,6 +173,7 @@ netloggerLevel = 'info'
 
 stVersion = 'v9r4p2'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
+#ST = os.path.join(L1Cmt, "ScienceTools", "ScienceTools-%s" % stVersion)
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
 PFILES = ".;"
 stBinDir = os.path.join(ST, 'bin')
@@ -177,18 +181,18 @@ aspLauncher = '/nfs/farm/g/glast/u33/ASP/ASP/AspLauncher/v1/rh9_gcc32/aspLaunche
 
 cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 
-packages = {
+cmtPackages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v2r14p0',
+        'version': 'v3r0p0',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v2r11p2',
+        'version': 'v3r0p0',
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'dp20080304',
+        'version': 'v1r0p0',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -208,11 +212,33 @@ packages = {
         },
     }
 
+cvsPackages = {
+    'AlarmsCfg': {
+        'repository': 'dataMonitoring',
+        'version': 'v1r0p0',
+        },
+    'DigiReconCalMeritCfg': {
+        'repository': 'dataMonitoring',
+        'version': 'v1r0p0',
+        },
+    'FastMonCfg': {
+        'repository': 'dataMonitoring',
+        'version': 'v1r0p0',
+        },
+    'IGRF': {
+        'repository': 'dataMonitoring',
+        'version': 'v1r0p0',
+        },
+    }
+
+packages = dict(cmtPackages)
+packages.update(cvsPackages)
+
 # fill in standard values for standard packages
 for packName in packages:
     package = packages[packName]
-    packages[packName]['root'] = os.path.join(
-        L1Cmt, packName, package['version'])
+    package['root'] = os.path.join(
+        L1Cmt, package['repository'], packName, package['version'])
     package['bin'] = os.path.join(package['root'], cmtConfig)
     package['cmtDir'] = os.path.join(package['root'], 'cmt')
     package['setup'] = os.path.join(package['cmtDir'], 'setup.sh')
@@ -229,37 +255,37 @@ packages['EngineeringModelRoot']['app'] = os.path.join(
 packages['ft2Util']['app'] = os.path.join(
     packages['ft2Util']['bin'], 'makeFT2Entries.exe')
 
+packages['FastMon']['python'] = os.path.join(
+    packages['FastMon']['root'], 'python')
 packages['FastMon']['app'] = os.path.join(
-    packages['FastMon']['root'], 'python', 'pDataProcessor.py')
+    packages['FastMon']['python'], 'pDataProcessor.py')
+packages['FastMon']['configDir'] = os.path.join(
+        packages['FastMonCfg']['root'], 'xml')
 packages['FastMon']['env'] = {
-    'XML_CONFIG_DIR': os.path.join(packages['FastMon']['root'], 'xml'),
+    'XML_CONFIG_DIR': packages['FastMon']['configDir']
     }
 packages['FastMon']['extraSetup'] = 'eval `/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/isoc isoc_env --add-env=flightops --add-env=root`'
 
+packages['IGRF']['python'] = os.path.join(packages['IGRF']['root'], 'python')
+
 packages['Monitor']['app'] = os.path.join(
     packages['Monitor']['bin'], 'runStrip_t.exe')
-packages['Monitor']['configDir'] = os.path.join(
-    packages['Monitor']['root'], 'config')
 packages['Monitor']['trendMerge'] = os.path.join(
     packages['Monitor']['bin'], 'treemerge.exe')
 packages['Monitor']['mergeApp'] = os.path.join(
     packages['Monitor']['bin'], 'MergeHistFiles.exe')
 
-igrfRoot = os.path.join(L1Cmt, 'IGRF')
-packages['IGRF'] = {
-    'root': igrfRoot,
-    'python': os.path.join(igrfRoot, 'python'),
-    }
-
-
 apps = {
-    'acdPlot': os.path.join(
+    'acdPlots': os.path.join(
         packages['Monitor']['bin'], 'MakeACDNicePlots.exe'),
     'alarmHandler': os.path.join(
         packages['Common']['python'], 'pAlarmHandler.py'),
     'digi': gleam,
     'digiEor': packages['Monitor']['app'],
     'errorMerger': os.path.join(L1ProcROOT, 'errorParser.py'),
+    'fastMonHist': os.path.join(
+        packages['FastMon']['python'], 'pFastMonTreeProcessor.py'),
+    'fastMonTuple': packages['FastMon']['app'],
     'fastMon': packages['FastMon']['app'],
     'makeFT1': os.path.join(stBinDir, 'makeFT1'),
     'makeFT2': packages['ft2Util']['app'],
@@ -274,47 +300,83 @@ apps = {
         packages['TestReport']['bin'], 'RunVerify.exe'),
     }
 
+
 monitorOptions = {
     'calEor': os.path.join(
-        packages['Monitor']['configDir'], 'monconfig_digi_CalLongTime_histos.xml'),
+        packages['DigiReconCalMeritCfg']['root'],
+        'monconfig_digi_CalLongTime_histos.xml'),
     'calTrend': os.path.join(
-        packages['Monitor']['configDir'], 'monconfig_digi_CalLongTime_Trending.xml'),
+        packages['DigiReconCalMeritCfg']['root'],
+        'monconfig_digi_CalLongTime_Trending.xml'),
     'digiEor': os.path.join(
-        packages['Monitor']['configDir'], 'monconfig_digi_histos.xml'),
+        packages['DigiReconCalMeritCfg']['root'],
+        'monconfig_digi_histos.xml'),
     'digiTrend': os.path.join(
-        packages['Monitor']['configDir'], 'monconfig_digi_trending.xml'),
+        packages['DigiReconCalMeritCfg']['root'],
+        'monconfig_digi_trending.xml'),
+    'fastMon': os.path.join(
+        packages['FastMon']['configDir'],
+        'config.xml'),
+    'fastMonLci': os.path.join(
+        packages['FastMon']['configDir'],
+        'configLCI.xml'),
     'fastMonTrend': os.path.join(
-        packages['Monitor']['configDir'], 'monconfig_fastmon_trending.xml'),
+        packages['DigiReconCalMeritCfg']['root'],
+        'monconfig_fastmon_trending.xml'),
     'reconEor': os.path.join(
-        packages['Monitor']['configDir'], 'monconfig_recon_histos.xml'),
+        packages['DigiReconCalMeritCfg']['root'],
+        'monconfig_recon_histos.xml'),
     'reconTrend': os.path.join(
-        packages['Monitor']['configDir'], 'monconfig_recon_trending.xml'),
+        packages['DigiReconCalMeritCfg']['root'],
+        'monconfig_recon_trending.xml'),
     }
 
 mergeConfigs = {
     'calEor': os.path.join(
-        packages['Monitor']['configDir'], 'MergeHistos_digi_CalLongTime.txt'),
+        packages['DigiReconCalMeritCfg']['root'],
+        'MergeHistos_digi_CalLongTime.txt'),
     'digiEor': os.path.join(
-        packages['Monitor']['configDir'], 'MergeHistos_digi.txt'),
+        packages['DigiReconCalMeritCfg']['root'], 'MergeHistos_digi.txt'),
     'fastMonHist': os.path.join(
-        packages['FastMon']['root'], 'xml', 'MergeHistos_FastMon.txt'),
+        packages['FastMonCfg']['root'], 'xml', 'MergeHistos_FastMon.txt'),
     'reconEor': os.path.join(
-        packages['Monitor']['configDir'], 'MergeHistos_recon.txt'),
+        packages['DigiReconCalMeritCfg']['root'], 'MergeHistos_recon.txt'),
     }
 
 alarmConfigs = {
     'digiEor': os.path.join(
-        packages['Common']['root'], 'xml', 'digi_eor_alarms.xml'),
+        packages['AlarmsCfg']['root'], 'xml', 'digi_eor_alarms.xml'),
     'digiTrend': os.path.join(
-        packages['Common']['root'], 'xml', 'digi_trend_alarms.xml'),
+        packages['AlarmsCfg']['root'], 'xml', 'digi_trend_alarms.xml'),
     'fastMonHist': os.path.join(
-        packages['Common']['root'], 'xml', 'fastmon_eor_alarms.xml'),
+        packages['AlarmsCfg']['root'], 'xml', 'fastmon_eor_alarms.xml'),
     'fastMonTrend': os.path.join(
-        packages['Common']['root'], 'xml', 'fastmon_trend_alarms.xml'),
+        packages['AlarmsCfg']['root'], 'xml', 'fastmon_trend_alarms.xml'),
     'reconEor': os.path.join(
-        packages['Common']['root'], 'xml', 'recon_eor_alarms.xml'),
+        packages['AlarmsCfg']['root'], 'xml', 'recon_eor_alarms.xml'),
     'reconTrend': os.path.join(
-        packages['Common']['root'], 'xml', 'recon_trend_alarms.xml'),
+        packages['AlarmsCfg']['root'], 'xml', 'recon_trend_alarms.xml'),
+    }
+
+alarmExceptions = {
+    'digiEor': os.path.join(
+        packages['AlarmsCfg']['root'], 'xml',
+        'digi_eor_alarms_exceptions.xml'),
+    'digiTrend': os.path.join(
+        packages['AlarmsCfg']['root'], 'xml',
+        'digi_trend_alarms_exceptions.xml'),
+    'fastMonHist': os.path.join(
+        packages['AlarmsCfg']['root'], 'xml',
+        'fastmon_eor_alarms_exceptions.xml'),
+    'fastMonTrend': os.path.join(
+        packages['AlarmsCfg']['root'], 'xml',
+        'fastmon_trend_alarms_exceptions.xml'),
+    'reconEor': os.path.join(
+        packages['AlarmsCfg']['root'], 'xml',
+        'recon_eor_alarms_exceptions.xml'),
+    'reconTrend': os.path.join(
+        packages['AlarmsCfg']['root'], 'xml',
+        'recon_trend_alarms_exceptions.xml'),
     }
 
 tdBin = {
@@ -330,16 +392,18 @@ tdBin = {
 trendIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/bin/ingestTrendingFile'
 
 rootPath = os.path.join(rootSys, 'lib')
-#xercesPath = ':'.join([glastExt, 'xerces/2.7.0/lib'])
-#mysqlPath = ':'.join([glastExt, 'MYSQL/4.1.18/lib/mysql'])
+xercesPath = os.path.join(glastExt, 'xerces/2.7.0/lib')
+mysqlPath = os.path.join(glastExt, 'MYSQL/4.1.18/lib/mysql')
 clhepPath = os.path.join(glastExt, 'CLHEP/1.9.2.2/lib')
 cppunitPath = os.path.join(glastExt, 'cppunit/1.10.2/lib')
+gaudiPath = os.path.join(glastExt, 'gaudi/v18r1-gl4/lib')
 oraclePath = '/afs/slac/package/oracle/new/lib'
 
 libraryPath = ':'.join(
-    (os.path.join(L1Cmt, 'lib'), 
+    [os.path.join(L1Cmt, 'lib'), 
      os.path.join(glastLocation, 'lib'), 
-     rootPath, clhepPath, cppunitPath, oraclePath))
+     rootPath, clhepPath, cppunitPath, oraclePath, xercesPath, gaudiPath,
+     mysqlPath])
 
 #GPL2 = '/nfs/slac/g/svac/focke/builds/GPLtools/dev'
 gplBase = '/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/GPLtools'

@@ -44,9 +44,8 @@
   <process name="cleanupDl">
     <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(expressQ)s " />
     <depends>
-<!--      <after process="doLci.checkRunLci" status="SUCCESS"/>  -->
+      <after process="doLci.checkRunLci" status="SUCCESS"/>
       <after process="doRun.checkRun" status="SUCCESS"/>
-      <after process="kludgeAsp" status="SUCCESS"/>
     </depends>
   </process>
 
@@ -67,6 +66,24 @@
       </createsSubtasks>
     </process>
 
+    <process name="copyM7">
+      <job executable="${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s " />
+    </process>
+
+    <process name="registerM7">
+      <variables>
+        <var name="parentProcess">copyM7</var>
+        <var name="dataType">MAGIC7</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="copyM7" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
     <process name="mergeDigi">
       <variables>
         <var name="fileType">digi</var>
@@ -149,6 +166,27 @@
       </depends>
     </process>
 
+    <process name="acdPlots">
+      <job executable="${L1ProcROOT}/acdPlots.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="mergeDigiEor" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerAcdPlots">
+      <variables>
+        <var name="parentProcess">acdPlots</var>
+        <var name="dataType">ACDPLOTS</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="acdPlots" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="mergeDigiTrend">
       <variables>
         <var name="fileType">digiTrend</var>
@@ -177,7 +215,7 @@
       <variables>
         <var name="reportType">digiTrend</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="mergeDigiTrend" status="SUCCESS"/>
       </depends>
@@ -269,19 +307,43 @@
       <variables>
         <var name="reportType">calTrend</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="mergeCalTrend" status="SUCCESS"/>
       </depends>
     </process>
  
+    <process name="mergeFastMonError">
+      <variables>
+        <var name="fileType">fastMonError</var>
+      </variables>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s "/>
+      <depends>
+        <after process="doChunk.fastMonTuple" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonError">
+      <variables>
+        <var name="parentProcess">mergeFastMonError</var>
+        <var name="dataType">FASTMONERROR</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonError" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="mergeFastMonHist">
       <variables>
         <var name="fileType">fastMonHist</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
-        <after process="doChunk.fastMon" status="DONE"/>
+        <after process="doChunk.fastMonHist" status="DONE"/>
       </depends>
     </process>
 
@@ -305,7 +367,7 @@
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
-        <after process="doChunk.fastMon" status="DONE"/>
+        <after process="doChunk.fastMonTuple" status="DONE"/>
       </depends>
     </process>
 
@@ -357,30 +419,6 @@
       </depends>
     </process>
 
-    <process name="mergeFastMonError">
-      <variables>
-        <var name="fileType">fastMonError</var>
-      </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s "/>
-      <depends>
-        <after process="doChunk.fastMon" status="DONE"/>
-      </depends>
-    </process>
-
-    <process name="registerFastMonError">
-      <variables>
-        <var name="parentProcess">mergeFastMonError</var>
-        <var name="dataType">FASTMONERROR</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="mergeFastMonError" status="SUCCESS"/>
-      </depends>
-    </process>
-
     <process name="mergeFastMonTrend">
       <variables>
         <var name="fileType">fastMonTrend</var>
@@ -409,7 +447,7 @@
       <variables>
         <var name="reportType">fastMonTrend</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="mergeFastMonTrend" status="SUCCESS"/>
       </depends>
@@ -697,7 +735,7 @@
       <variables>
         <var name="reportType">reconTrend</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="mergeReconTrend" status="SUCCESS"/>
       </depends>
@@ -863,6 +901,7 @@
         <after process="ingestReconTrend" status="SUCCESS"/>
         <after process="reconEorLogger" status="SUCCESS"/>
         <after process="reconTrendLogger" status="SUCCESS"/>
+        <after process="registerAcdPlots" status="SUCCESS"/>
         <after process="registerCal" status="SUCCESS"/>
         <after process="registerCalEor" status="SUCCESS"/>
         <after process="registerCalTrend" status="SUCCESS"/>
@@ -882,6 +921,7 @@
         <after process="registerFastMonTrendAlarm" status="SUCCESS"/>
         <after process="registerFastMonTuple" status="SUCCESS"/>
         <after process="registerGcr" status="SUCCESS"/>
+        <after process="registerM7" status="SUCCESS"/>
         <after process="registerMerit" status="SUCCESS"/>
         <after process="registerRecon" status="SUCCESS"/>
         <after process="registerReconEor" status="SUCCESS"/>
@@ -962,11 +1002,21 @@
         <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
       </process>
  
-      <process name="fastMon">
+      <process name="fastMonTuple">
         <variables>
-          <var name="reportType">fastMon</var>
+          <var name="reportType">fastMonTuple</var>
         </variables>
         <job executable="${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+      </process>
+
+      <process name="fastMonHist">
+        <variables>
+          <var name="reportType">fastMonHist</var>
+        </variables>
+        <job executable="${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="fastMonTuple" status="SUCCESS"/>
+        </depends>
       </process>
 
       <process name="fastMonTrend">
@@ -975,7 +1025,7 @@
         </variables>
         <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
-          <after process="fastMon" status="SUCCESS"/>
+          <after process="fastMonTuple" status="SUCCESS"/>
         </depends>
       </process>
 
@@ -1123,7 +1173,7 @@
         <depends>
           <after process="calEor" status="SUCCESS"/>
           <after process="calTrend" status="SUCCESS"/>
-          <after process="fastMon" status="SUCCESS"/>
+          <after process="fastMonHist" status="SUCCESS"/>
           <after process="fastMonTrend" status="SUCCESS"/>
           <after process="cleanupCrumbs" status="SUCCESS"/>
           <after process="digiEor" status="SUCCESS"/>
@@ -1172,6 +1222,24 @@
       </createsSubtasks>
     </process>
 
+    <process name="copyM7Lci">
+      <job executable="${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s " />
+    </process>
+
+    <process name="registerM7Lci">
+      <variables>
+        <var name="parentProcess">copyM7Lci</var>
+        <var name="dataType">MAGIC7</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="copyM7Lci" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
     <process name="mergeDigiLci">
       <variables>
         <var name="fileType">digi</var>
@@ -1226,7 +1294,7 @@
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s "/>
       <depends>
-        <after process="doChunkLci.fastMonLci" status="DONE"/>
+        <after process="doChunkLci.fastMonTupleLci" status="DONE"/>
       </depends>
     </process>
 
@@ -1244,37 +1312,13 @@
       </depends>
     </process>
 
-    <process name="mergeFastMonHistLci">
-      <variables>
-        <var name="fileType">fastMonHist</var>
-      </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;10]&quot; "/>
-      <depends>
-        <after process="doChunkLci.fastMonLci" status="DONE"/>
-      </depends>
-    </process>
-
-    <process name="registerFastMonHistLci">
-      <variables>
-        <var name="parentProcess">mergeFastMonHistLci</var>
-        <var name="dataType">FASTMONHIST</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="mergeFastMonHistLci" status="SUCCESS"/>
-      </depends>
-    </process>
- 
     <process name="mergeFastMonTupleLci">
       <variables>
         <var name="fileType">fastMonTuple</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;10]&quot; "/>
       <depends>
-        <after process="doChunkLci.fastMonLci" status="DONE"/>
+        <after process="doChunkLci.fastMonTupleLci" status="DONE"/>
       </depends>
     </process>
 
@@ -1292,15 +1336,40 @@
       </depends>
     </process>
  
+    <process name="mergeFastMonHistLci">
+      <variables>
+        <var name="fileType">fastMonHist</var>
+      </variables>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;10]&quot; "/>
+      <depends>
+        <after process="doChunkLci.fastMonHistLci" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonHistLci">
+      <variables>
+        <var name="parentProcess">mergeFastMonHistLci</var>
+        <var name="dataType">FASTMONHIST</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonHistLci" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
     <process name="checkRunLci">
       <job executable="${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="doChunkLci.checkChunkLci" status="SUCCESS"/>
         <after process="registerDigiLci" status="SUCCESS"/>
+        <after process="registerDigiEorLci" status="SUCCESS"/>
         <after process="registerFastMonErrorLci" status="SUCCESS"/>
         <after process="registerFastMonHistLci" status="SUCCESS"/>
         <after process="registerFastMonTupleLci" status="SUCCESS"/>
-        <after process="registerDigiEorLci" status="SUCCESS"/>
+        <after process="registerM7Lci" status="SUCCESS"/>
       </depends>
       <createsSubtasks>
         <subtask>cleanupCompleteRunLci</subtask>
@@ -1335,13 +1404,23 @@
         <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
       </process>
  
-      <process name="fastMonLci">
+      <process name="fastMonTupleLci">
         <variables>
-          <var name="reportType">fastMon</var>
+          <var name="reportType">fastMonTuple</var>
         </variables>
         <job executable="${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
       </process>
  
+      <process name="fastMonHistLci">
+        <variables>
+          <var name="reportType">fastMonHist</var>
+        </variables>
+        <job executable="${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="fastMonTupleLci" status="SUCCESS"/>
+        </depends>
+      </process>
+
       <process name="digiEorLci">
         <variables>
           <var name="reportType">digiEor</var>
@@ -1355,7 +1434,7 @@
       <process name="checkChunkLci">
         <job executable="${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s "/>
         <depends>
-          <after process="fastMonLci" status="SUCCESS"/>
+          <after process="fastMonHistLci" status="SUCCESS"/>
           <after process="digiEorLci" status="SUCCESS"/>
         </depends>
       </process>
@@ -1387,3 +1466,4 @@
 
 </task>
 </pipeline>
+

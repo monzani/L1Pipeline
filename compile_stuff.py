@@ -13,7 +13,7 @@ import runner
 if len(sys.argv) > 1:
     names = sys.argv[1:]
 else:
-    names = config.packages.keys()
+    names = config.cmtPackages.keys()
     pass
 
 for packName in names:
