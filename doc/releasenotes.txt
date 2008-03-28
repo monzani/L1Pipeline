@@ -541,3 +541,22 @@ Use LCI config for fastMonLci.
 Copy magic7 file to run directory (and register it).
 
 Don't do run cleanup.
+-------------------------------------------
+
+1.42
+-----------------
+GR v13r11p4
+EngineeringModelRoot v3r12
+FastMon v3r0p5
+FastMonCfg v1r0p1
+IGRF v1r0p1
+TestReport v5r6
+
+Put variables cotrolling task name, version, location, and build dir in XML
+and setup.sh.
+compile_stuff.py does cvs packages as well as cmt.
+Hardwire isocPlatform to rhel3_gcc32.
+
+Put data under IandT instead of OpsSim2.
+kludgeASP does nothing.
+-------------------------------------------

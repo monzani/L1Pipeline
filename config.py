@@ -9,7 +9,8 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('L1_TASK_VERSION') or "1.41"
+L1Version = os.environ.get('L1_TASK_VERSION') or "1.42"
+fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
 
 #L1Cmt = os.path.join(installRoot, 'builds')
@@ -67,7 +68,7 @@ calibFlavors = { # not using this now, have separate JO files for LPA & MC
 L1Disk = '/nfs/farm/g/glast/u52/L1'
 L1Dir = os.path.join(L1Disk, 'rootData')
 
-dataCatDir = '/Data/OpsSim2/Level1'
+dataCatDir = '/Data/IandT/Level1'
 
 xrootGlast = 'root://glast-rdr.slac.stanford.edu//glast'
 xrootSubDir = '%s/%s/%s' % (dataCatDir, mode, L1Version)
@@ -124,7 +125,7 @@ installBin = os.path.join(installArea, 'bin')
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
 releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
-glastVersion = 'v13r11p3'
+glastVersion = 'v13r11p4'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -155,8 +156,12 @@ hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
 
 isoc = '/afs/slac/g/glast/isoc/flightOps'
-isocPlatform = os.popen(os.path.join(isoc, 'isoc-platform')).readline().strip()
+#isocPlatform = os.popen(os.path.join(isoc, 'isoc-platform')).readline().strip()
+isocPlatform = 'rhel3_gcc32'
 isocBin = os.path.join(isoc, isocPlatform, 'ISOC_PROD', 'bin')
+
+isocScript = os.path.join(isocBin, 'isoc')
+isocEnv = 'eval `%s isoc_env --add-env=flightops --add-env=root`' % isocScript
 
 # ISOC logger
 scid = 99
@@ -177,7 +182,8 @@ ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % st
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
 PFILES = ".;"
 stBinDir = os.path.join(ST, 'bin')
-aspLauncher = '/nfs/farm/g/glast/u33/ASP/ASP/AspLauncher/v1/rh9_gcc32/aspLauncher.sh'
+#aspLauncher = '/nfs/farm/g/glast/u33/ASP/ASP/AspLauncher/v1/rh9_gcc32/aspLauncher.sh'
+aspLauncher = '/bin/true'
 
 cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 
@@ -188,7 +194,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v3r0p0',
+        'version': 'v3r0p5',
         },
     'Monitor': {
         'repository': 'svac',
@@ -196,11 +202,11 @@ cmtPackages = {
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
-        'version': 'v3r11',
+        'version': 'v3r12',
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'v5r3',
+        'version': 'v5r6',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -223,11 +229,11 @@ cvsPackages = {
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r0p0',
+        'version': 'v1r0p1',
         },
     'IGRF': {
         'repository': 'dataMonitoring',
-        'version': 'v1r0p0',
+        'version': 'v1r0p1',
         },
     }
 
@@ -264,7 +270,7 @@ packages['FastMon']['configDir'] = os.path.join(
 packages['FastMon']['env'] = {
     'XML_CONFIG_DIR': packages['FastMon']['configDir']
     }
-packages['FastMon']['extraSetup'] = 'eval `/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/isoc isoc_env --add-env=flightops --add-env=root`'
+packages['FastMon']['extraSetup'] = isocEnv
 
 packages['IGRF']['python'] = os.path.join(packages['IGRF']['root'], 'python')
 
@@ -402,7 +408,9 @@ oraclePath = '/afs/slac/package/oracle/new/lib'
 libraryPath = ':'.join(
     [os.path.join(L1Cmt, 'lib'), 
      os.path.join(glastLocation, 'lib'), 
-     rootPath, clhepPath, cppunitPath, oraclePath, xercesPath, gaudiPath,
+     rootPath, clhepPath, cppunitPath, oraclePath,
+     xercesPath,
+     gaudiPath,
      mysqlPath])
 
 #GPL2 = '/nfs/slac/g/svac/focke/builds/GPLtools/dev'
