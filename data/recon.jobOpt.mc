@@ -26,6 +26,4 @@ OnboardFilter.DgnConfig           = "DGN_gem";
 
 GcrReconAlg.HFC_Or_TriggerEng4 = "TriggerEng4";
 
-CalibDataSvc.CalibFlavorList = {"vanilla","ideal","MC_OktoberFest07", "MC_OktoberFest07-rnd"};
-AcdCalibSvc.FlavorGain            = "MC_OktoberFest07-rnd";
-CalCalibSvc.FlavorTholdCI         = "MC_OktoberFest07-rnd";
+CalibDataSvc.CalibFlavorList = {"vanilla","ideal","MC_OktoberFest07"};

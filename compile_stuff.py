@@ -13,7 +13,7 @@ import runner
 if len(sys.argv) > 1:
     names = sys.argv[1:]
 else:
-    names = config.cmtPackages.keys()
+    names = config.cvsPackages.keys() + config.cmtPackages.keys()
     pass
 
 def doPackage(packName):
@@ -103,12 +103,16 @@ def doCvsPackage(packName):
     
     cmd = '''
     source %(l1SetupScript)s
-    mkdir -p %(tmpDir)s
-    cd %(tmpDir)s
-    cvs co -r %(version)s %(checkOutName)s
-    rm -rf %(root)s
-    mv %(checkOutName)s %(root)s
-    rm -rf %(tmpDir)s
+    tmpDir=%(tmpDir)s
+    mkdir -p $tmpDir
+    cd $tmpDir
+    checkOutName=%(checkOutName)s
+    cvs co -r %(version)s $checkOutName
+    root=%(root)s
+    rm -rf $root
+    mkdir -p $(dirname $root)
+    mv $checkOutName $root
+    rm -rf $tmpDir
     ''' % args
 
     if packName == 'IGRF':

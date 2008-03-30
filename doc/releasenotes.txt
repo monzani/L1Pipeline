@@ -557,6 +557,10 @@ and setup.sh.
 compile_stuff.py does cvs packages as well as cmt.
 Hardwire isocPlatform to rhel3_gcc32.
 
+Default install location is
+/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1
+Default build dir is /afs/slac/g/glast/ground/releases/volume03/L1Proc
 Put data under IandT instead of OpsSim2.
 kludgeASP does nothing.
+Don't use goofy threshholds in MC digi & recon.
 -------------------------------------------

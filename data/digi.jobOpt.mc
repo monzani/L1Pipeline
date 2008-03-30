@@ -21,5 +21,4 @@ OnboardFilter.FileNamePeds        = "cal_db_pedestals_flight";
 OnboardFilter.FileNameGains       = "cal_db_gains_flight";
 OnboardFilter.DgnConfig           = "DGN_gem";
 
-CalibDataSvc.CalibFlavorList      = {"ideal", "MC_OktoberFest07", "MC_OktoberFest07-rnd"};
-CalCalibSvc.FlavorTholdCI         = "MC_OktoberFest07-rnd";
+CalibDataSvc.CalibFlavorList      = {"ideal", "MC_OktoberFest07"};

@@ -11,7 +11,7 @@ import sys
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
 L1Version = os.environ.get('L1_TASK_VERSION') or "1.42"
 fullTaskName = '-'.join([L1Name, L1Version])
-installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/SC/L1Pipeline"
+installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
 #L1Cmt = os.path.join(installRoot, 'builds')
 L1Cmt = os.environ.get('L1_BUILD_DIR') or '/afs/slac/g/glast/ground/releases/volume03/L1Proc'
