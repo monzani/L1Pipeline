@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('L1_TASK_VERSION') or "1.42"
+L1Version = os.environ.get('L1_TASK_VERSION') or "1.43"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -77,10 +77,11 @@ xrootBase = xrootGlast + xrootSubDir
 if testMode: L1Dir = os.path.join(L1Dir, 'test')
 
 stageDisks = [ # staging buffers with integer weights
-    ("/afs/slac/g/glast/ground/PipelineStaging", 2),
-    ("/afs/slac/g/glast/ground/PipelineStaging2", 2),
-    (L1Dir, 1),
-    ('/nfs/farm/g/glast/u29', 1),
+    ("/afs/slac/g/glast/ground/PipelineStaging", 1),
+    ("/afs/slac/g/glast/ground/PipelineStaging2", 1),
+    ("/afs/slac/g/glast/ground/PipelineStaging3", 1),
+    ("/afs/slac/g/glast/ground/PipelineStaging4", 1),
+    ("/afs/slac/g/glast/ground/PipelineStaging5", 1),
     ]
 stageBase = 'l1Stage'
 #stageDirs = [os.path.join(disk, stageBase) for disk in stageDisks]
