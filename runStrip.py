@@ -43,7 +43,11 @@ outFile = staged.stageOut(realOutFile)
 
 workDir = os.path.dirname(outFile)
 
-if 'fastMon' not in reportType:
+if 'fastMon' in reportType:
+    realFmt = fileNames.fileName('fastMonTuple', dlId, runId, chunkId)
+    stagedFmt = staged.stageIn(realFmt)
+    inFileOpts = '-f %s' % stagedFmt
+else:
     realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId)
     stagedDigiFile = staged.stageIn(realDigiFile)
     inFileOpts = '-d %s' % stagedDigiFile
@@ -53,12 +57,11 @@ if 'fastMon' not in reportType:
         realCalFile = fileNames.fileName('cal', dlId, runId, chunkId)
         stagedCalFile = staged.stageIn(realCalFile)
         inFileOpts += ' -r %s -a %s' % (stagedReconFile, stagedCalFile)
+    elif 'merit' in reportType:
+        realMeritFile = fileNames.fileName('merit', dlId, runId, chunkId)
+        stagedMeritFile = staged.stageIn(realMeritFile)
+        inFileOpts += ' -m %s' % (stagedMeritFile,)
         pass
-    pass
-else:
-    realFmt = fileNames.fileName('fastMonTuple', dlId, runId, chunkId)
-    stagedFmt = staged.stageIn(realFmt)
-    inFileOpts = '-f %s' % stagedFmt
     pass
 
 tdBin = config.tdBin[reportType]

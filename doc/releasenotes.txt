@@ -564,3 +564,11 @@ Put data under IandT instead of OpsSim2.
 kludgeASP does nothing.
 Don't use goofy threshholds in MC digi & recon.
 -------------------------------------------
+
+1.43
+-----------------
+Update to new netlogger.
+Add merit monitoring.
+When logging alarms, put counts in PI variables and log tags.
+
+Use new AFS buffers.

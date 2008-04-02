@@ -164,19 +164,6 @@ isocBin = os.path.join(isoc, isocPlatform, 'ISOC_PROD', 'bin')
 isocScript = os.path.join(isocBin, 'isoc')
 isocEnv = 'eval `%s isoc_env --add-env=flightops --add-env=root`' % isocScript
 
-# ISOC logger
-scid = 99
-#netLoggerFlight = 'x-netlog://glastlnx06.slac.stanford.edu:15502'
-netLoggerFlight = None
-#netloggerIAndT = 'x-netlog://glastlnx06.slac.stanford.edu:15501'
-netLoggerTest = 'x-netlog://glastlnx25.slac.stanford.edu:15502'
-if testMode:
-    netloggerDest = netLoggerTest
-else:
-    netloggerDest = netLoggerFlight
-    pass
-netloggerLevel = 'info'
-
 stVersion = 'v9r4p2'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
 #ST = os.path.join(L1Cmt, "ScienceTools", "ScienceTools-%s" % stVersion)
@@ -191,15 +178,15 @@ cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 cmtPackages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v3r0p0',
+        'version': 'v3r0p8',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v3r0p5',
+        'version': 'v3r0p7',
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r0p0',
+        'version': 'v1r0p6',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -222,15 +209,15 @@ cmtPackages = {
 cvsPackages = {
     'AlarmsCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r0p0',
+        'version': 'v1r0p2',
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r0p0',
+        'version': 'v1r0p6',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r0p1',
+        'version': 'v1r0p2',
         },
     'IGRF': {
         'repository': 'dataMonitoring',
@@ -330,6 +317,12 @@ monitorOptions = {
     'fastMonTrend': os.path.join(
         packages['DigiReconCalMeritCfg']['root'],
         'monconfig_fastmon_trending.xml'),
+    'meritEor': os.path.join(
+        packages['DigiReconCalMeritCfg']['root'],
+        'monconfig_merit_histos.xml'),
+    'meritTrend': os.path.join(
+        packages['DigiReconCalMeritCfg']['root'],
+        'monconfig_merit_trending.xml'),
     'reconEor': os.path.join(
         packages['DigiReconCalMeritCfg']['root'],
         'monconfig_recon_histos.xml'),
@@ -346,6 +339,8 @@ mergeConfigs = {
         packages['DigiReconCalMeritCfg']['root'], 'MergeHistos_digi.txt'),
     'fastMonHist': os.path.join(
         packages['FastMonCfg']['root'], 'xml', 'MergeHistos_FastMon.txt'),
+    'meritEor': os.path.join(
+        packages['DigiReconCalMeritCfg']['root'], 'MergeHistos_merit.txt'),
     'reconEor': os.path.join(
         packages['DigiReconCalMeritCfg']['root'], 'MergeHistos_recon.txt'),
     }
@@ -392,6 +387,8 @@ tdBin = {
     'digiEor': 15,
     'digiTrend': 15,
     'fastMonTrend': 15,
+    'meritEor': 15,
+    'meritTrend': 15,
     'reconEor': 15,
     'reconTrend': 15,
     }

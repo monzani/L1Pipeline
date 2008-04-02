@@ -5,13 +5,17 @@ import xml.dom.minidom as md
 
 import config
 
+import pipeline
+
 import PipelineNetlogger
 
-if config.netloggerDest:
-    log = PipelineNetlogger.PNetlogger(config.netloggerDest, config.netloggerLevel)
+if config.testMode:
+    flavor = PipelineNetlogger.Flavor.DEVEL
 else:
-    log = PipelineNetlogger.PNetlogger.getLogger()
+    flavor = PipelineNetlogger.Flavor.PROD
     pass
+print >> sys.stderr, 'Using logging flavor %s' % flavor
+log = PipelineNetlogger.PNetlogger.getLogger(flavor)
 
 loggableTypes = ['clean', 'error', 'undefined', 'warning']
 
@@ -48,7 +52,6 @@ def doAlarms(inFile, fileType, runId):
     head = '%(fileType)s monitoring for run %(runId)s had:  ' % locals()
     message = head + 'errors:%(error)d, warnings:%(warning)d, clean:%(clean)d, undefined:%(undefined)d.' % number
 
-    print >> sys.stderr, 'Logging to [%s]' % config.netloggerDest
     print >> sys.stderr, message
 
     dlNumber = os.environ['DOWNLINK_ID']
@@ -65,12 +68,18 @@ def doAlarms(inFile, fileType, runId):
         "tag_downlinkId": int(dlNumber),
         "tag_runId": int(runNumber),
         }
+
+    for alarmType, value in number.items():
+        varName = 'L1_Alarm_' + alarmType
+        pipeline.setVariable(varName, value)
+        tagName = 'tag_' + varName
+        tags[tagName] = value
+        continue
+
     print >> sys.stderr, tags
     
-    timeStamp = None
-    
     severity(eventType, message,
-             link=link, tgt=target, timestamp=timeStamp, scid=config.scid,
+             link=link, tgt=target,
              **tags)
 
     return

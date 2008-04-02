@@ -40,6 +40,8 @@ fileTypes = {
     'ls3': 'fit',
     'magic7': 'txt',
     'merit': 'root',
+    'meritEor': 'root',
+    'meritTrend': 'root',
     'recon': 'root',
     'reconEor': 'root',
     'reconEorAlarm': 'xml',

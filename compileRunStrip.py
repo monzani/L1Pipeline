@@ -20,16 +20,23 @@ os.mkdir(workDir)
 codeDir = config.packages['Monitor']['bin']
 
 digiFile = '/no/such/directory/no_such_file.root'
-reconFile = digiFile
 calFile = digiFile
 fastMonFile = digiFile
+meritFile = digiFile
+reconFile = digiFile
 
-reportTypes = [
-    'digiEor', 'digiTrend',
-    'fastMonTrend',
-    'reconEor', 'reconTrend',
-    'calEor', 'calTrend',
-    ]
+if len(sys.argv) > 1:
+    reportTypes = sys.argv[1:]
+else:
+    reportTypes = [
+        'calEor', 'calTrend',
+        'digiEor', 'digiTrend',
+        'fastMonTrend',
+        'meritEor', 'meritTrend',
+        'reconEor', 'reconTrend',
+        ]
+    pass
+
 for reportType in reportTypes:
 
     options = config.monitorOptions[reportType]
@@ -39,16 +46,17 @@ for reportType in reportTypes:
     app = package['app']
 
 
-    if 'fastMon' not in reportType:
+    if 'fastMon' in reportType:
+        inFileOpts = '-f %s' % fastMonFile
+    else:
         inFileOpts = '-d %s' % digiFile
         if 'recon' in reportType:
             inFileOpts += ' -r %s -a %s' % (reconFile, calFile)
+        elif 'merit' in reportType:
+            inFileOpts += ' -m %s' % (meritFile,)
             pass
         pass
-    else:
-        inFileOpts = '-f %s' % fastMonFile
-        pass
-
+ 
     tdBin = config.tdBin[reportType]
 
     # CHANGE THIS!

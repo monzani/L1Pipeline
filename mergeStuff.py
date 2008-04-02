@@ -125,7 +125,7 @@ status = 0
 
 
 
-if fileType in ['calEor', 'digiEor', 'reconEor', 'fastMonHist']:
+if fileType in ['calEor', 'digiEor', 'fastMonHist', 'reconEor', 'meritEor']:
     setup = config.packages['Monitor']['setup']
     mergeConfig = config.mergeConfigs[fileType]
     app = config.apps['reportMerge']
@@ -137,7 +137,8 @@ if fileType in ['calEor', 'digiEor', 'reconEor', 'fastMonHist']:
     status |= runner.run(cmd)
 
 
-elif fileType in ['calTrend', 'digiTrend', 'fastMonTrend', 'reconTrend']:
+elif fileType in ['calTrend', 'digiTrend', 'fastMonTrend', 'meritTrend',
+                  'reconTrend']:
     setup = config.packages['Monitor']['setup']
     app = config.apps['trendMerge']
     treeName = 'Time'

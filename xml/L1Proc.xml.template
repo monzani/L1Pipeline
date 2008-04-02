@@ -709,6 +709,54 @@
       </depends>
     </process>
 
+    <process name="mergeMeritTrend">
+      <variables>
+        <var name="fileType">meritTrend</var>
+      </variables>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="doChunk.meritTrend" status="DONE"/>
+      </depends>
+    </process>
+ 
+    <process name="registerMeritTrend">
+      <variables>
+        <var name="parentProcess">mergeMeritTrend</var>
+        <var name="dataType">MERITTREND</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeMeritTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeMeritEor">
+      <variables>
+        <var name="fileType">meritEor</var>
+      </variables>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="doChunk.meritEor" status="DONE"/>
+      </depends>
+    </process>
+ 
+    <process name="registerMeritEor">
+      <variables>
+        <var name="parentProcess">mergeMeritEor</var>
+        <var name="dataType">MERITHIST</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeMeritEor" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
     <process name="mergeReconTrend">
       <variables>
         <var name="fileType">reconTrend</var>
@@ -927,6 +975,8 @@
         <after process="registerGcr" status="SUCCESS"/>
         <after process="registerM7" status="SUCCESS"/>
         <after process="registerMerit" status="SUCCESS"/>
+        <after process="registerMeritEor" status="SUCCESS"/>
+        <after process="registerMeritTrend" status="SUCCESS"/>
         <after process="registerRecon" status="SUCCESS"/>
         <after process="registerReconEor" status="SUCCESS"/>
         <after process="registerReconEorAlarm" status="SUCCESS"/>
@@ -1136,6 +1186,26 @@
         </depends>
       </process>
 
+      <process name="meritEor">
+        <variables>
+          <var name="reportType">meritEor</var>
+        </variables>
+        <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="mergeMeritCrumbs" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="meritTrend">
+        <variables>
+          <var name="reportType">meritTrend</var>
+        </variables>
+        <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="mergeMeritCrumbs" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
       <process name="reconEor">
         <variables>
           <var name="reportType">reconEor</var>
@@ -1182,6 +1252,8 @@
           <after process="cleanupCrumbs" status="SUCCESS"/>
           <after process="digiEor" status="SUCCESS"/>
           <after process="digiTrend" status="SUCCESS"/>
+          <after process="meritEor" status="SUCCESS"/>
+          <after process="meritTrend" status="SUCCESS"/>
           <after process="reconEor" status="SUCCESS"/>
           <after process="reconTrend" status="SUCCESS"/>
         </depends>
