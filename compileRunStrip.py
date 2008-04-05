@@ -10,8 +10,6 @@ import sys
 
 import config
 
-sys.path.append(config.gplPath)
-
 import runner
 
 workDir = os.path.join('/tmp', `os.getpid()`)
