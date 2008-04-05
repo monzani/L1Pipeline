@@ -178,11 +178,11 @@ cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 cmtPackages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v3r0p8',
+        'version': 'v3r0p9',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v3r0p7',
+        'version': 'v3r0p8',
         },
     'Monitor': {
         'repository': 'svac',
@@ -218,6 +218,10 @@ cvsPackages = {
     'FastMonCfg': {
         'repository': 'dataMonitoring',
         'version': 'v1r0p2',
+        },
+    'GPLtools': {
+        'repository': '',
+        'version': 'v1r10',
         },
     'IGRF': {
         'repository': 'dataMonitoring',
@@ -260,6 +264,9 @@ packages['FastMon']['env'] = {
     }
 packages['FastMon']['extraSetup'] = isocEnv
 
+packages['GPLtools']['python'] = os.path.join(
+    packages['GPLtools']['root'], 'python')
+
 packages['IGRF']['python'] = os.path.join(packages['IGRF']['root'], 'python')
 
 packages['Monitor']['app'] = os.path.join(
@@ -274,6 +281,8 @@ apps = {
         packages['Monitor']['bin'], 'MakeACDNicePlots.exe'),
     'alarmHandler': os.path.join(
         packages['Common']['python'], 'pAlarmHandler.py'),
+    'compareDFm': os.path.join(
+        packages['Common']['python'], 'pRootDiffer.py'),
     'digi': gleam,
     'digiEor': packages['Monitor']['app'],
     'errorMerger': os.path.join(L1ProcROOT, 'errorParser.py'),
@@ -393,7 +402,8 @@ tdBin = {
     'reconTrend': 15,
     }
 
-trendIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/bin/ingestTrendingFile'
+
+trendIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/%s/bin/ingestTrendingFile' % mode
 
 rootPath = os.path.join(rootSys, 'lib')
 xercesPath = os.path.join(glastExt, 'xerces/2.7.0/lib')
@@ -411,21 +421,22 @@ libraryPath = ':'.join(
      gaudiPath,
      mysqlPath])
 
-#GPL2 = '/nfs/slac/g/svac/focke/builds/GPLtools/dev'
-gplBase = '/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/GPLtools'
-if testMode:
-    gplType = 'L1test'
-else:
-    gplType = 'L1prod'
-    pass
-# gplType = 'L1prod'
-GPL2 = os.path.join(gplBase, gplType)
-gplPath = os.path.join(GPL2, 'python')
+# #GPL2 = '/nfs/slac/g/svac/focke/builds/GPLtools/dev'
+# gplBase = '/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/GPLtools'
+# if testMode:
+#     gplType = 'L1test'
+# else:
+#     gplType = 'L1prod'
+#     pass
+# # gplType = 'L1prod'
+# GPL2 = os.path.join(gplBase, gplType)
+# gplPath = os.path.join(GPL2, 'python')
+GPL2 = packages['GPLtools']['root']
 
 ppComponents = [
     L1ProcROOT,
     rootPath,
-    gplPath,
+    packages['GPLtools']['python'],
     packages['Common']['python'],
     packages['IGRF']['python']
     ]

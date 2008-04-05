@@ -13,6 +13,7 @@
     <var name="L1_TASK_VERSION">%(L1Version)s</var>
     <var name="L1_INSTALL_DIR">%(installRoot)s</var>
     <var name="L1_BUILD_DIR">%(L1Cmt)s</var>
+    <var name="L1TrendVersion">Prompt</var> <!-- override if reprocessing -->
   </variables>
 
   <prerequisites>
@@ -362,6 +363,31 @@
       </script>
       <depends>
         <after process="mergeFastMonHist" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="compDigiFastMon">
+      <variables>
+        <var name="fileType">compareDFm</var>
+      </variables>
+      <job executable="${L1ProcROOT}/compDigiFastMon.py" batchOptions=" -q %(mediumQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="mergeDigi" status="SUCCESS"/>
+        <after process="mergeFastMonHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerCmpDFm">
+      <variables>
+        <var name="parentProcess">compDigiFastMon</var>
+        <var name="dataType">COMPAREDFM</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="compDigiFastMon" status="SUCCESS"/>
       </depends>
     </process>
  
@@ -733,6 +759,16 @@
       </depends>
     </process>
 
+    <process name="ingestMeritTrend">
+      <variables>
+        <var name="reportType">meritTrend</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="mergeMeritTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
     <process name="mergeMeritEor">
       <variables>
         <var name="fileType">meritEor</var>
@@ -950,6 +986,7 @@
         <after process="ingestCalTrend" status="SUCCESS"/>
         <after process="ingestDigiTrend" status="SUCCESS"/>
         <after process="ingestFastMonTrend" status="SUCCESS"/>
+        <after process="ingestMeritTrend" status="SUCCESS"/>
         <after process="ingestReconTrend" status="SUCCESS"/>
         <after process="reconEorLogger" status="SUCCESS"/>
         <after process="reconTrendLogger" status="SUCCESS"/>
@@ -957,6 +994,7 @@
         <after process="registerCal" status="SUCCESS"/>
         <after process="registerCalEor" status="SUCCESS"/>
         <after process="registerCalTrend" status="SUCCESS"/>
+        <after process="registerCmpDFm" status="SUCCESS"/>
         <after process="registerDigi" status="SUCCESS"/>
         <after process="registerDigiEor" status="SUCCESS"/>
         <after process="registerDigiEorAlarm" status="SUCCESS"/>

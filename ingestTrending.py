@@ -25,7 +25,8 @@ app = config.trendIngestor
 realInFile = fileNames.fileName(reportType, dlId, runId)
 stagedInFile = staged.stageIn(realInFile)
 
-version = fileNames.version(realInFile)
+#version = fileNames.version(realInFile)
+version = os.environ['L1TrendVersion']
 
 if config.testMode:
     db = 'dev'
@@ -37,6 +38,7 @@ processes = {
     'calTrend': 'CalPed',
     'digiTrend': 'Digi',
     'fastMonTrend': 'FastMon',
+    'meritTrend': 'Merit',
     'reconTrend': 'Recon',
     }
 process = processes.get(reportType, 'UnknownProcess')

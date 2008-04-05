@@ -19,6 +19,7 @@ fileTypes = {
     'calEor': 'root',
     'calTrend': 'root',
     'chunkList': 'txt',
+    'compareDFm': 'xml',
     'crumbList': 'txt',
     'digi': 'root',
     'digiEor': 'root',

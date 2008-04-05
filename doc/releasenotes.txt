@@ -567,8 +567,17 @@ Don't use goofy threshholds in MC digi & recon.
 
 1.43
 -----------------
-Update to new netlogger.
-Add merit monitoring.
-When logging alarms, put counts in PI variables and log tags.
+AlarmsCfg v1r0p2
+FastMon v3r0p8
+FastMonCfg v1r0p2
+GPLtools v1r10 LONE-30
+Monitor v1r0p6
+DigiReconCalMeritCfg v1r0p6
 
-Use new AFS buffers.
+Update to new netlogger. LONE-27
+Add merit monitoring. LONE-29
+When logging alarms, put counts in PI variables and log tags. LONE-28
+Use private install of GPLtools.
+Compare digi & fastMon EOR histos. LONE-31
+
+Use new AFS buffers. LONE-26
