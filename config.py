@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('L1_TASK_VERSION') or "1.43"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.43"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -178,15 +178,15 @@ cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 cmtPackages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v3r0p9',
+        'version': 'v3r0p10',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v3r0p8',
+        'version': 'v3r0p10',
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r0p6',
+        'version': 'v1r0p8',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -209,15 +209,15 @@ cmtPackages = {
 cvsPackages = {
     'AlarmsCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r0p2',
+        'version': 'v1r0p4',
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r0p6',
+        'version': 'v1r0p8',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r0p2',
+        'version': 'v1r0p4',
         },
     'GPLtools': {
         'repository': '',
