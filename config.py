@@ -118,6 +118,7 @@ cleanupSubTask = {
 glastRoot = '/afs/slac.stanford.edu/g/glast'
 groundRoot = os.path.join(glastRoot, 'ground')
 glastSetup = os.path.join(groundRoot, 'scripts', 'group.sh')
+glastSetupCsh = os.path.join(groundRoot, 'scripts', 'group.cshrc')
 #
 cmtConfig = 'rh9_gcc32opt'
 installArea = os.path.join(L1Cmt, 'InstallArea', cmtConfig)

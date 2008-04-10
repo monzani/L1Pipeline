@@ -63,3 +63,24 @@ ofp.write(bEnv("PYTHONPATH", config.pythonPath))
 ofp.write(bEnv("ROOTSYS", config.rootSys))
 
 #ofp.write('%s\n' % config.isocEnv)
+
+ofq = open('setup.csh', 'w')
+
+ofq.write('source %s\n' % config.glastSetupCsh)
+
+ofq.write(cEnv("L1_TASK_NAME", config.L1Name))
+ofq.write(cEnv("L1_TASK_VERSION", config.L1Version))
+ofq.write(cEnv("L1_INSTALL_DIR", config.installRoot))
+ofq.write(cEnv("L1_BUILD_DIR", config.L1Cmt))
+
+ofq.write(cEnv("CMTCONFIG", config.cmtConfig))
+ofq.write(cEnv("CMTPATH", config.cmtPath))
+ofq.write(cEnv("GLAST_EXT", config.glastExt))
+ofq.write(cEnv("LATCalibRoot", config.LATCalibRoot))
+ofq.write(cEnv("LD_LIBRARY_PATH", config.libraryPath))
+ofq.write(cEnv("MALLOC_CHECK_", "0"))
+ofq.write(cEnv("PFILES", config.PFILES))
+ofq.write(cEnv("PYTHONPATH", config.pythonPath))
+ofq.write(cEnv("ROOTSYS", config.rootSys))
+
+
