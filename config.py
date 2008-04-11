@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.43"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.44"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -165,7 +165,7 @@ isocBin = os.path.join(isoc, isocPlatform, 'ISOC_PROD', 'bin')
 isocScript = os.path.join(isocBin, 'isoc')
 isocEnv = 'eval `%s isoc_env --add-env=flightops --add-env=root`' % isocScript
 
-stVersion = 'v9r4p2'
+stVersion = 'v9r5'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
 #ST = os.path.join(L1Cmt, "ScienceTools", "ScienceTools-%s" % stVersion)
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
@@ -179,31 +179,35 @@ cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 cmtPackages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v3r0p10',
-        },
-    'FastMon': {
-        'repository': 'dataMonitoring',
-        'version': 'v3r0p10',
-        },
-    'Monitor': {
-        'repository': 'svac',
-        'version': 'v1r0p8',
+        'version': 'v3r0p13',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
         'version': 'v3r12',
         },
-    'TestReport': {
+    'FastMon': {
+        'repository': 'dataMonitoring',
+        'version': 'v3r0p13',
+        },
+    'ft2Util': {
+        'repository': '',
+        'version': 'v1r1p44',
+        },
+    'GPLtools': {
+        'repository': '',
+        'version': 'v1r10',
+        },
+    'Monitor': {
         'repository': 'svac',
-        'version': 'v5r6',
+        'version': 'v1r0p10',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
         'version': 'v0r4',
         },
-    'ft2Util': {
-        'repository': '',
-        'version': 'v1r1p44',
+    'TestReport': {
+        'repository': 'svac',
+        'version': 'v5r8',
         },
     }
 
@@ -214,15 +218,11 @@ cvsPackages = {
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r0p8',
+        'version': 'v1r0p11',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r0p4',
-        },
-    'GPLtools': {
-        'repository': '',
-        'version': 'v1r10',
+        'version': 'v1r0p10',
         },
     'IGRF': {
         'repository': 'dataMonitoring',
@@ -308,10 +308,10 @@ apps = {
 monitorOptions = {
     'calEor': os.path.join(
         packages['DigiReconCalMeritCfg']['root'],
-        'monconfig_digi_CalLongTime_histos.xml'),
+        'monconfig_digi_long_histos.xml'),
     'calTrend': os.path.join(
         packages['DigiReconCalMeritCfg']['root'],
-        'monconfig_digi_CalLongTime_Trending.xml'),
+        'monconfig_digi_long_trending.xml'),
     'digiEor': os.path.join(
         packages['DigiReconCalMeritCfg']['root'],
         'monconfig_digi_histos.xml'),
@@ -343,8 +343,7 @@ monitorOptions = {
 
 mergeConfigs = {
     'calEor': os.path.join(
-        packages['DigiReconCalMeritCfg']['root'],
-        'MergeHistos_digi_CalLongTime.txt'),
+        packages['DigiReconCalMeritCfg']['root'], 'MergeHistos_digi_long.txt'),
     'digiEor': os.path.join(
         packages['DigiReconCalMeritCfg']['root'], 'MergeHistos_digi.txt'),
     'fastMonHist': os.path.join(
