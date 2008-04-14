@@ -581,3 +581,19 @@ Use private install of GPLtools.
 Compare digi & fastMon EOR histos. LONE-31
 
 Use new AFS buffers. LONE-26
+-------------------------------------------
+
+1.44
+-----------------
+dataMonitoring/AlarmsCfg v1r0p4
+dataMonitoring/FastMonCfg: v1r0p10
+dataMonitoring/Common: v3r0p13
+dataMonitoring/FastMon: v3r0p13
+svac/Monitor: v1r0p11
+dataMonitoring/DigiReconCalMeritCfg: v1r0p12
+ft2Util v1r2p4
+ScienceTools v9r5
+
+Move fakeFT2 into doRun.
+Specify time range of fake ft2 file on command line.
+Fix chicken-and-egg problem when installing a new version of GPLtools.

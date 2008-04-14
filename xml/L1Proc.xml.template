@@ -30,10 +30,6 @@
     </createsSubtasks>
   </process>
 
-  <process name="fakeFT2">
-    <job executable="${L1ProcROOT}/fakeFT2.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
-  </process>
- 
   <process name="ft2Gaps">
     <job executable="${L1ProcROOT}/ft2Db.py" batchOptions=" -q %(expressQ)s "/>
   </process>
@@ -71,6 +67,10 @@
       </createsSubtasks>
     </process>
 
+    <process name="fakeFT2">
+      <job executable="${L1ProcROOT}/fakeFT2.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+    </process>
+ 
     <process name="copyM7">
       <job executable="${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s " />
     </process>
@@ -981,6 +981,7 @@
         <after process="exportFT2" status="SUCCESS"/>
         <after process="exportLS1" status="SUCCESS"/>
         <after process="exportLS3" status="SUCCESS"/>
+        <after process="fakeFT2" status="SUCCESS"/>
         <after process="fastMonHistLogger" status="SUCCESS"/>
         <after process="fastMonTrendLogger" status="SUCCESS"/>
         <after process="ingestCalTrend" status="SUCCESS"/>

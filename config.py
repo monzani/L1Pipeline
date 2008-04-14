@@ -194,7 +194,7 @@ cmtPackages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r1p44',
+        'version': 'v1r2p4',
         },
     'GPLtools': {
         'repository': '',
@@ -202,7 +202,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r0p10',
+        'version': 'v1r0p11',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -221,7 +221,7 @@ cvsPackages = {
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r0p11',
+        'version': 'v1r0p12',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',

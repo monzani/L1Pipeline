@@ -6,3 +6,15 @@ you can put '--Gleam' option where you want not just at the end of the command l
 To merge a FT2.txt file with 1 second entries into a 30 seconds one, use mergeFT2Entries.exe  task :
 example:    mergeFT2Entries.exe -FT2_txt_File ft2-out.txt -FT2_fits_File  ft2.fits
 
+2008-04-11
+The new command lines are:
+Gleam:
+makeFT2Entries.exe --Gleam -M7File magic7.txt  -FT2_txt_File  ft2.txt -FT2_fits_File ft2.fits -DigiFile digi.root
+Digi (if the gaps file exist):
+makeFT2Entries.exe -DigiFile digi.root -MeritFile merit.root -M7File m7.txt -FT2_txt_File ft2t.txt -FT2_fits_File ft2-.fits
+-Gaps_File gaps.tx
+
+
+the Gleam command line should look like:
+makeFT2Entries.exe --Gleam -M7File magic7.txt  -FT2_txt_File  ft2.txt -FT2_fits_File ft2.fits -DigiTstart 2.573483e8
+-DigiTstop 2.573485e8

@@ -14,6 +14,9 @@ else:
     names = config.cvsPackages.keys() + config.cmtPackages.keys()
     pass
 
+backupGplTools = '/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/GPLtools/prod'
+sys.path.append(backupGplTools)
+
 def doPackage(packName):
     if packName in config.cmtPackages:
         doCmtPackage(packName)
