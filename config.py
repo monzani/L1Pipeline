@@ -174,8 +174,10 @@ stBinDir = os.path.join(ST, 'bin')
 #aspLauncher = '/nfs/farm/g/glast/u33/ASP/ASP/AspLauncher/v1/rh9_gcc32/aspLauncher.sh'
 aspLauncher = '/bin/true'
 
-ft1Cuts = 'DEFAULT'
+#ft1Cuts = 'DEFAULT'
 ft1Cuts = os.path.join(L1Data, 'pass5_cuts')
+
+ft2Pad = 1.0
 
 cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 
