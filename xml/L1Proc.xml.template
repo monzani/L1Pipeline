@@ -799,8 +799,8 @@
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
-        <after process="doChunk.mergeCalCrumbs" status="DONE"/>
-        <after process="doChunk.mergeReconCrumbs" status="DONE"/>
+        <!-- <after process="doChunk.mergeCalCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
+        <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
         <after process="doChunk.reconTrend" status="DONE"/>
       </depends>
     </process>
@@ -869,8 +869,8 @@
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
-        <after process="doChunk.mergeCalCrumbs" status="DONE"/>
-        <after process="doChunk.mergeReconCrumbs" status="DONE"/>
+        <!-- <after process="doChunk.mergeCalCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
+        <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
         <after process="doChunk.reconEor" status="DONE"/>
       </depends>
     </process>
@@ -1231,6 +1231,7 @@
         </variables>
         <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
+          <after process="doCrumb.recon" status="SUCCESS"/>
           <after process="mergeMeritCrumbs" status="SUCCESS"/>
         </depends>
       </process>
@@ -1241,6 +1242,7 @@
         </variables>
         <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
+          <after process="doCrumb.recon" status="SUCCESS"/>
           <after process="mergeMeritCrumbs" status="SUCCESS"/>
         </depends>
       </process>

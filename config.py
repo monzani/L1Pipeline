@@ -196,7 +196,7 @@ cmtPackages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r2p4',
+        'version': 'v1r1p44',
         },
     'GPLtools': {
         'repository': '',
@@ -204,7 +204,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r0p11',
+        'version': 'v1r0p13',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',

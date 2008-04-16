@@ -10,6 +10,9 @@ import sys
 
 import config
 
+backupGplTools = '/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/GPLtools/prod/python'
+sys.path.append(backupGplTools)
+
 import runner
 
 workDir = os.path.join('/tmp', `os.getpid()`)

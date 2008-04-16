@@ -40,6 +40,16 @@ stagedFt2FitsFile = os.path.join(workDir, 'junkFT2.fits')
 
 setupScript = config.packages['ft2Util']['setup']
 
+realGapFile = os.path.join(
+    os.environ['DOWNLINK_RAWDIR'], 'event_gaps_%s.txt' % dlId)
+#if os.path.exists(realGapFile):
+if False:
+    stagedGapFile =  staged.stageIn(realGapFile)
+    gapOpts = ' -Gaps_File %s ' % stagedGapFile
+else:
+    gapOpts = ''
+    pass
+
 datasource = os.environ['DATASOURCE']
 if datasource == 'MC':
     mcOpt = '--MC'
@@ -50,7 +60,7 @@ else:
 cmd = '''
 cd %(workDir)s
 source %(setupScript)s
-%(app)s -DigiFile %(stagedDigiFile)s -MeritFile %(stagedMeritFile)s -M7File %(stagedM7File)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s %(mcOpt)s
+%(app)s -DigiFile %(stagedDigiFile)s -MeritFile %(stagedMeritFile)s -M7File %(stagedM7File)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s %(gapOpts)s %(mcOpt)s
 ''' % locals()
 
 status = runner.run(cmd)
