@@ -223,7 +223,7 @@ cvsPackages = {
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r0p12',
+        'version': 'v1r0p15',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',

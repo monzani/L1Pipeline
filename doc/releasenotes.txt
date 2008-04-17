@@ -590,7 +590,7 @@ dataMonitoring/FastMonCfg: v1r0p10
 dataMonitoring/Common: v3r0p13
 dataMonitoring/FastMon: v3r0p13
 svac/Monitor: v1r0p13
-dataMonitoring/DigiReconCalMeritCfg: v1r0p12
+dataMonitoring/DigiReconCalMeritCfg: v1r0p15
 ft2Util v1r1p44
 ScienceTools v9r5
 
