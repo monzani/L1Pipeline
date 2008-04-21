@@ -196,7 +196,7 @@ cmtPackages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r2p7',
+        'version': 'v1r2p8',
         },
     'GPLtools': {
         'repository': '',
