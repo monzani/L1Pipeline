@@ -42,8 +42,7 @@ setupScript = config.packages['ft2Util']['setup']
 
 realGapFile = os.path.join(
     os.environ['DOWNLINK_RAWDIR'], 'event_gaps_%s.txt' % dlId)
-#if os.path.exists(realGapFile):
-if False:
+if os.path.exists(realGapFile):
     stagedGapFile =  staged.stageIn(realGapFile)
     gapOpts = ' -Gaps_File %s ' % stagedGapFile
 else:

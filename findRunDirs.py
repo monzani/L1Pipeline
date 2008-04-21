@@ -102,15 +102,15 @@ dataSource = {}
 deliveredFile = os.path.join(dlRawDir, 'delivered_events_%s.txt' % dlId)
 try:
     dfp = open(deliveredFile)
+    for line in dfp:
+        runId, delivered, heldBack, source = line.split()
+        deliveredEvents[runId] = int(delivered)
+        heldBackEvents[runId] = int(heldBack)
+        dataSource[runId] = source
+        continue
 except IOError:
     print >> sys.stderr, "Couldn't open delivered event file %s, all runs will haver default dataSource %s" % (boundaryFile, config.defaultDataSource)
     pass
-for line in dfp:
-    runId, delivered, heldBack, source = line.split()
-    deliveredEvents[runId] = int(delivered)
-    heldBackEvents[runId] = int(heldBack)
-    dataSource[runId] = source
-    continue
 
 runNumRe = re.compile('([0-9]+)')
 # create up a subStream for each data run

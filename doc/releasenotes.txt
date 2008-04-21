@@ -1,3 +1,16 @@
+1.45
+-----------------
+GR v13r11p6
+ft2Util v1r2p7
+EngineeringModelRoot v3r14
+
+Supply start & end times to fakeFT2.
+Supply gaps file to ft2Entries.
+-------------------------------------------
+
+
+
+
 0.70 
 -----------------
 used for L1 demo.

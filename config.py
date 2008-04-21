@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.44"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.45"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -126,8 +126,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
-glastVersion = 'v13r11p4'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
+glastVersion = 'v13r11p6'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -188,7 +188,7 @@ cmtPackages = {
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
-        'version': 'v3r12',
+        'version': 'v3r14',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
@@ -196,7 +196,7 @@ cmtPackages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r1p44',
+        'version': 'v1r2p7',
         },
     'GPLtools': {
         'repository': '',
