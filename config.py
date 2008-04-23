@@ -92,7 +92,7 @@ stageBase = 'l1Stage'
 #maxCrumbSize = 17000   # ~.5Hr on cob (skymodel).
 minCrumbCpuf = 7
 maxCrumbs = 7 # Maximum number of crumbs/chunk. Not used by current algorithm.
-crumbSize = 5000 # typical crumb size
+crumbSize = 15000 # typical crumb size
 crumbMmr = 2.0 # largestCrumb / smallestCrumb
 
 defaultRunStatus = 'WAITING'

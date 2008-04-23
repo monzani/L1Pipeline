@@ -1,11 +1,13 @@
 1.45
 -----------------
 GR v13r11p6
-ft2Util v1r2p7
+ft2Util v1r2p8
 EngineeringModelRoot v3r14
 
 Supply start & end times to fakeFT2.
+Make fakeFT2 depend on findChunks so it doesn't escape the run lock.
 Supply gaps file to ft2Entries.
+config.crumbSize=15000 (was 5000).
 -------------------------------------------
 
 
