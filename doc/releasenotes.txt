@@ -1,3 +1,9 @@
+1.46 2007-04-24
+-----------------
+ft2Util v1r2p9
+-------------------------------------------
+
+
 1.45
 -----------------
 GR v13r11p6
@@ -8,6 +14,43 @@ Supply start & end times to fakeFT2.
 Make fakeFT2 depend on findChunks so it doesn't escape the run lock.
 Supply gaps file to ft2Entries.
 config.crumbSize=15000 (was 5000).
+-------------------------------------------
+
+
+1.44
+-----------------
+dataMonitoring/AlarmsCfg v1r0p4
+dataMonitoring/FastMonCfg: v1r0p10
+dataMonitoring/Common: v3r0p13
+dataMonitoring/FastMon: v3r0p13
+svac/Monitor: v1r0p13
+dataMonitoring/DigiReconCalMeritCfg: v1r0p15
+ft2Util v1r1p44
+ScienceTools v9r5
+
+Move fakeFT2 into doRun.
+Fix chicken-and-egg problem when installing a new version of GPLtools.
+meritTrend and meritEor depend on SUCCESS of recon.
+Remove unneeded dependencies from mergeReconTrend and mergeReconEor.
+-------------------------------------------
+
+
+1.43
+-----------------
+AlarmsCfg v1r0p2
+FastMon v3r0p8
+FastMonCfg v1r0p2
+GPLtools v1r10 LONE-30
+Monitor v1r0p6
+DigiReconCalMeritCfg v1r0p6
+
+Update to new netlogger. LONE-27
+Add merit monitoring. LONE-29
+When logging alarms, put counts in PI variables and log tags. LONE-28
+Use private install of GPLtools.
+Compare digi & fastMon EOR histos. LONE-31
+
+Use new AFS buffers. LONE-26
 -------------------------------------------
 
 
@@ -579,37 +622,3 @@ Put data under IandT instead of OpsSim2.
 kludgeASP does nothing.
 Don't use goofy threshholds in MC digi & recon.
 -------------------------------------------
-
-1.43
------------------
-AlarmsCfg v1r0p2
-FastMon v3r0p8
-FastMonCfg v1r0p2
-GPLtools v1r10 LONE-30
-Monitor v1r0p6
-DigiReconCalMeritCfg v1r0p6
-
-Update to new netlogger. LONE-27
-Add merit monitoring. LONE-29
-When logging alarms, put counts in PI variables and log tags. LONE-28
-Use private install of GPLtools.
-Compare digi & fastMon EOR histos. LONE-31
-
-Use new AFS buffers. LONE-26
--------------------------------------------
-
-1.44
------------------
-dataMonitoring/AlarmsCfg v1r0p4
-dataMonitoring/FastMonCfg: v1r0p10
-dataMonitoring/Common: v3r0p13
-dataMonitoring/FastMon: v3r0p13
-svac/Monitor: v1r0p13
-dataMonitoring/DigiReconCalMeritCfg: v1r0p15
-ft2Util v1r1p44
-ScienceTools v9r5
-
-Move fakeFT2 into doRun.
-Fix chicken-and-egg problem when installing a new version of GPLtools.
-meritTrend and meritEor depend on SUCCESS of recon.
-Remove unneeded dependencies from mergeReconTrend and mergeReconEor.
