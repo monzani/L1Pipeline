@@ -54,333 +54,220 @@ Use new AFS buffers. LONE-26
 -------------------------------------------
 
 
-
-
-0.70 
+1.42
 -----------------
-used for L1 demo.
+GR v13r11p4
+EngineeringModelRoot v3r12
+FastMon v3r0p5
+FastMonCfg v1r0p1
+IGRF v1r0p1
+TestReport v5r6
+
+Put variables cotrolling task name, version, location, and build dir in XML
+and setup.sh.
+compile_stuff.py does cvs packages as well as cmt.
+Hardwire isocPlatform to rhel3_gcc32.
+
+Default install location is
+/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1
+Default build dir is /afs/slac/g/glast/ground/releases/volume03/L1Proc
+Put data under IandT instead of OpsSim2.
+kludgeASP does nothing.
+Don't use goofy threshholds in MC digi & recon.
 -------------------------------------------
 
 
-1.3 (same as 1.2) 
+1.41 post OpsSim2
 -----------------
-used for ETE1a. NOT!
+AlarmsCfg v1r0p0
+DigiReconCalMeritCfg v1r0p0
+FastMonCfg v1r0p0
+Common v3r0p0
+FastMon v3r0p0
+Monitor v1r0p0
+IGRF v1r0p0
+
+RunVerify stuff added to L1Proc.
+Make and register ACD plot tarball.
+Separate FastMon tuple and histograms.
+Alarm exceptions.
+Use monitoring configs from separate packages.
+Use environment variables to override task name & version and builds dir.
+cleanupDl depends on doLci.checkRunLci, but not kludgeAsp.
+Use MOOT for trigger config in digitization.
+Use LCI config for fastMonLci.
+Copy magic7 file to run directory (and register it).
+
+Don't do run cleanup.
 -------------------------------------------
 
 
-1.4 2007/04/05
+1.40 OpsSim2, live portion
 -----------------
-EM v7r0913p11
-TestReport v3r6p41
+Common v2r13p3
+FastMon v2r11p0
+Monitor dp20080304
 
-Add exportL1 process (doesn't actually do the export yet)
-Do a cmt config when building packages at install time
-Use run, chunk, crumb IDs as stream #s
-When merging:
-  If no input files, print a message and die.
-  Stage output file, and any input files that don't fit on /scratch, on AFS.
-    Except we can't write to AFS.  So the code to do this is commented out.
+FastMon trending.
+Launch ASP.
+
+Use goofy threshholds in digi & recon (MC only).
 -------------------------------------------
 
-1.5
+1.39 OpsSim2, take 2
 -----------------
-Uses test version of pipelieDatasets that uses CloneTree to merge - fast, but 
-untrusted.
-export FT1 working.
+Monitor dp20080229_v4
+
+FastMon reads magic7 file and does IGRF monitoring.  But I think the results
+don't get merged.
+Implemented FastMon trending, but it's all commented out.
+Stage input digi even if it's on afs to avoid reading it multiple times.
+
+Delete DOWNLINK_RAWDIR in cleanupDl.
 -------------------------------------------
 
-1.6
+1.38
 -----------------
-Expand registration script at install time instead of hardcoding it
-repeatedly, and set dataset type correctly.
-Add checkChunk process.
-Put updateRunStatus and cleanupChunks in a subtask.
-Lock run directory in before findChunks, unlock in checkRun.
-Add FastMon.
-Add digi and recon end-of-run monitoring.
-Add digi and recon trending.
-Work on ASP launch code.
+ScienceTools v9r4p2
+Common v2r13p0
+FastMon v2r10p0
+Monitor mk20080227
+
+Move option files to $L1ProcRoot/data.
+Allow (integer) weights on staging dirs, add 2 nfs volumes at half weight.
+Don't save SVAC histogram files.
+Serialize crumb merges: merit, recon, cal, gcr.
+Don't run registerPrep on failed anything.
+Move crumble params to config.
+
+Do run cleanup.
+Put data in OpsSim2 in datacat&xroot.
+Back to 5k max avg crumb.
 -------------------------------------------
 
-1.7
+
+1.37 ETE4, OrbSim3
 -----------------
-Add ingestion of trending outputs.
-Use checkRun batch job (not script).
-Get merge configs for EOR, TDMon, FastMon.
-Generate histograms (not just trees) in FastMon, and register them.
--------------------------------------------
+ft2Util v1r1p44
 
-1.8 2007/07/07
------------------
-Common v1r0p1
-FastMon v0r7p2
-Monitor mk20070707
-TestReport TRdp20070706
-EngineeringModelRoot v3r0p3
-pipelineDatasets v0r3
+Don't set TriggerAlg.engine when digitizing.
+Don't run registerPrep on failed merges.
+Use stageFiles.copy instead of fileNames.fileCopy for single-piece "merges".
 
-Fix fastMon.py.  FastMon fails to produce output if the number of events is
-not restricted.  Set limit to 50K.
-
-Attempting to use this for ETE2.
--------------------------------------------
-
-1.9
------------------
-Common v1r1p0
-FastMon v1r0p0
-Fixes fastmon '-n' bug, and another.
--------------------------------------------
-
-1.10 2007-07-18
------------------
-Common v1r2p0
-FastMon v1r1p0
-Monitor mk20070716
-TestReport TRdp20070706
-EngineeringModelRoot v3r0p3
-pipelineDatasets v0r4
-
-Specify scratch>70 for mergeReconChunks.
-Don't specify LSF allocation group.
-Run most things on long, digi & recon on medium.
-Don't specifiy 32-bit hosts.
-Set MALLOC_CHECK_=0.
-
-Enable export of FT1, with proper(ish) name.
-Use MET at time of run lock creation as version of run-level files.
-Generate dynamic code for Monitor at install time.
-Add some missing dependencies in XML.
--------------------------------------------
-
-1.11
------------------
-EM v8r1109p10
-ROOT v5.14.00g
-Monitor mk20070719
-TestReport v3r7p4 (only used for histo merge code)
-EngineeringModelRoot v3r1p2
-
-Get rid of TestReport-based monitoring.
-Put actual queue names in XML, instead of vars from config.py
-Fiddle queues & priorities to try to favor FT1/FT2
-Add test mode:
-	automatically entered if we are not on prod server
-	write data to test location
-	use LISOC loopback for FTx exports
-Make svacTuple depend on success of all crumbs in the chunk
-Do crumb cleanup
--------------------------------------------
-
-1.12
------------------
-Use GPL2 version of stageFiles.py.
-Use ISOC installation of python2.5.
-Run crumb cleanup on short.
-config.py defaults to test mode (and doesn't crash) if pipeline env vars 
-aren't set.
--------------------------------------------
-
-1.13
------------------
-EM v8r1109p12
-Monitor dp20070728
-
-Don't put package versions in dir names - just L1 version at the top.
-Run digi & recon trending on chunks, use new treemerge.exe.
-Use 'Trend' instead of 'TdMon' and 'Td' in process and file names.
-
-Trending ingest is failing.
--------------------------------------------
-
-1.14 (neither tagged nor comitted)
------------------
-Fail on bad result from stageFiles.StageSet.finish().
-Better error handling in runner.run().
-Remove TestReport stuff.
-Increase crumb size (to 17000), run recon on long.
-Fix a couple of dumb little bugs.
--------------------------------------------
-
-1.15
------------------
-Move most processes to long so they don't interfere with recon.
-Fix(?) race condition in procdirs.mkdir().
-Don't "chgrp -R glast-pipeline" the output disk every time we merge a file.
--------------------------------------------
-
-1.16
------------------
-ft2Util v1r1p1
-Add Adrea's makeFt2.py (renamed to ft2Entries.py).
-Get histos instead of trees from fastMon.
-Add subtask for LCI runs.
--------------------------------------------
-
-1.17
------------------
-ft2Util v1r1p6
-Tweaks to PYTHONPATH and LD_LIBRARY_PATH
-Tweaks to FT2 and fastMon
--------------------------------------------
-
-1.18
------------------
-GlastRelease v12r5
-Common v2r1p0
-FastMon v2r1p1
-ScienceTools v9r2
-
-Stage chunks & crumbs on AFS.
-
-Add "DATASOURCE=LPA" as pipeline variable and use it as metadata when
-registering files.  User can override it when injecting MC data.
-FastCopy to LISOC even in prod mode.
-Frob makeFT1.
--------------------------------------------
-
-1.19
------------------
-GlastRelease v12r8
-Common v2r2p1
-FastMon v2r2p0
-ft2Util v1r1p11
-
-Don't copy staged outputs back if processing failed.
-Munge dependencies for FT1 and FT2.
-Make bogus FT2 file for recon.
-Make 30-second FT2 file.
-Restrict svacTuple to fast hosts.
-Register data products with DATASOURCE=(LPA|LCI|MC).
-Use flight geometry for MC and ground for LPA.
-Tweak queues.
--------------------------------------------
-
-1.20
------------------
-GR v12r11
-Common v2r3p1
-FastMon v2r3p2
-Monitor mk20071001
-ft2Util v1r1p19
-
-Make tStart and tStop prerequisites for doRun, and use them when registering
-files and making FT1.  Read them from file supplied by HalfPipe.
-Add run id & status, downlink id to metadata when registering files.
-Use cal file for recon EOR and trending.
-Do chunk cleanup on successfule runs if runstatus is COMPLETE or INCOMPLETE.
-rm -rf packages before checking them out when building.
--------------------------------------------
-
-1.21
------------------
-GR v12r13
-Monitor dp20071002_v2
-ft2Util v1r1p20
-
-Get GCR calib crumb files.
-Run alarmHandler on fastMon output, log results to ISOC logger.
-Clean up compound comands run by scripts.
--------------------------------------------
-
-1.22
------------------
-GR v12r15
-Monitor dp20071004_v1
-
-Log undefined alarms as errors.
-Use OktoberTest joboptions for recon.
-Merge gcr with pipelinedatasets.
-Clean up merging code.
-Use custom eventclassifier for FT1, run makeFT1.exe directly rather than 
-bin/makeFT1.
--------------------------------------------
-
-v1r22p1
------------------
-ScienceTools v9r2p2
-ft2Util v1r1p21
-Back out v1r22 changes to the way makeFT1 is run.
--------------------------------------------
-
-1.23 Used for OpsSim1
------------------
-Monitor dp20071008_v5
-EngineeringModelRoot v3r3p2
-ft2Util v1r1p24
-
-Get MergeHistFiles.exe from Monitor, not TestReport.
-Get configData from GlastRelease.
-No longer build TestReport or configData.
-Various OpsSim1-specific tweaks that will have to be backed out.
--------------------------------------------
-
-1.24
------------------
-Common v2r4p2
-FastMon v2r4p3
-Monitor dp20071019
-
-Make some mc-related options to programs that were hardwired for OpsSim1
-depend on DATASOURCE.
-Don't keep or register alarmHandler html.
-Do keep and register fastMon tuple. And error summary.
-Register digi & recon trending files.
-Put (almost) all chunk-level files in their own subdirectories.
-Make cleanup work better with load balancing.
-Reformat a bunch of stuff.
-Handle LCI runs.
-Determine LPA, LCI, or MC from delivered_events file.
-
-Load balance chunks (not crumbs yet) between 2 AFS staging volumes.  The
-implementation is not good, it's a shell script that has a bunch of stuff
-hardwired the should be gotten from config.
--------------------------------------------
-
-1.25
------------------
-Use variable crumb sizes and a fixed number of crumbs/chunk.
-Make reconEor and reconTrend depend on mergeCalCrumbs.
-Reorder stuff in XML.
--------------------------------------------
-
-1.26
------------------
-Reimplement load balancing of temp files in python.
-Load balance crumbs as well as chunks.
-Frob organization of temp dirs.
-Merge & keep FastMon error summary for LCI runs.
--------------------------------------------
-
-1.27
------------------
-Monitor dp20071114
-
-More XML reordering.
-Use a better hash (MD5 instead of python hash) to balance runs.
-Select calibrations for MC or LPA.
+Use bigger crumbs (25e3 max avg).
+Put data in IandT instead of OpsSim2 in datacat&xroot.
 Export to GSSC on prod.
-Specify python interpreter when running FastMon.
+Don't do run cleanup.
 -------------------------------------------
 
-1.28
+
+1.36 OpsSim2 orbits 31-53,55,56
 -----------------
-ft2Util v1r1p26
-Allow use of rootFiles.py as a hadd-like tree merger.
-Add code to change basket size while merging trees.
-Use rebasketizing merge for cal crumbs.
-Make better version numbers for export files.
-Tweak queues.
-Start work on assigning each chunk a list of preferred hosts to increase
-chance of sharing AFS cache.
-install.py makes a setup.sh script.
+Common v2r12p2
+ft2Util v1r1p39
+EngineeringModelRoot v3r11
+
+Run alarms on digiTrend, reconTrend.
+Use fileNames.fileCopy for single-crumb merges, thus automatically creating
+output dir.
+Pay attention to return status on tree merges.
+Initial version of run Verification (including output files). Not actually running it yet.
+
+Do run cleanup.  Hardwired since OpsSim2 gives complete runs.
+Crumb size tweakage.
+Move DOWNLINK_RAWDIR to long-term storage when dl is complete.
 -------------------------------------------
 
-1.29 (used for DITL 1)
+
+1.35 OpsSim2 orbits 1-30
 -----------------
-Don't run cleanupIncompleteRun.
+Common v2r11p0
+FastMon v2r9p0
+ft2Util v1r1p37
+
+Run alarms on digiEor, reconEor.
+-------------------------------------------
+
+
+1.34 OpsSim2 orbit0
+-----------------
+GR v9r11p1
+ft2Util v1r1p35
+
+Make lots of little crumbs.
+Supply proper VERSION keyword for ls5 (=ft2).
+-------------------------------------------
+
+
+1.33
+-----------------
+Common v2r10p0
+FastMon v2r8p0
+ft2Util v1r1p34
+
+Crumble digi file.
+Run svacTuple at crumb level.
+Supply proper VERSION keyword for ls1, ls2.
+Set disk space requirements to a minimum of 1GB.
+Launch ASP when all FT[12] in a downlink are registered.
+
+Use xroot for run-level products.
+Use new netlogging features.
+Munge data catalog names.
+
+Added some variables for run Verification. Not actually running it yet.
 
 -------------------------------------------
+
+
+1.32 Reprocess most OrbSim1 runs
+-----------------
+ScienceTools v9r4p1
+Common v2r9p0
+FastMon v2r7p0
+Monitor dp20080207_v2
+ft2Util v1r1p30
+EngineeringModelRoot v3r10p1 (For a while. Not sure since when.)
+
+Use LSF host balancing with glastcobs,glastyilis. Doesn't seem to do much.
+Move pipeline module to GPLtools.
+Use glastdataq for everything.
+Require sufficient scratch space.  Don't have good examples for all types.
+Import config before GPLinit so logging works.
+Don't use -z with runStrip.
+Set environment variables (except LD_LIB...) in config, not XML.
+Put a switch in config to disable cleanup.
+Eliminate RUN_RAWDIR variable.
+Make a minimum crumb size of 2500.
+
+-------------------------------------------
+
+
+1.31 2008/01/26 OrbSim1, TVAC Opp ETE
+-----------------
+Common v2r5p1
+FastMon v2r5p1
+Monitor dp20080125
+
+Make and export LS-001 (merit lite) files.
+
+Switch to new fileNames module:
+New version scheme.
+All staged files assigned to random-but-repeatable disk.
+Exported files are created with the proper name in the first place.
+Merge input files are predicted rather than scanned.
+
+Do downlink cleanup (just ft2Fake for now).
+
+Do cal EOR and trending.
+
+Run runStrip with -z option for recon & digi, but not for cal.
+compileRunStrip supplies nonexistant input files.
+
+Code cleanup.
+
+-------------------------------------------
+
 
 1.30
 -----------------
@@ -415,210 +302,356 @@ Work on LSF host balancing.  Still not used.
 
 Add (not yet used) fileNamesNew module which will replace fileNames, procDirs,
 and balance.
-
 -------------------------------------------
 
-1.31 2008/01/26 OrbSim1, TVAC Opp ETE
+
+1.29 (used for DITL 1)
 -----------------
-Common v2r5p1
-FastMon v2r5p1
-Monitor dp20080125
-
-Make and export LS-001 (merit lite) files.
-
-Switch to new fileNames module:
-New version scheme.
-All staged files assigned to random-but-repeatable disk.
-Exported files are created with the proper name in the first place.
-Merge input files are predicted rather than scanned.
-
-Do downlink cleanup (just ft2Fake for now).
-
-Do cal EOR and trending.
-
-Run runStrip with -z option for recon & digi, but not for cal.
-compileRunStrip supplies nonexistant input files.
-
-Code cleanup.
-
+Don't run cleanupIncompleteRun.
 -------------------------------------------
 
-1.32 Reprocess most OrbSim1 runs
+
+1.28
 -----------------
-ScienceTools v9r4p1
-Common v2r9p0
-FastMon v2r7p0
-Monitor dp20080207_v2
-ft2Util v1r1p30
-EngineeringModelRoot v3r10p1 (For a while. Not sure since when.)
-
-Use LSF host balancing with glastcobs,glastyilis. Doesn't seem to do much.
-Move pipeline module to GPLtools.
-Use glastdataq for everything.
-Require sufficient scratch space.  Don't have good examples for all types.
-Import config before GPLinit so logging works.
-Don't use -z with runStrip.
-Set environment variables (except LD_LIB...) in config, not XML.
-Put a switch in config to disable cleanup.
-Eliminate RUN_RAWDIR variable.
-Make a minimum crumb size of 2500.
-
+ft2Util v1r1p26
+Allow use of rootFiles.py as a hadd-like tree merger.
+Add code to change basket size while merging trees.
+Use rebasketizing merge for cal crumbs.
+Make better version numbers for export files.
+Tweak queues.
+Start work on assigning each chunk a list of preferred hosts to increase
+chance of sharing AFS cache.
+install.py makes a setup.sh script.
 -------------------------------------------
 
-1.33
+
+1.27
 -----------------
-Common v2r10p0
-FastMon v2r8p0
-ft2Util v1r1p34
+Monitor dp20071114
 
-Crumble digi file.
-Run svacTuple at crumb level.
-Supply proper VERSION keyword for ls1, ls2.
-Set disk space requirements to a minimum of 1GB.
-Launch ASP when all FT[12] in a downlink are registered.
-
-Use xroot for run-level products.
-Use new netlogging features.
-Munge data catalog names.
-
-Added some variables for run Verification. Not actually running it yet.
-
--------------------------------------------
-
-1.34 OpsSim2 orbit0
------------------
-GR v9r11p1
-ft2Util v1r1p35
-
-Make lots of little crumbs.
-Supply proper VERSION keyword for ls5 (=ft2).
--------------------------------------------
-
-1.35 OpsSim2 orbits 1-30
------------------
-Common v2r11p0
-FastMon v2r9p0
-ft2Util v1r1p37
-
-Run alarms on digiEor, reconEor.
--------------------------------------------
-
-1.36 OpsSim2 orbits 31-53,55,56
------------------
-Common v2r12p2
-ft2Util v1r1p39
-EngineeringModelRoot v3r11
-
-Run alarms on digiTrend, reconTrend.
-Use fileNames.fileCopy for single-crumb merges, thus automatically creating
-output dir.
-Pay attention to return status on tree merges.
-Initial version of run Verification (including output files). Not actually running it yet.
-
-Do run cleanup.  Hardwired since OpsSim2 gives complete runs.
-Crumb size tweakage.
-Move DOWNLINK_RAWDIR to long-term storage when dl is complete.
--------------------------------------------
-
-1.37 ETE4, OrbSim3
------------------
-ft2Util v1r1p44
-
-Don't set TriggerAlg.engine when digitizing.
-Don't run registerPrep on failed merges.
-Use stageFiles.copy instead of fileNames.fileCopy for single-piece "merges".
-
-Use bigger crumbs (25e3 max avg).
-Put data in IandT instead of OpsSim2 in datacat&xroot.
+More XML reordering.
+Use a better hash (MD5 instead of python hash) to balance runs.
+Select calibrations for MC or LPA.
 Export to GSSC on prod.
-Don't do run cleanup.
+Specify python interpreter when running FastMon.
 -------------------------------------------
 
-1.38
+
+1.26
 -----------------
-ScienceTools v9r4p2
-Common v2r13p0
-FastMon v2r10p0
-Monitor mk20080227
-
-Move option files to $L1ProcRoot/data.
-Allow (integer) weights on staging dirs, add 2 nfs volumes at half weight.
-Don't save SVAC histogram files.
-Serialize crumb merges: merit, recon, cal, gcr.
-Don't run registerPrep on failed anything.
-Move crumble params to config.
-
-Do run cleanup.
-Put data in OpsSim2 in datacat&xroot.
-Back to 5k max avg crumb.
+Reimplement load balancing of temp files in python.
+Load balance crumbs as well as chunks.
+Frob organization of temp dirs.
+Merge & keep FastMon error summary for LCI runs.
 -------------------------------------------
 
-1.39 OpsSim2, take 2
+
+1.25
 -----------------
-Monitor dp20080229_v4
-
-FastMon reads magic7 file and does IGRF monitoring.  But I think the results
-don't get merged.
-Implemented FastMon trending, but it's all commented out.
-Stage input digi even if it's on afs to avoid reading it multiple times.
-
-Delete DOWNLINK_RAWDIR in cleanupDl.
+Use variable crumb sizes and a fixed number of crumbs/chunk.
+Make reconEor and reconTrend depend on mergeCalCrumbs.
+Reorder stuff in XML.
 -------------------------------------------
 
-1.40 OpsSim2, live portion
+
+1.24
 -----------------
-Common v2r13p3
-FastMon v2r11p0
-Monitor dp20080304
+Common v2r4p2
+FastMon v2r4p3
+Monitor dp20071019
 
-FastMon trending.
-Launch ASP.
+Make some mc-related options to programs that were hardwired for OpsSim1
+depend on DATASOURCE.
+Don't keep or register alarmHandler html.
+Do keep and register fastMon tuple. And error summary.
+Register digi & recon trending files.
+Put (almost) all chunk-level files in their own subdirectories.
+Make cleanup work better with load balancing.
+Reformat a bunch of stuff.
+Handle LCI runs.
+Determine LPA, LCI, or MC from delivered_events file.
 
-Use goofy threshholds in digi & recon (MC only).
+Load balance chunks (not crumbs yet) between 2 AFS staging volumes.  The
+implementation is not good, it's a shell script that has a bunch of stuff
+hardwired the should be gotten from config.
 -------------------------------------------
 
-1.41 post OpsSim2
+
+1.23 Used for OpsSim1
 -----------------
-AlarmsCfg v1r0p0
-DigiReconCalMeritCfg v1r0p0
-FastMonCfg v1r0p0
-Common v3r0p0
-FastMon v3r0p0
-Monitor v1r0p0
-IGRF v1r0p0
+Monitor dp20071008_v5
+EngineeringModelRoot v3r3p2
+ft2Util v1r1p24
 
-RunVerify stuff added to L1Proc.
-Make and register ACD plot tarball.
-Separate FastMon tuple and histograms.
-Alarm exceptions.
-Use monitoring configs from separate packages.
-Use environment variables to override task name & version and builds dir.
-cleanupDl depends on doLci.checkRunLci, but not kludgeAsp.
-Use MOOT for trigger config in digitization.
-Use LCI config for fastMonLci.
-Copy magic7 file to run directory (and register it).
-
-Don't do run cleanup.
+Get MergeHistFiles.exe from Monitor, not TestReport.
+Get configData from GlastRelease.
+No longer build TestReport or configData.
+Various OpsSim1-specific tweaks that will have to be backed out.
 -------------------------------------------
 
-1.42
+
+v1r22p1
 -----------------
-GR v13r11p4
-EngineeringModelRoot v3r12
-FastMon v3r0p5
-FastMonCfg v1r0p1
-IGRF v1r0p1
-TestReport v5r6
+ScienceTools v9r2p2
+ft2Util v1r1p21
+Back out v1r22 changes to the way makeFT1 is run.
+-------------------------------------------
 
-Put variables cotrolling task name, version, location, and build dir in XML
-and setup.sh.
-compile_stuff.py does cvs packages as well as cmt.
-Hardwire isocPlatform to rhel3_gcc32.
 
-Default install location is
-/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1
-Default build dir is /afs/slac/g/glast/ground/releases/volume03/L1Proc
-Put data under IandT instead of OpsSim2.
-kludgeASP does nothing.
-Don't use goofy threshholds in MC digi & recon.
+1.22
+-----------------
+GR v12r15
+Monitor dp20071004_v1
+
+Log undefined alarms as errors.
+Use OktoberTest joboptions for recon.
+Merge gcr with pipelinedatasets.
+Clean up merging code.
+Use custom eventclassifier for FT1, run makeFT1.exe directly rather than 
+bin/makeFT1.
+-------------------------------------------
+
+
+1.21
+-----------------
+GR v12r13
+Monitor dp20071002_v2
+ft2Util v1r1p20
+
+Get GCR calib crumb files.
+Run alarmHandler on fastMon output, log results to ISOC logger.
+Clean up compound comands run by scripts.
+-------------------------------------------
+
+
+1.20
+-----------------
+GR v12r11
+Common v2r3p1
+FastMon v2r3p2
+Monitor mk20071001
+ft2Util v1r1p19
+
+Make tStart and tStop prerequisites for doRun, and use them when registering
+files and making FT1.  Read them from file supplied by HalfPipe.
+Add run id & status, downlink id to metadata when registering files.
+Use cal file for recon EOR and trending.
+Do chunk cleanup on successfule runs if runstatus is COMPLETE or INCOMPLETE.
+rm -rf packages before checking them out when building.
+-------------------------------------------
+
+
+1.19
+-----------------
+GlastRelease v12r8
+Common v2r2p1
+FastMon v2r2p0
+ft2Util v1r1p11
+
+Don't copy staged outputs back if processing failed.
+Munge dependencies for FT1 and FT2.
+Make bogus FT2 file for recon.
+Make 30-second FT2 file.
+Restrict svacTuple to fast hosts.
+Register data products with DATASOURCE=(LPA|LCI|MC).
+Use flight geometry for MC and ground for LPA.
+Tweak queues.
+-------------------------------------------
+
+
+1.18
+-----------------
+GlastRelease v12r5
+Common v2r1p0
+FastMon v2r1p1
+ScienceTools v9r2
+
+Stage chunks & crumbs on AFS.
+
+Add "DATASOURCE=LPA" as pipeline variable and use it as metadata when
+registering files.  User can override it when injecting MC data.
+FastCopy to LISOC even in prod mode.
+Frob makeFT1.
+-------------------------------------------
+
+
+1.17
+-----------------
+ft2Util v1r1p6
+Tweaks to PYTHONPATH and LD_LIBRARY_PATH
+Tweaks to FT2 and fastMon
+-------------------------------------------
+
+
+1.16
+-----------------
+ft2Util v1r1p1
+Add Adrea's makeFt2.py (renamed to ft2Entries.py).
+Get histos instead of trees from fastMon.
+Add subtask for LCI runs.
+-------------------------------------------
+
+
+1.15
+-----------------
+Move most processes to long so they don't interfere with recon.
+Fix(?) race condition in procdirs.mkdir().
+Don't "chgrp -R glast-pipeline" the output disk every time we merge a file.
+-------------------------------------------
+
+
+1.14 (neither tagged nor comitted)
+-----------------
+Fail on bad result from stageFiles.StageSet.finish().
+Better error handling in runner.run().
+Remove TestReport stuff.
+Increase crumb size (to 17000), run recon on long.
+Fix a couple of dumb little bugs.
+-------------------------------------------
+
+
+1.13
+-----------------
+EM v8r1109p12
+Monitor dp20070728
+
+Don't put package versions in dir names - just L1 version at the top.
+Run digi & recon trending on chunks, use new treemerge.exe.
+Use 'Trend' instead of 'TdMon' and 'Td' in process and file names.
+
+Trending ingest is failing.
+-------------------------------------------
+
+
+1.12
+-----------------
+Use GPL2 version of stageFiles.py.
+Use ISOC installation of python2.5.
+Run crumb cleanup on short.
+config.py defaults to test mode (and doesn't crash) if pipeline env vars 
+aren't set.
+-------------------------------------------
+
+
+1.11
+-----------------
+EM v8r1109p10
+ROOT v5.14.00g
+Monitor mk20070719
+TestReport v3r7p4 (only used for histo merge code)
+EngineeringModelRoot v3r1p2
+
+Get rid of TestReport-based monitoring.
+Put actual queue names in XML, instead of vars from config.py
+Fiddle queues & priorities to try to favor FT1/FT2
+Add test mode:
+	automatically entered if we are not on prod server
+	write data to test location
+	use LISOC loopback for FTx exports
+Make svacTuple depend on success of all crumbs in the chunk
+Do crumb cleanup
+-------------------------------------------
+
+
+1.10 2007-07-18
+-----------------
+Common v1r2p0
+FastMon v1r1p0
+Monitor mk20070716
+TestReport TRdp20070706
+EngineeringModelRoot v3r0p3
+pipelineDatasets v0r4
+
+Specify scratch>70 for mergeReconChunks.
+Don't specify LSF allocation group.
+Run most things on long, digi & recon on medium.
+Don't specifiy 32-bit hosts.
+Set MALLOC_CHECK_=0.
+
+Enable export of FT1, with proper(ish) name.
+Use MET at time of run lock creation as version of run-level files.
+Generate dynamic code for Monitor at install time.
+Add some missing dependencies in XML.
+-------------------------------------------
+
+
+1.9
+-----------------
+Common v1r1p0
+FastMon v1r0p0
+Fixes fastmon '-n' bug, and another.
+-------------------------------------------
+
+
+1.8 2007/07/07
+-----------------
+Common v1r0p1
+FastMon v0r7p2
+Monitor mk20070707
+TestReport TRdp20070706
+EngineeringModelRoot v3r0p3
+pipelineDatasets v0r3
+
+Fix fastMon.py.  FastMon fails to produce output if the number of events is
+not restricted.  Set limit to 50K.
+
+Attempting to use this for ETE2.
+-------------------------------------------
+
+
+1.7
+-----------------
+Add ingestion of trending outputs.
+Use checkRun batch job (not script).
+Get merge configs for EOR, TDMon, FastMon.
+Generate histograms (not just trees) in FastMon, and register them.
+-------------------------------------------
+
+
+1.6
+-----------------
+Expand registration script at install time instead of hardcoding it
+repeatedly, and set dataset type correctly.
+Add checkChunk process.
+Put updateRunStatus and cleanupChunks in a subtask.
+Lock run directory in before findChunks, unlock in checkRun.
+Add FastMon.
+Add digi and recon end-of-run monitoring.
+Add digi and recon trending.
+Work on ASP launch code.
+-------------------------------------------
+
+
+1.5
+-----------------
+Uses test version of pipelieDatasets that uses CloneTree to merge - fast, but 
+untrusted.
+export FT1 working.
+-------------------------------------------
+
+
+1.4 2007/04/05
+-----------------
+EM v7r0913p11
+TestReport v3r6p41
+
+Add exportL1 process (doesn't actually do the export yet)
+Do a cmt config when building packages at install time
+Use run, chunk, crumb IDs as stream #s
+When merging:
+  If no input files, print a message and die.
+  Stage output file, and any input files that don't fit on /scratch, on AFS.
+    Except we can't write to AFS.  So the code to do this is commented out.
+-------------------------------------------
+
+
+1.3 (same as 1.2) 
+-----------------
+used for ETE1a. NOT!
+-------------------------------------------
+
+
+0.70 
+-----------------
+used for L1 demo.
 -------------------------------------------
