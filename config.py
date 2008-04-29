@@ -92,7 +92,7 @@ stageBase = 'l1Stage'
 #maxCrumbSize = 17000   # ~.5Hr on cob (skymodel).
 minCrumbCpuf = 7
 maxCrumbs = 7 # Maximum number of crumbs/chunk. Not used by current algorithm.
-crumbSize = 15000 # typical crumb size
+crumbSize = 5000 # typical crumb size
 crumbMmr = 2.0 # largestCrumb / smallestCrumb
 
 defaultRunStatus = 'WAITING'
@@ -196,7 +196,7 @@ cmtPackages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r2p9',
+        'version': 'v1r1p44',
         },
     'GPLtools': {
         'repository': '',
@@ -408,7 +408,12 @@ tdBin = {
     }
 
 
-trendIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/%s/bin/ingestTrendingFile' % mode
+if testMode:
+    trendMode = 'dev'
+else:
+    trendMode = 'prod'
+    pass
+trendIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/%s/bin/ingestTrendingFile' % trendMode
 
 rootPath = os.path.join(rootSys, 'lib')
 xercesPath = os.path.join(glastExt, 'xerces/2.7.0/lib')
