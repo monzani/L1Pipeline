@@ -12,11 +12,6 @@ import runner
 import stageFiles
 import registerPrep
 
-dicts = {
-    'ft1': 'DEFAULT',
-    'ls1': os.path.join(config.L1ProcROOT, 'data', 'LS1variables'),
-    }
-
 head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
@@ -25,6 +20,8 @@ fileType = os.environ['fileType']
 
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
+
+evtClassDefsPython = config.packages['evtClassDefs']['python']
 
 app = config.apps['makeFT1']
 
@@ -36,17 +33,19 @@ stagedFt1File = staged.stageOut(realFt1File)
 workDir = os.path.dirname(stagedFt1File)
 
 tCuts = config.ft1Cuts
+classifier = config.ft1Classifier
 
 tStart = float(os.environ['tStart'])
 tStop = float(os.environ['tStop'])
 
-dictionary = dicts[fileType]
+dictionary = config.ft1Dicts[fileType]
 
 version = fileNames.version(realFt1File)
 
 cmd = '''
 cd %(workDir)s
-%(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=%(tCuts)s event_classifier="Pass5_Classifier" tstart=%(tStart).17g tstop=%(tStop).17g dict_file=%(dictionary)s file_version=%(version)s
+PYTHONPATH=%(evtClassDefsPython)s:$PYTHONPATH ; export PYTHONPATH
+%(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=%(tCuts)s event_classifier="%(classifier)s" tstart=%(tStart).17g tstop=%(tStop).17g dict_file=%(dictionary)s file_version=%(version)s
 ''' % locals()
 
 status = runner.run(cmd)

@@ -19,7 +19,8 @@ import registerPrep
 head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
 
-runId = os.environ['RUNID']
+runId = os.environ.get('RUNID')
+chunkId = os.environ.get('CHUNK_ID')
 
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
@@ -32,7 +33,7 @@ realM7File = os.path.join(os.environ['DOWNLINK_RAWDIR'], 'magic7_%s.txt' % dlId)
 stagedM7File = staged.stageIn(realM7File)
 
 #output
-fakeFt2File = fileNames.fileName('ft2Fake', dlId, runId, next=True)
+fakeFt2File = fileNames.fileName('ft2Fake', dlId, runId, chunkId, next=True)
 stagedFt2FitsFile = staged.stageOut(fakeFt2File)
 workDir = os.path.dirname(stagedFt2FitsFile)
 stagedFt2TxtFile = os.path.join(workDir, 'junkFT2.txt')

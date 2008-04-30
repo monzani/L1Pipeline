@@ -9,12 +9,13 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.47"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.48"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
 #L1Cmt = os.path.join(installRoot, 'builds')
-L1Cmt = os.environ.get('L1_BUILD_DIR') or '/afs/slac/g/glast/ground/releases/volume03/L1Proc'
+L1CmtBase = os.environ.get('L1_BUILD_DIR') or '/afs/slac/g/glast/ground/releases/volume03/L1Proc'
+L1Cmt = os.path.join(L1CmtBase, L1Version)
 
 doCleanup = True
 
@@ -174,11 +175,6 @@ stBinDir = os.path.join(ST, 'bin')
 #aspLauncher = '/nfs/farm/g/glast/u33/ASP/ASP/AspLauncher/v1/rh9_gcc32/aspLauncher.sh'
 aspLauncher = '/bin/true'
 
-#ft1Cuts = 'DEFAULT'
-ft1Cuts = os.path.join(L1Data, 'pass5_cuts')
-
-ft2Pad = 1.0
-
 cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 
 cmtPackages = {
@@ -189,6 +185,10 @@ cmtPackages = {
     'EngineeringModelRoot': {
         'repository': 'svac',
         'version': 'v3r14',
+        },
+    'evtClassDefs': {
+        'repository': '',
+        'version': 'v0r2',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
@@ -255,6 +255,11 @@ packages['Common']['python'] = os.path.join(
 
 packages['EngineeringModelRoot']['app'] = os.path.join(
     packages['EngineeringModelRoot']['bin'], 'RunRootAnalyzer.exe')
+
+packages['evtClassDefs']['data'] = os.path.join(
+    packages['evtClassDefs']['root'], 'data')
+packages['evtClassDefs']['python'] = os.path.join(
+    packages['evtClassDefs']['root'], 'python')
 
 packages['ft2Util']['app'] = os.path.join(
     packages['ft2Util']['bin'], 'makeFT2Entries.exe')
@@ -406,6 +411,18 @@ tdBin = {
     'reconEor': 15,
     'reconTrend': 15,
     }
+
+
+#ft1Cuts = 'DEFAULT'
+ft1Cuts = os.path.join(packages['evtClassDefs']['data'], 'pass5_cuts')
+ft1Classifier = 'Pass5_Classifier'
+ft1Dicts = {
+    'ft1': os.path.join(packages['evtClassDefs']['data'], 'FT1variables'),
+    'ls1': os.path.join(packages['evtClassDefs']['data'], 'LS1variables'),
+    }
+
+
+ft2Pad = 1.0
 
 
 if testMode:

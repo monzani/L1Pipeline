@@ -12,7 +12,7 @@
     <var name="L1_TASK_NAME">%(L1Name)s</var>
     <var name="L1_TASK_VERSION">%(L1Version)s</var>
     <var name="L1_INSTALL_DIR">%(installRoot)s</var>
-    <var name="L1_BUILD_DIR">%(L1Cmt)s</var>
+    <var name="L1_BUILD_DIR">%(L1CmtBase)s</var>
     <var name="L1TrendVersion">Prompt</var> <!-- override if reprocessing -->
   </variables>
 
@@ -67,13 +67,6 @@
       </createsSubtasks>
     </process>
 
-    <process name="fakeFT2">
-      <job executable="${L1ProcROOT}/fakeFT2.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
-      <depends>
-        <after process="findChunks" status="SUCCESS"/>
-      </depends>
-    </process>
- 
     <process name="copyM7">
       <job executable="${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s " />
     </process>
@@ -984,7 +977,6 @@
         <after process="exportFT2" status="SUCCESS"/>
         <after process="exportLS1" status="SUCCESS"/>
         <after process="exportLS3" status="SUCCESS"/>
-        <after process="fakeFT2" status="SUCCESS"/>
         <after process="fastMonHistLogger" status="SUCCESS"/>
         <after process="fastMonTrendLogger" status="SUCCESS"/>
         <after process="ingestCalTrend" status="SUCCESS"/>
@@ -1098,6 +1090,10 @@
         <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
       </process>
  
+      <process name="fakeFT2">
+        <job executable="${L1ProcROOT}/fakeFT2.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
+      </process>
+ 
       <process name="fastMonTuple">
         <variables>
           <var name="reportType">fastMonTuple</var>
@@ -1169,6 +1165,7 @@
         <job executable="${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
         <depends>
           <after process="digitization" status="SUCCESS"/>
+          <after process="fakeFT2" status="SUCCESS"/>
         </depends>
         <createsSubtasks>
           <subtask>doCrumb</subtask>

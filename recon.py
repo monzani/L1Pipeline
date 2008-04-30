@@ -30,7 +30,7 @@ finishOption = config.finishOption
 
 realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId, crumbId)
 os.environ['digiChunkFile'] = staged.stageIn(realDigiFile)
-realFT2Fake = fileNames.fileName('ft2Fake', dlId, runId)
+realFT2Fake = fileNames.fileName('ft2Fake', dlId, runId, chunkId)
 os.environ['fakeFT2File'] = staged.stageIn(realFT2Fake)
 
 realReconFile = fileNames.fileName('recon', dlId, runId, chunkId, crumbId)
