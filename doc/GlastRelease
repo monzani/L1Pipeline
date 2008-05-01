@@ -1,0 +1,72 @@
+To install a new version of GlastRelease:
+
+Got to /afs/slac.stanford.edu/g/glast/ground/releases
+
+VOLUME.USAGE is where we keep track of which volume is being used for what, 
+so let's take a look:
+
+------------------------------------------------------------------
+/afs/slac/g/glast/ground/releases/VOLUME.USAGE
+
+Current assignment of AFS volumes within this release directory.
+
+Please contact the "Contact" prior to cleaning up any of these volumes.
+
+
+
+Volume      Use                Date        Note      Contact
+======      ==============     ==========  ====      ==========
+volume01    GR-v13r9p16        04/08/2008  20k sec   glanzman,dubois
+volume02    GR-v13r9p3         01/28/2008  BigRun    glanzman,dubois
+volume03    stuff              03/21/2008  L1        focke,borgland
+volume04    GR-v12r11          09/27/2007  OctTest   glanzman,dubois
+volume05    BT-v6r0919p1       12/15/2006  BT sim    focke,borgland,longo
+volume05    BT-v7r1215p0       11/18/2007  BT sim    focke,borgland,longo
+volume06    GR-v13r9p6         02/21/2008  test      glanzman,dubois
+volume07    GR-v13r6p3         03/07/2008  SVACprod  focke,borgland
+volume08    GR-v14r2           04/16/2008  4launch   glanzman,dubois
+volume09    GR-v14r4           04/28/2008  test      glanzman,dubois
+volume10    BT-v7r1117p1       10/19/2007  BT sim    longo,focke,borgland
+volume10    BT-v6r0922p2       04/09/2007  BT sim    longo,focke,borgland
+volume11    GR-v11r17          07/26/2007  SC2       glanzman,dubois    
+volume12    GR-v13r11p6        02/06/2008  L1 dev    focke,borgland
+volume13    GR-v13r9           01/14/2008            glanzman,dubois    
+volume14    GR-v13r11p4        07/06/2007  L1 prod   focke,borgland
+
+
+------------------------------------------------------------------
+
+We see that I was lax the last time I did this, because it says v13r11p6 is 
+on dev and v13r11p4 is prod, when in fact r6 is prod and r4 is no longer used.
+So we can get rid of r4 and put the new version on volume14.
+
+focke@noric04 $ rm -rf volume14/GlastRelease-v13r11p4/ &
+focke@noric04 $ bsub -q long cp -R /nfs/farm/g/glast/u30/builds/rh9_gcc32opt/GlastRelease/GlastRelease-v13r11p7 volume14
+... go get a cup of coffee while disks thrash ...
+
+Now we have to do a 'cmt config' in the cmt directory of each package.  I know 
+that there's some kind of broadcast feature in cmt, and I used to know how to 
+do this with mrvcmt, but I usually do it sort of by hand.  More on that later.
+
+Before doing this, you'll have to have various environment variables set, I 
+don't even remember what they all are.  But if you source setup.[c]sh from a 
+version of L1 that already has config pointed at the new release, it should 
+do it.  So i modify my config.py to say:
+
+releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
+glastVersion = 'v13r11p7'
+
+and run install.py
+
+Then, back in the releases directory:
+
+focke@noric04 $ source /nfs/slac/g/svac/focke/L1/dev/1.48/setup.sh 
+focke@noric04 $ for dd in `find volume14/GlastRelease-v13r11p7 -type d -name cmt -print` ; do pushd $dd ; cmt config ; popd ; done
+
+but that won't work so well under csh, so switch to bash or use braodcast or 
+we can write a csh script to do the same thing.
+
+Then all of the monitoring apps and whatnot have to be recompiled to go with the
+new GR.  So go back to your L1 directory and run compile_stuff.py
+
+I think at this point you should be good to go.
