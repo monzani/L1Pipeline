@@ -70,3 +70,8 @@ Then all of the monitoring apps and whatnot have to be recompiled to go with the
 new GR.  So go back to your L1 directory and run compile_stuff.py
 
 I think at this point you should be good to go.
+
+But don't forget to update VOLUME.USAGE:
+
+volume12    GR-v13r11p6        02/06/2008  L1 prod   focke,borgland
+volume14    GR-v13r11p7        07/06/2007  L1 dev    focke,borgland
