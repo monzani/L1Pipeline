@@ -143,6 +143,16 @@
       </depends>
     </process>
 
+    <process name="ingestDigiEorRun">
+      <variables>
+        <var name="reportType">digiEorAlarm</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="digiEorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="digiEorLogger">
       <variables>
         <var name="fileType">digiEorAlarm</var>
@@ -256,6 +266,16 @@
       </depends>
     </process>
 
+    <process name="ingestDigiTrendRun">
+      <variables>
+        <var name="reportType">digiTrendAlarm</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="digiTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="mergeCalEor">
       <variables>
         <var name="fileType">calEor</var>
@@ -333,6 +353,16 @@
 %(registerBody)s
 ]]>
       </script>
+      <depends>
+        <after process="mergeFastMonError" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestFastMonErrorRun">
+      <variables>
+        <var name="reportType">fastMonError</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="mergeFastMonError" status="SUCCESS"/>
       </depends>
@@ -445,6 +475,16 @@
       </depends>
     </process>
 
+    <process name="ingestFastMonHistRun">
+      <variables>
+        <var name="reportType">fastMonHistAlarm</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="fastMonHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="mergeFastMonTrend">
       <variables>
         <var name="fileType">fastMonTrend</var>
@@ -486,6 +526,16 @@
       <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="mergeFastMonTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestFastMonTrendRun">
+      <variables>
+        <var name="reportType">fastMonTrendAlarm</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="fastMonTrendAlarm" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -835,6 +885,16 @@
       </depends>
     </process>
 
+    <process name="ingestReconTrendRun">
+      <variables>
+        <var name="reportType">reconTrendAlarm</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="reconTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="reconTrendLogger">
       <variables>
         <var name="fileType">reconTrendAlarm</var>
@@ -871,6 +931,16 @@
       </depends>
     </process>
  
+    <process name="ingestReconEorRun">
+      <variables>
+        <var name="reportType">reconEorAlarm</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="reconEorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="registerReconEor">
       <variables>
         <var name="parentProcess">mergeReconEor</var>
@@ -984,6 +1054,13 @@
         <after process="ingestFastMonTrend" status="SUCCESS"/>
         <after process="ingestMeritTrend" status="SUCCESS"/>
         <after process="ingestReconTrend" status="SUCCESS"/>
+        <after process="ingestFastMonTrendRun" status="SUCCESS"/>
+        <after process="ingestFastMonHistRun" status="SUCCESS"/>
+        <after process="ingestFastMonErrorRun" status="SUCCESS"/>
+        <after process="ingestDigiTrendRun" status="SUCCESS"/>
+        <after process="ingestDigiEorRun" status="SUCCESS"/>
+        <after process="ingestReconTrendRun" status="SUCCESS"/>
+        <after process="ingestReconEorRun" status="SUCCESS"/>
         <after process="reconEorLogger" status="SUCCESS"/>
         <after process="reconTrendLogger" status="SUCCESS"/>
         <after process="registerAcdPlots" status="SUCCESS"/>
@@ -1059,6 +1136,16 @@
         <job executable="${L1ProcROOT}/verifyLog.py" batchOptions=" -q %(shortQ)s "/>
         <depends>
           <after process="verify" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="ingestVerifyErrorRun">
+        <variables>
+          <var name="reportType">verifyLog</var>
+        </variables>
+        <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+        <depends>
+          <after process="verifyLog" status="SUCCESS"/>
         </depends>
       </process>
 

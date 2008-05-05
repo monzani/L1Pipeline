@@ -6,6 +6,12 @@ Run fakeFT2 at chunk level.
 Make setupCrumbs depend on fakeFT2.
 Get dictionaries, cuts, and classifiers for FT1/LS1 from evtClassDefs.
 Use a private app build directory for each L1 version.
+
+Back to ft2Util v1r1p44
+GR v13r11p7
+ST v9r5
+
+Added the per-run ingest capability.
 -------------------------------------------
 
 

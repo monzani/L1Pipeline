@@ -127,8 +127,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
-glastVersion = 'v13r11p6'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
+glastVersion = 'v13r11p7'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -180,11 +180,11 @@ cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 cmtPackages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v3r0p13',
+        'version': 'v3r1p1',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
-        'version': 'v3r14',
+        'version': 'v3r14p1',
         },
     'evtClassDefs': {
         'repository': '',
@@ -192,7 +192,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v3r0p13',
+        'version': 'v3r1p3',
         },
     'ft2Util': {
         'repository': '',
@@ -204,7 +204,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r0p13',
+        'version': 'v1r1p5',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -219,15 +219,15 @@ cmtPackages = {
 cvsPackages = {
     'AlarmsCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r0p4',
+        'version': 'v1r1p0',
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r0p15',
+        'version': 'v1r1p9',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r0p10',
+        'version': 'v1r1p9',
         },
     'IGRF': {
         'repository': 'dataMonitoring',
@@ -431,6 +431,7 @@ else:
     trendMode = 'prod'
     pass
 trendIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/%s/bin/ingestTrendingFile' % trendMode
+runIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/%s/bin/ingestRunFile' % trendMode
 
 rootPath = os.path.join(rootSys, 'lib')
 xercesPath = os.path.join(glastExt, 'xerces/2.7.0/lib')
