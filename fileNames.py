@@ -46,6 +46,7 @@ fileTypes = {
     'recon': 'root',
     'reconEor': 'root',
     'reconEorAlarm': 'xml',
+    'reconEorAlarmDist': 'root',
     'reconTrend': 'root',
     'reconTrendAlarm': 'xml',
     'svac': 'root',

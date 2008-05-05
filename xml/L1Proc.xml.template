@@ -398,7 +398,7 @@
       </variables>
       <job executable="${L1ProcROOT}/compDigiFastMon.py" batchOptions=" -q %(mediumQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
-        <after process="mergeDigi" status="SUCCESS"/>
+        <after process="mergeDigiEor" status="SUCCESS"/>
         <after process="mergeFastMonHist" status="SUCCESS"/>
       </depends>
     </process>

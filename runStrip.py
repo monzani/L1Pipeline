@@ -77,7 +77,7 @@ zOpt = ''
 
 datasource = os.environ['DATASOURCE']
 if datasource == 'MC':
-    mcOpt = '-t MCOktTest'
+    mcOpt = '-t MC'
 else:
     mcOpt = ''
     pass

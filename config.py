@@ -250,6 +250,9 @@ for packName in packages:
     continue
 
 # add nonstandard package info
+packages['AlarmsCfg']['xml'] = os.path.join(
+    packages['AlarmsCfg']['root'], 'xml')
+
 packages['Common']['python'] = os.path.join(
     packages['Common']['root'], 'python')
 
@@ -292,6 +295,8 @@ apps = {
         packages['Monitor']['bin'], 'MakeACDNicePlots.exe'),
     'alarmHandler': os.path.join(
         packages['Common']['python'], 'pAlarmHandler.py'),
+    'alarmPostProcessor': os.path.join(
+        packages['Common']['python'], 'pAlarmPostProcessor.py'),
     'compareDFm': os.path.join(
         packages['Common']['python'], 'pRootDiffer.py'),
     'digi': gleam,
@@ -366,38 +371,44 @@ mergeConfigs = {
 
 alarmConfigs = {
     'digiEor': os.path.join(
-        packages['AlarmsCfg']['root'], 'xml', 'digi_eor_alarms.xml'),
+        packages['AlarmsCfg']['xml'], 'digi_eor_alarms.xml'),
     'digiTrend': os.path.join(
-        packages['AlarmsCfg']['root'], 'xml', 'digi_trend_alarms.xml'),
+        packages['AlarmsCfg']['xml'], 'digi_trend_alarms.xml'),
     'fastMonHist': os.path.join(
-        packages['AlarmsCfg']['root'], 'xml', 'fastmon_eor_alarms.xml'),
+        packages['AlarmsCfg']['xml'], 'fastmon_eor_alarms.xml'),
     'fastMonTrend': os.path.join(
-        packages['AlarmsCfg']['root'], 'xml', 'fastmon_trend_alarms.xml'),
+        packages['AlarmsCfg']['xml'], 'fastmon_trend_alarms.xml'),
     'reconEor': os.path.join(
-        packages['AlarmsCfg']['root'], 'xml', 'recon_eor_alarms.xml'),
+        packages['AlarmsCfg']['xml'], 'recon_eor_alarms.xml'),
     'reconTrend': os.path.join(
-        packages['AlarmsCfg']['root'], 'xml', 'recon_trend_alarms.xml'),
+        packages['AlarmsCfg']['xml'], 'recon_trend_alarms.xml'),
     }
 
 alarmExceptions = {
     'digiEor': os.path.join(
-        packages['AlarmsCfg']['root'], 'xml',
+        packages['AlarmsCfg']['xml'],
         'digi_eor_alarms_exceptions.xml'),
     'digiTrend': os.path.join(
-        packages['AlarmsCfg']['root'], 'xml',
+        packages['AlarmsCfg']['xml'],
         'digi_trend_alarms_exceptions.xml'),
     'fastMonHist': os.path.join(
-        packages['AlarmsCfg']['root'], 'xml',
+        packages['AlarmsCfg']['xml'],
         'fastmon_eor_alarms_exceptions.xml'),
     'fastMonTrend': os.path.join(
-        packages['AlarmsCfg']['root'], 'xml',
+        packages['AlarmsCfg']['xml'],
         'fastmon_trend_alarms_exceptions.xml'),
     'reconEor': os.path.join(
-        packages['AlarmsCfg']['root'], 'xml',
+        packages['AlarmsCfg']['xml'],
         'recon_eor_alarms_exceptions.xml'),
     'reconTrend': os.path.join(
-        packages['AlarmsCfg']['root'], 'xml',
+        packages['AlarmsCfg']['xml'],
         'recon_trend_alarms_exceptions.xml'),
+    }
+
+alarmPostProcessorConfigs = {
+    'reconEor': os.path.join(
+        packages['AlarmsCfg']['xml'],
+        'recon_eor_alarms_postprocess.xml'),
     }
 
 tdBin = {

@@ -8,6 +8,7 @@ here to handle staging and set JOBOPTIONS.
 @author W. Focke <focke@slac.stanford.edu>
 """
 
+import glob
 import os
 import sys
 
@@ -64,6 +65,19 @@ cd %(workDir)s
 
 status = runner.run(cmd)
 if status: finishOption = 'wipe'
+
+if status:
+    # fugly hack; there should be a facility for this in stageFiles
+    print >> sys.stderr, 'Recon failed, looking for core files...'
+    pat = os.path.join(workDir, '*core*')
+    coreFiles = golb.glob(pat)
+    if coreFiles:
+        runDir = fileNames.fileName(None, dlId, runId)
+        pass
+    for cf in coreFiles:
+        stageFiles.copy(cf, runDir)
+        continue
+    pass
 
 status |= staged.finish(finishOption)
 
