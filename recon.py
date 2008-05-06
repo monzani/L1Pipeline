@@ -70,7 +70,7 @@ if status:
     # fugly hack; there should be a facility for this in stageFiles
     print >> sys.stderr, 'Recon failed, looking for core files...'
     pat = os.path.join(workDir, '*core*')
-    coreFiles = golb.glob(pat)
+    coreFiles = glob.glob(pat)
     if coreFiles:
         runDir = fileNames.fileName(None, dlId, runId)
         pass
