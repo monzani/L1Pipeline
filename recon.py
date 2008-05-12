@@ -66,7 +66,7 @@ cd %(workDir)s
 status = runner.run(cmd)
 if status: finishOption = 'wipe'
 
-if status:
+if status: # save any core files
     # fugly hack; there should be a facility for this in stageFiles
     print >> sys.stderr, 'Recon failed, looking for core files...'
     pat = os.path.join(workDir, '*core*')
@@ -75,7 +75,9 @@ if status:
         runDir = fileNames.fileName(None, dlId, runId)
         pass
     for cf in coreFiles:
-        stageFiles.copy(cf, runDir)
+        # and stageFiles.copy should accept a directory as the destination
+        dest = os.path.join(runDir, os.path.basename(cf))
+        stageFiles.copy(cf, dest)
         continue
     pass
 
