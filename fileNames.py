@@ -297,7 +297,7 @@ def subDirectory(dsType, dlId, runId=None, chunkId=None, crumbId=None):
         dirs.extend(['downlinks', dlId])
         pass
 
-    if level in ['chunk'] and dsType is not None:
+    if level in ['crumb', 'chunk'] and dsType is not None:
         dirs.append(dsType)
         pass
 

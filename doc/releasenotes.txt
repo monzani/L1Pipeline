@@ -1,3 +1,12 @@
+1.49
+-----------------
+Implement alarm postprocessing.
+Fix bug when recon tries to save core dumps.
+Give crumb-level files their own directories to avoid having process reading
+files in directories where other files are being written.
+-------------------------------------------
+
+
 1.48
 -----------------
 evtClassDefs v0r2

@@ -989,6 +989,30 @@
       </depends>
     </process>
 
+    <process name="reconEorPostProcessor">
+      <variables>
+        <var name="fileType">reconEorAlarm</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmPostProcessor.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="reconEorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerReconEorAlarmDist">
+      <variables>
+        <var name="parentProcess">reconEorPostProcessor</var>
+        <var name="dataType">reconEorAlarmDist</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="reconEorPostProcessor" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="mergeReconChunks">
       <variables>
         <var name="fileType">recon</var>
@@ -1091,6 +1115,7 @@
         <after process="registerRecon" status="SUCCESS"/>
         <after process="registerReconEor" status="SUCCESS"/>
         <after process="registerReconEorAlarm" status="SUCCESS"/>
+        <after process="registerReconEorAlarmDist" status="SUCCESS"/>
         <after process="registerReconTrend" status="SUCCESS"/>
         <after process="registerReconTrendAlarm" status="SUCCESS"/>
         <after process="registerSvacTuple" status="SUCCESS"/>

@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.48"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.49"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -166,7 +166,7 @@ isocBin = os.path.join(isoc, isocPlatform, 'ISOC_PROD', 'bin')
 isocScript = os.path.join(isocBin, 'isoc')
 isocEnv = 'eval `%s isoc_env --add-env=flightops --add-env=root`' % isocScript
 
-stVersion = 'v9r5'
+stVersion = 'v9r5p2'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
 #ST = os.path.join(L1Cmt, "ScienceTools", "ScienceTools-%s" % stVersion)
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
@@ -180,7 +180,7 @@ cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 cmtPackages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v3r1p1',
+        'version': 'v3r1p2',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -406,7 +406,7 @@ alarmExceptions = {
     }
 
 alarmPostProcessorConfigs = {
-    'reconEor': os.path.join(
+    'reconEorAlarm': os.path.join(
         packages['AlarmsCfg']['xml'],
         'recon_eor_alarms_postprocess.xml'),
     }

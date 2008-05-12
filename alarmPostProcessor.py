@@ -25,14 +25,14 @@ realInFile = fileNames.fileName(fileType, dlId, runId)
 stagedInFile = staged.stageIn(realInFile)
 
 outFileType = fileType + 'Dist'
-realOutFile = fileNames.fileName(outFileType, dlId, runId)
+realOutFile = fileNames.fileName(outFileType, dlId, runId, next=True)
 stagedOutFile = staged.stageOut(realOutFile)
 
 workDir = os.path.dirname(stagedInFile)
 
 app = config.apps['alarmPostProcessor']
 
-configFile = config.alarmPostProcessorConfigs['fileType']
+configFile = config.alarmPostProcessorConfigs[fileType]
 
 cmd = '%(app)s -c %(configFile)s -o %(stagedOutFile)s %(stagedInFile)s' % locals()
 
