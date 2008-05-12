@@ -127,7 +127,7 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
+releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
 glastVersion = 'v13r11p9'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
