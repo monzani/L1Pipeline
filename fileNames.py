@@ -15,8 +15,11 @@ import config
 
 fileTypes = {
     'acdPlots': 'tar',
+    'acdPedsAnalyzer': 'root',
     'cal': 'root',
     'calEor': 'root',
+    'calGainsAnalyzer': 'root',
+    'calPedsAnalyzer': 'root',
     'calTrend': 'root',
     'chunkList': 'txt',
     'compareDFm': 'xml',

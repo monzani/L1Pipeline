@@ -334,6 +334,56 @@
       </depends>
     </process>
  
+    <process name="acdPedsAnalyzer">
+      <variables>
+        <var name="fileType">calEor</var>
+        <var name="reportType">acdPedsAnalyzer</var>
+      </variables>
+      <job executable="${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s "/>
+      <depends>
+        <after process="mergeCalEor" status="SUCCESS"/>
+      </depends>
+    </process>
+   
+    <process name="registerAcdPedsAnalyzer">
+      <variables>
+        <var name="parentProcess">acdPedsAnalyzer</var>
+        <var name="dataType">acdPedsAnalyzer</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="acdPedsAnalyzer" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="calPedsAnalyzer">
+      <variables>
+        <var name="fileType">calEor</var>
+        <var name="reportType">calPedsAnalyzer</var>
+      </variables>
+      <job executable="${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s "/>
+      <depends>
+        <after process="mergeCalEor" status="SUCCESS"/>
+      </depends>
+    </process>
+   
+    <process name="registerCalPedsAnalyzer">
+      <variables>
+        <var name="parentProcess">calPedsAnalyzer</var>
+        <var name="dataType">calPedsAnalyzer</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="calPedsAnalyzer" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="mergeFastMonError">
       <variables>
         <var name="fileType">fastMonError</var>
@@ -1101,6 +1151,9 @@
         <after process="registerFT2" status="SUCCESS"/>
         <after process="registerLS1" status="SUCCESS"/>
         <after process="registerLS3" status="SUCCESS"/>
+        <after process="registerAcdPedsAnalyzer" status="SUCCESS"/>
+        <after process="registerCalGainsAnalyzer" status="SUCCESS"/>
+        <after process="registerCalPedsAnalyzer" status="SUCCESS"/>
         <after process="registerFastMonError" status="SUCCESS"/>
         <after process="registerFastMonHist" status="SUCCESS"/>
         <after process="registerFastMonHistAlarm" status="SUCCESS"/>

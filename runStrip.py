@@ -61,6 +61,8 @@ else:
         realMeritFile = fileNames.fileName('merit', dlId, runId, chunkId)
         stagedMeritFile = staged.stageIn(realMeritFile)
         inFileOpts += ' -m %s' % (stagedMeritFile,)
+        configFile = config.normalizedRateConfigs[reportType]
+        options += ' -e %s' % (configFile)
         pass
     pass
 

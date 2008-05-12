@@ -128,7 +128,7 @@ installBin = os.path.join(installArea, 'bin')
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
 releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
-glastVersion = 'v13r11p7'
+glastVersion = 'v13r11p9'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -180,7 +180,7 @@ cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 cmtPackages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v3r1p2',
+        'version': 'v3r1p3',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -196,6 +196,7 @@ cmtPackages = {
         },
     'ft2Util': {
         'repository': '',
+        #'version': 'v1r2p14',
         'version': 'v1r1p44',
         },
     'GPLtools': {
@@ -204,7 +205,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r1p5',
+        'version': 'v1r1p6',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -223,7 +224,7 @@ cvsPackages = {
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r1p9',
+        'version': 'v1r1p10',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
@@ -291,12 +292,18 @@ packages['Monitor']['mergeApp'] = os.path.join(
     packages['Monitor']['bin'], 'MergeHistFiles.exe')
 
 apps = {
+    'acdPedsAnalyzer': os.path.join(
+        packages['Common']['python'], 'pAcdPedsAnalyzer.py'),
     'acdPlots': os.path.join(
         packages['Monitor']['bin'], 'MakeACDNicePlots.exe'),
     'alarmHandler': os.path.join(
         packages['Common']['python'], 'pAlarmHandler.py'),
     'alarmPostProcessor': os.path.join(
         packages['Common']['python'], 'pAlarmPostProcessor.py'),
+    'calGainsAnalyzer': os.path.join(
+        packages['Common']['python'], 'pCalGainsAnalyzer.py'),
+    'calPedsAnalyzer': os.path.join(
+        packages['Common']['python'], 'pCalPedsAnalyzer.py'),
     'compareDFm': os.path.join(
         packages['Common']['python'], 'pRootDiffer.py'),
     'digi': gleam,
@@ -404,11 +411,19 @@ alarmExceptions = {
         packages['AlarmsCfg']['xml'],
         'recon_trend_alarms_exceptions.xml'),
     }
-
 alarmPostProcessorConfigs = {
     'reconEorAlarm': os.path.join(
         packages['AlarmsCfg']['xml'],
         'recon_eor_alarms_postprocess.xml'),
+    }
+
+normalizedRateConfigs = {
+    'meritEor': os.path.join(
+        packages['DigiReconCalMeritCfg']['root'],
+        'NormFactors_AllRunsOpsSims2.txt'),
+    'meritTrend': os.path.join(
+        packages['DigiReconCalMeritCfg']['root'],
+        'NormFactors_AllRunsOpsSims2.txt'),
     }
 
 tdBin = {
