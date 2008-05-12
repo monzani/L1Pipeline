@@ -39,17 +39,22 @@ else:
     chunkId = None
     pass
 
-# This decision should be made at a higher level.
-if level == 'run' and runStatus not in ['COMPLETE', 'INCOMPLETE']:
-    print >> sys.stderr, 'Run %s has status %s, not deleting chunks.' \
-          % (runId, runStatus)
-    sys.exit(0)
-    pass
+# This is harmful; the runStatus the halfPipe gave us is not reliable
+# due to concurrency issues.
+#
+# # This decision should be made at a higher level.
+# if level == 'run' and runStatus not in ['COMPLETE', 'INCOMPLETE']:
+#     print >> sys.stderr, 'Run %s has status %s, not deleting chunks.' \
+#           % (runId, runStatus)
+#     sys.exit(0)
+#     pass
 
 goners = fileNames.findPieces(None, dlId, runId, chunkId)
 
 if level == 'downlink':
     goners.append(dlRawDir)
+elif level == 'run':
+    goners.append(fileNames.tokenDir(head, runId))
     pass
 
 totG = len(goners)

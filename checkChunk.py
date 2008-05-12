@@ -9,6 +9,7 @@ halfpipe.
 
 
 import os
+import sys
 
 import config
 import fileNames
@@ -29,4 +30,22 @@ chunkId = os.environ['CHUNK_ID']
 # # This ain't the right code, either.
 # lockFile.removeLock(runDir, chunkId)
 
-# Remove event file?
+# Remove event file? - No, that happens in cleanupDl.
+
+
+token = fileNames.chunkToken(head, runId, chunkId)
+
+if not os.path.exists(token):
+    print >> sys.stderr, "Chunk token %s does not exist.  This is odd, but not necessarily fatal.  We'll continue." % token
+    sys.exit(0)
+    pass
+
+print >> sys.stderr, 'Removing chunk token %s.' % token
+try:
+    os.unlink(token)
+except OSError:
+    print >> sys.stderr, "Can't remove chunk token %s.  Fail." % token
+    status = 1
+    pass
+
+sys.exit(status)

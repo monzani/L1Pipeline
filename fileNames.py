@@ -220,22 +220,28 @@ def findPieces(fileType, dlId, runId=None, chunkId=None):
         # We're not merging anything, just finding downlink dirs to delete.
         argSets = [(fileType, dlId)]
     elif chunkId is None:
-        # We are merging chunk files into a run file.
-        # We have to find a file listing chunks for each downlink.
-        dlId = '*'
-        pattern = fileName('chunkList', dlId, runId)
-        print >> sys.stderr, 'Looking for files of form %s' % pattern
-        chunkFiles = glob.glob(pattern)
-        print >> sys.stderr, 'Found %s' % chunkFiles
-        chunkIds = []
-        for chunkFile in chunkFiles:
-            these = readList(chunkFile).keys()
-            chunkIds.extend(these)
-            print >> sys.stderr, '%s: %s' % (chunkFile, these)
-            continue
-        chunkIds.sort()
-        argSets = [(fileType, dlId, runId, chunkId)
-                   for chunkId in chunkIds]
+        if fileType is None:
+            # Just finding run buffers to delete
+            argSets = [(fileType, dlId, runId, chunkId)]
+        else:
+            # We are merging chunk files into a run file.
+            # We have to find a file listing chunks for each downlink.
+            dlId = '*'
+            pattern = fileName('chunkList', dlId, runId)
+            print >> sys.stderr, 'Looking for files of form %s' % pattern
+            chunkFiles = glob.glob(pattern)
+            print >> sys.stderr, 'Found %s' % chunkFiles
+            chunkIds = []
+            for chunkFile in chunkFiles:
+                these = readList(chunkFile).keys()
+                chunkIds.extend(these)
+                print >> sys.stderr, '%s: %s' % (chunkFile, these)
+                continue
+            chunkIds.sort()
+            argSets = [(fileType, dlId, runId, chunkId)
+                       for chunkId in chunkIds]
+            pass
+        pass
     else:
         # We are either merging crumb files into chunk files or
         # deleting crumb directories.
@@ -321,3 +327,13 @@ def version(fileName):
     else:
         raise ValueError, "Can't parse version from %s" % fileName
     return vers
+
+
+def tokenDir(dlHead, runId):
+    tokenDirName = os.path.join(dlHead, 'chunktokens', runId)
+    return tokenDirName
+
+def chunkToken(dlHead, runId, chunkId):
+    tokenDirName = tokenDir(dlHead, runId)
+    token = os.path.join(tokenDirName, '-'.join([runId, chunkId]))
+    return token

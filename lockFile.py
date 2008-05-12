@@ -120,8 +120,10 @@ def unlockDir(directory, base, id):
     # Open and read lock file.  Die if it isn't there, or other wierdness.
     try:
         data = readLock(directory, base, id)
-    except OSError:
-        raise LockedError, "Can't open lockfile %s." % lockFile
+    except IOError:
+        # This is probably bad.  What if we don't have permission?
+        print >> sys.stderr, "Can't open lockfile %s.  Very odd, but we'll continue." % lockFile
+        return
 
     # Die if lock was not written by this stream.
     if data['id'] != id:
