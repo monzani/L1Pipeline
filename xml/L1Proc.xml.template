@@ -1152,7 +1152,6 @@
         <after process="registerLS1" status="SUCCESS"/>
         <after process="registerLS3" status="SUCCESS"/>
         <after process="registerAcdPedsAnalyzer" status="SUCCESS"/>
-        <after process="registerCalGainsAnalyzer" status="SUCCESS"/>
         <after process="registerCalPedsAnalyzer" status="SUCCESS"/>
         <after process="registerFastMonError" status="SUCCESS"/>
         <after process="registerFastMonHist" status="SUCCESS"/>

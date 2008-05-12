@@ -48,7 +48,8 @@ tStop = tFormat % (float(os.environ['tStop']) + config.ft2Pad)
 cmd = '''
 cd %(workDir)s
 source %(setupScript)s
-%(app)s -M7File %(stagedM7File)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s --Gleam -DigiTstart %(tStart)s -DigiTstop %(tStop)s
+ldd %(app)s
+%(app)s -M7File %(stagedM7File)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s --Gleam --test-quaternion -DigiTstart %(tStart)s -DigiTstop %(tStop)s
 ''' % locals()
 
 status = runner.run(cmd)
