@@ -166,6 +166,14 @@ isocBin = os.path.join(isoc, isocPlatform, 'ISOC_PROD', 'bin')
 isocScript = os.path.join(isocBin, 'isoc')
 isocEnv = 'eval `%s isoc_env --add-env=flightops --add-env=root`' % isocScript
 
+# DB for acqsummary
+if mode == 'prod':
+    connectString = '/@isocflight'
+else:
+    connectString = '/@isocnightly'
+    pass
+acqTable = 'GLASTOPS_ACQSUMMARY'
+
 stVersion = 'v9r5p2'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
 #ST = os.path.join(L1Cmt, "ScienceTools", "ScienceTools-%s" % stVersion)
