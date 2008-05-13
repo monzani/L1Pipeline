@@ -359,6 +359,31 @@
       </depends>
     </process>
 
+    <process name="calGainsAnalyzer">
+      <variables>
+        <var name="fileType">calEor</var>
+        <var name="reportType">calGainsAnalyzer</var>
+      </variables>
+      <job executable="${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s "/>
+      <depends>
+        <after process="mergeCalEor" status="SUCCESS"/>
+      </depends>
+    </process>
+   
+    <process name="registerCalGainsAnalyzer">
+      <variables>
+        <var name="parentProcess">calGainsAnalyzer</var>
+        <var name="dataType">calGainsAnalyzer</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="calGainsAnalyzer" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="calPedsAnalyzer">
       <variables>
         <var name="fileType">calEor</var>
