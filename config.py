@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.49"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.50"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -127,8 +127,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
-glastVersion = 'v13r11p9'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
+glastVersion = 'v14r8'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -153,7 +153,7 @@ reconOptions = {
     'MC': os.path.join(L1Data, 'recon.jobOpt.mc'),
 }
 
-rootSys = os.path.join(glastExt, 'ROOT/v5.16.00-gl1/root')
+rootSys = os.path.join(glastExt, 'ROOT/v5.18.00b/root')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
@@ -164,7 +164,8 @@ isocPlatform = 'rhel3_gcc32'
 isocBin = os.path.join(isoc, isocPlatform, 'ISOC_PROD', 'bin')
 
 isocScript = os.path.join(isocBin, 'isoc')
-isocEnv = 'eval `%s isoc_env --add-env=flightops --add-env=root`' % isocScript
+#isocEnv = 'eval `%s isoc_env --add-env=flightops --add-env=root`' % isocScript
+isocEnv = 'eval `%s isoc_env --add-env=flightops`' % isocScript
 
 # DB for acqsummary
 if mode == 'prod':
@@ -188,11 +189,11 @@ cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 cmtPackages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v3r1p3',
+        'version': 'v3r1p4',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
-        'version': 'v3r14p1',
+        'version': 'v3r14p3',
         },
     'evtClassDefs': {
         'repository': '',
@@ -204,7 +205,7 @@ cmtPackages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r2p14',
+        'version': 'v1r2p15',
         },
     'GPLtools': {
         'repository': '',
