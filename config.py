@@ -184,7 +184,7 @@ cmtPackages = {
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
-        'version': 'v3r14p1',
+        'version': 'v3r14p3',
         },
     'evtClassDefs': {
         'repository': '',
@@ -204,7 +204,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r1p6',
+        'version': 'v1r1p7',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -223,7 +223,7 @@ cvsPackages = {
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r1p10',
+        'version': 'v1r1p11',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
