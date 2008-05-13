@@ -6,7 +6,6 @@ Give crumb-level files their own directories to avoid having process reading
 files in directories where other files are being written.
 Implement GDQMQ-65/LONE-48 (pedestals/gains fitting).
 Add configs for normalized rates (GDQMQ-82/GDQMQ-83).
-EngineeringModelRoot v3r14p3.
 -------------------------------------------
 
 

@@ -192,7 +192,7 @@ cmtPackages = {
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
-        'version': 'v3r14p3',
+        'version': 'v3r14p1',
         },
     'evtClassDefs': {
         'repository': '',
