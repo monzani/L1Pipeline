@@ -93,7 +93,7 @@ stageBase = 'l1Stage'
 #maxCrumbSize = 17000   # ~.5Hr on cob (skymodel).
 minCrumbCpuf = 7
 maxCrumbs = 7 # Maximum number of crumbs/chunk. Not used by current algorithm.
-crumbSize = 5000 # typical crumb size
+crumbSize = 10000 # typical crumb size
 crumbMmr = 2.0 # largestCrumb / smallestCrumb
 
 defaultRunStatus = 'WAITING'
@@ -128,7 +128,7 @@ installBin = os.path.join(installArea, 'bin')
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
 releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
-glastVersion = 'v14r8'
+glastVersion = 'v14r10'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -175,7 +175,7 @@ else:
     pass
 acqTable = 'GLASTOPS_ACQSUMMARY'
 
-stVersion = 'v9r5p2'
+stVersion = 'v9r5p4'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
 #ST = os.path.join(L1Cmt, "ScienceTools", "ScienceTools-%s" % stVersion)
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
@@ -187,6 +187,10 @@ aspLauncher = '/bin/true'
 cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 
 cmtPackages = {
+    'calibTkrUtil': {
+        'repository': '',
+        'version': 'v2r1p2',
+        },
     'Common': {
         'repository': 'dataMonitoring',
         'version': 'v3r1p4',

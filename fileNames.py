@@ -54,6 +54,8 @@ fileTypes = {
     'reconTrendAlarm': 'xml',
     'svac': 'root',
     'svacHist': 'root',
+    'tkrAnalysis': 'root',
+    'tkrEor': 'root',
     'verifyLog': 'xml',
     'verifyHisto': 'root',
     }

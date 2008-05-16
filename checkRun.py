@@ -61,10 +61,6 @@ runNumber = os.environ['runNumber']
 
 rootDir = os.path.dirname(fileNames.fileName('chunkList', dlId, runId)) #bleh
 
-print >> sys.stderr, \
-      "Attempting to remove lock from [%s] at [%s]" % (rootDir, time.ctime())
-lockFile.unlockDir(rootDir, runId, dlId)
-
 # Here we need to check that all the chunk locks (created by the halfpipe,
 # removed by this script before now) are gone, AND that some database
 # somewhere (GLAST_ISOC.ACQSUMMARY) says that the run is as complete as it
@@ -88,4 +84,8 @@ if readyToRetire:
 else:
     print >> sys.stderr, "Not retiring run %s: runStatus=%s, toeksnStatus=%s" % (runId, runStatus, tokenStatus)
     pass
+
+print >> sys.stderr, \
+      "Attempting to remove lock from [%s] at [%s]" % (rootDir, time.ctime())
+lockFile.unlockDir(rootDir, runId, dlId)
 

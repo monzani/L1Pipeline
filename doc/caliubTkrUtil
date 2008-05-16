@@ -1,0 +1,20 @@
+For digi/recon analysis, command will look like
+${CALIBTKRUTILROOT}/rh9_gcc32/tkrRootAnalysis.exe [digi root file] [recon root file] [output root file]
+
+
+For processing of resulting root file,
+unsetenv PYTHONPATH
+unsetenv ROOTSYS
+source ${CALIBTKRUTILROOT}/cmt/setup.csh
+${CALIBTKRUTILROOT}/python/tkrMonitor.py [input root file] [output root file] [html directory] [alert file] [log file]
+
+Before the software freeze, these are stuff we would like to work on.
+
+1. alert xml file (I need to know the format).
+2. parameter limit xml file (I am using a text file in calibTkrUtil now. I plan to change to use a file in
+${LATMonRoot}/TKR. I am wondering if I should share limits with David for "error" condition. (We also have different level
+of alerts such as "info", "notice" and "warning". I think we can use our own limits for these less important alerts, but it
+might be a good idea to share the same "error" limit to avoid having different limits between us and David.
+3. Improve html report.
+4. Reference root file in ${LATMonRoot}/TKR. (There are some parameters that requires references for better understandings
+of performance.)

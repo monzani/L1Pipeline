@@ -21,7 +21,7 @@ if not dlId: head, dlId = os.path.split(head)
 
 runId = os.environ.get('RUNID')
 if runId is not None:
-    runStatus = os.environ['RUNSTATUS']
+    # runStatus = os.environ['RUNSTATUS']
 
     chunkId = os.environ.get('CHUNK_ID')
     if chunkId is not None:
@@ -33,8 +33,8 @@ if runId is not None:
 else:
     level = 'downlink'
 
-    print >> sys.stderr, 'Not doing cleanup.'
-    sys.exit(0)
+    # print >> sys.stderr, 'Not doing cleanup.'
+    # sys.exit(0)
     
     chunkId = None
     pass

@@ -26,7 +26,7 @@
     <createsSubtasks>
       <subtask>doRun</subtask>
       <subtask>doLci</subtask>
-      <subtask>cleanupIncompleteRun</subtask>
+      <subtask>doInc</subtask>
     </createsSubtasks>
   </process>
 
@@ -1460,6 +1460,14 @@
         </depends>
       </process>
  
+      <process name="tkrAnalysis">
+        <job executable="${L1ProcROOT}/tkrRootAnalysis.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="doCrumb.recon" status="SUCCESS"/>
+          <after process="mergeReconCrumbs" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
       <process name="cleanupCrumbs">
         <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(shortQ)s "/>
         <depends>
@@ -1486,6 +1494,7 @@
           <after process="meritTrend" status="SUCCESS"/>
           <after process="reconEor" status="SUCCESS"/>
           <after process="reconTrend" status="SUCCESS"/>
+          <after process="tkrAnalysis" status="SUCCESS"/>
         </depends>
       </process>
 
@@ -1749,24 +1758,36 @@
 
   </task>
 
-  <task name="cleanupIncompleteRun" version="%(L1Version)s" type="Data">
+  <task name="doInc" version="%(L1Version)s" type="Data">
 
     <prerequisites>
       <prerequisite name="RUNID" type="string"/>
       <prerequisite name="RUNSTATUS" type="string"/>
     </prerequisites>
 
-    <process name="cleanupChunksInc">
-      <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
+    <process name="checkInc">
+      <job executable="${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
+      <createsSubtasks>
+        <subtask>cleanupIncompleteRun</subtask>
+      </createsSubtasks>
     </process>
 
-    <process name="updateRunStatusInc">
-      <script>
-        <![CDATA[
+
+    <task name="cleanupIncompleteRun" version="%(L1Version)s" type="Data">
+
+      <process name="cleanupChunksInc">
+        <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
+      </process>
+
+      <process name="updateRunStatusInc">
+        <script>
+          <![CDATA[
 %(retireScriptBody)s
 ]]>
-      </script>
-    </process>
+        </script>
+      </process>
+
+   </task>
 
   </task>
 
