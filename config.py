@@ -226,7 +226,7 @@ cmtPackages = {
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'v6r7',
+        'version': 'v6r8',
         },
     }
 
