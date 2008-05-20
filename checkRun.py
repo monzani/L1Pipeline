@@ -28,6 +28,9 @@ def checkRunStatus(runNumber):
     con.close()
 
     if len(results) != 1:
+        # If the run is not in ACQSUMMARY, something is wrong.
+        # If there are multiple entries, something is wrong.
+        # In either case, err on the side of caution.
         print >> sys.stderr, "Did not get exactly 1 status for run %s, results=%s; not retiring." % (runNumber, results)
         return False
     
@@ -45,6 +48,7 @@ def checkTokens(head, runId):
     try:
         tokenFiles = os.listdir(tokenDir)
     except OSError:
+        # Probably should not cleanup here if we're in prod mode.
         print >> sys.stderr, 'Token directory %s is nonexistent or unreadable.' % tokenDir
         tokenFiles = []
         pass

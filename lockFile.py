@@ -25,39 +25,6 @@ def uniqName():
     return uniq
 
 
-def createLock(directory, id):
-    """Create a lock file.
-    DEPRECATED
-    """
-    fullName = os.path.join(directory, lockFileName(id))
-    print >> sys.stderr, "Checking lock file %s" % fullName
-    if os.path.exists(fullName):
-        # potentially we could wait a while and check again before failing
-        # or maybe that should be handled by the caller
-        raise LockedError
-    print >> sys.stderr, "Creating lock file %s" % fullName
-    lfp = open(fullName, 'w')
-    lfp.close()
-    return
-
-
-def removeLock(directory, id):
-    """Remove a lock file.
-    DEPRECATED
-    """
-    fullName = os.path.join(directory, lockFileName(id))
-    print >> sys.stderr, "Removing lock file %s" % fullName
-    os.remove(fullName)
-    return
-
-
-def checkLock(directory):
-    """Check a directory for the presence of any lock files.
-    DEPRECATED
-    """
-    # TBI
-    return
-
 def lockData(id):
     data = {
         'id': id,
@@ -122,6 +89,8 @@ def unlockDir(directory, base, id):
         data = readLock(directory, base, id)
     except IOError:
         # This is probably bad.  What if we don't have permission?
+        # Nor should the file be missing.
+        # On prod, we should fail here.
         print >> sys.stderr, "Can't open lockfile %s.  Very odd, but we'll continue." % lockFile
         return
 

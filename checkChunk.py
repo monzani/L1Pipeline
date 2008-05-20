@@ -22,22 +22,12 @@ if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 chunkId = os.environ['CHUNK_ID']
 
-
-# # This is probably not the right location for these locks.
-# # They need to be put in a run-level (independent of downlink)
-# # directory by the halfpipe.
-# # The location has not yet been determined.
-# # When it is, it will affect this process and checkRun
-# runDir = files['dirs']['run']
-# # This ain't the right code, either.
-# lockFile.removeLock(runDir, chunkId)
-
 # Remove event file? - No, that happens in cleanupDl.
-
 
 token = fileNames.chunkToken(head, runId, chunkId)
 
 if not os.path.exists(token):
+    # This should not happen on prod.  We should fail.
     print >> sys.stderr, "Chunk token %s does not exist.  This is odd, but not necessarily fatal.  We'll continue." % token
     sys.exit(0)
     pass

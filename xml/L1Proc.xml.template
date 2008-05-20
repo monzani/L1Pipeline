@@ -1158,7 +1158,10 @@
         <after process="preRegisterTkrReport" status="SUCCESS"/>
       </depends>
     </process>
- 
+
+
+
+<!-- We don't have TKR alarms yet
     <process name="preRegisterTkrAlarm">
       <variables>
         <var name="fileType">tkrAlarm</var>
@@ -1182,7 +1185,10 @@
         <after process="preRegisterTkrAlarm" status="SUCCESS"/>
       </depends>
     </process>
- 
+ -->
+
+
+
     <process name="tkrTrend">
       <variables>
         <var name="reportType">tkrTrend</var>
@@ -1193,6 +1199,20 @@
       </depends>
     </process>
 
+    <process name="registerTkrTrend">
+      <variables>
+        <var name="parentProcess">tkrTrend</var>
+        <var name="dataType">TKRTREND</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="tkrTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
     <process name="ingestTkrTrend">
       <variables>
         <var name="reportType">tkrTrend</var>
@@ -1312,10 +1332,11 @@
         <after process="registerReconTrend" status="SUCCESS"/>
         <after process="registerReconTrendAlarm" status="SUCCESS"/>
         <after process="registerSvacTuple" status="SUCCESS"/>
-        <after process="registerTkrAlarm" status="SUCCESS"/>
+<!-- We don't have TKR alarms yet        <after process="registerTkrAlarm" status="SUCCESS"/>     -->
         <after process="registerTkrAnalysis" status="SUCCESS"/>
         <after process="registerTkrMonitor" status="SUCCESS"/>
         <after process="registerTkrReport" status="SUCCESS"/>
+        <after process="registerTkrTrend" status="SUCCESS"/>
       </depends>
       <createsSubtasks>
         <subtask>cleanupCompleteRun</subtask>
@@ -1388,7 +1409,7 @@
         </depends>
       </process>
 
-    </task>
+    </task> <!-- cleanupCompleteRun -->
 
     <task name="doChunk" version="%(L1Version)s" type="Data">
 
@@ -1640,11 +1661,11 @@
           </depends>
         </process>
 
-      </task>
+      </task> <!-- doCrumb -->
      
-    </task>
+    </task> <!-- doChunk -->
 
-  </task>
+  </task> <!-- doRun -->
 
   <task name="doLci" version="%(L1Version)s" type="Data">
 
@@ -1828,7 +1849,7 @@
         </script>
       </process>
 
-    </task>
+    </task> <!-- cleanupCompleteRunLci -->
 
     <task name="doChunkLci" version="%(L1Version)s" type="Data">
 
@@ -1877,9 +1898,9 @@
         </depends>
       </process>
 
-    </task>
+    </task> <!-- doChunkLci -->
 
-  </task>
+  </task> <!-- doLci -->
 
   <task name="doInc" version="%(L1Version)s" type="Data">
 
@@ -1910,61 +1931,78 @@
         </script>
       </process>
 
-      <process name="verifyInc">
-        <job executable="${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s "/>
-      </process>
-
-      <process name="registerVerifyHistoInc">
-        <variables>
-          <var name="parentProcess">verify</var>
-	  <var name="dataType">VERIFYHISTO</var>
-        </variables>
-        <script><![CDATA[
-%(registerBody)s
+      <process name="launchVerify">
+        <script>
+          <![CDATA[
+if DATASOURCE == 'LPA':
+    pipeline.createSubstream("verifyIncompleteRun", runNumber)
 ]]>
         </script>
-        <depends>
-          <after process="verifyInc" status="SUCCESS"/>
-        </depends>
+        <createsSubtasks>
+          <subtask>verifyIncompleteRun</subtask>
+        </createsSubtasks>
       </process>
 
-      <process name="preRegisterVerifyLogInc">
-        <variables>
-          <var name="fileType">verifyLog</var>
-        </variables>
-        <job executable="${L1ProcROOT}/preRegister.py" batchOptions=" -q %(shortQ)s "/>
-        <depends>
-          <after process="verifyInc" status="SUCCESS"/>
-        </depends>
-      </process>
 
-      <process name="ingestVerifyErrorRunInc">
-        <variables>
-          <var name="reportType">verifyLog</var>
-        </variables>
-        <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
-        <depends>
-          <after process="preRegisterVerifyLogInc" status="SUCCESS"/>
-        </depends>
-      </process>
+      <task name="verifyIncompleteRun" version="%(L1Version)s" type="Data">
 
-      <process name="registerVerifyLogInc">
-        <variables>
-          <var name="parentProcess">preRegisterVerifyLog</var>
-          <var name="dataType">VERIFYLOG</var>
-        </variables>
-        <script><![CDATA[
+        <process name="verifyInc">
+          <job executable="${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s "/>
+        </process>
+
+        <process name="registerVerifyHistoInc">
+          <variables>
+            <var name="parentProcess">verifyInc</var>
+            <var name="dataType">VERIFYHISTO</var>
+          </variables>
+          <script><![CDATA[
 %(registerBody)s
 ]]>
-        </script>
-        <depends>
-          <after process="preRegisterVerifyLogInc" status="SUCCESS"/>
-        </depends>
-      </process>
-   </task>
+          </script>
+          <depends>
+            <after process="verifyInc" status="SUCCESS"/>
+          </depends>
+        </process>
 
-  </task>
+        <process name="preRegisterVerifyLogInc">
+          <variables>
+            <var name="fileType">verifyLog</var>
+          </variables>
+          <job executable="${L1ProcROOT}/preRegister.py" batchOptions=" -q %(shortQ)s "/>
+          <depends>
+            <after process="verifyInc" status="SUCCESS"/>
+          </depends>
+        </process>
 
-</task>
+        <process name="ingestVerifyErrorRunInc">
+          <variables>
+            <var name="reportType">verifyLog</var>
+          </variables>
+          <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+          <depends>
+            <after process="preRegisterVerifyLogInc" status="SUCCESS"/>
+          </depends>
+        </process>
+
+        <process name="registerVerifyLogInc">
+          <variables>
+            <var name="parentProcess">preRegisterVerifyLogInc</var>
+            <var name="dataType">VERIFYLOG</var>
+          </variables>
+          <script><![CDATA[
+%(registerBody)s
+]]>
+          </script>
+          <depends>
+            <after process="preRegisterVerifyLogInc" status="SUCCESS"/>
+          </depends>
+        </process>
+
+      </task> <!-- verifyIncompleteRun -->
+    </task> <!-- cleanupIncompleteRun -->
+
+  </task> <!-- doInc -->
+
+</task> <!-- L1Proc -->
 </pipeline>
 

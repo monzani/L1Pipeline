@@ -20,7 +20,9 @@ os.mkdir(workDir)
 
 codeDir = config.packages['Monitor']['bin']
 
-digiFile = '/no/such/directory/no_such_file.root'
+# You have to supply file names, but you don't actually need a file.
+# This seems unlikely to exist.
+digiFile = '/no/such/directory/noSuchFile.root'
 calFile = digiFile
 fastMonFile = digiFile
 meritFile = digiFile

@@ -13,6 +13,7 @@ import config
 import GPLinit
 
 import fileNames
+import registerPrep
 import runner
 import stageFiles
 
@@ -23,8 +24,10 @@ chunkId = os.environ.get('CHUNK_ID') # might not be set
 
 if chunkId is None:
     level = 'run'
+    next = True
 else:
     level = 'chunk'
+    next = False
     pass
 
 staged = stageFiles.StageSet()
@@ -38,7 +41,7 @@ package = config.packages['Monitor']
 setup = package['setup']
 app = package['app']
 
-realOutFile = fileNames.fileName(reportType, dlId, runId, chunkId, next=True)
+realOutFile = fileNames.fileName(reportType, dlId, runId, chunkId, next=next)
 outFile = staged.stageOut(realOutFile)
 
 workDir = os.path.dirname(outFile)
@@ -103,5 +106,9 @@ status = runner.run(cmd)
 if status: finishOption = 'wipe'
 
 status |= staged.finish(finishOption)
+
+if level == 'run' and not status:
+    registerPrep.prep(reportType, realOutFile)
+    pass
 
 sys.exit(status)

@@ -33,12 +33,14 @@ stagedInFile = staged.stageIn(realInFile)
 
 realMonFile = fileNames.fileName('tkrMonitor', dlId, runId, chunkId, crumbId, next=True)
 stagedMonFile = staged.stageOut(realMonFile)
-realAlarmFile = fileNames.fileName('tkrAlarm', dlId, runId, chunkId, crumbId, next=True)
-stagedAlarmFile = staged.stageOut(realAlarmFile)
 realReportFile = fileNames.fileName('tkrReport', dlId, runId, chunkId, crumbId, next=True)
 stagedReportFile = staged.stageOut(realReportFile)
 
 workDir = os.path.dirname(stagedMonFile)
+
+#realAlarmFile = fileNames.fileName('tkrAlarm', dlId, runId, chunkId, crumbId, next=True)
+#stagedAlarmFile = staged.stageOut(realAlarmFile)
+stagedAlarmFile = os.path.join(workDir, 'aintNoAlarmFile.xml')
 
 htmlBase = '%s_tkrReport' % runId
 htmlDir = os.path.join(workDir, htmlBase)
@@ -54,7 +56,6 @@ cmd = """
 cd %(workDir)s
 source %(cmtScript)s
 /afs/slac.stanford.edu/g/glast/ground/GLAST_EXT/rh9_gcc32opt/python/2.5.1/bin/python2.5 %(app)s %(stagedInFile)s %(stagedMonFile)s %(htmlDir)s %(stagedAlarmFile)s %(logFile)s
-touch %(stagedAlarmFile)s
 """ % locals()
 
 status = runner.run(cmd)

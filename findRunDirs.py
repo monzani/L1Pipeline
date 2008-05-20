@@ -117,6 +117,7 @@ runNumRe = re.compile('([0-9]+)')
 for runId in dataRuns:
     source = dataSource.get(runId, config.defaultDataSource)
     subTask = config.runSubTask[source]
+
     mop = runNumRe.search(runId)
     if mop:
         nStr = mop.group(1)
@@ -126,6 +127,7 @@ for runId in dataRuns:
         pass
     runNumber = '%d' % int(nStr)
     stream = runNumber
+
     runDir = runDirs[runId]['runDir']
     runStatus = runStatuses[runId]
     try:
@@ -146,13 +148,24 @@ for runId in dataRuns:
 # and for each old run
 subTask = "cleanupIncompleteRun"
 for runId in oldRuns:
-    stream = runId[1:]
+    source = dataSource.get(runId, config.defaultDataSource)
+
+    mop = runNumRe.search(runId)
+    if mop:
+        nStr = mop.group(1)
+    else:
+        print >> sys.stderr, 'runId %s is malformed.' % runId
+        nStr = runId[1:]
+        pass
+    runNumber = '%d' % int(nStr)
+    stream = runNumber
+
     runStatus = runStatuses[runId]
-    args = "RUNID=%(runId)s,RUNSTATUS=%(runStatus)s" % locals()
+    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUNSTATUS=%(runStatus)s,DATASOURCE=%(source)s" % locals()
     print >> sys.stderr, \
-          "NOT Creating stream [%s] of subtask [%s] with args [%s]" % \
+          "Creating stream [%s] of subtask [%s] with args [%s]" % \
           (stream, subTask, args)
-    #pipeline.createSubStream(subTask, stream, args)
+    pipeline.createSubStream(subTask, stream, args)
     continue
 
 staged.finish()
