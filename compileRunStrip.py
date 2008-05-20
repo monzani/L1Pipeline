@@ -25,6 +25,7 @@ calFile = digiFile
 fastMonFile = digiFile
 meritFile = digiFile
 reconFile = digiFile
+tkrMonFile = digiFile
 
 if len(sys.argv) > 1:
     reportTypes = sys.argv[1:]
@@ -35,6 +36,7 @@ else:
         'fastMonTrend',
         'meritEor', 'meritTrend',
         'reconEor', 'reconTrend',
+        'tkrTrend',
         ]
     pass
 
@@ -49,6 +51,8 @@ for reportType in reportTypes:
 
     if 'fastMon' in reportType:
         inFileOpts = '-f %s' % fastMonFile
+    elif 'tkrTrend' in reportType:
+        inFileOpts = '-k %s' % tkrMonFile
     else:
         inFileOpts = '-d %s' % digiFile
         if 'recon' in reportType:

@@ -38,7 +38,7 @@ package = config.packages['Monitor']
 setup = package['setup']
 app = package['app']
 
-realOutFile = fileNames.fileName(reportType, dlId, runId, chunkId)
+realOutFile = fileNames.fileName(reportType, dlId, runId, chunkId, next=True)
 outFile = staged.stageOut(realOutFile)
 
 workDir = os.path.dirname(outFile)
@@ -47,6 +47,10 @@ if 'fastMon' in reportType:
     realFmt = fileNames.fileName('fastMonTuple', dlId, runId, chunkId)
     stagedFmt = staged.stageIn(realFmt)
     inFileOpts = '-f %s' % stagedFmt
+elif 'tkrTrend' in reportType:
+    realInFile = fileNames.fileName('tkrMonitor', dlId, runId, chunkId)
+    stagedInFile = staged.stageIn(realInFile)
+    inFileOpts = '-k %s' % stagedInFile
 else:
     realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId)
     stagedDigiFile = staged.stageIn(realDigiFile)

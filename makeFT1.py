@@ -45,11 +45,14 @@ dictionary = config.ft1Dicts[fileType]
 
 version = fileNames.version(realFt1File)
 
+cfitsioPath = config.cfitsioPath
+
 cmd = '''
 cd %(workDir)s
 source %(stSetup)s
-source %(appSetup)s
+#source %(appSetup)s
 PYTHONPATH=%(evtClassDefsPython)s:$PYTHONPATH ; export PYTHONPATH
+#LD_LIBRARY_PATH=%(cfitsioPath)s:$LD_LIBRARY_PATH ; export LD_LIBRARY_PATH
 %(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=%(tCuts)s event_classifier="%(classifier)s" tstart=%(tStart).17g tstop=%(tStop).17g dict_file=%(dictionary)s file_version=%(version)s
 ''' % locals()
 

@@ -51,6 +51,7 @@ L1Xml = os.path.join(L1ProcROOT, 'xml')
 L1Data = os.path.join(L1ProcROOT, 'data')
 
 LATCalibRoot = '/afs/slac/g/glast/ground/releases/calibrations/'
+LATMonRoot="/afs/slac.stanford.edu/g/glast/ground/releases/monitor/"
 
 calibFlavors = { # not using this now, have separate JO files for LPA & MC
     'LPA': {
@@ -128,7 +129,7 @@ installBin = os.path.join(installArea, 'bin')
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
 releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
-glastVersion = 'v14r10'
+glastVersion = 'v14r11'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -189,7 +190,7 @@ cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 cmtPackages = {
     'calibTkrUtil': {
         'repository': '',
-        'version': 'v2r1p2',
+        'version': 'v2r2p1',
         },
     'Common': {
         'repository': 'dataMonitoring',
@@ -201,11 +202,11 @@ cmtPackages = {
         },
     'evtClassDefs': {
         'repository': '',
-        'version': 'v0r2',
+        'version': 'v0r3',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v3r1p3',
+        'version': 'v3r1p4',
         },
     'ft2Util': {
         'repository': '',
@@ -217,7 +218,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r1p7',
+        'version': 'v1r1p9',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -236,11 +237,11 @@ cvsPackages = {
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r1p11',
+        'version': 'v1r1p15',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r1p9',
+        'version': 'v1r1p10',
         },
     'IGRF': {
         'repository': 'dataMonitoring',
@@ -259,6 +260,7 @@ for packName in packages:
     package['bin'] = os.path.join(package['root'], cmtConfig)
     package['cmtDir'] = os.path.join(package['root'], 'cmt')
     package['setup'] = os.path.join(package['cmtDir'], 'setup.sh')
+    package['python'] = os.path.join(package['root'], 'python')
     package['checkOutName'] = os.path.join(package['repository'], packName)
     continue
 
@@ -266,22 +268,22 @@ for packName in packages:
 packages['AlarmsCfg']['xml'] = os.path.join(
     packages['AlarmsCfg']['root'], 'xml')
 
-packages['Common']['python'] = os.path.join(
-    packages['Common']['root'], 'python')
+#packages['Common']['python'] = os.path.join(
+#    packages['Common']['root'], 'python')
 
 packages['EngineeringModelRoot']['app'] = os.path.join(
     packages['EngineeringModelRoot']['bin'], 'RunRootAnalyzer.exe')
 
 packages['evtClassDefs']['data'] = os.path.join(
     packages['evtClassDefs']['root'], 'data')
-packages['evtClassDefs']['python'] = os.path.join(
-    packages['evtClassDefs']['root'], 'python')
+#packages['evtClassDefs']['python'] = os.path.join(
+#    packages['evtClassDefs']['root'], 'python')
 
 packages['ft2Util']['app'] = os.path.join(
     packages['ft2Util']['bin'], 'makeFT2Entries.exe')
 
-packages['FastMon']['python'] = os.path.join(
-    packages['FastMon']['root'], 'python')
+#packages['FastMon']['python'] = os.path.join(
+#    packages['FastMon']['root'], 'python')
 packages['FastMon']['app'] = os.path.join(
     packages['FastMon']['python'], 'pDataProcessor.py')
 packages['FastMon']['configDir'] = os.path.join(
@@ -291,10 +293,10 @@ packages['FastMon']['env'] = {
     }
 packages['FastMon']['extraSetup'] = isocEnv
 
-packages['GPLtools']['python'] = os.path.join(
-    packages['GPLtools']['root'], 'python')
+#packages['GPLtools']['python'] = os.path.join(
+#    packages['GPLtools']['root'], 'python')
 
-packages['IGRF']['python'] = os.path.join(packages['IGRF']['root'], 'python')
+#packages['IGRF']['python'] = os.path.join(packages['IGRF']['root'], 'python')
 
 packages['Monitor']['app'] = os.path.join(
     packages['Monitor']['bin'], 'runStrip_t.exe')
@@ -333,6 +335,12 @@ apps = {
     'recon': gleam,
     'reportMerge': packages['Monitor']['mergeApp'],
     'svacTuple': packages['EngineeringModelRoot']['app'],
+    'tkrAnalysis': os.path.join(
+        packages['calibTkrUtil']['bin'], 'tkrRootAnalysis.exe'),
+    'tkrMerger': os.path.join(
+        packages['calibTkrUtil']['python'], 'mergeTkrRootFiles.py'),
+    'tkrMonitor': os.path.join(
+        packages['calibTkrUtil']['python'], 'tkrMonitor.py'),
     'trendMerge': packages['Monitor']['trendMerge'],
     'runVerify': os.path.join(
         packages['TestReport']['bin'], 'RunVerify.exe'),
@@ -367,6 +375,9 @@ monitorOptions = {
     'meritTrend': os.path.join(
         packages['DigiReconCalMeritCfg']['root'],
         'monconfig_merit_trending.xml'),
+    'tkrTrend': os.path.join(
+        packages['DigiReconCalMeritCfg']['root'],
+        'monconfig_trackermon_trending.xml'),
     'reconEor': os.path.join(
         packages['DigiReconCalMeritCfg']['root'],
         'monconfig_recon_histos.xml'),
@@ -448,6 +459,7 @@ tdBin = {
     'meritTrend': 15,
     'reconEor': 15,
     'reconTrend': 15,
+    'tkrTrend': 30000000,
     }
 
 
@@ -471,21 +483,30 @@ else:
 trendIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/%s/bin/ingestTrendingFile' % trendMode
 runIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/%s/bin/ingestRunFile' % trendMode
 
-rootPath = os.path.join(rootSys, 'lib')
-xercesPath = os.path.join(glastExt, 'xerces/2.7.0/lib')
-mysqlPath = os.path.join(glastExt, 'MYSQL/4.1.18/lib/mysql')
+cfitsioPath = os.path.join(glastExt, 'cfitsio/v3060/lib')
 clhepPath = os.path.join(glastExt, 'CLHEP/1.9.2.2/lib')
 cppunitPath = os.path.join(glastExt, 'cppunit/1.10.2/lib')
 gaudiPath = os.path.join(glastExt, 'gaudi/v18r1-gl4/lib')
+mysqlPath = os.path.join(glastExt, 'MYSQL/4.1.18/lib/mysql')
 oraclePath = '/afs/slac/package/oracle/new/lib'
+rootPath = os.path.join(rootSys, 'lib')
+xercesPath = os.path.join(glastExt, 'xerces/2.7.0/lib')
 
 libraryPath = ':'.join(
     [os.path.join(L1Cmt, 'lib'), 
      os.path.join(glastLocation, 'lib'), 
-     rootPath, clhepPath, cppunitPath, oraclePath,
+     oraclePath,
+     rootPath,
+     # It seems like the rest of this should not be necessary if everyone
+     # had their requirements set up right.  Maybe some of these are not
+     # required anymore.  But each of them was at some point.
+     clhepPath,
+     cppunitPath,
      xercesPath,
      gaudiPath,
-     mysqlPath])
+     mysqlPath,
+     #cfitsioPath,
+     ])
 
 # #GPL2 = '/nfs/slac/g/svac/focke/builds/GPLtools/dev'
 # gplBase = '/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/GPLtools'
@@ -544,6 +565,7 @@ os.environ['CMTPATH'] = cmtPath
 os.environ['GLAST_EXT'] = glastExt
 os.environ['GPL2'] = GPL2
 os.environ['LATCalibRoot'] = LATCalibRoot
+os.environ['LATMonRoot'] = LATMonRoot
 os.environ['MALLOC_CHECK_'] = '0'
 os.environ['PFILES'] = PFILES
 os.environ['PYTHONPATH'] = pythonPath

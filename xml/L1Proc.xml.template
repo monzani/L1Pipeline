@@ -45,6 +45,7 @@
   <process name="cleanupDl">
     <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(expressQ)s " />
     <depends>
+      <after process="doInc.checkRunInc" status="SUCCESS"/>
       <after process="doLci.checkRunLci" status="SUCCESS"/>
       <after process="doRun.checkRun" status="SUCCESS"/>
     </depends>
@@ -1088,6 +1089,110 @@
       </depends>
     </process>
 
+    <process name="mergeTkrAnalysis">
+      <variables>
+        <var name="fileType">tkrAnalysis</var>
+      </variables>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
+        <after process="doChunk.tkrAnalysis" status="DONE"/>
+      </depends>
+    </process>
+ 
+    <process name="registerTkrAnalysis">
+      <variables>
+        <var name="parentProcess">mergeTkrAnalysis</var>
+        <var name="dataType">TKRANALYSIS</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeTkrAnalysis" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="tkrMonitor">
+      <job executable="${L1ProcROOT}/tkrMonitor.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="mergeTkrAnalysis" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerTkrMonitor">
+      <variables>
+        <var name="parentProcess">tkrMonitor</var>
+        <var name="dataType">TKRMONITOR</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="tkrMonitor" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="preRegisterTkrReport">
+      <variables>
+        <var name="fileType">tkrReport</var>
+      </variables>
+      <job executable="${L1ProcROOT}/preRegister.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="tkrMonitor" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerTkrReport">
+      <variables>
+        <var name="parentProcess">preRegisterTkrReport</var>
+        <var name="dataType">TKRREPORT</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="preRegisterTkrReport" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="preRegisterTkrAlarm">
+      <variables>
+        <var name="fileType">tkrAlarm</var>
+      </variables>
+      <job executable="${L1ProcROOT}/preRegister.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="tkrMonitor" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerTkrAlarm">
+      <variables>
+        <var name="parentProcess">preRegisterTkrAlarm</var>
+        <var name="dataType">TKRALARM</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="preRegisterTkrAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="tkrTrend">
+      <variables>
+        <var name="reportType">tkrTrend</var>
+      </variables>
+      <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="tkrMonitor" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="mergeReconChunks">
       <variables>
         <var name="fileType">recon</var>
@@ -1196,6 +1301,10 @@
         <after process="registerReconTrend" status="SUCCESS"/>
         <after process="registerReconTrendAlarm" status="SUCCESS"/>
         <after process="registerSvacTuple" status="SUCCESS"/>
+        <after process="registerTkrAlarm" status="SUCCESS"/>
+        <after process="registerTkrAnalysis" status="SUCCESS"/>
+        <after process="registerTkrMonitor" status="SUCCESS"/>
+        <after process="registerTkrReport" status="SUCCESS"/>
       </depends>
       <createsSubtasks>
         <subtask>cleanupCompleteRun</subtask>
@@ -1765,7 +1874,7 @@
       <prerequisite name="RUNSTATUS" type="string"/>
     </prerequisites>
 
-    <process name="checkInc">
+    <process name="checkRunInc">
       <job executable="${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
       <createsSubtasks>
         <subtask>cleanupIncompleteRun</subtask>
@@ -1787,6 +1896,54 @@
         </script>
       </process>
 
+      <process name="verifyInc">
+        <job executable="${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s "/>
+      </process>
+
+      <process name="registerVerifyHistoInc">
+        <variables>
+          <var name="parentProcess">verify</var>
+	  <var name="dataType">VERIFYHISTO</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="verifyInc" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="verifyLogInc">
+        <job executable="${L1ProcROOT}/verifyLog.py" batchOptions=" -q %(shortQ)s "/>
+        <depends>
+          <after process="verifyInc" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="ingestVerifyErrorRunInc">
+        <variables>
+          <var name="reportType">verifyLog</var>
+        </variables>
+        <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+        <depends>
+          <after process="verifyLogInc" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="registerVerifyLogInc">
+        <variables>
+          <var name="parentProcess">verifyLog</var>
+          <var name="dataType">VERIFYLOG</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="verifyLogInc" status="SUCCESS"/>
+        </depends>
+      </process>
    </task>
 
   </task>

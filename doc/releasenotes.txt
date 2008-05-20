@@ -1,3 +1,15 @@
+1.50
+-----------------
+GR v14r11
+
+Implement TKR monitoring (LONE-49).
+Work around various bugs caused by CMT mangling PYTHONPATH and
+LD_LIBRARY_PATH.
+Rework handling of notification that incomplete runs will remain that way
+(LONE-57).
+-------------------------------------------
+
+
 1.49
 -----------------
 Implement alarm postprocessing.

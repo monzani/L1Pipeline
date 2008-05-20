@@ -18,3 +18,9 @@ might be a good idea to share the same "error" limit to avoid having different l
 3. Improve html report.
 4. Reference root file in ${LATMonRoot}/TKR. (There are some parameters that requires references for better understandings
 of performance.)
+mergeTkrRootFiles.py will merge two or more root files into one file. Syntax is
+
+python mergeTkrRootFiles.py [output root file] [input 1] [input 2] .... [input n]
+
+This guy is pretty universal. (It sums up any TH1F, TH2F, TProfile and TTrees while preserving directory structure. I can
+accommodate almost any object types.) Since I had too many histograms to merge, it was actually easier to make it generic.

@@ -41,6 +41,7 @@ def checkRunStatus(runNumber):
 
 def checkTokens(head, runId):
     tokenDir = fileNames.tokenDir(head, runId)
+    print >> sys.stderr, 'Looking for chunk tokens in %s' % tokenDir
     try:
         tokenFiles = os.listdir(tokenDir)
     except OSError:
@@ -49,6 +50,8 @@ def checkTokens(head, runId):
         pass
     if tokenFiles:
         print >> sys.stderr, 'Token files %s remain, not cleaning up.' % tokenFiles
+    else:
+        print >> sys.stderr, 'Found none.'
         pass
     statusTokens = not tokenFiles
     return statusTokens
@@ -77,7 +80,7 @@ readyToRetire = runStatus and tokenStatus
 subTask = config.cleanupSubTask[os.environ['DATASOURCE']]
 
 if readyToRetire:
-    print >> sys.stderr, "Run %s is as done as it's going to get, retiring."
+    print >> sys.stderr, "Run %s is as done as it's going to get, retiring." % runId
     stream = 0
     args = ''
     pipeline.createSubStream(subTask, stream, args)

@@ -170,6 +170,17 @@ elif fileType in ['fastMonError']:
     status |= runner.run(cmd)
 
 
+elif fileType in ['tkrAnalysis']:
+    python = config.python
+    app = config.apps['tkrMerger']
+    inFileString = ' %s' * len(inFiles) % tuple(inFiles)
+    cmd = '''
+    cd %(workDir)s
+    %(python)s %(app)s %(outFile)s %(inFileString)s
+    ''' % locals()
+    status = runner.run(cmd)
+
+
 else:
     app = config.hadd
     inFileString = ' %s' * len(inFiles) % tuple(inFiles)
