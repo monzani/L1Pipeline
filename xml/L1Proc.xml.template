@@ -1193,6 +1193,16 @@
       </depends>
     </process>
 
+    <process name="ingestTkrTrend">
+      <variables>
+        <var name="reportType">tkrTrend</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="tkrTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="mergeReconChunks">
       <variables>
         <var name="fileType">recon</var>
@@ -1265,6 +1275,7 @@
         <after process="ingestDigiEorRun" status="SUCCESS"/>
         <after process="ingestReconTrendRun" status="SUCCESS"/>
         <after process="ingestReconEorRun" status="SUCCESS"/>
+        <after process="ingestTkrTrend" status="SUCCESS"/>
         <after process="reconEorLogger" status="SUCCESS"/>
         <after process="reconTrendLogger" status="SUCCESS"/>
         <after process="registerAcdPlots" status="SUCCESS"/>
@@ -1343,10 +1354,27 @@
         </depends>
       </process>
 
-      <process name="verifyLog">
-        <job executable="${L1ProcROOT}/verifyLog.py" batchOptions=" -q %(shortQ)s "/>
+      <process name="preRegisterVerifyLog">
+        <variables>
+          <var name="fileType">verifyLog</var>
+        </variables>
+        <job executable="${L1ProcROOT}/preRegister.py" batchOptions=" -q %(shortQ)s "/>
         <depends>
           <after process="verify" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="registerVerifyLog">
+        <variables>
+          <var name="parentProcess">preRegisterVerifyLog</var>
+          <var name="dataType">VERIFYLOG</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="preRegisterVerifyLog" status="SUCCESS"/>
         </depends>
       </process>
 
@@ -1356,21 +1384,7 @@
         </variables>
         <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
         <depends>
-          <after process="verifyLog" status="SUCCESS"/>
-        </depends>
-      </process>
-
-      <process name="registerVerifyLog">
-        <variables>
-          <var name="parentProcess">verifyLog</var>
-          <var name="dataType">VERIFYLOG</var>
-        </variables>
-        <script><![CDATA[
-%(registerBody)s
-]]>
-        </script>
-        <depends>
-          <after process="verifyLog" status="SUCCESS"/>
+          <after process="preRegisterVerifyLog" status="SUCCESS"/>
         </depends>
       </process>
 
@@ -1914,8 +1928,11 @@
         </depends>
       </process>
 
-      <process name="verifyLogInc">
-        <job executable="${L1ProcROOT}/verifyLog.py" batchOptions=" -q %(shortQ)s "/>
+      <process name="preRegisterVerifyLogInc">
+        <variables>
+          <var name="fileType">verifyLog</var>
+        </variables>
+        <job executable="${L1ProcROOT}/preRegister.py" batchOptions=" -q %(shortQ)s "/>
         <depends>
           <after process="verifyInc" status="SUCCESS"/>
         </depends>
@@ -1927,13 +1944,13 @@
         </variables>
         <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
         <depends>
-          <after process="verifyLogInc" status="SUCCESS"/>
+          <after process="preRegisterVerifyLogInc" status="SUCCESS"/>
         </depends>
       </process>
 
       <process name="registerVerifyLogInc">
         <variables>
-          <var name="parentProcess">verifyLog</var>
+          <var name="parentProcess">preRegisterVerifyLog</var>
           <var name="dataType">VERIFYLOG</var>
         </variables>
         <script><![CDATA[
@@ -1941,7 +1958,7 @@
 ]]>
         </script>
         <depends>
-          <after process="verifyLogInc" status="SUCCESS"/>
+          <after process="preRegisterVerifyLogInc" status="SUCCESS"/>
         </depends>
       </process>
    </task>

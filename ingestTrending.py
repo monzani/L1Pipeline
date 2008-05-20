@@ -40,12 +40,14 @@ processes = {
     'fastMonTrend': 'FastMon',
     'meritTrend': 'Merit',
     'reconTrend': 'Recon',
+    'tkrTrend': 'TkrMon',
     }
 process = processes.get(reportType, 'UnknownProcess')
 
 timeBins = {
     15: "15secs",
     300: "5mins",
+    30000000: "run"
     }
 tdBin = timeBins.get(config.tdBin[reportType], 'UnknownTimeBin')
 
