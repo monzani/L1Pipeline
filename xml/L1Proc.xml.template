@@ -1405,7 +1405,7 @@
         </variables>
         <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
         <depends>
-          <after process="preRegisterVerifyLog" status="SUCCESS"/>
+          <after process="verify" status="SUCCESS"/>
         </depends>
       </process>
 
@@ -1980,7 +1980,7 @@ if DATASOURCE == 'LPA':
           </variables>
           <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
           <depends>
-            <after process="preRegisterVerifyLogInc" status="SUCCESS"/>
+            <after process="verifyInc" status="SUCCESS"/>
           </depends>
         </process>
 
