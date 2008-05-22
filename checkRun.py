@@ -92,6 +92,8 @@ else:
     print >> sys.stderr, "Not retiring run %s: runStatus=%s, toeksnStatus=%s" % (runId, runStatus, tokenStatus)
     pass
 
+# Here we should copy the run status from ACQSUMMARY to Karen's table.
+
 print >> sys.stderr, \
       "Attempting to remove lock from [%s] at [%s]" % (rootDir, time.ctime())
 lockFile.unlockDir(rootDir, runId, dlId)

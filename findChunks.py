@@ -32,6 +32,8 @@ finishOption = config.finishOption
 realChunkList = fileNames.fileName('chunkList', dlId, runId)
 stagedChunkList = staged.stageIn(realChunkList)
 
+# Here we should put 'RUNNING' in Karen's run status table.
+
 subTask = config.chunkSubTask[os.environ['DATASOURCE']]
 
 chunkListData = fileNames.readList(stagedChunkList)
