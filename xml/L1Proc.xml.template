@@ -1217,7 +1217,7 @@
       <variables>
         <var name="reportType">tkrTrend</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="tkrTrend" status="SUCCESS"/>
       </depends>
