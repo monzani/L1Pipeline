@@ -49,6 +49,8 @@ def checkTokens(head, runId):
         tokenFiles = os.listdir(tokenDir)
     except OSError:
         # Probably should not cleanup here if we're in prod mode.
+        #
+        # Or at least send a message to the log watcher.
         print >> sys.stderr, 'Token directory %s is nonexistent or unreadable.' % tokenDir
         tokenFiles = []
         pass

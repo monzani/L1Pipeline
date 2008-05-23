@@ -28,6 +28,8 @@ token = fileNames.chunkToken(head, runId, chunkId)
 
 if not os.path.exists(token):
     # This should not happen on prod.  We should fail.
+    #
+    # Or at least send a message to the log watcher.
     print >> sys.stderr, "Chunk token %s does not exist.  This is odd, but not necessarily fatal.  We'll continue." % token
     sys.exit(0)
     pass

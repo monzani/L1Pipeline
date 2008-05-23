@@ -61,6 +61,9 @@ if numInFiles == 0:
     sys.exit(1)
     pass
 
+# Here we should send a message to the log watcher if we didn't find all of
+# the expected input files.
+
 realOutFile = fileNames.fileName(fileType, dlId, runId, chunkId, next=True)
 
 inStage = stageFiles.StageSet()

@@ -84,13 +84,15 @@ def unlockDir(directory, base, id):
 
     lockFile = os.path.join(directory, lockFileName(base))
 
-    # Open and read lock file.  Die if it isn't there, or other wierdness.
+    # Open and read lock file.
     try:
         data = readLock(directory, base, id)
     except IOError:
         # This is probably bad.  What if we don't have permission?
         # Nor should the file be missing.
         # On prod, we should fail here.
+        #
+        # Or at least send a message to the log watcher.
         print >> sys.stderr, "Can't open lockfile %s.  Very odd, but we'll continue." % lockFile
         return
 
