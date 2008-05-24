@@ -1,5 +1,7 @@
 1.51
 -----------------
+GR v15r2
+calibTkrUtil v2r2p2
 Monitor v1r1p13
 
 Require a 64-bit machine to ingest TKR trending.

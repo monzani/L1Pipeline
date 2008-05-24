@@ -128,8 +128,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
-glastVersion = 'v14r11'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
+glastVersion = 'v15r2'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -190,7 +190,7 @@ cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 cmtPackages = {
     'calibTkrUtil': {
         'repository': '',
-        'version': 'v2r2p1',
+        'version': 'v2r2p2',
         },
     'Common': {
         'repository': 'dataMonitoring',
