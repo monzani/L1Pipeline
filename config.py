@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.51"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.52"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -94,7 +94,8 @@ stageBase = 'l1Stage'
 #maxCrumbSize = 17000   # ~.5Hr on cob (skymodel).
 minCrumbCpuf = 7
 maxCrumbs = 7 # Maximum number of crumbs/chunk. Not used by current algorithm.
-crumbSize = 10000 # typical crumb size
+#crumbSize = 10000 # typical crumb size
+crumbSize = 4000 # typical crumb size
 crumbMmr = 2.0 # largestCrumb / smallestCrumb
 
 defaultRunStatus = 'WAITING'
@@ -183,7 +184,8 @@ stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
 PFILES = ".;"
 stBinDir = os.path.join(ST, 'bin')
 #aspLauncher = '/nfs/farm/g/glast/u33/ASP/ASP/AspLauncher/v1/rh9_gcc32/aspLauncher.sh'
-aspLauncher = '/bin/true'
+aspLauncher = '/afs/slac/g/glast/ground/links/data/ASP/aspLauncher.sh'
+#aspLauncher = '/bin/true'
 
 cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 
@@ -202,7 +204,7 @@ cmtPackages = {
         },
     'evtClassDefs': {
         'repository': '',
-        'version': 'v0r3',
+        'version': 'v0r4',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
@@ -321,7 +323,7 @@ apps = {
     'compareDFm': os.path.join(
         packages['Common']['python'], 'pRootDiffer.py'),
     'digi': gleam,
-    'digiEor': packages['Monitor']['app'],
+    'digiHist': packages['Monitor']['app'],
     'errorMerger': os.path.join(L1ProcROOT, 'errorParser.py'),
     'fastMonHist': os.path.join(
         packages['FastMon']['python'], 'pFastMonTreeProcessor.py'),
@@ -348,13 +350,13 @@ apps = {
 
 
 monitorOptions = {
-    'calEor': os.path.join(
+    'calHist': os.path.join(
         packages['DigiReconCalMeritCfg']['root'],
         'monconfig_digi_long_histos.xml'),
     'calTrend': os.path.join(
         packages['DigiReconCalMeritCfg']['root'],
         'monconfig_digi_long_trending.xml'),
-    'digiEor': os.path.join(
+    'digiHist': os.path.join(
         packages['DigiReconCalMeritCfg']['root'],
         'monconfig_digi_histos.xml'),
     'digiTrend': os.path.join(
@@ -369,7 +371,7 @@ monitorOptions = {
     'fastMonTrend': os.path.join(
         packages['DigiReconCalMeritCfg']['root'],
         'monconfig_fastmon_trending.xml'),
-    'meritEor': os.path.join(
+    'meritHist': os.path.join(
         packages['DigiReconCalMeritCfg']['root'],
         'monconfig_merit_histos.xml'),
     'meritTrend': os.path.join(
@@ -378,7 +380,7 @@ monitorOptions = {
     'tkrTrend': os.path.join(
         packages['DigiReconCalMeritCfg']['root'],
         'monconfig_trackermon_trending.xml'),
-    'reconEor': os.path.join(
+    'reconHist': os.path.join(
         packages['DigiReconCalMeritCfg']['root'],
         'monconfig_recon_histos.xml'),
     'reconTrend': os.path.join(
@@ -387,20 +389,20 @@ monitorOptions = {
     }
 
 mergeConfigs = {
-    'calEor': os.path.join(
+    'calHist': os.path.join(
         packages['DigiReconCalMeritCfg']['root'], 'MergeHistos_digi_long.txt'),
-    'digiEor': os.path.join(
+    'digiHist': os.path.join(
         packages['DigiReconCalMeritCfg']['root'], 'MergeHistos_digi.txt'),
     'fastMonHist': os.path.join(
         packages['FastMonCfg']['root'], 'xml', 'MergeHistos_FastMon.txt'),
-    'meritEor': os.path.join(
+    'meritHist': os.path.join(
         packages['DigiReconCalMeritCfg']['root'], 'MergeHistos_merit.txt'),
-    'reconEor': os.path.join(
+    'reconHist': os.path.join(
         packages['DigiReconCalMeritCfg']['root'], 'MergeHistos_recon.txt'),
     }
 
 alarmConfigs = {
-    'digiEor': os.path.join(
+    'digiHist': os.path.join(
         packages['AlarmsCfg']['xml'], 'digi_eor_alarms.xml'),
     'digiTrend': os.path.join(
         packages['AlarmsCfg']['xml'], 'digi_trend_alarms.xml'),
@@ -408,14 +410,14 @@ alarmConfigs = {
         packages['AlarmsCfg']['xml'], 'fastmon_eor_alarms.xml'),
     'fastMonTrend': os.path.join(
         packages['AlarmsCfg']['xml'], 'fastmon_trend_alarms.xml'),
-    'reconEor': os.path.join(
+    'reconHist': os.path.join(
         packages['AlarmsCfg']['xml'], 'recon_eor_alarms.xml'),
     'reconTrend': os.path.join(
         packages['AlarmsCfg']['xml'], 'recon_trend_alarms.xml'),
     }
 
 alarmExceptions = {
-    'digiEor': os.path.join(
+    'digiHist': os.path.join(
         packages['AlarmsCfg']['xml'],
         'digi_eor_alarms_exceptions.xml'),
     'digiTrend': os.path.join(
@@ -427,7 +429,7 @@ alarmExceptions = {
     'fastMonTrend': os.path.join(
         packages['AlarmsCfg']['xml'],
         'fastmon_trend_alarms_exceptions.xml'),
-    'reconEor': os.path.join(
+    'reconHist': os.path.join(
         packages['AlarmsCfg']['xml'],
         'recon_eor_alarms_exceptions.xml'),
     'reconTrend': os.path.join(
@@ -435,13 +437,13 @@ alarmExceptions = {
         'recon_trend_alarms_exceptions.xml'),
     }
 alarmPostProcessorConfigs = {
-    'reconEorAlarm': os.path.join(
+    'reconHistAlarm': os.path.join(
         packages['AlarmsCfg']['xml'],
         'recon_eor_alarms_postprocess.xml'),
     }
 
 normalizedRateConfigs = {
-    'meritEor': os.path.join(
+    'meritHist': os.path.join(
         packages['DigiReconCalMeritCfg']['root'],
         'NormFactors_AllRunsOpsSims2.txt'),
     'meritTrend': os.path.join(
@@ -450,22 +452,22 @@ normalizedRateConfigs = {
     }
 
 tdBin = {
-    'calEor': 30000000,
+    'calHist': 30000000,
     'calTrend': 300,
-    'digiEor': 15,
+    'digiHist': 15,
     'digiTrend': 15,
     'fastMonTrend': 15,
-    'meritEor': 15,
+    'meritHist': 15,
     'meritTrend': 15,
-    'reconEor': 15,
+    'reconHist': 15,
     'reconTrend': 15,
     'tkrTrend': 30000000,
     }
 
 
 #ft1Cuts = 'DEFAULT'
-ft1Cuts = os.path.join(packages['evtClassDefs']['data'], 'pass5_cuts')
-ft1Classifier = 'Pass5_Classifier'
+ft1Cuts = os.path.join(packages['evtClassDefs']['data'], 'pass6_cuts')
+ft1Classifier = 'Pass6_Classifier'
 ft1Dicts = {
     'ft1': os.path.join(packages['evtClassDefs']['data'], 'FT1variables'),
     'ls1': os.path.join(packages['evtClassDefs']['data'], 'LS1variables'),
@@ -571,6 +573,8 @@ os.environ['PFILES'] = PFILES
 os.environ['PYTHONPATH'] = pythonPath
 os.environ['ROOTSYS'] = rootSys
 
+
+nameManglingPrefix = 'L1'
 
 if __name__ == "__main__":
     print L1ProcROOT

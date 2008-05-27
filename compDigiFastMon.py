@@ -24,7 +24,7 @@ finishOption = config.finishOption
 app = config.apps['compareDFm']
 
 #input file
-realDigiHist = fileNames.fileName('digiEor', dlId, runId)
+realDigiHist = fileNames.fileName('digiHist', dlId, runId)
 stagedDigiHist = staged.stageIn(realDigiHist)
 realFastHist = fileNames.fileName('fastMonHist', dlId, runId)
 stagedFastHist = staged.stageIn(realFastHist)

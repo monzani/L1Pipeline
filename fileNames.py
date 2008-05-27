@@ -12,12 +12,13 @@ import sys
 
 import config
 
+import variables
 
 fileTypes = {
     'acdPlots': 'tar',
     'acdPedsAnalyzer': 'root',
     'cal': 'root',
-    'calEor': 'root',
+    'calHist': 'root',
     'calGainsAnalyzer': 'root',
     'calPedsAnalyzer': 'root',
     'calTrend': 'root',
@@ -25,8 +26,8 @@ fileTypes = {
     'compareDFm': 'xml',
     'crumbList': 'txt',
     'digi': 'root',
-    'digiEor': 'root',
-    'digiEorAlarm': 'xml',
+    'digiHist': 'root',
+    'digiHistAlarm': 'xml',
     'digiTrend': 'root',
     'digiTrendAlarm': 'xml',
     'fastMonError': 'xml',
@@ -44,12 +45,12 @@ fileTypes = {
     'ls3': 'fit',
     'magic7': 'txt',
     'merit': 'root',
-    'meritEor': 'root',
+    'meritHist': 'root',
     'meritTrend': 'root',
     'recon': 'root',
-    'reconEor': 'root',
-    'reconEorAlarm': 'xml',
-    'reconEorAlarmDist': 'root',
+    'reconHist': 'root',
+    'reconHistAlarm': 'xml',
+    'reconHistAlarmDist': 'root',
     'reconTrend': 'root',
     'reconTrendAlarm': 'xml',
     'svac': 'root',
@@ -78,21 +79,32 @@ stageDirs = [os.path.join(disk, config.stageBase)
              for ii in range(weight)]
 uniqueStageDirs = set(stageDirs)
 
+def dataCatGroup(fileType):
+    dsType = fileType.upper()
+    return dsType
+
+def dataCatFolder(fileType):
+    dsType = dataCatGroup(fileType)
+    folder = '/'.join([config.dataCatDir, dsType])
+    return folder
 
 def dataCatName(fileType, fileName):
-    dsType = fileType.upper()
+    folder = dataCatFolder(fileType)
     junk, baseName = os.path.split(fileName)
-    name = '%s/%s:%s' % (config.dataCatDir, dsType, baseName)
+    name = ':'.join([folder, baseName])
     return name
 
 sites = ['SLAC', 'SLAC_XROOT']
+def getSite(fileName):
+    site = sites[fileName.startswith('root:')]    
+    return site
 def sitedName(fileName):
-    site = sites[fileName.startswith('root:')]
+    site = getSite(fileName)
     filePath = '%s@%s' % (fileName, site)
     return filePath
 
 
-def fileName(dsType, dlId, runId=None, chunkId=None, crumbId=None, next=False):
+def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None, next=False):
 
     fields = []
 
@@ -113,76 +125,47 @@ def fileName(dsType, dlId, runId=None, chunkId=None, crumbId=None, next=False):
         fields.append(dlId)
         pass
 
-    subDir = subDirectory(dsType, dlId, runId, chunkId, crumbId)
+    subDir = subDirectory(fileType, dlId, runId, chunkId, crumbId)
     
     if level == 'run':
         runDir = os.path.join(config.L1Dir, subDir)
 
-        if dsType is None:
+        if fileType is None:
             return runDir
         
-        if fileTypes[dsType] in xrootFileTypes:
-            subDir = xrootSubDirectory(dsType, dlId, runId)
+        if fileTypes[fileType] in xrootFileTypes:
+            subDir = xrootSubDirectory(fileType, dlId, runId)
             baseDir = config.xrootBase
         else:
             baseDir = config.L1Dir
             pass
+
         
-        if dsType in ['chunkList', 'magic7']:
+        if fileType in ['chunkList']:
             verStr = dlId
         else:
-            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            # This has horrible concurrency issues.
-            # It is protected by the global run lock.
-            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            #
-            # And it blows for so many reasons on top of that.
-            # Replace with something based on the files that are
-            # already present.
-            # Or not.
-            # It has to work this way to use xrootd and not data catalog lookup.
-            # So it has to stay for now.
-            #
-            versionFile = os.path.join(runDir, dsType+'.version')
-            print >> sys.stderr, 'Trying to read version from %s' % versionFile
-            try:
-                verNum = int(open(versionFile).readline().strip())
-                print >> sys.stderr, 'Read %d' % verNum
-            except IOError:
-                if next:
-                    print >> sys.stderr, 'First version'
-                    verNum = -1
-                else:
-                    print >> sys.stderr, """
-                    Drat.
-                    We really should not be here.
-                    Someone promised that there would be a version file, but it ain't there.
-                    Maybe the caller forgot to specify 'next=True'?
-                    Or the file got deleted?
-                    """
-                    raise
-                pass
+            verNum = int(variables.getVar(fileType, 'ver'))
             if next:
                 verNum += 1
-                print >> sys.stderr, 'Writing new version %d to %s' % \
-                      (verNum, versionFile)
-                open(versionFile, 'w').write('%d\n' % verNum)
                 pass
             verStr = 'v%03d' % verNum
+            if fileType in ['magic7']:
+                verStr = '_'.join([dlId, verStr])
+                pass
             pass
         fields.append(verStr)
         pass
 
-    if dsType in exportTags:
-        tag = exportTags[dsType]
+    if fileType in exportTags:
+        tag = exportTags[fileType]
         pos = 0
     else:
-        tag = dsType
+        tag = fileType
         pos = len(fields)
         pass
     fields.insert(pos, tag)
 
-    baseName = '.'.join(['_'.join(fields), fileTypes[dsType]])
+    baseName = '.'.join(['_'.join(fields), fileTypes[fileType]])
     relativePath = os.path.join(subDir, baseName)
 
     if level != 'run':
@@ -289,7 +272,7 @@ def writeList(data, outFile):
 readList = readListNew
 
 
-def subDirectory(dsType, dlId, runId=None, chunkId=None, crumbId=None):
+def subDirectory(fileType, dlId, runId=None, chunkId=None, crumbId=None):
 
     dirs = []
 
@@ -311,16 +294,16 @@ def subDirectory(dsType, dlId, runId=None, chunkId=None, crumbId=None):
         dirs.extend(['downlinks', dlId])
         pass
 
-    if level in ['crumb', 'chunk'] and dsType is not None:
-        dirs.append(dsType)
+    if level in ['crumb', 'chunk'] and fileType is not None:
+        dirs.append(fileType)
         pass
 
     dirName = os.path.join(*dirs)
     
     return dirName
 
-def xrootSubDirectory(dsType, dlId, runId=None):
-    subDir = dsType
+def xrootSubDirectory(fileType, dlId, runId=None):
+    subDir = fileType
     return subDir
 
 

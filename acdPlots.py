@@ -23,7 +23,7 @@ staged = stageFiles.StageSet()
 
 fileType = 'acdPlots'
 
-realInFile = fileNames.fileName('digiEor', dlId, runId)
+realInFile = fileNames.fileName('digiHist', dlId, runId)
 stagedInFile = staged.stageIn(realInFile)
 
 realOutFile = fileNames.fileName(fileType, dlId, runId, next=True)

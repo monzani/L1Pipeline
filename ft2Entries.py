@@ -19,6 +19,8 @@ runId = os.environ['RUNID']
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
+fileType = 'ft2Txt'
+
 app = config.apps['makeFT2']
 
 #input file
@@ -31,7 +33,7 @@ realM7File = os.path.join(os.environ['DOWNLINK_RAWDIR'], 'magic7_%s.txt' % dlId)
 stagedM7File=  staged.stageIn(realM7File)
 
 #output
-txtFt2File = fileNames.fileName('ft2Txt', dlId, runId, next=True)
+txtFt2File = fileNames.fileName(fileType, dlId, runId, next=True)
 stagedFt2TxtFile = staged.stageOut(txtFt2File)
 
 workDir = os.path.dirname(stagedFt2TxtFile)
@@ -64,6 +66,10 @@ source %(setupScript)s
 
 status = runner.run(cmd)
 if status: finishOption = 'wipe'
+
+if not status:
+    registerPrep.prep(fileType, txtFt2File)
+    pass
 
 status |= staged.finish(finishOption)
 

@@ -43,6 +43,9 @@ if status: finishOption = 'wipe'
 
 status |= staged.finish(finishOption)
 
-registerPrep.prep('verifyHisto', realVerifyHistoFile)
+if not status:
+    registerPrep.prep('verifyHisto', realVerifyHistoFile)
+    registerPrep.prep('verifyLog', realVerifyLogFile)
+    pass
 
 sys.exit(status)

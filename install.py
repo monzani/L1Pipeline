@@ -7,6 +7,9 @@ import expandTemplate
 
 import config
 
+import fileNames
+import variables
+
 #os.chdir(config.L1ProcROOT) # ?
 
 taskNames = ['L1Proc', 'lciChunk', 'lciWhole', 'testVerify']
@@ -26,6 +29,17 @@ for taskName in taskNames:
 
     registerScript = os.path.join(config.L1ProcROOT, 'registerStuff.py')
     configuration['registerBody'] = open(registerScript).read()
+
+    for fileType in fileNames.fileTypes:
+        vTag = fileType + '_version'
+        nTag = vTag + 'Name'
+        varName = variables.mangleName(fileType, 'ver')
+        path = config.dataCatDir
+        group = fileNames.dataCatGroup(fileType)
+        value = '${datacatalog.getDatasetLatestVersion(RUNID, "%(path)s", "%(group)s")}' % locals()
+        configuration[vTag] = value
+        configuration[nTag] = varName
+        continue
 
     expandTemplate.expand(template, taskFile, configuration)
 

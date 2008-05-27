@@ -69,6 +69,10 @@ if not status:
 
 status |= staged.finish(finishOption)
 
-if not status: registerPrep.prep('tkrMonitor', realMonFile)
+if not status:
+    registerPrep.prep('tkrMonitor', realMonFile)
+    registerPrep.prep('tkrReport', realReportFile)
+    # registerPrep.prep('tkrAlarm', realAlarmFile)
+    pass
 
 sys.exit(status)

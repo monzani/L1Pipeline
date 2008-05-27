@@ -128,7 +128,7 @@ status = 0
 
 
 
-if fileType in ['calEor', 'digiEor', 'fastMonHist', 'reconEor', 'meritEor']:
+if fileType in ['calHist', 'digiHist', 'fastMonHist', 'reconHist', 'meritHist']:
     setup = config.packages['Monitor']['setup']
     mergeConfig = config.mergeConfigs[fileType]
     app = config.apps['reportMerge']
