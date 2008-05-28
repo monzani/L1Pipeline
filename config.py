@@ -94,8 +94,7 @@ stageBase = 'l1Stage'
 #maxCrumbSize = 17000   # ~.5Hr on cob (skymodel).
 minCrumbCpuf = 7
 maxCrumbs = 7 # Maximum number of crumbs/chunk. Not used by current algorithm.
-#crumbSize = 10000 # typical crumb size
-crumbSize = 4000 # typical crumb size
+crumbSize = 10000 # typical crumb size
 crumbMmr = 2.0 # largestCrumb / smallestCrumb
 
 defaultRunStatus = 'WAITING'
@@ -562,8 +561,12 @@ finishOption = ''
 
 python = sys.executable
 
-runningStr = 'Running'
-crashedStr = 'Failed'
+# values for L1RunStatus in run quality table
+runningStatus = 'Running'
+crashedStatus = 'Failed'
+doneStatus = 'Complete'
+incompleteStatus = 'Incomplete'
+waitingStatus = 'InProgress'
 
 os.environ['CMTCONFIG'] = cmtConfig
 os.environ['CMTPATH'] = cmtPath

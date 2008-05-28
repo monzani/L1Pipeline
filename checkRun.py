@@ -90,7 +90,7 @@ if readyToRetire:
     l1RunStatus = hpRunStatus
 else:
     print >> sys.stderr, "Not retiring run %s: hpFinal=%s, tokenStatus=%s" % (runId, hpFinal, tokenStatus)
-    l1RunStatus = 'Waiting'
+    l1RunStatus = config.waitingStatus
     pass
 
 # Here we should copy the run status from ACQSUMMARY to Karen's table.

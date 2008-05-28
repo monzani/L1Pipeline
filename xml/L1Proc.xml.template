@@ -73,7 +73,7 @@
 
     <process name="setRunning">
       <variables>
-        <var name="l1RunStatus">%(runningStr)s</var>
+        <var name="l1RunStatus">%(runningStatus)s</var>
       </variables>
       <script><![CDATA[
 %(statusScriptBody)s
@@ -1459,7 +1459,7 @@
 
     <process name="setCrashed">
       <variables>
-        <var name="l1RunStatus">%(crashedStr)s</var>
+        <var name="l1RunStatus">%(crashedStatus)s</var>
       </variables>
       <script><![CDATA[
 %(statusScriptBody)s
@@ -1836,7 +1836,7 @@
 
     <process name="setRunningLci">
       <variables>
-        <var name="l1RunStatus">%(runningStr)s</var>
+        <var name="l1RunStatus">%(runningStatus)s</var>
       </variables>
       <script><![CDATA[
 %(statusScriptBody)s
@@ -2011,7 +2011,7 @@
 
     <process name="setCrashedLci">
       <variables>
-        <var name="l1RunStatus">%(crashedStr)s</var>
+        <var name="l1RunStatus">%(crashedStatus)s</var>
       </variables>
       <script><![CDATA[
 %(statusScriptBody)s
