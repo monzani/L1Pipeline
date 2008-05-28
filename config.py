@@ -169,6 +169,7 @@ isocScript = os.path.join(isocBin, 'isoc')
 #isocEnv = 'eval `%s isoc_env --add-env=flightops --add-env=root`' % isocScript
 isocEnv = 'eval `%s isoc_env --add-env=flightops`' % isocScript
 
+
 # DB for acqsummary
 if mode == 'prod':
     connectString = '/@isocflight'
@@ -561,6 +562,8 @@ finishOption = ''
 
 python = sys.executable
 
+runningStr = 'Running'
+crashedStr = 'Failed'
 
 os.environ['CMTCONFIG'] = cmtConfig
 os.environ['CMTPATH'] = cmtPath

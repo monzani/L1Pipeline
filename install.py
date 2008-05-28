@@ -24,6 +24,12 @@ for taskName in taskNames:
     retireScript = os.path.join(config.L1ProcROOT, 'retireRun.py')
     configuration['retireScriptBody'] = open(retireScript).read()
 
+    statusScript = os.path.join(config.L1ProcROOT, 'setStatus.py')
+    configuration['statusScriptBody'] = open(statusScript).read()
+
+    successScript = os.path.join(config.L1ProcROOT, 'setSuccessful.py')
+    configuration['successScriptBody'] = open(successScript).read()
+
     placeHolderScript = os.path.join(config.L1ProcROOT, 'placeHolder.py')
     configuration['placeHolderBody'] = open(placeHolderScript).read()
 

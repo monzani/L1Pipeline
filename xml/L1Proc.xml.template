@@ -31,9 +31,11 @@
     </createsSubtasks>
   </process>
 
+<!--
   <process name="ft2Gaps">
     <job executable="${L1ProcROOT}/ft2Db.py" batchOptions=" -q %(expressQ)s "/>
   </process>
+-->
 
   <process name="kludgeAsp">
     <job executable="${L1ProcROOT}/kludgeAsp.py" batchOptions=" -q %(expressQ)s " />
@@ -67,6 +69,19 @@
       <createsSubtasks>
         <subtask>doChunk</subtask>
       </createsSubtasks>
+    </process>
+
+    <process name="setRunning">
+      <variables>
+        <var name="l1RunStatus">%(runningStr)s</var>
+      </variables>
+      <script><![CDATA[
+%(statusScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="findChunks" status="SUCCESS"/>
+      </depends>
     </process>
 
     <process name="copyM7">
@@ -836,6 +851,7 @@
       </depends>
     </process>
 
+<!--
     <process name="ingestFT2">
       <variables>
         <var name="%(ft2Txt_versionName)s">%(ft2Txt_version)s</var>
@@ -845,6 +861,7 @@
         <after process="registerFt2Txt" status="SUCCESS"/>
       </depends>
     </process>
+-->
 
     <process name="makeFT2">
       <variables>
@@ -853,7 +870,8 @@
       </variables>
       <job executable="${L1ProcROOT}/makeFT2File.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
-        <after process="ingestFT2" status="SUCCESS"/>
+        <!-- <after process="ingestFT2" status="SUCCESS"/> -->
+        <after process="registerFt2Txt" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -1439,12 +1457,41 @@
       </createsSubtasks>
     </process>
 
+    <process name="setCrashed">
+      <variables>
+        <var name="l1RunStatus">%(crashedStr)s</var>
+      </variables>
+      <script><![CDATA[
+%(statusScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="checkRun" status="SKIPPED"/>
+        <after process="setRunning" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="setSuccessful">
+      <variables>
+        <var name="parentProcess">checkRun</var>
+      </variables>
+      <script><![CDATA[
+%(successScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="checkRun" status="SUCCESS"/>
+        <after process="setRunning" status="DONE"/>
+      </depends>
+    </process>
+
     <task name="cleanupCompleteRun" version="%(L1Version)s" type="Data">
 
       <process name="cleanupChunks">
         <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
       </process>
 
+<!--
       <process name="updateRunStatus">
         <script>
           <![CDATA[
@@ -1452,6 +1499,7 @@
 ]]>
         </script>
       </process>
+-->
 
       <process name="verify">
         <variables>
@@ -1786,7 +1834,23 @@
       </createsSubtasks>
     </process>
 
+    <process name="setRunningLci">
+      <variables>
+        <var name="l1RunStatus">%(runningStr)s</var>
+      </variables>
+      <script><![CDATA[
+%(statusScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="findChunksLci" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="copyM7Lci">
+      <variables>
+        <var name="%(magic7_versionName)s">%(magic7_version)s</var>
+      </variables>
       <job executable="${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s " />
     </process>
 
@@ -1945,12 +2009,41 @@
       </createsSubtasks>
     </process>
 
+    <process name="setCrashedLci">
+      <variables>
+        <var name="l1RunStatus">%(crashedStr)s</var>
+      </variables>
+      <script><![CDATA[
+%(statusScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="checkRunLci" status="SKIPPED"/>
+        <after process="setRunningLci" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="setSuccessfulLci">
+      <variables>
+        <var name="parentProcess">checkRunLci</var>
+      </variables>
+      <script><![CDATA[
+%(successScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="checkRunLci" status="SUCCESS"/>
+        <after process="setRunningLci" status="DONE"/>
+      </depends>
+    </process>
+
     <task name="cleanupCompleteRunLci" version="%(L1Version)s" type="Data">
 
       <process name="cleanupChunksLci">
         <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
       </process>
 
+<!--
       <process name="updateRunStatusLci">
         <script>
           <![CDATA[
@@ -1958,6 +2051,7 @@
 ]]>
         </script>
       </process>
+-->
 
     </task> <!-- cleanupCompleteRunLci -->
 
@@ -2026,6 +2120,18 @@
       </createsSubtasks>
     </process>
 
+    <process name="setSuccessfulInc">
+      <variables>
+        <var name="parentProcess">checkRunInc</var>
+      </variables>
+      <script><![CDATA[
+%(successScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="checkRunInc" status="SUCCESS"/>
+      </depends>
+    </process>
 
     <task name="cleanupIncompleteRun" version="%(L1Version)s" type="Data">
 
@@ -2033,6 +2139,7 @@
         <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
       </process>
 
+<!--
       <process name="updateRunStatusInc">
         <script>
           <![CDATA[
@@ -2040,6 +2147,7 @@
 ]]>
         </script>
       </process>
+-->
 
       <process name="launchVerify">
         <script>

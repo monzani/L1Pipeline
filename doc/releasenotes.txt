@@ -1,3 +1,27 @@
+1.52
+-----------------
+Support dataset versions in data catalog. LONE-58
+Update run quality table. LONE-60
+
+All of the xxx.version files are gone.  You still have to say next=True when
+asking for the name of a file you're about to create.  And you have to add a
+variable to processes in the XML for any run-level file they read or create.
+
+Anything that used to depend on a run-level file being created now depends on
+it's being registered.  This reduces the number of things that checkRun has to
+depend on, and lowers branching numbers elswhere, so it should make the graph
+less heinous-looking. (But that's not why I did it.)
+
+registerPrep/registerStuff can now handle multiple fileTypes from the same
+parentProcess, so preRegiter is no longer necessary (and won't work anymore,
+anyway).  Just run registerPrep.prep once for each file you create, then have
+a registerXxx step for each, all depending on the creating process.
+
+Everything that used to be named Eor is now named Hist.  This is not just a
+cosmetic change.
+-------------------------------------------
+
+
 1.51
 -----------------
 GR v15r2

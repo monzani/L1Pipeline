@@ -5,22 +5,13 @@ import xml.dom.minidom as md
 
 import config
 
+import l1Logger
 import pipeline
 
-import PipelineNetlogger
-
-if config.testMode:
-    flavor = PipelineNetlogger.Flavor.DEVEL
-else:
-    flavor = PipelineNetlogger.Flavor.PROD
-    pass
-print >> sys.stderr, 'Using logging flavor %s' % flavor
-log = PipelineNetlogger.PNetlogger.getLogger(flavor)
+logger = l1Logger.logger
+eventType = l1Logger.eventType
 
 loggableTypes = ['clean', 'error', 'undefined', 'warning']
-
-eventType = '.'.join([os.environ['PIPELINE_TASKPATH'].split('.')[0],
-                      os.environ['PIPELINE_PROCESS']])
 
 def parser(inFile):
     doc = md.parse(inFile)
@@ -37,11 +28,11 @@ def parser(inFile):
 
 def alarmSeverity(number):
     if number['error'] or number['undefined']:
-        severity = log.error
+        severity = logger.error
     elif number['warning']:
-        severity = log.warn
+        severity = logger.warn
     else:
-        severity = log.info
+        severity = logger.info
         pass
     return severity
 

@@ -32,7 +32,7 @@ def checkRunStatus(runNumber):
         # If there are multiple entries, something is wrong.
         # In either case, err on the side of caution.
         print >> sys.stderr, "Did not get exactly 1 status for run %s, results=%s; not retiring." % (runNumber, results)
-        return False
+        return False, "WeirdlyBroken"
     
     runStatus = results[0][0]
     statusFinal = runStatus in ['Complete', 'Incomplete']
@@ -40,7 +40,7 @@ def checkRunStatus(runNumber):
     print >> sys.stderr, 'Run %s has status %s, final=%s' % \
           (runNumber, runStatus, statusFinal)
 
-    return statusFinal
+    return statusFinal, runStatus
 
 def checkTokens(head, runId):
     tokenDir = fileNames.tokenDir(head, runId)
@@ -75,13 +75,10 @@ rootDir = os.path.dirname(fileNames.fileName('chunkList', dlId, runId)) #bleh
 # somewhere (GLAST_ISOC.ACQSUMMARY) says that the run is as complete as it
 # will get, before launching cleanup and updating run status in the data
 # catalog.
-#
-# but for now we punt
-#readyToRetire = False
 
-runStatus = checkRunStatus(runNumber)
+hpFinal, hpRunStatus = checkRunStatus(runNumber)
 tokenStatus = checkTokens(head, runId)
-readyToRetire = runStatus and tokenStatus
+readyToRetire = hpFinal and tokenStatus
 
 subTask = config.cleanupSubTask[os.environ['DATASOURCE']]
 
@@ -90,11 +87,17 @@ if readyToRetire:
     stream = 0
     args = ''
     pipeline.createSubStream(subTask, stream, args)
+    l1RunStatus = hpRunStatus
 else:
-    print >> sys.stderr, "Not retiring run %s: runStatus=%s, toeksnStatus=%s" % (runId, runStatus, tokenStatus)
+    print >> sys.stderr, "Not retiring run %s: hpFinal=%s, tokenStatus=%s" % (runId, hpFinal, tokenStatus)
+    l1RunStatus = 'Waiting'
     pass
 
 # Here we should copy the run status from ACQSUMMARY to Karen's table.
+#
+# No, a dependent process does that.
+# And it's not necessarily a copy.
+pipeline.setVariable('l1RunStatus', l1RunStatus)
 
 print >> sys.stderr, \
       "Attempting to remove lock from [%s] at [%s]" % (rootDir, time.ctime())
