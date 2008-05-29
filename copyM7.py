@@ -27,7 +27,7 @@ stagedInFile = staged.stageIn(realInFile)
 
 #outDir = fileNames.fileName(None, dlId, runId)
 #outBase = os.path.basename(realInFile)
-realOutFile = fileNames.fileName(fileType, dlId, runId)
+realOutFile = fileNames.fileName(fileType, dlId, runId, next=True)
 
 if not status: status |= stageFiles.copy(stagedInFile, realOutFile)
 

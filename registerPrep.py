@@ -1,11 +1,15 @@
 
-
 import os
 import sys
 
-import fileNames
-import pipeline
+import config
 
+import fileNames
+import variables
+
+dlId = os.environ.get('DOWNLINK_ID')
+runId = os.environ.get('RUNID')
+  
 def prep(fileType, fileName):
     """
     Deal with batch-side prep to register a file with the data catalog.
@@ -13,10 +17,17 @@ def prep(fileType, fileName):
     This sets up some pipeline variables so the scriptlet knows what to do.
     """
 
-    logiPath = fileNames.dataCatName(fileType, fileName)
     filePath = fileNames.sitedName(fileName)
-    print >> sys.stderr, "logipath=[%s], filepath=[%s]" % (logiPath, filePath)
-    pipeline.setVariable('REGISTER_LOGIPATH', logiPath)
-    pipeline.setVariable('REGISTER_FILEPATH', filePath)
+
+    taskName = os.environ['L1_TASK_NAME']
+    taskVersion =  os.environ['PIPELINE_TASKVERSION']
+    creator = '-'.join([taskName, taskVersion])
+
+    variables.setVar(fileType, 'format', fileNames.fileTypes[fileType])
+    variables.setVar(fileType, 'path', config.dataCatDir)
+    variables.setVar(fileType, 'group', fileNames.dataCatGroup(fileType))
+    variables.setVar(fileType, 'site', fileNames.getSite(filePath))
+    variables.setVar(fileType, 'fileName', filePath)
+    variables.setVar(fileType, 'creator', creator)
 
     return

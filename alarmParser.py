@@ -5,22 +5,13 @@ import xml.dom.minidom as md
 
 import config
 
+import l1Logger
 import pipeline
 
-import PipelineNetlogger
-
-if config.testMode:
-    flavor = PipelineNetlogger.Flavor.DEVEL
-else:
-    flavor = PipelineNetlogger.Flavor.PROD
-    pass
-print >> sys.stderr, 'Using logging flavor %s' % flavor
-log = PipelineNetlogger.PNetlogger.getLogger(flavor)
+logger = l1Logger.logger
+#eventType = l1Logger.eventType
 
 loggableTypes = ['clean', 'error', 'undefined', 'warning']
-
-eventType = '.'.join([os.environ['PIPELINE_TASKPATH'].split('.')[0],
-                      os.environ['PIPELINE_PROCESS']])
 
 def parser(inFile):
     doc = md.parse(inFile)
@@ -37,11 +28,11 @@ def parser(inFile):
 
 def alarmSeverity(number):
     if number['error'] or number['undefined']:
-        severity = log.error
+        severity = l1Logger.error
     elif number['warning']:
-        severity = log.warn
+        severity = l1Logger.warn
     else:
-        severity = log.info
+        severity = l1Logger.info
         pass
     return severity
 
@@ -64,11 +55,7 @@ def doAlarms(inFile, fileType, runId):
         )
     link = target
 
-    tags = {
-        "tag_downlinkId": int(dlNumber),
-        "tag_runId": int(runNumber),
-        }
-
+    tags = {}
     for alarmType, value in number.items():
         varName = 'L1_Alarm_' + alarmType
         pipeline.setVariable(varName, value)
@@ -78,8 +65,6 @@ def doAlarms(inFile, fileType, runId):
 
     print >> sys.stderr, tags
     
-    severity(eventType, message,
-             link=link, tgt=target,
-             **tags)
+    severity(message, link=link, tgt=target, **tags)
 
     return

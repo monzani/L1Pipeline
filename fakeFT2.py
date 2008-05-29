@@ -34,7 +34,11 @@ stagedM7File = staged.stageIn(realM7File)
 
 #output
 fakeFt2File = fileNames.fileName('ft2Fake', dlId, runId, chunkId, next=True)
-stagedFt2FitsFile = staged.stageOut(fakeFt2File)
+runDir = fileNames.fileName(None, dlId, runId)
+ft2FakeBase = os.path.basename(fakeFt2File)
+permanentFt2File = os.path.join(runDir, ft2FakeBase)
+stagedFt2FitsFile = staged.stageOut(fakeFt2File, permanentFt2File)
+
 workDir = os.path.dirname(stagedFt2FitsFile)
 stagedFt2TxtFile = os.path.join(workDir, 'junkFT2.txt')
 
@@ -48,7 +52,6 @@ tStop = tFormat % (float(os.environ['tStop']) + config.ft2Pad)
 cmd = '''
 cd %(workDir)s
 source %(setupScript)s
-ldd %(app)s
 %(app)s -M7File %(stagedM7File)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s --Gleam --test-quaternion -DigiTstart %(tStart)s -DigiTstop %(tStop)s
 ''' % locals()
 

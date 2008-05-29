@@ -77,7 +77,7 @@ tdBin = config.tdBin[reportType]
 
 codeDir = config.packages['Monitor']['bin']
 
-# if reportType in ['calEor', 'calTrend']:
+# if reportType in ['calHist', 'calTrend']:
 #     zOpt = '' # keep transient data in a temp file
 # else:
 #     zOpt = '-z' # keep transient data in memory

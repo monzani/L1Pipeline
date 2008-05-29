@@ -14,6 +14,7 @@
     <var name="L1_INSTALL_DIR">%(installRoot)s</var>
     <var name="L1_BUILD_DIR">%(L1CmtBase)s</var>
     <var name="L1TrendVersion">Prompt</var> <!-- override if reprocessing -->
+    <var name="nameManglingPrefix">%(nameManglingPrefix)s</var>
   </variables>
 
   <prerequisites>
@@ -30,9 +31,11 @@
     </createsSubtasks>
   </process>
 
+<!--
   <process name="ft2Gaps">
     <job executable="${L1ProcROOT}/ft2Db.py" batchOptions=" -q %(expressQ)s "/>
   </process>
+-->
 
   <process name="kludgeAsp">
     <job executable="${L1ProcROOT}/kludgeAsp.py" batchOptions=" -q %(expressQ)s " />
@@ -68,14 +71,30 @@
       </createsSubtasks>
     </process>
 
+    <process name="setRunning">
+      <variables>
+        <var name="l1RunStatus">%(runningStatus)s</var>
+      </variables>
+      <script><![CDATA[
+%(statusScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="findChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="copyM7">
+      <variables>
+        <var name="%(magic7_versionName)s">%(magic7_version)s</var>
+      </variables>
       <job executable="${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s " />
     </process>
 
     <process name="registerM7">
       <variables>
         <var name="parentProcess">copyM7</var>
-        <var name="dataType">MAGIC7</var>
+        <var name="fileType">magic7</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -89,6 +108,7 @@
     <process name="mergeDigi">
       <variables>
         <var name="fileType">digi</var>
+        <var name="%(digi_versionName)s">%(digi_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;5]&quot; " />
       <depends>
@@ -99,7 +119,7 @@
     <process name="registerDigi">
       <variables>
         <var name="parentProcess">mergeDigi</var>
-        <var name="dataType">DIGI</var>
+        <var name="fileType">digi</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -110,85 +130,94 @@
       </depends>
     </process>
  
-    <process name="mergeDigiEor">
+    <process name="mergeDigiHist">
       <variables>
-        <var name="fileType">digiEor</var>
+        <var name="fileType">digiHist</var>
+        <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
-        <after process="doChunk.digiEor" status="DONE"/>
+        <after process="doChunk.digiHist" status="DONE"/>
       </depends>
     </process>
  
-    <process name="registerDigiEor">
+    <process name="registerDigiHist">
       <variables>
-        <var name="parentProcess">mergeDigiEor</var>
-        <var name="dataType">DIGIHIST</var>
+        <var name="parentProcess">mergeDigiHist</var>
+        <var name="fileType">digiHist</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
 ]]>
       </script>
       <depends>
-        <after process="mergeDigiEor" status="SUCCESS"/>
+        <after process="mergeDigiHist" status="SUCCESS"/>
       </depends>
     </process>
  
-    <process name="digiEorAlarm">
+    <process name="digiHistAlarm">
       <variables>
-        <var name="fileType">digiEor</var>
+        <var name="fileType">digiHist</var>
+        <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
+        <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
-        <after process="mergeDigiEor" status="SUCCESS"/>
+        <after process="registerDigiHist" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="ingestDigiEorRun">
+    <process name="registerDigiHistAlarm">
       <variables>
-        <var name="reportType">digiEorAlarm</var>
-      </variables>
-      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
-      <depends>
-        <after process="digiEorAlarm" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="digiEorLogger">
-      <variables>
-        <var name="fileType">digiEorAlarm</var>
-      </variables>
-      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
-      <depends>
-        <after process="digiEorAlarm" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="registerDigiEorAlarm">
-      <variables>
-        <var name="parentProcess">digiEorAlarm</var>
-        <var name="dataType">digiEorAlarm</var>
+        <var name="parentProcess">digiHistAlarm</var>
+        <var name="fileType">digiHistAlarm</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
 ]]>
       </script>
       <depends>
-        <after process="digiEorAlarm" status="SUCCESS"/>
+        <after process="digiHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestDigiHistRun">
+      <variables>
+        <var name="reportType">digiHistAlarm</var>
+        <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerDigiHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="digiHistLogger">
+      <variables>
+        <var name="fileType">digiHistAlarm</var>
+        <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerDigiHistAlarm" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="acdPlots">
+      <variables>
+        <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
+        <var name="%(acdPlots_versionName)s">%(acdPlots_version)s</var>
+      </variables>
       <job executable="${L1ProcROOT}/acdPlots.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
-        <after process="mergeDigiEor" status="SUCCESS"/>
+        <after process="registerDigiHist" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="registerAcdPlots">
       <variables>
         <var name="parentProcess">acdPlots</var>
-        <var name="dataType">ACDPLOTS</var>
+        <var name="fileType">acdPlots</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -202,6 +231,7 @@
     <process name="mergeDigiTrend">
       <variables>
         <var name="fileType">digiTrend</var>
+        <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
@@ -212,7 +242,7 @@
     <process name="registerDigiTrend">
       <variables>
         <var name="parentProcess">mergeDigiTrend</var>
-        <var name="dataType">DIGITREND</var>
+        <var name="fileType">digiTrend</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -226,37 +256,30 @@
     <process name="ingestDigiTrend">
       <variables>
         <var name="reportType">digiTrend</var>
+        <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
-        <after process="mergeDigiTrend" status="SUCCESS"/>
+        <after process="registerDigiTrend" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="digiTrendAlarm">
       <variables>
         <var name="fileType">digiTrend</var>
+        <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
+        <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
-        <after process="mergeDigiTrend" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="digiTrendLogger">
-      <variables>
-        <var name="fileType">digiTrendAlarm</var>
-      </variables>
-      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
-      <depends>
-        <after process="digiTrendAlarm" status="SUCCESS"/>
+        <after process="registerDigiTrend" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="registerDigiTrendAlarm">
       <variables>
         <var name="parentProcess">digiTrendAlarm</var>
-        <var name="dataType">digiTrendAlarm</var>
+        <var name="fileType">digiTrendAlarm</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -264,46 +287,60 @@
       </script>
       <depends>
         <after process="digiTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="digiTrendLogger">
+      <variables>
+        <var name="fileType">digiTrendAlarm</var>
+        <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerDigiTrendAlarm" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="ingestDigiTrendRun">
       <variables>
         <var name="reportType">digiTrendAlarm</var>
+        <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
-        <after process="digiTrendAlarm" status="SUCCESS"/>
+        <after process="registerDigiTrendAlarm" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="mergeCalEor">
+    <process name="mergeCalHist">
       <variables>
-        <var name="fileType">calEor</var>
+        <var name="fileType">calHist</var>
+        <var name="%(calHist_versionName)s">%(calHist_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
-        <after process="doChunk.calEor" status="DONE"/>
+        <after process="doChunk.calHist" status="DONE"/>
       </depends>
     </process>
  
-    <process name="registerCalEor">
+    <process name="registerCalHist">
       <variables>
-        <var name="parentProcess">mergeCalEor</var>
-        <var name="dataType">CALHIST</var>
+        <var name="parentProcess">mergeCalHist</var>
+        <var name="fileType">calHist</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
 ]]>
       </script>
       <depends>
-        <after process="mergeCalEor" status="SUCCESS"/>
+        <after process="mergeCalHist" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="mergeCalTrend">
       <variables>
         <var name="fileType">calTrend</var>
+        <var name="%(calTrend_versionName)s">%(calTrend_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
@@ -314,7 +351,7 @@
     <process name="registerCalTrend">
       <variables>
         <var name="parentProcess">mergeCalTrend</var>
-        <var name="dataType">CALTREND</var>
+        <var name="fileType">calTrend</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -328,28 +365,31 @@
     <process name="ingestCalTrend">
       <variables>
         <var name="reportType">calTrend</var>
+        <var name="%(calTrend_versionName)s">%(calTrend_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
-        <after process="mergeCalTrend" status="SUCCESS"/>
+        <after process="registerCalTrend" status="SUCCESS"/>
       </depends>
     </process>
  
     <process name="acdPedsAnalyzer">
       <variables>
-        <var name="fileType">calEor</var>
+        <var name="fileType">calHist</var>
         <var name="reportType">acdPedsAnalyzer</var>
+        <var name="%(calHist_versionName)s">%(calHist_version)s</var>
+        <var name="%(acdPedsAnalyzer_versionName)s">%(acdPedsAnalyzer_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s "/>
       <depends>
-        <after process="mergeCalEor" status="SUCCESS"/>
+        <after process="registerCalHist" status="SUCCESS"/>
       </depends>
     </process>
    
     <process name="registerAcdPedsAnalyzer">
       <variables>
         <var name="parentProcess">acdPedsAnalyzer</var>
-        <var name="dataType">acdPedsAnalyzer</var>
+        <var name="fileType">acdPedsAnalyzer</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -362,19 +402,21 @@
 
     <process name="calGainsAnalyzer">
       <variables>
-        <var name="fileType">calEor</var>
+        <var name="fileType">calHist</var>
         <var name="reportType">calGainsAnalyzer</var>
+        <var name="%(calHist_versionName)s">%(calHist_version)s</var>
+        <var name="%(calGainsAnalyzer_versionName)s">%(calGainsAnalyzer_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s "/>
       <depends>
-        <after process="mergeCalEor" status="SUCCESS"/>
+        <after process="registerCalHist" status="SUCCESS"/>
       </depends>
     </process>
    
     <process name="registerCalGainsAnalyzer">
       <variables>
         <var name="parentProcess">calGainsAnalyzer</var>
-        <var name="dataType">calGainsAnalyzer</var>
+        <var name="fileType">calGainsAnalyzer</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -387,19 +429,21 @@
 
     <process name="calPedsAnalyzer">
       <variables>
-        <var name="fileType">calEor</var>
+        <var name="fileType">calHist</var>
         <var name="reportType">calPedsAnalyzer</var>
+        <var name="%(calHist_versionName)s">%(calHist_version)s</var>
+        <var name="%(calPedsAnalyzer_versionName)s">%(calPedsAnalyzer_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s "/>
       <depends>
-        <after process="mergeCalEor" status="SUCCESS"/>
+        <after process="registerCalHist" status="SUCCESS"/>
       </depends>
     </process>
    
     <process name="registerCalPedsAnalyzer">
       <variables>
         <var name="parentProcess">calPedsAnalyzer</var>
-        <var name="dataType">calPedsAnalyzer</var>
+        <var name="fileType">calPedsAnalyzer</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -413,6 +457,7 @@
     <process name="mergeFastMonError">
       <variables>
         <var name="fileType">fastMonError</var>
+        <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s "/>
       <depends>
@@ -423,7 +468,7 @@
     <process name="registerFastMonError">
       <variables>
         <var name="parentProcess">mergeFastMonError</var>
-        <var name="dataType">FASTMONERROR</var>
+        <var name="fileType">fastMonError</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -437,16 +482,18 @@
     <process name="ingestFastMonErrorRun">
       <variables>
         <var name="reportType">fastMonError</var>
+        <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
-        <after process="mergeFastMonError" status="SUCCESS"/>
+        <after process="registerFastMonError" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="mergeFastMonHist">
       <variables>
         <var name="fileType">fastMonHist</var>
+        <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
@@ -457,7 +504,7 @@
     <process name="registerFastMonHist">
       <variables>
         <var name="parentProcess">mergeFastMonHist</var>
-        <var name="dataType">FASTMONHIST</var>
+        <var name="fileType">fastMonHist</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -471,18 +518,21 @@
     <process name="compDigiFastMon">
       <variables>
         <var name="fileType">compareDFm</var>
+        <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
+        <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
+        <var name="%(compareDFm_versionName)s">%(compareDFm_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/compDigiFastMon.py" batchOptions=" -q %(mediumQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
-        <after process="mergeDigiEor" status="SUCCESS"/>
-        <after process="mergeFastMonHist" status="SUCCESS"/>
+        <after process="registerDigiHist" status="SUCCESS"/>
+        <after process="registerFastMonHist" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="registerCmpDFm">
       <variables>
         <var name="parentProcess">compDigiFastMon</var>
-        <var name="dataType">COMPAREDFM</var>
+        <var name="fileType">compareDFm</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -496,6 +546,7 @@
     <process name="mergeFastMonTuple">
       <variables>
         <var name="fileType">fastMonTuple</var>
+        <var name="%(fastMonTuple_versionName)s">%(fastMonTuple_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
@@ -506,7 +557,7 @@
     <process name="registerFastMonTuple">
       <variables>
         <var name="parentProcess">mergeFastMonTuple</var>
-        <var name="dataType">FASTMONTUPLE</var>
+        <var name="fileType">fastMonTuple</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -520,27 +571,19 @@
     <process name="fastMonHistAlarm">
       <variables>
         <var name="fileType">fastMonHist</var>
+        <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
+        <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
-        <after process="mergeFastMonHist" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="fastMonHistLogger">
-      <variables>
-        <var name="fileType">fastMonHistAlarm</var>
-      </variables>
-      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
-      <depends>
-        <after process="fastMonHistAlarm" status="SUCCESS"/>
+        <after process="registerFastMonHist" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="registerFastMonHistAlarm">
       <variables>
         <var name="parentProcess">fastMonHistAlarm</var>
-        <var name="dataType">fastMonHistAlarm</var>
+        <var name="fileType">fastMonHistAlarm</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -551,19 +594,32 @@
       </depends>
     </process>
 
+    <process name="fastMonHistLogger">
+      <variables>
+        <var name="fileType">fastMonHistAlarm</var>
+        <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerFastMonHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="ingestFastMonHistRun">
       <variables>
         <var name="reportType">fastMonHistAlarm</var>
+        <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
-        <after process="fastMonHistAlarm" status="SUCCESS"/>
+        <after process="registerFastMonHistAlarm" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="mergeFastMonTrend">
       <variables>
         <var name="fileType">fastMonTrend</var>
+        <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
@@ -574,7 +630,7 @@
     <process name="registerFastMonTrend">
       <variables>
         <var name="parentProcess">mergeFastMonTrend</var>
-        <var name="dataType">FASTMONTREND</var>
+        <var name="fileType">fastMonTrend</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -588,47 +644,30 @@
     <process name="ingestFastMonTrend">
       <variables>
         <var name="reportType">fastMonTrend</var>
+        <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
-        <after process="mergeFastMonTrend" status="SUCCESS"/>
+        <after process="registerFastMonTrend" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="fastMonTrendAlarm">
       <variables>
         <var name="fileType">fastMonTrend</var>
+        <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
+        <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
-        <after process="mergeFastMonTrend" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="ingestFastMonTrendRun">
-      <variables>
-        <var name="reportType">fastMonTrendAlarm</var>
-      </variables>
-      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
-      <depends>
-        <after process="fastMonTrendAlarm" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="fastMonTrendLogger">
-      <variables>
-        <var name="fileType">fastMonTrendAlarm</var>
-      </variables>
-      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
-      <depends>
-        <after process="fastMonTrendAlarm" status="SUCCESS"/>
+        <after process="registerFastMonTrend" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="registerFastMonTrendAlarm">
       <variables>
         <var name="parentProcess">fastMonTrendAlarm</var>
-        <var name="dataType">fastMonTrendAlarm</var>
+        <var name="fileType">fastMonTrendAlarm</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -639,9 +678,32 @@
       </depends>
     </process>
 
+    <process name="ingestFastMonTrendRun">
+      <variables>
+        <var name="reportType">fastMonTrendAlarm</var>
+        <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerFastMonTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="fastMonTrendLogger">
+      <variables>
+        <var name="fileType">fastMonTrendAlarm</var>
+        <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerFastMonTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="mergeGcrChunks">
       <variables>
         <var name="fileType">gcr</var>
+        <var name="%(gcr_versionName)s">%(gcr_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
@@ -652,7 +714,7 @@
     <process name="registerGcr">
       <variables>
         <var name="parentProcess">mergeGcrChunks</var>
-        <var name="dataType">GCR</var>
+        <var name="fileType">gcr</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -666,6 +728,7 @@
     <process name="mergeMeritChunks">
       <variables>
         <var name="fileType">merit</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;2]&quot; " />
       <depends>
@@ -676,7 +739,7 @@
     <process name="registerMerit">
       <variables>
         <var name="parentProcess">mergeMeritChunks</var>
-        <var name="dataType">MERIT</var>
+        <var name="fileType">merit</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -690,27 +753,19 @@
     <process name="makeFT1">
       <variables>
         <var name="fileType">ft1</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="%(ft1_versionName)s">%(ft1_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
-        <after process="mergeMeritChunks" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="exportFT1">
-      <variables>
-        <var name="fileType">ft1</var>
-      </variables>
-      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
-      <depends>
-        <after process="makeFT1" status="SUCCESS"/>
+        <after process="registerMerit" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="registerFT1">
       <variables>
         <var name="parentProcess">makeFT1</var>
-        <var name="dataType">FT1</var>
+        <var name="fileType">ft1</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -718,33 +773,36 @@
       </script>
       <depends>
         <after process="makeFT1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="exportFT1">
+      <variables>
+        <var name="fileType">ft1</var>
+        <var name="%(ft1_versionName)s">%(ft1_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <depends>
+        <after process="registerFT1" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="makeLS1">
       <variables>
         <var name="fileType">ls1</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="%(ls1_versionName)s">%(ls1_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
-        <after process="mergeMeritChunks" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="exportLS1">
-      <variables>
-        <var name="fileType">ls1</var>
-      </variables>
-      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
-      <depends>
-        <after process="makeLS1" status="SUCCESS"/>
+        <after process="registerMerit" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="registerLS1">
       <variables>
         <var name="parentProcess">makeLS1</var>
-        <var name="dataType">LS1</var>
+        <var name="fileType">ls1</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -755,42 +813,72 @@
       </depends>
     </process>
 
-    <process name="ft2Runs">
-      <job executable="${L1ProcROOT}/ft2Entries.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+    <process name="exportLS1">
+      <variables>
+        <var name="fileType">ls1</var>
+        <var name="%(ls1_versionName)s">%(ls1_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
-        <after process="mergeDigi" status="SUCCESS"/>
-        <after process="mergeMeritChunks" status="SUCCESS"/>
+        <after process="registerLS1" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="ingestFT2">
-      <job executable="${L1ProcROOT}/ft2Db.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+    <process name="ft2Runs">
+      <variables>
+        <var name="%(digi_versionName)s">%(digi_version)s</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="%(ft2Txt_versionName)s">%(ft2Txt_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ft2Entries.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <depends>
+        <after process="registerDigi" status="SUCCESS"/>
+        <after process="registerMerit" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFt2Txt">
+      <variables>
+        <var name="parentProcess">ft2Runs</var>
+        <var name="fileType">ft2Txt</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
       <depends>
         <after process="ft2Runs" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="makeFT2">
-      <job executable="${L1ProcROOT}/makeFT2File.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+<!--
+    <process name="ingestFT2">
+      <variables>
+        <var name="%(ft2Txt_versionName)s">%(ft2Txt_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ft2Db.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
-        <after process="ingestFT2" status="SUCCESS"/>
+        <after process="registerFt2Txt" status="SUCCESS"/>
       </depends>
     </process>
+-->
 
-    <process name="exportFT2">
+    <process name="makeFT2">
       <variables>
-        <var name="fileType">ft2</var>
+        <var name="%(ft2Txt_versionName)s">%(ft2Txt_version)s</var>
+        <var name="%(ft2_versionName)s">%(ft2_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d  -R &quot;select[scratch&gt;1]&quot; " />
+      <job executable="${L1ProcROOT}/makeFT2File.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
-        <after process="makeFT2" status="SUCCESS"/>
+        <!-- <after process="ingestFT2" status="SUCCESS"/> -->
+        <after process="registerFt2Txt" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="registerFT2">
       <variables>
         <var name="parentProcess">makeFT2</var>
-        <var name="dataType">FT2</var>
+        <var name="fileType">ft2</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -801,28 +889,34 @@
       </depends>
     </process>
 
-    <process name="makeLS3">
-      <job executable="${L1ProcROOT}/makeLS3.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+    <process name="exportFT2">
+      <variables>
+        <var name="fileType">ft2</var>
+        <var name="%(ft2_versionName)s">%(ft2_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d  -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
-        <after process="makeFT1" status="SUCCESS"/>
-        <after process="makeFT2" status="SUCCESS"/>
+        <after process="registerFT2" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="exportLS3">
+    <process name="makeLS3">
       <variables>
-        <var name="fileType">ls3</var>
+        <var name="%(ft1_versionName)s">%(ft1_version)s</var>
+        <var name="%(ft2_versionName)s">%(ft2_version)s</var>
+        <var name="%(ls3_versionName)s">%(ls3_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <job executable="${L1ProcROOT}/makeLS3.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
-        <after process="makeLS3" status="SUCCESS"/>
+        <after process="registerFT1" status="SUCCESS"/>
+        <after process="registerFT2" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="registerLS3">
       <variables>
         <var name="parentProcess">makeLS3</var>
-        <var name="dataType">LS3</var>
+        <var name="fileType">ls3</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -833,9 +927,21 @@
       </depends>
     </process>
 
+    <process name="exportLS3">
+      <variables>
+        <var name="fileType">ls3</var>
+        <var name="%(ls3_versionName)s">%(ls3_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <depends>
+        <after process="registerLS3" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="mergeCalChunks">
       <variables>
         <var name="fileType">cal</var>
+        <var name="%(cal_versionName)s">%(cal_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;6]&quot; "/>
       <depends>
@@ -846,7 +952,7 @@
     <process name="registerCal">
       <variables>
         <var name="parentProcess">mergeCalChunks</var>
-        <var name="dataType">CAL</var>
+        <var name="fileType">cal</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -860,6 +966,7 @@
     <process name="mergeMeritTrend">
       <variables>
         <var name="fileType">meritTrend</var>
+        <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
@@ -870,7 +977,7 @@
     <process name="registerMeritTrend">
       <variables>
         <var name="parentProcess">mergeMeritTrend</var>
-        <var name="dataType">MERITTREND</var>
+        <var name="fileType">meritTrend</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -884,40 +991,43 @@
     <process name="ingestMeritTrend">
       <variables>
         <var name="reportType">meritTrend</var>
+        <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
-        <after process="mergeMeritTrend" status="SUCCESS"/>
+        <after process="registerMeritTrend" status="SUCCESS"/>
       </depends>
     </process>
  
-    <process name="mergeMeritEor">
+    <process name="mergeMeritHist">
       <variables>
-        <var name="fileType">meritEor</var>
+        <var name="fileType">meritHist</var>
+        <var name="%(meritHist_versionName)s">%(meritHist_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
-        <after process="doChunk.meritEor" status="DONE"/>
+        <after process="doChunk.meritHist" status="DONE"/>
       </depends>
     </process>
  
-    <process name="registerMeritEor">
+    <process name="registerMeritHist">
       <variables>
-        <var name="parentProcess">mergeMeritEor</var>
-        <var name="dataType">MERITHIST</var>
+        <var name="parentProcess">mergeMeritHist</var>
+        <var name="fileType">meritHist</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
 ]]>
       </script>
       <depends>
-        <after process="mergeMeritEor" status="SUCCESS"/>
+        <after process="mergeMeritHist" status="SUCCESS"/>
       </depends>
     </process>
  
     <process name="mergeReconTrend">
       <variables>
         <var name="fileType">reconTrend</var>
+        <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
@@ -930,7 +1040,7 @@
     <process name="registerReconTrend">
       <variables>
         <var name="parentProcess">mergeReconTrend</var>
-        <var name="dataType">RECONTREND</var>
+        <var name="fileType">reconTrend</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -944,47 +1054,30 @@
     <process name="ingestReconTrend">
       <variables>
         <var name="reportType">reconTrend</var>
+        <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
-        <after process="mergeReconTrend" status="SUCCESS"/>
+        <after process="registerReconTrend" status="SUCCESS"/>
       </depends>
     </process>
  
     <process name="reconTrendAlarm">
       <variables>
         <var name="fileType">reconTrend</var>
+        <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
+        <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
-        <after process="mergeReconTrend" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="ingestReconTrendRun">
-      <variables>
-        <var name="reportType">reconTrendAlarm</var>
-      </variables>
-      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
-      <depends>
-        <after process="reconTrendAlarm" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="reconTrendLogger">
-      <variables>
-        <var name="fileType">reconTrendAlarm</var>
-      </variables>
-      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
-      <depends>
-        <after process="reconTrendAlarm" status="SUCCESS"/>
+        <after process="registerReconTrend" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="registerReconTrendAlarm">
       <variables>
         <var name="parentProcess">reconTrendAlarm</var>
-        <var name="dataType">reconTrendAlarm</var>
+        <var name="fileType">reconTrendAlarm</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -994,104 +1087,134 @@
         <after process="reconTrendAlarm" status="SUCCESS"/>
       </depends>
     </process>
- 
-    <process name="mergeReconEor">
+
+    <process name="ingestReconTrendRun">
       <variables>
-        <var name="fileType">reconEor</var>
+        <var name="reportType">reconTrendAlarm</var>
+        <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerReconTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="reconTrendLogger">
+      <variables>
+        <var name="fileType">reconTrendAlarm</var>
+        <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerReconTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="mergeReconHist">
+      <variables>
+        <var name="fileType">reconHist</var>
+        <var name="%(reconHist_versionName)s">%(reconHist_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <!-- <after process="doChunk.mergeCalCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
         <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
-        <after process="doChunk.reconEor" status="DONE"/>
+        <after process="doChunk.reconHist" status="DONE"/>
       </depends>
     </process>
  
-    <process name="ingestReconEorRun">
+    <process name="registerReconHist">
       <variables>
-        <var name="reportType">reconEorAlarm</var>
-      </variables>
-      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
-      <depends>
-        <after process="reconEorAlarm" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="registerReconEor">
-      <variables>
-        <var name="parentProcess">mergeReconEor</var>
-        <var name="dataType">RECONHIST</var>
+        <var name="parentProcess">mergeReconHist</var>
+        <var name="fileType">reconHist</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
 ]]>
       </script>
       <depends>
-        <after process="mergeReconEor" status="SUCCESS"/>
+        <after process="mergeReconHist" status="SUCCESS"/>
       </depends>
     </process>
  
-    <process name="reconEorAlarm">
+    <process name="reconHistAlarm">
       <variables>
-        <var name="fileType">reconEor</var>
+        <var name="fileType">reconHist</var>
+        <var name="%(reconHist_versionName)s">%(reconHist_version)s</var>
+        <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
-        <after process="mergeReconEor" status="SUCCESS"/>
+        <after process="registerReconHist" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="reconEorLogger">
+    <process name="registerReconHistAlarm">
       <variables>
-        <var name="fileType">reconEorAlarm</var>
+        <var name="parentProcess">reconHistAlarm</var>
+        <var name="fileType">reconHistAlarm</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="reconHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="reconHistLogger">
+      <variables>
+        <var name="fileType">reconHistAlarm</var>
+        <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
-        <after process="reconEorAlarm" status="SUCCESS"/>
+        <after process="registerReconHistAlarm" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="registerReconEorAlarm">
+    <process name="ingestReconHistRun">
       <variables>
-        <var name="parentProcess">reconEorAlarm</var>
-        <var name="dataType">reconEorAlarm</var>
+        <var name="reportType">reconHistAlarm</var>
+        <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
       </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
+      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
-        <after process="reconEorAlarm" status="SUCCESS"/>
+        <after process="registerReconHistAlarm" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="reconEorPostProcessor">
+    <process name="reconHistPostProcessor">
       <variables>
-        <var name="fileType">reconEorAlarm</var>
+        <var name="fileType">reconHistAlarm</var>
+        <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
+        <var name="%(reconHistAlarmDist_versionName)s">%(reconHistAlarmDist_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/alarmPostProcessor.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
-        <after process="reconEorAlarm" status="SUCCESS"/>
+        <after process="registerReconHistAlarm" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="registerReconEorAlarmDist">
+    <process name="registerReconHistAlarmDist">
       <variables>
-        <var name="parentProcess">reconEorPostProcessor</var>
-        <var name="dataType">reconEorAlarmDist</var>
+        <var name="parentProcess">reconHistPostProcessor</var>
+        <var name="fileType">reconHistAlarmDist</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
 ]]>
       </script>
       <depends>
-        <after process="reconEorPostProcessor" status="SUCCESS"/>
+        <after process="reconHistPostProcessor" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="mergeTkrAnalysis">
       <variables>
         <var name="fileType">tkrAnalysis</var>
+        <var name="%(tkrAnalysis_versionName)s">%(tkrAnalysis_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
@@ -1103,7 +1226,7 @@
     <process name="registerTkrAnalysis">
       <variables>
         <var name="parentProcess">mergeTkrAnalysis</var>
-        <var name="dataType">TKRANALYSIS</var>
+        <var name="fileType">tkrAnalysis</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1115,16 +1238,22 @@
     </process>
  
     <process name="tkrMonitor">
+      <variables>
+        <var name="%(tkrAnalysis_versionName)s">%(tkrAnalysis_version)s</var>
+        <var name="%(tkrMonitor_versionName)s">%(tkrMonitor_version)s</var>
+        <var name="%(tkrReport_versionName)s">%(tkrReport_version)s</var>
+        <!-- <var name="%(tkrAlarm_versionName)s">%(tkrAlarm_version)s</var> -->
+      </variables>
       <job executable="${L1ProcROOT}/tkrMonitor.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
-        <after process="mergeTkrAnalysis" status="SUCCESS"/>
+        <after process="registerTkrAnalysis" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="registerTkrMonitor">
       <variables>
         <var name="parentProcess">tkrMonitor</var>
-        <var name="dataType">TKRMONITOR</var>
+        <var name="fileType">tkrMonitor</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1135,27 +1264,30 @@
       </depends>
     </process>
  
+<!--
     <process name="preRegisterTkrReport">
       <variables>
         <var name="fileType">tkrReport</var>
+        <var name="%(tkrReport_versionName)s">%(tkrReport_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/preRegister.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="tkrMonitor" status="SUCCESS"/>
       </depends>
     </process>
+-->
 
     <process name="registerTkrReport">
       <variables>
-        <var name="parentProcess">preRegisterTkrReport</var>
-        <var name="dataType">TKRREPORT</var>
+        <var name="parentProcess">tkrMonitor</var>
+        <var name="fileType">tkrReport</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
 ]]>
       </script>
       <depends>
-        <after process="preRegisterTkrReport" status="SUCCESS"/>
+        <after process="tkrMonitor" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -1165,6 +1297,7 @@
     <process name="preRegisterTkrAlarm">
       <variables>
         <var name="fileType">tkrAlarm</var>
+        <var name="%(tkrAlarm_versionName)s">%(tkrAlarm_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/preRegister.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
@@ -1174,15 +1307,15 @@
 
     <process name="registerTkrAlarm">
       <variables>
-        <var name="parentProcess">preRegisterTkrAlarm</var>
-        <var name="dataType">TKRALARM</var>
+        <var name="parentProcess">tkrMonitor</var>
+        <var name="fileType">tkrAlarm</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
 ]]>
       </script>
       <depends>
-        <after process="preRegisterTkrAlarm" status="SUCCESS"/>
+        <after process="tkrMonitor" status="SUCCESS"/>
       </depends>
     </process>
  -->
@@ -1192,17 +1325,19 @@
     <process name="tkrTrend">
       <variables>
         <var name="reportType">tkrTrend</var>
+        <var name="%(tkrMonitor_versionName)s">%(tkrMonitor_version)s</var>
+        <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
-        <after process="tkrMonitor" status="SUCCESS"/>
+        <after process="registerTkrMonitor" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="registerTkrTrend">
       <variables>
         <var name="parentProcess">tkrTrend</var>
-        <var name="dataType">TKRTREND</var>
+        <var name="fileType">tkrTrend</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1216,16 +1351,66 @@
     <process name="ingestTkrTrend">
       <variables>
         <var name="reportType">tkrTrend</var>
+        <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
-        <after process="tkrTrend" status="SUCCESS"/>
+        <after process="registerTkrTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="tkrTrendAlarm">
+      <variables>
+        <var name="fileType">tkrTrend</var>
+        <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
+        <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerTkrTrend" status="SUCCESS"/>
       </depends>
     </process>
 
+    <process name="registerTkrTrendAlarm">
+      <variables>
+        <var name="parentProcess">tkrTrendAlarm</var>
+        <var name="fileType">tkrTrendAlarm</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="tkrTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestTkrTrendRun">
+      <variables>
+        <var name="reportType">tkrTrendAlarm</var>
+        <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerTkrTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="tkrTrendLogger">
+      <variables>
+        <var name="fileType">tkrTrendAlarm</var>
+        <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerTkrTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
     <process name="mergeReconChunks">
       <variables>
         <var name="fileType">recon</var>
+        <var name="%(recon_versionName)s">%(recon_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;20]&quot; "/>
       <depends>
@@ -1236,7 +1421,7 @@
     <process name="registerRecon">
       <variables>
         <var name="parentProcess">mergeReconChunks</var>
-        <var name="dataType">RECON</var>
+        <var name="fileType">recon</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1250,6 +1435,7 @@
     <process name="mergeSvacChunks">
       <variables>
         <var name="fileType">svac</var>
+        <var name="%(svac_versionName)s">%(svac_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;6]&quot; "/>
       <depends>
@@ -1260,7 +1446,7 @@
     <process name="registerSvacTuple">
       <variables>
         <var name="parentProcess">mergeSvacChunks</var>
-        <var name="dataType">SVAC</var>
+        <var name="fileType">svac</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1275,7 +1461,7 @@
       <job executable="${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="doChunk.checkChunk" status="SUCCESS"/>
-        <after process="digiEorLogger" status="SUCCESS"/>
+        <after process="digiHistLogger" status="SUCCESS"/>
         <after process="digiTrendLogger" status="SUCCESS"/>
         <after process="exportFT1" status="SUCCESS"/>
         <after process="exportFT2" status="SUCCESS"/>
@@ -1292,55 +1478,61 @@
         <after process="ingestFastMonHistRun" status="SUCCESS"/>
         <after process="ingestFastMonErrorRun" status="SUCCESS"/>
         <after process="ingestDigiTrendRun" status="SUCCESS"/>
-        <after process="ingestDigiEorRun" status="SUCCESS"/>
+        <after process="ingestDigiHistRun" status="SUCCESS"/>
         <after process="ingestReconTrendRun" status="SUCCESS"/>
-        <after process="ingestReconEorRun" status="SUCCESS"/>
+        <after process="ingestReconHistRun" status="SUCCESS"/>
         <after process="ingestTkrTrend" status="SUCCESS"/>
-        <after process="reconEorLogger" status="SUCCESS"/>
+        <after process="ingestTkrTrendRun" status="SUCCESS"/>
+        <after process="reconHistLogger" status="SUCCESS"/>
         <after process="reconTrendLogger" status="SUCCESS"/>
         <after process="registerAcdPlots" status="SUCCESS"/>
         <after process="registerCal" status="SUCCESS"/>
-        <after process="registerCalEor" status="SUCCESS"/>
-        <after process="registerCalTrend" status="SUCCESS"/>
+        <after process="registerCalGainsAnalyzer" status="SUCCESS"/>
         <after process="registerCmpDFm" status="SUCCESS"/>
-        <after process="registerDigi" status="SUCCESS"/>
-        <after process="registerDigiEor" status="SUCCESS"/>
-        <after process="registerDigiEorAlarm" status="SUCCESS"/>
-        <after process="registerDigiTrend" status="SUCCESS"/>
-        <after process="registerDigiTrendAlarm" status="SUCCESS"/>
-        <after process="registerFT1" status="SUCCESS"/>
-        <after process="registerFT2" status="SUCCESS"/>
-        <after process="registerLS1" status="SUCCESS"/>
-        <after process="registerLS3" status="SUCCESS"/>
         <after process="registerAcdPedsAnalyzer" status="SUCCESS"/>
         <after process="registerCalPedsAnalyzer" status="SUCCESS"/>
-        <after process="registerFastMonError" status="SUCCESS"/>
-        <after process="registerFastMonHist" status="SUCCESS"/>
-        <after process="registerFastMonHistAlarm" status="SUCCESS"/>
-        <after process="registerFastMonTrend" status="SUCCESS"/>
-        <after process="registerFastMonTrendAlarm" status="SUCCESS"/>
         <after process="registerFastMonTuple" status="SUCCESS"/>
         <after process="registerGcr" status="SUCCESS"/>
         <after process="registerM7" status="SUCCESS"/>
-        <after process="registerMerit" status="SUCCESS"/>
-        <after process="registerMeritEor" status="SUCCESS"/>
-        <after process="registerMeritTrend" status="SUCCESS"/>
+        <after process="registerMeritHist" status="SUCCESS"/>
         <after process="registerRecon" status="SUCCESS"/>
-        <after process="registerReconEor" status="SUCCESS"/>
-        <after process="registerReconEorAlarm" status="SUCCESS"/>
-        <after process="registerReconEorAlarmDist" status="SUCCESS"/>
-        <after process="registerReconTrend" status="SUCCESS"/>
-        <after process="registerReconTrendAlarm" status="SUCCESS"/>
+        <after process="registerReconHistAlarmDist" status="SUCCESS"/>
         <after process="registerSvacTuple" status="SUCCESS"/>
 <!-- We don't have TKR alarms yet        <after process="registerTkrAlarm" status="SUCCESS"/>     -->
-        <after process="registerTkrAnalysis" status="SUCCESS"/>
-        <after process="registerTkrMonitor" status="SUCCESS"/>
         <after process="registerTkrReport" status="SUCCESS"/>
-        <after process="registerTkrTrend" status="SUCCESS"/>
+        <after process="tkrTrendLogger" status="SUCCESS"/>
       </depends>
       <createsSubtasks>
         <subtask>cleanupCompleteRun</subtask>
       </createsSubtasks>
+    </process>
+
+    <process name="setCrashed">
+      <variables>
+        <var name="l1RunStatus">%(crashedStatus)s</var>
+      </variables>
+      <script><![CDATA[
+%(statusScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="checkRun" status="SKIPPED"/>
+        <after process="setRunning" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="setSuccessful">
+      <variables>
+        <var name="parentProcess">checkRun</var>
+      </variables>
+      <script><![CDATA[
+%(successScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="checkRun" status="SUCCESS"/>
+        <after process="setRunning" status="DONE"/>
+      </depends>
     </process>
 
     <task name="cleanupCompleteRun" version="%(L1Version)s" type="Data">
@@ -1349,6 +1541,7 @@
         <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
       </process>
 
+<!--
       <process name="updateRunStatus">
         <script>
           <![CDATA[
@@ -1356,15 +1549,21 @@
 ]]>
         </script>
       </process>
+-->
 
       <process name="verify">
+        <variables>
+          <var name="%(digi_versionName)s">%(digi_version)s</var>
+          <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
+          <var name="%(verifyHisto_versionName)s">%(verifyHisto_version)s</var>
+        </variables>
         <job executable="${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s "/>
       </process>
 
       <process name="registerVerifyHisto">
         <variables>
           <var name="parentProcess">verify</var>
-	  <var name="dataType">VERIFYHISTO</var>
+          <var name="fileType">verifyHisto</var>
         </variables>
         <script><![CDATA[
 %(registerBody)s
@@ -1375,37 +1574,41 @@
         </depends>
       </process>
 
+<!--
       <process name="preRegisterVerifyLog">
         <variables>
           <var name="fileType">verifyLog</var>
+          <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
         </variables>
         <job executable="${L1ProcROOT}/preRegister.py" batchOptions=" -q %(shortQ)s "/>
         <depends>
           <after process="verify" status="SUCCESS"/>
         </depends>
       </process>
+-->
 
       <process name="registerVerifyLog">
         <variables>
-          <var name="parentProcess">preRegisterVerifyLog</var>
-          <var name="dataType">VERIFYLOG</var>
+          <var name="parentProcess">verify</var>
+          <var name="fileType">verifyLog</var>
         </variables>
         <script><![CDATA[
 %(registerBody)s
 ]]>
         </script>
         <depends>
-          <after process="preRegisterVerifyLog" status="SUCCESS"/>
+          <after process="verify" status="SUCCESS"/>
         </depends>
       </process>
 
       <process name="ingestVerifyErrorRun">
         <variables>
           <var name="reportType">verifyLog</var>
+          <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
         </variables>
         <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
         <depends>
-          <after process="verify" status="SUCCESS"/>
+          <after process="registerVerifyLog" status="SUCCESS"/>
         </depends>
       </process>
 
@@ -1454,9 +1657,9 @@
         </depends>
       </process>
 
-      <process name="digiEor">
+      <process name="digiHist">
         <variables>
-          <var name="reportType">digiEor</var>
+          <var name="reportType">digiHist</var>
         </variables>
         <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
@@ -1474,9 +1677,9 @@
         </depends>
       </process>
  
-      <process name="calEor">
+      <process name="calHist">
         <variables>
-          <var name="reportType">calEor</var>
+          <var name="reportType">calHist</var>
         </variables>
         <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
@@ -1558,9 +1761,9 @@
         </depends>
       </process>
 
-      <process name="meritEor">
+      <process name="meritHist">
         <variables>
-          <var name="reportType">meritEor</var>
+          <var name="reportType">meritHist</var>
         </variables>
         <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
@@ -1580,9 +1783,9 @@
         </depends>
       </process>
  
-      <process name="reconEor">
+      <process name="reconHist">
         <variables>
-          <var name="reportType">reconEor</var>
+          <var name="reportType">reconHist</var>
         </variables>
         <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
@@ -1627,16 +1830,16 @@
       <process name="checkChunk">
         <job executable="${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s "/>
         <depends>
-          <after process="calEor" status="SUCCESS"/>
+          <after process="calHist" status="SUCCESS"/>
           <after process="calTrend" status="SUCCESS"/>
           <after process="fastMonHist" status="SUCCESS"/>
           <after process="fastMonTrend" status="SUCCESS"/>
           <after process="cleanupCrumbs" status="SUCCESS"/>
-          <after process="digiEor" status="SUCCESS"/>
+          <after process="digiHist" status="SUCCESS"/>
           <after process="digiTrend" status="SUCCESS"/>
-          <after process="meritEor" status="SUCCESS"/>
+          <after process="meritHist" status="SUCCESS"/>
           <after process="meritTrend" status="SUCCESS"/>
-          <after process="reconEor" status="SUCCESS"/>
+          <after process="reconHist" status="SUCCESS"/>
           <after process="reconTrend" status="SUCCESS"/>
           <after process="tkrAnalysis" status="SUCCESS"/>
         </depends>
@@ -1681,14 +1884,30 @@
       </createsSubtasks>
     </process>
 
+    <process name="setRunningLci">
+      <variables>
+        <var name="l1RunStatus">%(runningStatus)s</var>
+      </variables>
+      <script><![CDATA[
+%(statusScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="findChunksLci" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="copyM7Lci">
+      <variables>
+        <var name="%(magic7_versionName)s">%(magic7_version)s</var>
+      </variables>
       <job executable="${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s " />
     </process>
 
     <process name="registerM7Lci">
       <variables>
         <var name="parentProcess">copyM7Lci</var>
-        <var name="dataType">MAGIC7</var>
+        <var name="fileType">magic7</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1702,6 +1921,7 @@
     <process name="mergeDigiLci">
       <variables>
         <var name="fileType">digi</var>
+        <var name="%(digi_versionName)s">%(digi_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -R &quot;select[scratch&gt;5]&quot; "/>
       <depends>
@@ -1712,7 +1932,7 @@
     <process name="registerDigiLci">
       <variables>
         <var name="parentProcess">mergeDigiLci</var>
-        <var name="dataType">DIGI</var>
+        <var name="fileType">digi</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1723,33 +1943,35 @@
       </depends>
     </process>
  
-     <process name="mergeDigiEorLci">
+     <process name="mergeDigiHistLci">
       <variables>
-        <var name="fileType">digiEor</var>
+        <var name="fileType">digiHist</var>
+        <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;10]&quot; "/>
       <depends>
-        <after process="doChunkLci.digiEorLci" status="DONE"/>
+        <after process="doChunkLci.digiHistLci" status="DONE"/>
       </depends>
     </process>
  
-    <process name="registerDigiEorLci">
+    <process name="registerDigiHistLci">
       <variables>
-        <var name="parentProcess">mergeDigiEorLci</var>
-        <var name="dataType">DIGIHIST</var>
+        <var name="parentProcess">mergeDigiHistLci</var>
+        <var name="fileType">digiHist</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
 ]]>
       </script>
       <depends>
-        <after process="mergeDigiEorLci" status="SUCCESS"/>
+        <after process="mergeDigiHistLci" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="mergeFastMonErrorLci">
       <variables>
         <var name="fileType">fastMonError</var>
+        <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s "/>
       <depends>
@@ -1760,7 +1982,7 @@
     <process name="registerFastMonErrorLci">
       <variables>
         <var name="parentProcess">mergeFastMonErrorLci</var>
-        <var name="dataType">FASTMONERROR</var>
+        <var name="fileType">fastMonError</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1774,6 +1996,7 @@
     <process name="mergeFastMonTupleLci">
       <variables>
         <var name="fileType">fastMonTuple</var>
+        <var name="%(fastMonTuple_versionName)s">%(fastMonTuple_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;10]&quot; "/>
       <depends>
@@ -1784,7 +2007,7 @@
     <process name="registerFastMonTupleLci">
       <variables>
         <var name="parentProcess">mergeFastMonTupleLci</var>
-        <var name="dataType">FASTMONTUPLE</var>
+        <var name="fileType">fastMonTuple</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1798,6 +2021,7 @@
     <process name="mergeFastMonHistLci">
       <variables>
         <var name="fileType">fastMonHist</var>
+        <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;10]&quot; "/>
       <depends>
@@ -1808,7 +2032,7 @@
     <process name="registerFastMonHistLci">
       <variables>
         <var name="parentProcess">mergeFastMonHistLci</var>
-        <var name="dataType">FASTMONHIST</var>
+        <var name="fileType">fastMonHist</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1824,7 +2048,7 @@
       <depends>
         <after process="doChunkLci.checkChunkLci" status="SUCCESS"/>
         <after process="registerDigiLci" status="SUCCESS"/>
-        <after process="registerDigiEorLci" status="SUCCESS"/>
+        <after process="registerDigiHistLci" status="SUCCESS"/>
         <after process="registerFastMonErrorLci" status="SUCCESS"/>
         <after process="registerFastMonHistLci" status="SUCCESS"/>
         <after process="registerFastMonTupleLci" status="SUCCESS"/>
@@ -1835,12 +2059,41 @@
       </createsSubtasks>
     </process>
 
+    <process name="setCrashedLci">
+      <variables>
+        <var name="l1RunStatus">%(crashedStatus)s</var>
+      </variables>
+      <script><![CDATA[
+%(statusScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="checkRunLci" status="SKIPPED"/>
+        <after process="setRunningLci" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="setSuccessfulLci">
+      <variables>
+        <var name="parentProcess">checkRunLci</var>
+      </variables>
+      <script><![CDATA[
+%(successScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="checkRunLci" status="SUCCESS"/>
+        <after process="setRunningLci" status="DONE"/>
+      </depends>
+    </process>
+
     <task name="cleanupCompleteRunLci" version="%(L1Version)s" type="Data">
 
       <process name="cleanupChunksLci">
         <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
       </process>
 
+<!--
       <process name="updateRunStatusLci">
         <script>
           <![CDATA[
@@ -1848,6 +2101,7 @@
 ]]>
         </script>
       </process>
+-->
 
     </task> <!-- cleanupCompleteRunLci -->
 
@@ -1880,9 +2134,9 @@
         </depends>
       </process>
 
-      <process name="digiEorLci">
+      <process name="digiHistLci">
         <variables>
-          <var name="reportType">digiEor</var>
+          <var name="reportType">digiHist</var>
         </variables>
         <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
@@ -1894,7 +2148,7 @@
         <job executable="${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s "/>
         <depends>
           <after process="fastMonHistLci" status="SUCCESS"/>
-          <after process="digiEorLci" status="SUCCESS"/>
+          <after process="digiHistLci" status="SUCCESS"/>
         </depends>
       </process>
 
@@ -1916,6 +2170,18 @@
       </createsSubtasks>
     </process>
 
+    <process name="setSuccessfulInc">
+      <variables>
+        <var name="parentProcess">checkRunInc</var>
+      </variables>
+      <script><![CDATA[
+%(successScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="checkRunInc" status="SUCCESS"/>
+      </depends>
+    </process>
 
     <task name="cleanupIncompleteRun" version="%(L1Version)s" type="Data">
 
@@ -1923,6 +2189,7 @@
         <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
       </process>
 
+<!--
       <process name="updateRunStatusInc">
         <script>
           <![CDATA[
@@ -1930,6 +2197,7 @@
 ]]>
         </script>
       </process>
+-->
 
       <process name="launchVerify">
         <script>
@@ -1947,13 +2215,18 @@ if DATASOURCE == 'LPA':
       <task name="verifyIncompleteRun" version="%(L1Version)s" type="Data">
 
         <process name="verifyInc">
+          <variables>
+            <var name="%(digi_versionName)s">%(digi_version)s</var>
+            <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
+            <var name="%(verifyHisto_versionName)s">%(verifyHisto_version)s</var>
+          </variables>
           <job executable="${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s "/>
         </process>
 
         <process name="registerVerifyHistoInc">
           <variables>
             <var name="parentProcess">verifyInc</var>
-            <var name="dataType">VERIFYHISTO</var>
+            <var name="fileType">verifyHisto</var>
           </variables>
           <script><![CDATA[
 %(registerBody)s
@@ -1964,11 +2237,28 @@ if DATASOURCE == 'LPA':
           </depends>
         </process>
 
+<!--
         <process name="preRegisterVerifyLogInc">
           <variables>
             <var name="fileType">verifyLog</var>
+            <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
           </variables>
           <job executable="${L1ProcROOT}/preRegister.py" batchOptions=" -q %(shortQ)s "/>
+          <depends>
+            <after process="verifyInc" status="SUCCESS"/>
+          </depends>
+        </process>
+-->
+
+        <process name="registerVerifyLogInc">
+          <variables>
+            <var name="parentProcess">verifyInc</var>
+            <var name="fileType">verifyLog</var>
+          </variables>
+          <script><![CDATA[
+%(registerBody)s
+]]>
+          </script>
           <depends>
             <after process="verifyInc" status="SUCCESS"/>
           </depends>
@@ -1977,24 +2267,11 @@ if DATASOURCE == 'LPA':
         <process name="ingestVerifyErrorRunInc">
           <variables>
             <var name="reportType">verifyLog</var>
+            <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
           </variables>
           <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
           <depends>
-            <after process="verifyInc" status="SUCCESS"/>
-          </depends>
-        </process>
-
-        <process name="registerVerifyLogInc">
-          <variables>
-            <var name="parentProcess">preRegisterVerifyLogInc</var>
-            <var name="dataType">VERIFYLOG</var>
-          </variables>
-          <script><![CDATA[
-%(registerBody)s
-]]>
-          </script>
-          <depends>
-            <after process="preRegisterVerifyLogInc" status="SUCCESS"/>
+            <after process="registerVerifyLogInc" status="SUCCESS"/>
           </depends>
         </process>
 

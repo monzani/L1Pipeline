@@ -10,6 +10,8 @@ import socket
 import sys
 import time
 
+import l1Logger
+
 class LockedError(EnvironmentError):
     pass
 
@@ -93,7 +95,9 @@ def unlockDir(directory, base, id):
         # On prod, we should fail here.
         #
         # Or at least send a message to the log watcher.
-        print >> sys.stderr, "Can't open lockfile %s.  Very odd, but we'll continue." % lockFile
+        msg = "Can't open lockfile %s." % lockFile
+        print >> sys.stderr, msg
+        l1Logger.warn(msg)
         return
 
     # Die if lock was not written by this stream.

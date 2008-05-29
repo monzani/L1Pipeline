@@ -16,6 +16,7 @@ import config
 import GPLinit
 
 import fileNames
+import l1Logger
 import registerPrep
 import runner
 import stageFiles
@@ -63,6 +64,11 @@ if numInFiles == 0:
 
 # Here we should send a message to the log watcher if we didn't find all of
 # the expected input files.
+if numInFiles != len(expectedInFiles):
+    msg = """Merging %(fileType)s file for run %(runId)s could not find all expected input files.""" % locals()
+    print >> sys.stderr, msg
+    l1Logger.error(msg)
+    pass
 
 realOutFile = fileNames.fileName(fileType, dlId, runId, chunkId, next=True)
 
@@ -128,7 +134,7 @@ status = 0
 
 
 
-if fileType in ['calEor', 'digiEor', 'fastMonHist', 'reconEor', 'meritEor']:
+if fileType in ['calHist', 'digiHist', 'fastMonHist', 'reconHist', 'meritHist']:
     setup = config.packages['Monitor']['setup']
     mergeConfig = config.mergeConfigs[fileType]
     app = config.apps['reportMerge']

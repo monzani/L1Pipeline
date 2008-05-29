@@ -19,6 +19,8 @@ runId = os.environ['RUNID']
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
+fileType = 'ls3'
+
 app = config.apps['makeLS3']
 
 realFt1File = fileNames.fileName('ft1', dlId, runId)
@@ -26,7 +28,7 @@ stagedFt1File = staged.stageIn(realFt1File)
 realFt2File = fileNames.fileName('ft2', dlId, runId)
 stagedFt2File = staged.stageIn(realFt2File)
 
-realLs3File = fileNames.fileName('ls3', dlId, runId, next=True)
+realLs3File = fileNames.fileName(fileType, dlId, runId, next=True)
 stagedLs3File = staged.stageOut(realLs3File)
 
 workDir = os.path.dirname(stagedLs3File)
@@ -43,7 +45,6 @@ if status: finishOption = 'wipe'
 
 status |= staged.finish(finishOption)
 
-fileType = 'LS3'
 if not status: registerPrep.prep(fileType, realLs3File)
 
 sys.exit(status)

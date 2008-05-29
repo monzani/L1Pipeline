@@ -19,6 +19,8 @@ runId = os.environ['RUNID']
 staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
+fileType = 'ft2'
+
 app = config.apps['mergeFT2']
 
 # input
@@ -26,7 +28,7 @@ txtFt2File = fileNames.fileName('ft2Txt', dlId, runId)
 stagedFt2TxtFile = staged.stageIn(txtFt2File)
 
 # output
-fitsFt2File = fileNames.fileName('ft2', dlId, runId, next=True)
+fitsFt2File = fileNames.fileName(fileType, dlId, runId, next=True)
 stagedFt2FitsFile = staged.stageOut(fitsFt2File)
 
 workDir = os.path.dirname(stagedFt2FitsFile)
@@ -46,7 +48,6 @@ if status: finishOption = 'wipe'
 
 status |= staged.finish(finishOption)
 
-fileType = 'FT2'
 if not status: registerPrep.prep(fileType, fitsFt2File)
 
 sys.exit(status)
