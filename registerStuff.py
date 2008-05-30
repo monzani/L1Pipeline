@@ -31,5 +31,5 @@ attributes.put('nRun', runNumber)
 attributes.put('nDownlink', DOWNLINK_ID)
 attributes.put('sCreator', creator)
 
-dsNew = NewDataset(dsName, "root", fileType, dcPath, dcGroup, site, fileName)
+dsNew = NewDataset(dsName, fileFormat, fileType, dcPath, dcGroup, site, fileName)
 ds = datacatalog.registerDataset(dsNew, attributes);

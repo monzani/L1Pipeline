@@ -7,6 +7,7 @@ Put LPA, LCI, MC data in separate folders.
 Do alarms on TKR trending.
 Send messages to log watcher if things get weird.
 Removed site from the end of filenames.
+Bug fixed in DataCat registration (fileFormat). 
 -------------------------------------------
 
 
