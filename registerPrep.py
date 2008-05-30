@@ -17,8 +17,6 @@ def prep(fileType, fileName):
     This sets up some pipeline variables so the scriptlet knows what to do.
     """
 
-    filePath = fileNames.sitedName(fileName)
-
     taskName = os.environ['L1_TASK_NAME']
     taskVersion =  os.environ['PIPELINE_TASKVERSION']
     creator = '-'.join([taskName, taskVersion])
@@ -26,8 +24,8 @@ def prep(fileType, fileName):
     variables.setVar(fileType, 'format', fileNames.fileTypes[fileType])
     variables.setVar(fileType, 'path', config.dataCatDir)
     variables.setVar(fileType, 'group', fileNames.dataCatGroup(fileType))
-    variables.setVar(fileType, 'site', fileNames.getSite(filePath))
-    variables.setVar(fileType, 'fileName', filePath)
+    variables.setVar(fileType, 'site', fileNames.getSite(fileName))
+    variables.setVar(fileType, 'fileName', fileName)
     variables.setVar(fileType, 'creator', creator)
 
     return

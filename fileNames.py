@@ -99,11 +99,6 @@ sites = ['SLAC', 'SLAC_XROOT']
 def getSite(fileName):
     site = sites[fileName.startswith('root:')]    
     return site
-def sitedName(fileName):
-    site = getSite(fileName)
-    filePath = '%s@%s' % (fileName, site)
-    return filePath
-
 
 def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None, next=False):
 
