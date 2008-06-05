@@ -78,6 +78,10 @@ if status: # save any core files
         # and stageFiles.copy should accept a directory as the destination
         dest = os.path.join(runDir, os.path.basename(cf))
         stageFiles.copy(cf, dest)
+        cmd = 'chmod a+r %s' % dest
+        runner.run(cmd)
+        cmd = 'chmod g+w %s' % dest
+        runner.run(cmd)
         continue
     pass
 
