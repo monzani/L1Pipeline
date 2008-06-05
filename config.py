@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.53"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.54"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -94,6 +94,8 @@ stageDisks = [ # staging buffers with smallish integer weights
     ("/afs/slac/g/glast/ground/PipelineStaging3", 1),
     ("/afs/slac/g/glast/ground/PipelineStaging4", 1),
     ("/afs/slac/g/glast/ground/PipelineStaging5", 1),
+    ("/afs/slac/g/glast/ground/PipelineStaging6", 1),
+    ("/afs/slac/g/glast/ground/PipelineStaging7", 1),
     ]
 stageBase = 'l1Stage'
 #stageDirs = [os.path.join(disk, stageBase) for disk in stageDisks]
@@ -139,7 +141,7 @@ installBin = os.path.join(installArea, 'bin')
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
 releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
-glastVersion = 'v15r2'
+glastVersion = 'v15r5'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -164,7 +166,7 @@ reconOptions = {
     'MC': os.path.join(L1Data, 'recon.jobOpt.mc'),
 }
 
-rootSys = os.path.join(glastExt, 'ROOT/v5.18.00b/root')
+rootSys = os.path.join(glastExt, 'ROOT/v5.18.00c-gl1/root')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
@@ -172,7 +174,7 @@ hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 isoc = '/afs/slac/g/glast/isoc/flightOps'
 #isocPlatform = os.popen(os.path.join(isoc, 'isoc-platform')).readline().strip()
 isocPlatform = 'rhel3_gcc32'
-isocBin = os.path.join(isoc, isocPlatform, 'ISOC_PROD', 'bin')
+isocBin = os.path.join(isoc, isocPlatform, 'ISOC_NIGHTLY', 'bin')
 
 isocScript = os.path.join(isocBin, 'isoc')
 #isocEnv = 'eval `%s isoc_env --add-env=flightops --add-env=root`' % isocScript
@@ -200,7 +202,7 @@ aspLauncher = '/afs/slac/g/glast/ground/links/data/ASP/aspLauncher.sh'
 cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 
 cmtPackages = {
-    'calibTkrUtil': {
+     'calibTkrUtil': {
         'repository': '',
         'version': 'v2r2p2',
         },
@@ -210,7 +212,7 @@ cmtPackages = {
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
-        'version': 'v3r14p3',
+        'version': 'v4r0p0',
         },
     'evtClassDefs': {
         'repository': '',
@@ -218,7 +220,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v3r1p4',
+        'version': 'v3r1p5',
         },
     'ft2Util': {
         'repository': '',
@@ -230,7 +232,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r1p13',
+        'version': 'v1r1p18',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -249,7 +251,7 @@ cvsPackages = {
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r1p16',
+        'version': 'v1r1p21',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',

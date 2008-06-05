@@ -1,3 +1,11 @@
+
+1.54
+-----------------
+GlastRelease GR v15r5 and Root v5.18.00c-gl1 (new DFI with the filter bits).
+Using the ISOC_NIGHLY flightops configuration (to get the new DFI).
+New tags of monitoring packages (to include the filter bits informations).
+
+
 1.53
 -----------------
 Don't set confusing & wrong status metadata when registering datasets.
