@@ -1815,33 +1815,30 @@
         </depends>
       </process>
  
-      <process name="cleanupCrumbs">
-        <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(shortQ)s "/>
-        <depends>
-          <after process="doCrumb.svacTuple" status="SUCCESS"/>
-          <after process="mergeCalCrumbs" status="SUCCESS"/>
-          <after process="mergeGcrCrumbs" status="SUCCESS"/>
-          <after process="mergeMeritCrumbs" status="SUCCESS"/>
-          <after process="mergeReconCrumbs" status="SUCCESS"/>
-          <after process="mergeSvacCrumbs" status="SUCCESS"/>
-        </depends>
-      </process>
-
       <process name="checkChunk">
         <job executable="${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s "/>
         <depends>
+          <after process="doCrumb.svacTuple" status="SUCCESS"/>
           <after process="calHist" status="SUCCESS"/>
           <after process="calTrend" status="SUCCESS"/>
           <after process="fastMonHist" status="SUCCESS"/>
           <after process="fastMonTrend" status="SUCCESS"/>
-          <after process="cleanupCrumbs" status="SUCCESS"/>
           <after process="digiHist" status="SUCCESS"/>
           <after process="digiTrend" status="SUCCESS"/>
+          <after process="mergeGcrCrumbs" status="SUCCESS"/>
+          <after process="mergeSvacCrumbs" status="SUCCESS"/>
           <after process="meritHist" status="SUCCESS"/>
           <after process="meritTrend" status="SUCCESS"/>
           <after process="reconHist" status="SUCCESS"/>
           <after process="reconTrend" status="SUCCESS"/>
           <after process="tkrAnalysis" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="cleanupCrumbs">
+        <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(shortQ)s "/>
+        <depends>
+          <after process="checkChunk" status="SUCCESS"/>
         </depends>
       </process>
 

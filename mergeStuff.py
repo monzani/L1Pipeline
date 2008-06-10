@@ -65,7 +65,11 @@ if numInFiles == 0:
 # Here we should send a message to the log watcher if we didn't find all of
 # the expected input files.
 if numInFiles != len(expectedInFiles):
-    msg = """Merging %(fileType)s file for run %(runId)s could not find all expected input files.""" % locals()
+    idStr = 'run %s' % runId
+    if mergeLevel == 'chunk':
+        idStr += ' chunk %s' % chunkId
+        pass
+    msg = """Merging %(fileType)s file for %(idStr)s could not find all expected input files.""" % locals()
     print >> sys.stderr, msg
     l1Logger.error(msg)
     pass
