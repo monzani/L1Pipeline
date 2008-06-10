@@ -173,7 +173,7 @@ hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 isoc = '/afs/slac/g/glast/isoc/flightOps'
 #isocPlatform = os.popen(os.path.join(isoc, 'isoc-platform')).readline().strip()
 isocPlatform = 'rhel3_gcc32'
-isocBin = os.path.join(isoc, isocPlatform, 'ISOC_NIGHTLY', 'bin')
+isocBin = os.path.join(isoc, isocPlatform, 'ISOC_PROD', 'bin')
 
 isocScript = os.path.join(isocBin, 'isoc')
 #isocEnv = 'eval `%s isoc_env --add-env=flightops --add-env=root`' % isocScript
