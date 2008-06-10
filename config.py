@@ -94,7 +94,6 @@ stageDisks = [ # staging buffers with smallish integer weights
     ("/afs/slac/g/glast/ground/PipelineStaging3", 1),
     ("/afs/slac/g/glast/ground/PipelineStaging4", 1),
     ("/afs/slac/g/glast/ground/PipelineStaging5", 1),
-    ("/afs/slac/g/glast/ground/PipelineStaging6", 1),
     ("/afs/slac/g/glast/ground/PipelineStaging7", 1),
     ]
 stageBase = 'l1Stage'
@@ -204,7 +203,7 @@ cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 cmtPackages = {
      'calibTkrUtil': {
         'repository': '',
-        'version': 'v2r2p2',
+        'version': 'v2r2p3',
         },
     'Common': {
         'repository': 'dataMonitoring',
