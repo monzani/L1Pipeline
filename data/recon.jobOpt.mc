@@ -27,3 +27,8 @@ OnboardFilter.DgnConfig           = "DGN_gem";
 GcrReconAlg.HFC_Or_TriggerEng4 = "TriggerEng4";
 
 CalibDataSvc.CalibFlavorList = {"vanilla","ideal","MC_OktoberFest07"};
+
+// New Cal calib:
+CalTupleAlg.NeighborXtalkToolName   = "NeighborXtalkTool";
+CalXtalRecAlg.NeighborXtalkToolName= "NeighborXtalkTool";
+ToolSvc.NeighborXtalkTool.txtFile="$(LATCalibRoot)/CAL/LAT-flight_gain/pre_launch_calib_0608/digitization-licos-v3r9p12_077015240_digi_DIGI.neighborXtalk.txt";

@@ -30,6 +30,16 @@ if runId is not None:
         level = 'run'
         dlId = '*'
         pass
+
+    # check if mergeStuff has supressed cleanup due to missing files
+    runDir = fileNames.fileName(None, dlId, runId)
+    lfBase = 'dontCleanUp'
+    cleanupLock = os.path.join(runDir, lfBase)
+    if os.path.exists(cleanupLock):
+        print >> sys.stderr, 'Cleanup is supressed.  FAIL'
+        sys.exit(1)
+        pass
+    
 else:
     level = 'downlink'
 

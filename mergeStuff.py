@@ -72,6 +72,14 @@ if numInFiles != len(expectedInFiles):
     msg = """Merging %(fileType)s file for %(idStr)s could not find all expected input files.""" % locals()
     print >> sys.stderr, msg
     l1Logger.error(msg)
+
+    print >> sys.stderr, 'Supressing cleanup.'
+    runDir = fileNames.fileName(None, dlId, runId)
+    lfBase = 'dontCleanUp'
+    cleanupLock = os.path.join(runDir, lfBase)
+    cmd = 'touch %s' % cleanupLock
+    runner.run(cmd)
+    
     pass
 
 realOutFile = fileNames.fileName(fileType, dlId, runId, chunkId, next=True)

@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.54"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.55"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -79,7 +79,8 @@ dataCatBase = '/Data/Flight/Level1'
 #     None: os.path.join(dataCatBase, 'TheWrongPlace'), # Shouldn't happen.
 #     }
 # dataCatDir = dataCatDirs[os.environ.get('DATASOURCE')]
-dataSource = os.environ.get('DATASOURCE', 'TheWrongPlace')
+#dataSource = os.environ.get('DATASOURCE', 'TheWrongPlace')
+dataSource = os.environ.get('DATASOURCE', 'LPA')
 dataCatDir = '/'.join([dataCatBase, dataSource])
 
 xrootGlast = 'root://glast-rdr.slac.stanford.edu//glast'
@@ -139,8 +140,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
-glastVersion = 'v15r5'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
+glastVersion = 'v15r6p1'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -188,7 +189,7 @@ else:
     pass
 acqTable = 'GLASTOPS_ACQSUMMARY'
 
-stVersion = 'v9r5p4'
+stVersion = 'v9r5p5'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
 #ST = os.path.join(L1Cmt, "ScienceTools", "ScienceTools-%s" % stVersion)
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
@@ -219,7 +220,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v3r1p5',
+        'version': 'v3r2p1',
         },
     'ft2Util': {
         'repository': '',
@@ -231,7 +232,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r1p19',
+        'version': 'v1r1p21',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -250,11 +251,11 @@ cvsPackages = {
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r1p21',
+        'version': 'v1r1p26',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r1p11',
+        'version': 'v1r2p0',
         },
     'IGRF': {
         'repository': 'dataMonitoring',
