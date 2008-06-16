@@ -36,7 +36,7 @@ if runId is not None:
     lfBase = 'dontCleanUp'
     cleanupLock = os.path.join(runDir, lfBase)
     if os.path.exists(cleanupLock):
-        print >> sys.stderr, 'Cleanup is supressed.  FAIL'
+        print >> sys.stderr, '''Cleanup is supressed by %s''' % cleanupLock
         sys.exit(1)
         pass
     

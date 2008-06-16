@@ -1,4 +1,13 @@
 
+1.55
+-----------------
+GR v15r6p1.
+ST v9r5p5.
+Lots of new monitoring tags.
+Don't clean up crumbs or chunks if a merge has missing input files.
+-------------------------------------------
+
+
 1.54
 -----------------
 GlastRelease GR v15r5 and Root v5.18.00c-gl1 (new DFI with the filter bits).
@@ -8,6 +17,7 @@ PipelineStaging6 buffer disk temporarily removed from confing.
 Be more paranoid about running cleanupCrumbs.
 Make saved recon core files world-readable and group-writeable.
 Include chunkId in logger message if not all crumb files are found for.
+-------------------------------------------
 
 
 1.53
