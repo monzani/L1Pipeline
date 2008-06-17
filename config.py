@@ -123,11 +123,17 @@ chunkSubTask = {
     'MC': 'doChunk',
     }
 cleanupSubTask = {
-    'LCI': 'cleanupCompleteRunLci',
-    'LPA': 'cleanupCompleteRun',
-    'MC': 'cleanupCompleteRun',
+    'Complete': {
+        'LCI': 'cleanupCompleteRunLci',
+        'LPA': 'cleanupCompleteRun',
+        'MC': 'cleanupCompleteRun',
+        },
+    'Incomplete': {
+        'LCI': 'cleanupIncompleteRunLci',
+        'LPA': 'cleanupIncompleteRun',
+        'MC': 'cleanupIncompleteRun',
+        },
     }
-
 
 glastRoot = '/afs/slac.stanford.edu/g/glast'
 groundRoot = os.path.join(glastRoot, 'ground')

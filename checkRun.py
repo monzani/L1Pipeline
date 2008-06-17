@@ -83,7 +83,7 @@ hpFinal, hpRunStatus = checkRunStatus(runNumber)
 tokenStatus = checkTokens(head, runId)
 readyToRetire = hpFinal and tokenStatus
 
-subTask = config.cleanupSubTask[os.environ['DATASOURCE']]
+subTask = config.cleanupSubTask[hpRunStatus][os.environ['DATASOURCE']]
 
 if readyToRetire:
     print >> sys.stderr, "Run %s is as done as it's going to get, retiring." % runId
