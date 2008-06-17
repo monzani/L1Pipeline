@@ -146,7 +146,7 @@ for runId in dataRuns:
     continue
 
 # and for each old run
-subTask = "cleanupIncompleteRun"
+subTask = "doInc"
 for runId in oldRuns:
     source = dataSource.get(runId, config.defaultDataSource)
 
