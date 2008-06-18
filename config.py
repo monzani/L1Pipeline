@@ -123,12 +123,12 @@ chunkSubTask = {
     'MC': 'doChunk',
     }
 cleanupSubTask = {
-    'Complete': {
+    'doRun': {
         'LCI': 'cleanupCompleteRunLci',
         'LPA': 'cleanupCompleteRun',
         'MC': 'cleanupCompleteRun',
         },
-    'Incomplete': {
+    'doInc': {
         'LCI': 'cleanupIncompleteRunLci',
         'LPA': 'cleanupIncompleteRun',
         'MC': 'cleanupIncompleteRun',
@@ -257,7 +257,7 @@ cvsPackages = {
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r1p27',
+        'version': 'v1r1p29',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',

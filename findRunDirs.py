@@ -109,7 +109,7 @@ try:
         dataSource[runId] = source
         continue
 except IOError:
-    print >> sys.stderr, "Couldn't open delivered event file %s, all runs will haver default dataSource %s" % (boundaryFile, config.defaultDataSource)
+    print >> sys.stderr, "Couldn't open delivered event file %s, all runs will have default dataSource %s" % (deliveredFile, config.defaultDataSource)
     pass
 
 runNumRe = re.compile('([0-9]+)')
@@ -146,6 +146,7 @@ for runId in dataRuns:
     continue
 
 # and for each old run
+# should merge this block with the one above?
 subTask = "doInc"
 for runId in oldRuns:
     source = dataSource.get(runId, config.defaultDataSource)
@@ -161,7 +162,15 @@ for runId in oldRuns:
     stream = runNumber
 
     runStatus = runStatuses[runId]
-    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUNSTATUS=%(runStatus)s,DATASOURCE=%(source)s" % locals()
+    try:
+        tStart = start[runId]
+        tStop = stop[runId]
+    except KeyError:
+        tStart = tStartDef
+        tStop = tStopDef
+        print >> sys.stderr, "Couldn't get tStart, tStop for run %s, using bogus values" % runId
+        pass
+    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUNSTATUS=%(runStatus)s,tStart=%(tStart).17g,tStop=%(tStop).17g,DATASOURCE=%(source)s" % locals()
     print >> sys.stderr, \
           "Creating stream [%s] of subtask [%s] with args [%s]" % \
           (stream, subTask, args)

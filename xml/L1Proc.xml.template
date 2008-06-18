@@ -1870,8 +1870,11 @@
   <task name="doLci" version="%(L1Version)s" type="Data">
 
     <prerequisites>
+      <prerequisite name="DATASOURCE" type="string"/>
       <prerequisite name="RUNID" type="string"/>
       <prerequisite name="RUNSTATUS" type="string"/>
+      <prerequisite name="tStart" type="float"/>
+      <prerequisite name="tStop" type="float"/>
     </prerequisites>
 
     <process name="findChunksLci">
@@ -2156,8 +2159,11 @@
   <task name="doInc" version="%(L1Version)s" type="Data">
 
     <prerequisites>
+      <prerequisite name="DATASOURCE" type="string"/>
       <prerequisite name="RUNID" type="string"/>
       <prerequisite name="RUNSTATUS" type="string"/>
+      <prerequisite name="tStart" type="float"/>
+      <prerequisite name="tStop" type="float"/>
     </prerequisites>
 
     <process name="checkRunInc">
@@ -2199,7 +2205,7 @@
       <process name="launchVerify">
         <script>
           <![CDATA[
-if DATASOURCE == 'LPA':
+if DATASOURCE in ['LPA', 'MC']:
     pipeline.createSubstream("verifyIncompleteRun", runNumber)
 ]]>
         </script>

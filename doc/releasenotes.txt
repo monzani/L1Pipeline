@@ -5,6 +5,7 @@ GR v15r6p1.
 ST v9r5p5.
 Lots of new monitoring tags.
 Don't clean up crumbs or chunks if a merge has missing input files.
+Fix several bugs in incomplete run handling.
 -------------------------------------------
 
 
