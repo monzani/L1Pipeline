@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.55"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.56"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -51,7 +51,8 @@ L1Xml = os.path.join(L1ProcROOT, 'xml')
 L1Data = os.path.join(L1ProcROOT, 'data')
 
 LATCalibRoot = '/afs/slac/g/glast/ground/releases/calibrations/'
-LATMonRoot="/afs/slac.stanford.edu/g/glast/ground/releases/monitor/"
+LATMonRoot = "/afs/slac.stanford.edu/g/glast/ground/releases/monitor/"
+#mootArchive = 'MOOT_ARCHIVE=/afs/slac.stanford.edu/g/glast/moot/archive-mood'
 
 calibFlavors = { # not using this now, have separate JO files for LPA & MC
     'LPA': {
@@ -71,14 +72,9 @@ L1Disk = '/nfs/farm/g/glast/u52/L1'
 # L1Dir = os.path.join(L1Disk, 'rootData')
 L1Dir = L1Disk
 
+dlStorage = os.path.join(L1Disk, 'downlinks') # not used at the mo
+
 dataCatBase = '/Data/Flight/Level1'
-# dataCatDirs = {
-#     'LCI': os.path.join(dataCatBase, 'LCI'),
-#     'LPA': os.path.join(dataCatBase, 'LPA'),
-#     'MC': os.path.join(dataCatBase, 'LPA'),
-#     None: os.path.join(dataCatBase, 'TheWrongPlace'), # Shouldn't happen.
-#     }
-# dataCatDir = dataCatDirs[os.environ.get('DATASOURCE')]
 #dataSource = os.environ.get('DATASOURCE', 'TheWrongPlace')
 dataSource = os.environ.get('DATASOURCE', 'LPA')
 dataCatDir = '/'.join([dataCatBase, dataSource])
@@ -88,14 +84,17 @@ xrootSubDir = '%s/%s/%s' % (dataCatDir, mode, L1Version)
 xrootBase = xrootGlast + xrootSubDir
 
 if testMode: L1Dir = os.path.join(L1Dir, 'test')
+#L1Dir = os.path.join(L1Dir, dataSource)
 
-stageDisks = [ # staging buffers with smallish integer weights
-    ("/afs/slac/g/glast/ground/PipelineStaging", 1),
-    ("/afs/slac/g/glast/ground/PipelineStaging2", 1),
-    ("/afs/slac/g/glast/ground/PipelineStaging3", 1),
-    ("/afs/slac/g/glast/ground/PipelineStaging4", 1),
-    ("/afs/slac/g/glast/ground/PipelineStaging5", 1),
-    ("/afs/slac/g/glast/ground/PipelineStaging7", 1),
+# staging buffers with smallish integer weights
+# These are actually links so they can be swapped out easily.
+stageDisks = [ 
+    ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/00", 1),
+    ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/01", 1),
+    ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/02", 1),
+    ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/03", 1),
+    ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/04", 1),
+    ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/05", 1),
     ]
 stageBase = 'l1Stage'
 #stageDirs = [os.path.join(disk, stageBase) for disk in stageDisks]
@@ -146,8 +145,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
-glastVersion = 'v15r6p1'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
+glastVersion = 'v15r13'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -202,8 +201,12 @@ stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
 PFILES = ".;"
 stBinDir = os.path.join(ST, 'bin')
 #aspLauncher = '/nfs/farm/g/glast/u33/ASP/ASP/AspLauncher/v1/rh9_gcc32/aspLauncher.sh'
-aspLauncher = '/afs/slac/g/glast/ground/links/data/ASP/aspLauncher.sh'
 #aspLauncher = '/bin/true'
+if testMode:
+    aspLauncher = '/afs/slac/g/glast/ground/links/data/ASP/aspLauncher_dev.sh'
+else:
+    aspLauncher = '/afs/slac/g/glast/ground/links/data/ASP/aspLauncher.sh'
+    pass
 
 cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 
@@ -214,23 +217,23 @@ cmtPackages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v3r1p5',
+        'version': 'v3r1p6',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
-        'version': 'v4r0p0',
+        'version': 'v4r1p4',
         },
     'evtClassDefs': {
         'repository': '',
-        'version': 'v0r4',
+        'version': 'v0r5',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v3r2p1',
+        'version': 'v3r2p2',
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r2p15',
+        'version': 'v1r2p18',
         },
     'GPLtools': {
         'repository': '',
@@ -238,7 +241,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r1p21',
+        'version': 'v1r2p4',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -246,7 +249,7 @@ cmtPackages = {
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'v6r8',
+        'version': 'v6r9',
         },
     }
 
@@ -257,7 +260,7 @@ cvsPackages = {
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r1p29',
+        'version': 'v1r1p35',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
@@ -598,6 +601,7 @@ os.environ['GPL2'] = GPL2
 os.environ['LATCalibRoot'] = LATCalibRoot
 os.environ['LATMonRoot'] = LATMonRoot
 os.environ['MALLOC_CHECK_'] = '0'
+#os.environ['MOOT_ARCHIVE'] = mootArchive # Joanne says we shouldn't need this.
 os.environ['PFILES'] = PFILES
 os.environ['PYTHONPATH'] = pythonPath
 os.environ['ROOTSYS'] = rootSys

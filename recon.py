@@ -47,11 +47,13 @@ os.environ['gcrCrumbFile'] = staged.stageOut(realGcrFile)
 workDir = os.path.dirname(stagedReconFile)
 
 dataSource = os.environ['DATASOURCE']
-if dataSource == 'LPA':
-    geometry = 'latAssembly/latAssemblySegVols.xml'
-elif dataSource == 'MC':
-    geometry = 'flight/flightSegVols.xml'
-    pass
+
+# if dataSource == 'LPA':
+#     geometry = 'latAssembly/latAssemblySegVols.xml'
+# elif dataSource == 'MC':
+#     geometry = 'flight/flightSegVols.xml'
+#     pass
+geometry = 'flight/flightSegVols.xml'
 os.environ['gleamGeometry'] = geometry
 
 #setupScript = config.cmtScript
@@ -72,7 +74,8 @@ if status: # save any core files
     pat = os.path.join(workDir, '*core*')
     coreFiles = glob.glob(pat)
     if coreFiles:
-        runDir = fileNames.fileName(None, dlId, runId)
+        #runDir = fileNames.fileName(None, dlId, runId)
+        runDir = os.path.dirname(realReconFile)
         pass
     for cf in coreFiles:
         # and stageFiles.copy should accept a directory as the destination

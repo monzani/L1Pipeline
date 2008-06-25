@@ -1,4 +1,15 @@
 
+1.56
+-----------------
+GR v15r13
+Lots of new monitoring tags.
+Use different aspLauncher for dev.
+Use symbolic links to point to buffers.
+Use flight geometry always.
+Export to GSSC on prod.
+-------------------------------------------
+
+
 1.55
 -----------------
 GR v15r6p1.

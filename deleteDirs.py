@@ -80,7 +80,7 @@ for ig, goner in enumerate(goners):
     continue
 
 # if level == 'downlink':
-#     dlStorage = '/nfs/farm/g/glast/u52/L1/rootData/downlinks'
+#     dlStorage = config.dlStorage
 #     cmd = 'mv %(dlRawDir)s %(dlStorage)s' % locals()
 #     status |= runner.run(cmd)
 #     pass

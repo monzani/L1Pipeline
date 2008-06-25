@@ -4,10 +4,6 @@ EventSelector.FileName = "$EVTFILE";
 digiRootWriterAlg.digiRootFile = "$digiChunkFile";
 GlastDetSvc.xmlfile = "$(XMLGEODBSROOT)/xml/$(gleamGeometry)";
 
-TrgConfigSvc.configureFrom = "$trigConfig";
-
-OnboardFilter.FilterList = {0,1,2,3};
-
 CalibMySQLCnvSvc.DbName           = "calib";
 CalibMySQLCnvSvc.QualityList      = {"PROD"};
 AcdCalibSvc.DefaultFlavor         = "MC_OktoberFest07";
@@ -17,8 +13,5 @@ TkrCalibAlg.calibFlavor           = "MC_OktoberFest07";
 TkrCalibAlg.deadStripsCalibFlavor = "MC_OktoberFest07";
 TkrSplitsSvc.defaultMaxStrips     = "14";
 CalCalibSvc.DefaultFlavor         = "MC_OktoberFest07";
-OnboardFilter.FileNamePeds        = "cal_db_pedestals_flight";
-OnboardFilter.FileNameGains       = "cal_db_gains_flight";
-OnboardFilter.DgnConfig           = "DGN_gem";
 
 CalibDataSvc.CalibFlavorList      = {"ideal", "MC_OktoberFest07"};
