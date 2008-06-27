@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.56"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.57"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -145,8 +145,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
-glastVersion = 'v15r13'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
+glastVersion = 'v15r19'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -221,7 +221,7 @@ cmtPackages = {
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
-        'version': 'v4r1p4',
+        'version': 'v4r1p5',
         },
     'evtClassDefs': {
         'repository': '',
@@ -229,7 +229,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v3r2p2',
+        'version': 'v3r2p3',
         },
     'ft2Util': {
         'repository': '',
@@ -249,7 +249,7 @@ cmtPackages = {
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'v6r9',
+        'version': 'v6r11',
         },
     }
 

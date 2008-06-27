@@ -1,4 +1,10 @@
 
+1.59
+-----------------
+GR v15r19 (appropriate jobOptions were added for digi).
+New monitoring tags (bug fix in FastMon geomagnetic variables).
+
+
 1.56
 -----------------
 GR v15r13
