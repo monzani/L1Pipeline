@@ -1,8 +1,12 @@
 
-1.59
+1.57
 -----------------
 GR v15r19 (appropriate jobOptions were added for digi).
 New monitoring tags (bug fix in FastMon geomagnetic variables).
+Attach MOOT key and alias as metadata when registering files.
+Avoid the merging issue described in JIRA LONE-67.
+Make run locking a little more verbose.
+-------------------------------------------
 
 
 1.56

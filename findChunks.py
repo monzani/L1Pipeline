@@ -18,6 +18,7 @@ import fileNames
 import finders
 import lockFile
 import pipeline
+import runner
 import stageFiles
 
 status = 0
@@ -30,9 +31,14 @@ staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
 realChunkList = fileNames.fileName('chunkList', dlId, runId)
+# unmangle chunk list name to get around JIRA LONE-67
+mangledChunkList = fileNames.mangleChunkList(realChunkList)
+cmd = 'mv %s %s' % (mangledChunkList, realChunkList)
+runner.run(cmd)
 stagedChunkList = staged.stageIn(realChunkList)
 
 # Here we should put 'RUNNING' in Karen's run status table.
+# No, that's in a separate process.
 
 subTask = config.chunkSubTask[os.environ['DATASOURCE']]
 

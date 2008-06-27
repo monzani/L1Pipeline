@@ -49,6 +49,7 @@ def lockDir(directory, base, id):
     # This should fail if the file already exists.  It should be atomic for a
     # local file, but not if the file is on NFS.  So if this fails, we know
     # there's a problem, but if it succeeds, things still might not be okay.
+    print >> sys.stderr, 'Trying to create %s' % uniqFile
     try:
         fd = os.open(uniqFile, os.O_EXCL | os.O_RDWR | os.O_CREAT)
     except OSError:
@@ -63,6 +64,7 @@ def lockDir(directory, base, id):
 
     # Here is the actual locking operation.  This is advertized as atomic even
     # on NFS.
+    print >> sys.stderr, 'Trying to link %s' % lockFile
     try:
         os.link(uniqFile, lockFile)
     except OSError:

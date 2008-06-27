@@ -24,12 +24,14 @@ fileName = getVar(fileType, 'fileName')
 creator = getVar(fileType, 'creator')
 
 attributes = HashMap()
+attributes.put('sCreator', creator)
+attributes.put('sDataSource', DATASOURCE)
+attributes.put('nDownlink', DOWNLINK_ID)
+attributes.put('sIntent', mootAlias)
 attributes.put('nMetStart', tStart)
 attributes.put('nMetStop', tStop)
-attributes.put('sDataSource', DATASOURCE)
+attributes.put('nMootKey', mootKey)
 attributes.put('nRun', runNumber)
-attributes.put('nDownlink', DOWNLINK_ID)
-attributes.put('sCreator', creator)
 
 dsNew = NewDataset(dsName, fileFormat, fileType, dcPath, dcGroup, site, fileName)
 ds = datacatalog.registerDataset(dsNew, attributes);

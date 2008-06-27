@@ -321,3 +321,9 @@ def chunkToken(dlHead, runId, chunkId):
     tokenDirName = tokenDir(dlHead, runId)
     token = os.path.join(tokenDirName, '-'.join([runId, chunkId]))
     return token
+
+
+def mangleChunkList(realName):
+    # mangle chunk list name to get around JIRA LONE-67
+    mangledName = realName + '.tmp'
+    return mangledName

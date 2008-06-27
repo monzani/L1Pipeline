@@ -110,6 +110,8 @@ crumbMmr = 2.0 # largestCrumb / smallestCrumb
 
 defaultRunStatus = 'WAITING'
 defaultDataSource = 'LPA'
+defaultMootKey = '0'
+defaultMootAlias = 'None'
 
 runSubTask = {
     'LCI': 'doLci',
@@ -607,7 +609,9 @@ os.environ['PYTHONPATH'] = pythonPath
 os.environ['ROOTSYS'] = rootSys
 
 
+# Used to distinguish our variable names from the hoi polloi
 nameManglingPrefix = 'L1'
+
 
 if __name__ == "__main__":
     print L1ProcROOT

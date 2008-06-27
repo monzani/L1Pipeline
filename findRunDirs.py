@@ -51,7 +51,9 @@ for (runId, chunkId), hostList in hostLists:
 
 for runId, chunkListData in chunkLists.items():
     realChunkList = fileNames.fileName('chunkList', dlId, runId)
-    stagedChunkList = staged.stageOut(realChunkList)
+    # temporarily mangle chunk list name to get around JIRA LONE-67    
+    mangledChunkList = fileNames.mangleChunkList(realChunkList)
+    stagedChunkList = staged.stageOut(mangledChunkList)
     fileNames.writeList(chunkListData, stagedChunkList)
     continue
 
@@ -108,9 +110,20 @@ try:
         heldBackEvents[runId] = int(heldBack)
         dataSource[runId] = source
         continue
+    dfp.close()
 except IOError:
     print >> sys.stderr, "Couldn't open delivered event file %s, all runs will have default dataSource %s" % (deliveredFile, config.defaultDataSource)
     pass
+
+# get MOOT keys
+mootFile = os.path.join(dlRawDir, 'moot_keys_%s.txt' % dlId)
+try:
+    mootLines = [line.split() for line in open(mootFile)]
+except IOError:
+    print >> sys.stderr, "Couldn't open moot mey file %s, all runs will have default key %s, alias %s" % (deliveredFile, config.defaultMootKey, config.defaultMootAlias)
+    pass
+mootKeys = dict((line[0], line[1]) for line in mootLines)
+mootAliases = dict((line[0], line[2]) for line in mootLines)
 
 runNumRe = re.compile('([0-9]+)')
 # create up a subStream for each data run
@@ -138,7 +151,11 @@ for runId in dataRuns:
         tStop = tStopDef
         print >> sys.stderr, "Couldn't get tStart, tStop for run %s, using bogus values" % runId
         pass
-    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUNSTATUS=%(runStatus)s,tStart=%(tStart).17g,tStop=%(tStop).17g,DATASOURCE=%(source)s" % locals()
+
+    mootKey = mootKeys.get(runId, config.defaultMootKey)
+    mootAlias = mootAliases.get(runId, config.defaultMootAlias)
+    
+    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUNSTATUS=%(runStatus)s,tStart=%(tStart).17g,tStop=%(tStop).17g,DATASOURCE=%(source)s,mootKey=%(mootKey)s,mootAlias=%(mootAlias)s" % locals()
     print >> sys.stderr, \
           "Creating stream [%s] of subtask [%s] with args [%s]" % \
           (stream, subTask, args)
@@ -170,7 +187,11 @@ for runId in oldRuns:
         tStop = tStopDef
         print >> sys.stderr, "Couldn't get tStart, tStop for run %s, using bogus values" % runId
         pass
-    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUNSTATUS=%(runStatus)s,tStart=%(tStart).17g,tStop=%(tStop).17g,DATASOURCE=%(source)s" % locals()
+
+    mootKey = mootKeys.get(runId, config.defaultMootKey)
+    mootAlias = mootAliases.get(runId, config.defaultMootAlias)
+    
+    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUNSTATUS=%(runStatus)s,tStart=%(tStart).17g,tStop=%(tStop).17g,DATASOURCE=%(source)s,mootKey=%(mootKey)s,mootAlias=%(mootAlias)s" % locals()
     print >> sys.stderr, \
           "Creating stream [%s] of subtask [%s] with args [%s]" % \
           (stream, subTask, args)
