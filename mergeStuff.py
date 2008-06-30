@@ -171,7 +171,7 @@ elif fileType in ['calTrend', 'digiTrend', 'fastMonTrend', 'meritTrend',
     status |= runner.run(cmd)
 
 
-elif fileType in ['digi', 'recon', 'gcr']:
+elif fileType in ['digi', 'recon', 'gcr', 'cal']:
     import rootFiles
     treeName = treeNames[fileType]
     status |= rootFiles.concatenate_prune(outFile, inFiles, treeName)

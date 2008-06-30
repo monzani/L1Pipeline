@@ -89,13 +89,13 @@ if testMode: L1Dir = os.path.join(L1Dir, 'test')
 # staging buffers with smallish integer weights
 # These are actually links so they can be swapped out easily.
 stageDisks = [ 
-    ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/test", 1),
-#     ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/00", 1),
-#     ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/01", 1),
-#     ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/02", 1),
-#     ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/03", 1),
-#     ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/04", 1),
-#     ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/05", 1),
+#     ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/test", 1),
+     ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/00", 1),
+     ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/01", 1),
+     ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/02", 1),
+     ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/03", 1),
+     ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/04", 1),
+     ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/05", 1),
     ]
 stageBase = 'l1Stage'
 #stageDirs = [os.path.join(disk, stageBase) for disk in stageDisks]
@@ -106,8 +106,8 @@ stageBase = 'l1Stage'
 #maxCrumbSize = 17000   # ~.5Hr on cob (skymodel).
 minCrumbCpuf = 7
 maxCrumbs = 7 # Maximum number of crumbs/chunk. Not used by current algorithm.
-# crumbSize = 10000 # typical crumb size
-crumbSize = 2000 # typical crumb size
+crumbSize = 10000 # typical crumb size
+# crumbSize = 2000 # typical crumb size
 crumbMmr = 2.0 # largestCrumb / smallestCrumb
 
 defaultRunStatus = 'WAITING'
@@ -152,7 +152,7 @@ installBin = os.path.join(installArea, 'bin')
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
 releaseDir = os.path.join(groundRoot, 'releases', 'volume07')
-glastVersion = 'v15r20'
+glastVersion = 'v15r21'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -196,8 +196,8 @@ isocEnv = 'eval `%s isoc_env --add-env=flightops`' % isocScript
 if mode == 'prod':
     connectString = '/@isocflight'
 else:
-    # connectString = '/@isocnightly'
-    connectString = '/@isocflight'
+    connectString = '/@isocnightly'
+    # connectString = '/@isocflight'
     pass
 acqTable = 'GLASTOPS_ACQSUMMARY'
 

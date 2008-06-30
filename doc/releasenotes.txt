@@ -1,7 +1,8 @@
 1.58
 -----------------
-GR v15r20
+GR v15r21
 Fix bug that caused LCI runs to not get finalized.
+Use the same tree merger as recon, digi, & gcr for cal tuples.
 -------------------------------------------
 
 
