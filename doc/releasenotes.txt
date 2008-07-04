@@ -1,3 +1,13 @@
+1.59
+-----------------
+GR v15r24
+Look up run start&stop times from ACQSUMMARY rather than relying on the
+metadata supplied with the delivery. (LONE-76)
+Move deliveries to NFS when we're done with them.
+Use different directory in buffers when in test mode.
+-------------------------------------------
+
+
 1.58
 -----------------
 GR v15r21

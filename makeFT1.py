@@ -1,4 +1,4 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
+#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc --add-env=oracle11 python2.5
 
 import os
 import sys
@@ -7,6 +7,7 @@ import config
 
 import GPLinit
 
+import acqQuery
 import fileNames
 import runner
 import stageFiles
@@ -38,8 +39,10 @@ workDir = os.path.dirname(stagedFt1File)
 tCuts = config.ft1Cuts
 classifier = config.ft1Classifier
 
-tStart = float(os.environ['tStart'])
-tStop = float(os.environ['tStop'])
+#tStart = float(os.environ['tStart'])
+#tStop = float(os.environ['tStop'])
+runNumber = int(os.environ['runNumber'])
+tStart, tStop = acqQuery.runTimes(runNumber)
 
 dictionary = config.ft1Dicts[fileType]
 

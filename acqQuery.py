@@ -5,11 +5,12 @@ import cx_Oracle
 
 import config
 
-import GPLinit
+#import GPLinit
 
 
 
 def checkRunStatus(runNumber, field):
+    '''broken junk'''
     con = cx_Oracle.connect(config.connectString)
     cur = con.cursor()
     cmd = 'select %s from %s where STARTEDAT = %s' % \
@@ -31,3 +32,51 @@ def checkRunStatus(runNumber, field):
 
     return statusFinal, runStatus
 
+
+def query(runs, fields):
+    '''@brief Query fields from ACQSUMMARY
+
+    @arg runs An ieterable of run numbers.
+
+    @arg fields An iterable of fields to query.
+
+    @return A dictionary with run number for keys and iterables of field vaules,
+    in order, as values.
+    
+    '''
+
+    con = cx_Oracle.connect(config.connectString)
+    cur = con.cursor()
+
+    augFields = ['STARTEDAT'] + list(fields)
+    fieldStr = ', '.join(augFields)
+    runStr = '(' + ', '.join(str(run) for run in runs) + ')'
+    cmd = 'select %s from %s where STARTEDAT in %s' % (fieldStr, config.acqTable, runStr)
+    print >> sys.stderr, cmd
+    
+    stuff = cur.execute(cmd)
+    results = cur.fetchall()
+    con.close()
+
+    dResults = dict((row[0], row[1:]) for row in results)
+
+    return dResults
+
+
+def runTimes(run):
+    '''@brief Get MET of first and last events observed in a run.
+
+    @arg run The run number.
+
+    @return tStart, tStop
+
+    '''
+    import glastTime
+
+    fields = ['EVTUTC0', 'EVTUTC1']
+    dtResults = query([run], fields)
+
+    row = dtResults[run]
+    results = tuple(glastTime.dt2Met(dt) for dt in row)
+
+    return results

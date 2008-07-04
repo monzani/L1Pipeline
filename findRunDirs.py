@@ -79,6 +79,8 @@ print >> sys.stderr, "Old runs:[%s]" % oldRuns
 
 # bogus placeholder start and stop times
 # Should get from acqsummary DB table
+# findChunks does so, and overrides these values for chunks and registration
+# makeFT1 looks in ACQSUMMARY
 tStartDef = 100000001.0
 tStopDef = 300000001.0
 start = {}
@@ -155,7 +157,7 @@ for runId in dataRuns:
     mootKey = mootKeys.get(runId, config.defaultMootKey)
     mootAlias = mootAliases.get(runId, config.defaultMootAlias)
     
-    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUNSTATUS=%(runStatus)s,tStart=%(tStart).17g,tStop=%(tStop).17g,DATASOURCE=%(source)s,mootKey=%(mootKey)s,mootAlias=%(mootAlias)s" % locals()
+    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUNSTATUS=%(runStatus)s,hpTStart=%(tStart).17g,hpTStop=%(tStop).17g,DATASOURCE=%(source)s,mootKey=%(mootKey)s,mootAlias=%(mootAlias)s" % locals()
     print >> sys.stderr, \
           "Creating stream [%s] of subtask [%s] with args [%s]" % \
           (stream, subTask, args)
@@ -191,7 +193,7 @@ for runId in oldRuns:
     mootKey = mootKeys.get(runId, config.defaultMootKey)
     mootAlias = mootAliases.get(runId, config.defaultMootAlias)
     
-    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUNSTATUS=%(runStatus)s,tStart=%(tStart).17g,tStop=%(tStop).17g,DATASOURCE=%(source)s,mootKey=%(mootKey)s,mootAlias=%(mootAlias)s" % locals()
+    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUNSTATUS=%(runStatus)s,hpTStart=%(tStart).17g,hpTStop=%(tStop).17g,DATASOURCE=%(source)s,mootKey=%(mootKey)s,mootAlias=%(mootAlias)s" % locals()
     print >> sys.stderr, \
           "Creating stream [%s] of subtask [%s] with args [%s]" % \
           (stream, subTask, args)

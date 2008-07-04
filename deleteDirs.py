@@ -62,7 +62,14 @@ else:
 goners = fileNames.findPieces(None, dlId, runId, chunkId)
 
 if level == 'downlink':
-    goners.append(dlRawDir)
+    if config.saveDl:
+        dlStorage = config.dlStorage
+        cmd = 'mv %(dlRawDir)s %(dlStorage)s' % locals()
+        status |= runner.run(cmd)
+    else:
+        goners.append(dlRawDir)
+        pass
+    pass
 elif level == 'run':
     goners.append(fileNames.tokenDir(head, runId))
     pass
@@ -78,11 +85,5 @@ for ig, goner in enumerate(goners):
         print >> sys.stderr, "NOT Deleting %s." % goner
         pass
     continue
-
-# if level == 'downlink':
-#     dlStorage = config.dlStorage
-#     cmd = 'mv %(dlRawDir)s %(dlStorage)s' % locals()
-#     status |= runner.run(cmd)
-#     pass
 
 sys.exit(status)

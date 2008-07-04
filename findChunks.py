@@ -1,4 +1,4 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
+#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc --add-env=oracle11 python2.5
 
 """@brief Find new chunk files.
 
@@ -14,6 +14,7 @@ import config
 
 import GPLinit
 
+import acqQuery
 import fileNames
 import finders
 import lockFile
@@ -37,19 +38,22 @@ cmd = 'mv %s %s' % (mangledChunkList, realChunkList)
 runner.run(cmd)
 stagedChunkList = staged.stageIn(realChunkList)
 
-# Here we should put 'RUNNING' in Karen's run status table.
-# No, that's in a separate process.
-
 subTask = config.chunkSubTask[os.environ['DATASOURCE']]
 
 chunkListData = fileNames.readList(stagedChunkList)
+
+# get current tStart, tStop to override the bogus values set by findRunDirs
+runNumber = int(os.environ['runNumber'])
+tStart, tStop = acqQuery.runTimes(runNumber)
+pipeline.setVariable('tStart', tStart)
+pipeline.setVariable('tStop', tStop)
 
 # set up a subStream for each chunk
 for chunkId, chunkData in chunkListData.items():
     chunkFile = chunkData['chunkFile']
     hostList = chunkData['hostList']
     stream = chunkId[1:]
-    args = 'EVTFILE=%(chunkFile)s,CHUNK_ID=%(chunkId)s,HOSTLIST="%(hostList)s"' % locals()
+    args = 'EVTFILE=%(chunkFile)s,CHUNK_ID=%(chunkId)s,HOSTLIST="%(hostList)s",tStart=%(tStart).17g,tStop=%(tStop).17g' % locals()
     pipeline.createSubStream(subTask, stream, args)
     continue
 

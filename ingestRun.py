@@ -18,8 +18,8 @@ head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 reportType = os.environ['reportType']
-nMetStart = os.environ['tStart']
-nMetStop = os.environ['tStop']
+nMetStart = os.environ['hpTStart']
+nMetStop = os.environ['hpTStop']
 
 app = config.runIngestor
 

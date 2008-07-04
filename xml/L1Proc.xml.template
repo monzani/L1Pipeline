@@ -60,8 +60,6 @@
       <prerequisite name="DATASOURCE" type="string"/>
       <prerequisite name="RUNID" type="string"/>
       <prerequisite name="RUNSTATUS" type="string"/>
-      <prerequisite name="tStart" type="float"/>
-      <prerequisite name="tStop" type="float"/>
    </prerequisites>
 
     <process name="findChunks">
@@ -102,6 +100,7 @@
       </script>
       <depends>
         <after process="copyM7" status="SUCCESS"/>
+        <after process="findChunks" status="SUCCESS"/>
       </depends>
     </process>
  
@@ -185,6 +184,8 @@
       <variables>
         <var name="reportType">digiHistAlarm</var>
         <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
+        <var name="tStart">${pipeline.getProcessInstance("findChunks").getVariable("tStart")}</var>
+        <var name="tStop">${pipeline.getProcessInstance("findChunks").getVariable("tStop")}</var>
       </variables>
       <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
@@ -1873,8 +1874,6 @@
       <prerequisite name="DATASOURCE" type="string"/>
       <prerequisite name="RUNID" type="string"/>
       <prerequisite name="RUNSTATUS" type="string"/>
-      <prerequisite name="tStart" type="float"/>
-      <prerequisite name="tStop" type="float"/>
     </prerequisites>
 
     <process name="findChunksLci">
@@ -2162,8 +2161,6 @@
       <prerequisite name="DATASOURCE" type="string"/>
       <prerequisite name="RUNID" type="string"/>
       <prerequisite name="RUNSTATUS" type="string"/>
-      <prerequisite name="tStart" type="float"/>
-      <prerequisite name="tStop" type="float"/>
     </prerequisites>
 
     <process name="checkRunInc">

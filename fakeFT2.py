@@ -44,15 +44,13 @@ stagedFt2TxtFile = os.path.join(workDir, 'junkFT2.txt')
 
 setupScript = config.packages['ft2Util']['setup']
 
-tFormat = '%.17g'
-tStart = tFormat % (float(os.environ['tStart']) - config.ft2Pad)
-tStop = tFormat % (float(os.environ['tStop']) + config.ft2Pad)
-# ''
+tStart = float(os.environ['hpTStart']) - config.ft2Pad
+tStop = float(os.environ['hpTStop']) + config.ft2Pad
 
 cmd = '''
 cd %(workDir)s
 source %(setupScript)s
-%(app)s -M7File %(stagedM7File)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s --Gleam --test-quaternion -DigiTstart %(tStart)s -DigiTstop %(tStop)s
+%(app)s -M7File %(stagedM7File)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s --Gleam --test-quaternion -DigiTstart %(tStart).17g -DigiTstop %(tStop).17g
 ''' % locals()
 
 status = runner.run(cmd)

@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.58"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.59"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -72,7 +72,9 @@ L1Disk = '/nfs/farm/g/glast/u52/L1'
 # L1Dir = os.path.join(L1Disk, 'rootData')
 L1Dir = L1Disk
 
-dlStorage = os.path.join(L1Disk, 'downlinks') # not used at the mo
+dlStorage = os.path.join(L1Disk, 'rootData/dl')
+if testMode: dlStorage = os.path.join(dlStorage, 'test')
+saveDl = True
 
 dataCatBase = '/Data/Flight/Level1'
 #dataSource = os.environ.get('DATASOURCE', 'TheWrongPlace')
@@ -97,7 +99,11 @@ stageDisks = [
      ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/04", 1),
      ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/05", 1),
     ]
-stageBase = 'l1Stage'
+if testMode:
+    stageBase = 'l1Test'
+else:
+    stageBase = 'l1Stage'
+    pass
 #stageDirs = [os.path.join(disk, stageBase) for disk in stageDisks]
 
 #maxCrumbSize = 48000 # SVAC pipeline uses this
@@ -151,8 +157,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume07')
-glastVersion = 'v15r21'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
+glastVersion = 'v15r24'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -196,8 +202,8 @@ isocEnv = 'eval `%s isoc_env --add-env=flightops`' % isocScript
 if mode == 'prod':
     connectString = '/@isocflight'
 else:
-    connectString = '/@isocnightly'
-    # connectString = '/@isocflight'
+    # connectString = '/@isocnightly'
+    connectString = '/@isocflight'
     pass
 acqTable = 'GLASTOPS_ACQSUMMARY'
 
@@ -220,27 +226,27 @@ cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 cmtPackages = {
      'calibTkrUtil': {
         'repository': '',
-        'version': 'v2r2p3',
+        'version': 'v2r2p4',
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v3r1p6',
+        'version': 'v3r2p0',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
-        'version': 'v4r1p5',
+        'version': 'v4r1p6',
         },
     'evtClassDefs': {
         'repository': '',
-        'version': 'v0r5',
+        'version': 'v0r6',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v3r2p3',
+        'version': 'v3r3p1',
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r2p19',
+        'version': 'v1r2p22',
         },
     'GPLtools': {
         'repository': '',
@@ -248,7 +254,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r2p4',
+        'version': 'v1r2p8',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -256,22 +262,22 @@ cmtPackages = {
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'v6r12',
+        'version': 'v6r13',
         },
     }
 
 cvsPackages = {
     'AlarmsCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r1p1',
+        'version': 'v1r0p0',
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r1p35',
+        'version': 'v1r1p38',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r2p0',
+        'version': 'v1r3p1',
         },
     'IGRF': {
         'repository': 'dataMonitoring',

@@ -7,11 +7,14 @@
 """
 
 import calendar
+import datetime
 import time
 
 tsFormat = 't%.10d'
 
-met0 = calendar.timegm(time.strptime('Jan 1 00:00:00 2001 UTC', '%b %d %H:%M:%S %Y %Z'))
+met0 = calendar.timegm(time.strptime('Jan 1 00:00:00 2001 UTC', '%b %d %H:%M:%S %Y %Z')) # unix time at MET 0
+
+dtMet0 = datetime.datetime(2001, 1, 1, 0, 0, 0, 0) # datetime for MET 0
 
 def met(unixTime=None):
     if unixTime is None: unixTime = time.time()
@@ -23,3 +26,7 @@ def timeStamp(unixTime=None):
     stamp = tsFormat % val
     return stamp
 
+def dt2Met(dtIn):
+    delta = dtIn - dtMet0
+    met = delta.microseconds / 1e6 + delta.seconds + delta.days * 86400
+    return met

@@ -55,6 +55,7 @@ fileTypes = {
     'reconTrendAlarm': 'xml',
     'svac': 'root',
     'svacHist': 'root',
+    'timeSpan': 'txt',
     'tkrAlarm': 'xml',
     'tkrAnalysis': 'root',
     'tkrMonitor': 'root',

@@ -23,15 +23,21 @@ site = getVar(fileType, 'site')
 fileName = getVar(fileType, 'fileName')
 creator = getVar(fileType, 'creator')
 
+fcPi = pipeline.getProcessInstance('findChunks')
+lessBrokenTStart = fcPi.getVariable('tStart')
+lessBrokenTStop = fcPi.getVariable('tStop')
+
 attributes = HashMap()
 attributes.put('sCreator', creator)
 attributes.put('sDataSource', DATASOURCE)
 attributes.put('nDownlink', DOWNLINK_ID)
 attributes.put('sIntent', mootAlias)
-attributes.put('nMetStart', tStart)
-attributes.put('nMetStop', tStop)
+attributes.put('nMetStart', lessBrokenTStart)
+attributes.put('nMetStop', lessBrokenTStop)
 attributes.put('nMootKey', mootKey)
 attributes.put('nRun', runNumber)
+
+print attributes
 
 dsNew = NewDataset(dsName, fileFormat, fileType, dcPath, dcGroup, site, fileName)
 ds = datacatalog.registerDataset(dsNew, attributes);
