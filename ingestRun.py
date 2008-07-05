@@ -1,4 +1,4 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
+#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc --add-env=oracle11 python2.5
 
 import os
 import sys
@@ -7,6 +7,7 @@ import config
 
 import GPLinit
 
+import acqQuery
 import fileNames
 import runner
 import stageFiles
@@ -18,8 +19,10 @@ head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 reportType = os.environ['reportType']
-nMetStart = os.environ['hpTStart']
-nMetStop = os.environ['hpTStop']
+
+#nMetStart = os.environ['tStart']
+#nMetStop = os.environ['tStop']
+nMetStart, nMetStop = acqQuery.runTimes(int(os.environ['runNumber']))
 
 app = config.runIngestor
 

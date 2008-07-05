@@ -242,7 +242,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v3r3p1',
+        'version': 'v3r3p2',
         },
     'ft2Util': {
         'repository': '',
@@ -254,7 +254,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r2p8',
+        'version': 'v1r2p11',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -269,11 +269,11 @@ cmtPackages = {
 cvsPackages = {
     'AlarmsCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r0p0',
+        'version': 'v2r0p0',
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r1p38',
+        'version': 'v1r2p3',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',

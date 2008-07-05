@@ -139,6 +139,7 @@ treeNames = {
     'digi': 'Digi',
     'gcr': 'GcrSelect',
     'recon': 'Recon',
+    'svac': 'Ouput',
     }
 
 print >> sys.stderr, '------------------- start merge ------------------'
@@ -171,7 +172,7 @@ elif fileType in ['calTrend', 'digiTrend', 'fastMonTrend', 'meritTrend',
     status |= runner.run(cmd)
 
 
-elif fileType in ['digi', 'recon', 'gcr', 'cal']:
+elif fileType in ['digi', 'recon', 'gcr', 'cal', 'svac']:
     import rootFiles
     treeName = treeNames[fileType]
     status |= rootFiles.concatenate_prune(outFile, inFiles, treeName)

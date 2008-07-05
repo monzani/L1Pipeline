@@ -6,6 +6,7 @@ metadata supplied with the delivery. (LONE-76)
 Move deliveries to NFS when we're done with them.
 Use different directory in buffers when in test mode.
 The verify section is executed after mergeDigi.
+Use prune tree merger for svac.
 -------------------------------------------
 
 
