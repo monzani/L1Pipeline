@@ -245,7 +245,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v3r3p2',
+        'version': 'v3r4p1',
         },
     'ft2Util': {
         'repository': '',
@@ -265,7 +265,7 @@ cmtPackages = {
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'v6r13',
+        'version': 'v6r14',
         },
     }
 
