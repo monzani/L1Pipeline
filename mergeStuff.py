@@ -139,7 +139,7 @@ treeNames = {
     'digi': 'Digi',
     'gcr': 'GcrSelect',
     'recon': 'Recon',
-    'svac': 'Ouput',
+    'svac': 'Output',
     }
 
 print >> sys.stderr, '------------------- start merge ------------------'

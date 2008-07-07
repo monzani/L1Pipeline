@@ -3,6 +3,7 @@
 GR v15r24
 Look up run start&stop times from ACQSUMMARY rather than relying on the
 metadata supplied with the delivery. (LONE-76)
+Make our own magic7 file for use with ft2Runs. (LONE-82)
 Move deliveries to NFS when we're done with them.
 Use different directory in buffers when in test mode.
 The verify section is executed after mergeDigi.

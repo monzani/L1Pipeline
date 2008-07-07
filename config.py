@@ -207,6 +207,9 @@ else:
     pass
 acqTable = 'GLASTOPS_ACQSUMMARY'
 
+scid = 77
+hpTaskBase = '/afs/slac/g/glast/isoc/flightOps/offline/halfPipe/prod'
+
 stVersion = 'v9r5p5'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
 #ST = os.path.join(L1Cmt, "ScienceTools", "ScienceTools-%s" % stVersion)
@@ -513,8 +516,8 @@ ft1Dicts = {
     }
 
 
-ft2Pad = 1.0
-
+ft2Pad = 1.0 # pad time range with this on either end whan making fakeFT2
+m7Pad = 10 # pad time range with this on either end whan making m7
 
 if testMode:
     trendMode = 'dev'

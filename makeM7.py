@@ -8,7 +8,9 @@ import config
 import GPLinit
 
 import fileNames
+import glastTime
 import registerPrep
+import runner
 import stageFiles
 
 status = 0
@@ -18,18 +20,27 @@ head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 
-fileType = 'magic7Hp'
+fileType = 'magic7L1'
 
 staged = stageFiles.StageSet()
 
-realInFile = os.path.join(os.environ['DOWNLINK_RAWDIR'], 'magic7_%s.txt' % dlId)
-stagedInFile = staged.stageIn(realInFile)
-
-#outDir = fileNames.fileName(None, dlId, runId)
-#outBase = os.path.basename(realInFile)
 realOutFile = fileNames.fileName(fileType, dlId, runId, next=True)
+stagedOutFile = staged.stageOut(realOutFile)
 
-if not status: status |= stageFiles.copy(stagedInFile, realOutFile)
+isocBin = config.isocBin
+
+python = config.python
+taskBase = config.hpTaskBase
+scid = config.scid
+
+tStart = glastTime.met2Iso8860(float(os.environ['tStart']) - config.m7Pad)
+tStop = glastTime.met2Iso8860(float(os.environ['tStop']) + config.m7Pad)
+
+cmd = """eval `%(isocBin)s/isoc env --add-env=flightops`
+%(python)s %(taskBase)s/scripts/DiagRet.py --scid %(scid)s -b "%(tStart)s" -e "%(tStop)s" --lsm | grep -E 'ATT|ORB' > %(stagedOutFile)s
+""" % locals()
+
+status = runner.run(cmd)
 
 if status: finishOption = 'wipe'
 status |= staged.finish(finishOption)

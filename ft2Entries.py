@@ -29,7 +29,9 @@ realDigiFile = fileNames.fileName('digi', dlId, runId)
 stagedDigiFile = staged.stageIn(realDigiFile)
 realMeritFile = fileNames.fileName('merit', dlId, runId)
 stagedMeritFile = staged.stageIn(realMeritFile)
-realM7File = os.path.join(os.environ['DOWNLINK_RAWDIR'], 'magic7_%s.txt' % dlId)
+#realM7File = os.path.join(os.environ['DOWNLINK_RAWDIR'], 'magic7_%s.txt' % dlId)
+#realM7File = os.environ['L1_magic7L1_filename']
+realM7File = fileNames.fileName('magic7L1', dlId, runId)
 stagedM7File=  staged.stageIn(realM7File)
 
 #output

@@ -1,0 +1,11 @@
+To roll your own, the idiom is:
+
+python ${taskBase}/scripts/DiagRet.py --scid $scid -b "$t0" -e "$t1" --lsm | grep -E 'ATT|ORB' > magic7.txt
+
+Where 
+
+ taskBase=/afs/slac/g/glast/isoc/flightOps/offline/halfPipe/prod
+ scid=77
+ t0/t1 are ISO-8660 UTC time strings of the form "YYYY-mm-dd HH:MM:SS"
+
+This has to be run in a PROD ISOC environment, like FASTCopy.py.

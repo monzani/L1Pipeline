@@ -43,7 +43,8 @@ fileTypes = {
     'gcr': 'root',
     'ls1': 'fit',
     'ls3': 'fit',
-    'magic7': 'txt',
+    'magic7Hp': 'txt',
+    'magic7L1': 'txt',
     'merit': 'root',
     'meritHist': 'root',
     'meritTrend': 'root',
@@ -146,7 +147,7 @@ def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None, next=False)
                 verNum += 1
                 pass
             verStr = 'v%03d' % verNum
-            if fileType in ['magic7']:
+            if fileType in ['magic7Hp']:
                 verStr = '_'.join([dlId, verStr])
                 pass
             pass
