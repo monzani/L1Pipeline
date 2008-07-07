@@ -63,9 +63,14 @@ goners = fileNames.findPieces(None, dlId, runId, chunkId)
 
 if level == 'downlink':
     if config.saveDl:
-        dlStorage = config.dlStorage
-        cmd = 'mv %(dlRawDir)s %(dlStorage)s' % locals()
-        status |= runner.run(cmd)
+        dest = os.path.join(config.dlStorage, os.path.basename(dlRawDir))
+        if os.path.isdir(dest):
+            print >> sys.stderr, '%(dlRawDir)s has already ben saved, deleting.' % locals()
+            goners.append(dlRawDir)
+        elif os.path.isdir(dlRawDir):
+            cmd = 'mv %(dlRawDir)s %(dlStorage)s' % locals()
+            status |= runner.run(cmd)
+            pass
     else:
         goners.append(dlRawDir)
         pass

@@ -249,7 +249,7 @@ cmtPackages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r2p22',
+        'version': 'v1r2p23',
         },
     'GPLtools': {
         'repository': '',
@@ -508,7 +508,7 @@ tdBin = {
 
 
 #ft1Cuts = 'DEFAULT'
-ft1Cuts = os.path.join(packages['evtClassDefs']['data'], 'pass6_cuts')
+ft1Cuts = os.path.join(packages['evtClassDefs']['data'], 'pass6_FSW_cuts')
 ft1Classifier = 'Pass6_Classifier'
 ft1Dicts = {
     'ft1': os.path.join(packages['evtClassDefs']['data'], 'FT1variables'),
