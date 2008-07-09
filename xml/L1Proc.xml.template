@@ -238,7 +238,7 @@
       </variables>
       <job executable="${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s "/>
       <depends>
-        <after process="mergeDigi" status="SUCCESS"/>
+        <after process="registerDigi" status="SUCCESS"/>
       </depends>
     </process>
 
