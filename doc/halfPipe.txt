@@ -1,0 +1,17 @@
+The stopper is whether or not the files
+
+/afs/slac/g/glast/isoc/flightOps/offline/halfPipe/prod/config/haltL1
+
+And
+
+/afs/slac/g/glast/isoc/flightOps/offline/halfPipe/prod/config/haltOnline
+
+Exist.
+
+Should be safe to roll back anything you need.
+
+In v6r1p0, I added a per-downlink "pin" for launchL1....  just touch the file
+/nfs/farm/g/glast/u42/ISOC-flight/Downlinks/$DOWNLINK_ID/haltL1 
+and it'll skip the L1Proc createstream (but still generate and deliver all the
+.txt files, etc.).
+

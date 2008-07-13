@@ -128,7 +128,6 @@
       </script>
       <depends>
         <after process="makeM7L1" status="SUCCESS"/>
-        <after process="findChunks" status="SUCCESS"/>
       </depends>
     </process>
  
@@ -1080,6 +1079,54 @@
       </depends>
     </process>
  
+    <process name="meritTrendAlarm">
+      <variables>
+        <var name="fileType">meritTrend</var>
+        <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
+        <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerMeritTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerMeritTrendAlarm">
+      <variables>
+        <var name="parentProcess">meritTrendAlarm</var>
+        <var name="fileType">meritTrendAlarm</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="meritTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="meritTrendLogger">
+      <variables>
+        <var name="fileType">meritTrendAlarm</var>
+        <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerMeritTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestMeritTrendRun">
+      <variables>
+        <var name="reportType">meritTrendAlarm</var>
+        <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerMeritTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="mergeMeritHist">
       <variables>
         <var name="fileType">meritHist</var>
@@ -1102,6 +1149,54 @@
       </script>
       <depends>
         <after process="mergeMeritHist" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="meritHistAlarm">
+      <variables>
+        <var name="fileType">meritHist</var>
+        <var name="%(meritHist_versionName)s">%(meritHist_version)s</var>
+        <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerMeritHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerMeritHistAlarm">
+      <variables>
+        <var name="parentProcess">meritHistAlarm</var>
+        <var name="fileType">meritHistAlarm</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="meritHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestMeritHistRun">
+      <variables>
+        <var name="reportType">meritHistAlarm</var>
+        <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerMeritHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="meritHistLogger">
+      <variables>
+        <var name="fileType">meritHistAlarm</var>
+        <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerMeritHistAlarm" status="SUCCESS"/>
       </depends>
     </process>
  
@@ -1560,11 +1655,15 @@
         <after process="ingestFastMonErrorRun" status="SUCCESS"/>
         <after process="ingestDigiTrendRun" status="SUCCESS"/>
         <after process="ingestDigiHistRun" status="SUCCESS"/>
+        <after process="ingestMeritTrendRun" status="SUCCESS"/>
+        <after process="ingestMeritHistRun" status="SUCCESS"/>
         <after process="ingestReconTrendRun" status="SUCCESS"/>
         <after process="ingestReconHistRun" status="SUCCESS"/>
         <after process="ingestTkrTrend" status="SUCCESS"/>
         <after process="ingestTkrTrendRun" status="SUCCESS"/>
         <after process="ingestVerifyErrorRun" status="SUCCESS"/>
+        <after process="meritHistLogger" status="SUCCESS"/>
+        <after process="meritTrendLogger" status="SUCCESS"/>
         <after process="reconHistLogger" status="SUCCESS"/>
         <after process="reconTrendLogger" status="SUCCESS"/>
         <after process="registerAcdPlots" status="SUCCESS"/>

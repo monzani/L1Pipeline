@@ -1,8 +1,10 @@
 1.60
 -----------------
+Use a link to point to AlarmsCfg (LONE-88).
+Use error merger provided by FastMon instead of our own (LONE-70).
+Run alarms on merit histograms and trending (LONE-87).
 Fixed the wrong dependence in verify.
-
-
+Remove redundant dependence from registerM7L1.
 -------------------------------------------
 
 

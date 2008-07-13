@@ -45,8 +45,8 @@ chunkListData = fileNames.readList(stagedChunkList)
 # get current tStart, tStop to override the bogus values set by findRunDirs
 runNumber = int(os.environ['runNumber'])
 tStart, tStop = acqQuery.runTimes(runNumber)
-pipeline.setVariable('tStart', tStart)
-pipeline.setVariable('tStop', tStop)
+pipeline.setVariable('tStart', '%.17g' % tStart)
+pipeline.setVariable('tStop', '%.17g' % tStop)
 
 # set up a subStream for each chunk
 for chunkId, chunkData in chunkListData.items():

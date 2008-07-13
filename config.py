@@ -14,7 +14,8 @@ fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
 #L1Cmt = os.path.join(installRoot, 'builds')
-L1CmtBase = os.environ.get('L1_BUILD_DIR') or '/afs/slac/g/glast/ground/releases/volume03/L1Proc'
+L1Volume = '/afs/slac/g/glast/ground/releases/volume03'
+L1CmtBase = os.environ.get('L1_BUILD_DIR') or os.path.join(L1Volume, 'L1Proc')
 L1Cmt = os.path.join(L1CmtBase, L1Version)
 
 doCleanup = True
@@ -245,7 +246,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v3r4p1',
+        'version': 'v3r5p1',
         },
     'ft2Util': {
         'repository': '',
@@ -257,7 +258,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r2p11',
+        'version': 'v1r2p12',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -270,17 +271,17 @@ cmtPackages = {
     }
 
 cvsPackages = {
-    'AlarmsCfg': {
-        'repository': 'dataMonitoring',
-        'version': 'v2r1p1',
-        },
+#     'AlarmsCfg': {
+#         'repository': 'dataMonitoring',
+#         'version': 'v2r1p1',
+#         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
         'version': 'v1r2p3',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r3p1',
+        'version': 'v1r3p3',
         },
     'IGRF': {
         'repository': 'dataMonitoring',
@@ -304,8 +305,8 @@ for packName in packages:
     continue
 
 # add nonstandard package info
-packages['AlarmsCfg']['xml'] = os.path.join(
-    packages['AlarmsCfg']['root'], 'xml')
+#packages['AlarmsCfg']['xml'] = os.path.join(
+#    packages['AlarmsCfg']['root'], 'xml')
 
 #packages['Common']['python'] = os.path.join(
 #    packages['Common']['root'], 'python')
@@ -361,7 +362,10 @@ apps = {
         packages['Common']['python'], 'pRootDiffer.py'),
     'digi': gleam,
     'digiHist': packages['Monitor']['app'],
-    'errorMerger': os.path.join(L1ProcROOT, 'errorParser.py'),
+    # 'errorMerger': os.path.join(L1ProcROOT, 'errorParser.py'),
+    'errorMerger': os.path.join(
+        packages['FastMon']['python'], 'pXmlErrorMerger.py'),
+    'fastMonTuple': packages['FastMon']['app'],
     'fastMonHist': os.path.join(
         packages['FastMon']['python'], 'pFastMonTreeProcessor.py'),
     'fastMonTuple': packages['FastMon']['app'],
@@ -438,50 +442,43 @@ mergeConfigs = {
         packages['DigiReconCalMeritCfg']['root'], 'MergeHistos_recon.txt'),
     }
 
+
+alarmBase = os.path.join(L1Volume, 'AlarmsCfg', mode)
 alarmConfigs = {
-    'digiHist': os.path.join(
-        packages['AlarmsCfg']['xml'], 'digi_eor_alarms.xml'),
-    'digiTrend': os.path.join(
-        packages['AlarmsCfg']['xml'], 'digi_trend_alarms.xml'),
-    'fastMonHist': os.path.join(
-        packages['AlarmsCfg']['xml'], 'fastmon_eor_alarms.xml'),
-    'fastMonTrend': os.path.join(
-        packages['AlarmsCfg']['xml'], 'fastmon_trend_alarms.xml'),
-    'reconHist': os.path.join(
-        packages['AlarmsCfg']['xml'], 'recon_eor_alarms.xml'),
-    'reconTrend': os.path.join(
-        packages['AlarmsCfg']['xml'], 'recon_trend_alarms.xml'),
-    'tkrTrend': os.path.join(
-        packages['AlarmsCfg']['xml'], 'trackermon_trend_alarms.xml'),
+    'digiHist': os.path.join(alarmBase, 'xml', 'digi_eor_alarms.xml'),
+    'digiTrend': os.path.join(alarmBase, 'xml', 'digi_trend_alarms.xml'),
+    'fastMonHist': os.path.join(alarmBase, 'xml', 'fastmon_eor_alarms.xml'),
+    'fastMonTrend': os.path.join(alarmBase, 'xml', 'fastmon_trend_alarms.xml'),
+    'meritHist': os.path.join(alarmBase, 'xml', 'merit_eor_alarms.xml'),
+    'meritTrend': os.path.join(alarmBase, 'xml', 'merit_trend_alarms.xml'),
+    'reconHist': os.path.join(alarmBase, 'xml', 'recon_eor_alarms.xml'),
+    'reconTrend': os.path.join(alarmBase, 'xml', 'recon_trend_alarms.xml'),
+    'tkrTrend': os.path.join(alarmBase, 'xml', 'trackermon_trend_alarms.xml'),
     }
 
 alarmExceptions = {
     'digiHist': os.path.join(
-        packages['AlarmsCfg']['xml'],
-        'digi_eor_alarms_exceptions.xml'),
+        alarmBase, 'xml', 'digi_eor_alarms_exceptions.xml'),
     'digiTrend': os.path.join(
-        packages['AlarmsCfg']['xml'],
-        'digi_trend_alarms_exceptions.xml'),
+        alarmBase, 'xml', 'digi_trend_alarms_exceptions.xml'),
     'fastMonHist': os.path.join(
-        packages['AlarmsCfg']['xml'],
-        'fastmon_eor_alarms_exceptions.xml'),
+        alarmBase, 'xml', 'fastmon_eor_alarms_exceptions.xml'),
     'fastMonTrend': os.path.join(
-        packages['AlarmsCfg']['xml'],
-        'fastmon_trend_alarms_exceptions.xml'),
+        alarmBase, 'xml', 'fastmon_trend_alarms_exceptions.xml'),
+    'meritHist': os.path.join(
+        alarmBase, 'xml', 'merit_eor_alarms_exceptions.xml'),
+    'meritTrend': os.path.join(
+        alarmBase, 'xml', 'merit_trend_alarms_exceptions.xml'),
     'reconHist': os.path.join(
-        packages['AlarmsCfg']['xml'],
-        'recon_eor_alarms_exceptions.xml'),
+        alarmBase, 'xml', 'recon_eor_alarms_exceptions.xml'),
     'reconTrend': os.path.join(
-        packages['AlarmsCfg']['xml'],
-        'recon_trend_alarms_exceptions.xml'),
+        alarmBase, 'xml', 'recon_trend_alarms_exceptions.xml'),
     'tkrTrend': os.path.join(
-        packages['AlarmsCfg']['xml'],
-        'trackermon_trend_alarms_exceptions.xml'),
+        alarmBase, 'xml', 'trackermon_trend_alarms_exceptions.xml'),
     }
 alarmPostProcessorConfigs = {
     'reconHistAlarm': os.path.join(
-        packages['AlarmsCfg']['xml'],
-        'recon_eor_alarms_postprocess.xml'),
+        alarmBase, 'xml', 'recon_eor_alarms_postprocess.xml'),
     }
 
 normalizedRateConfigs = {

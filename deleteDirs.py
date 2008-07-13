@@ -68,7 +68,7 @@ if level == 'downlink':
             print >> sys.stderr, '%(dlRawDir)s has already ben saved, deleting.' % locals()
             goners.append(dlRawDir)
         elif os.path.isdir(dlRawDir):
-            cmd = 'mv %(dlRawDir)s %(dlStorage)s' % locals()
+            cmd = 'mv %(dlRawDir)s %(dest)s' % locals()
             status |= runner.run(cmd)
             pass
     else:
