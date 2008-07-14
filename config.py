@@ -246,7 +246,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v3r5p1',
+        'version': 'v3r4p1',
         },
     'ft2Util': {
         'repository': '',
@@ -258,7 +258,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r2p12',
+        'version': 'v1r2p11',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -281,7 +281,7 @@ cvsPackages = {
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r3p3',
+        'version': 'v1r3p1',
         },
     'IGRF': {
         'repository': 'dataMonitoring',
