@@ -105,6 +105,7 @@
       <variables>
         <var name="parentProcess">copyM7Hp</var>
         <var name="fileType">magic7Hp</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -121,6 +122,7 @@
       <variables>
         <var name="parentProcess">makeM7L1</var>
         <var name="fileType">magic7L1</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -146,6 +148,7 @@
       <variables>
         <var name="parentProcess">mergeDigi</var>
         <var name="fileType">digi</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -171,6 +174,7 @@
       <variables>
         <var name="parentProcess">mergeDigiHist</var>
         <var name="fileType">digiHist</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -197,6 +201,7 @@
       <variables>
         <var name="parentProcess">digiHistAlarm</var>
         <var name="fileType">digiHistAlarm</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -245,6 +250,7 @@
       <variables>
         <var name="parentProcess">verify</var>
         <var name="fileType">verifyHisto</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -259,6 +265,7 @@
       <variables>
         <var name="parentProcess">verify</var>
         <var name="fileType">verifyLog</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -295,6 +302,7 @@
       <variables>
         <var name="parentProcess">acdPlots</var>
         <var name="fileType">acdPlots</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -320,6 +328,7 @@
       <variables>
         <var name="parentProcess">mergeDigiTrend</var>
         <var name="fileType">digiTrend</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -357,6 +366,7 @@
       <variables>
         <var name="parentProcess">digiTrendAlarm</var>
         <var name="fileType">digiTrendAlarm</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -404,6 +414,7 @@
       <variables>
         <var name="parentProcess">mergeCalHist</var>
         <var name="fileType">calHist</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -429,6 +440,7 @@
       <variables>
         <var name="parentProcess">mergeCalTrend</var>
         <var name="fileType">calTrend</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -467,6 +479,7 @@
       <variables>
         <var name="parentProcess">acdPedsAnalyzer</var>
         <var name="fileType">acdPedsAnalyzer</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -494,6 +507,7 @@
       <variables>
         <var name="parentProcess">calGainsAnalyzer</var>
         <var name="fileType">calGainsAnalyzer</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -521,6 +535,7 @@
       <variables>
         <var name="parentProcess">calPedsAnalyzer</var>
         <var name="fileType">calPedsAnalyzer</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -546,6 +561,7 @@
       <variables>
         <var name="parentProcess">mergeFastMonError</var>
         <var name="fileType">fastMonError</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -582,6 +598,7 @@
       <variables>
         <var name="parentProcess">mergeFastMonHist</var>
         <var name="fileType">fastMonHist</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -610,6 +627,7 @@
       <variables>
         <var name="parentProcess">compDigiFastMon</var>
         <var name="fileType">compareDFm</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -635,6 +653,7 @@
       <variables>
         <var name="parentProcess">mergeFastMonTuple</var>
         <var name="fileType">fastMonTuple</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -661,6 +680,7 @@
       <variables>
         <var name="parentProcess">fastMonHistAlarm</var>
         <var name="fileType">fastMonHistAlarm</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -708,6 +728,7 @@
       <variables>
         <var name="parentProcess">mergeFastMonTrend</var>
         <var name="fileType">fastMonTrend</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -745,6 +766,7 @@
       <variables>
         <var name="parentProcess">fastMonTrendAlarm</var>
         <var name="fileType">fastMonTrendAlarm</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -792,6 +814,7 @@
       <variables>
         <var name="parentProcess">mergeGcrChunks</var>
         <var name="fileType">gcr</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -817,6 +840,7 @@
       <variables>
         <var name="parentProcess">mergeMeritChunks</var>
         <var name="fileType">merit</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -843,6 +867,7 @@
       <variables>
         <var name="parentProcess">makeFT1</var>
         <var name="fileType">ft1</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -880,6 +905,7 @@
       <variables>
         <var name="parentProcess">makeLS1</var>
         <var name="fileType">ls1</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -921,6 +947,7 @@
       <variables>
         <var name="parentProcess">ft2Runs</var>
         <var name="fileType">ft2Txt</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -959,6 +986,7 @@
       <variables>
         <var name="parentProcess">makeFT2</var>
         <var name="fileType">ft2</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -997,6 +1025,7 @@
       <variables>
         <var name="parentProcess">makeLS3</var>
         <var name="fileType">ls3</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1033,6 +1062,7 @@
       <variables>
         <var name="parentProcess">mergeCalChunks</var>
         <var name="fileType">cal</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1058,6 +1088,7 @@
       <variables>
         <var name="parentProcess">mergeMeritTrend</var>
         <var name="fileType">meritTrend</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1095,6 +1126,7 @@
       <variables>
         <var name="parentProcess">meritTrendAlarm</var>
         <var name="fileType">meritTrendAlarm</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1142,6 +1174,7 @@
       <variables>
         <var name="parentProcess">mergeMeritHist</var>
         <var name="fileType">meritHist</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1168,6 +1201,7 @@
       <variables>
         <var name="parentProcess">meritHistAlarm</var>
         <var name="fileType">meritHistAlarm</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1217,6 +1251,7 @@
       <variables>
         <var name="parentProcess">mergeReconTrend</var>
         <var name="fileType">reconTrend</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1254,6 +1289,7 @@
       <variables>
         <var name="parentProcess">reconTrendAlarm</var>
         <var name="fileType">reconTrendAlarm</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1303,6 +1339,7 @@
       <variables>
         <var name="parentProcess">mergeReconHist</var>
         <var name="fileType">reconHist</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1329,6 +1366,7 @@
       <variables>
         <var name="parentProcess">reconHistAlarm</var>
         <var name="fileType">reconHistAlarm</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1377,6 +1415,7 @@
       <variables>
         <var name="parentProcess">reconHistPostProcessor</var>
         <var name="fileType">reconHistAlarmDist</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1403,6 +1442,7 @@
       <variables>
         <var name="parentProcess">mergeTkrAnalysis</var>
         <var name="fileType">tkrAnalysis</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1430,6 +1470,7 @@
       <variables>
         <var name="parentProcess">tkrMonitor</var>
         <var name="fileType">tkrMonitor</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1457,6 +1498,7 @@
       <variables>
         <var name="parentProcess">tkrMonitor</var>
         <var name="fileType">tkrReport</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1485,6 +1527,7 @@
       <variables>
         <var name="parentProcess">tkrMonitor</var>
         <var name="fileType">tkrAlarm</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1514,6 +1557,7 @@
       <variables>
         <var name="parentProcess">tkrTrend</var>
         <var name="fileType">tkrTrend</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1551,6 +1595,7 @@
       <variables>
         <var name="parentProcess">tkrTrendAlarm</var>
         <var name="fileType">tkrTrendAlarm</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1598,6 +1643,7 @@
       <variables>
         <var name="parentProcess">mergeReconChunks</var>
         <var name="fileType">recon</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -1623,6 +1669,7 @@
       <variables>
         <var name="parentProcess">mergeSvacChunks</var>
         <var name="fileType">svac</var>
+        <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -2027,6 +2074,7 @@
       <variables>
         <var name="parentProcess">copyM7HpLci</var>
         <var name="fileType">magic7Hp</var>
+        <var name="timeProcess">findChunksLci</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -2052,6 +2100,7 @@
       <variables>
         <var name="parentProcess">mergeDigiLci</var>
         <var name="fileType">digi</var>
+        <var name="timeProcess">findChunksLci</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -2077,6 +2126,7 @@
       <variables>
         <var name="parentProcess">mergeDigiHistLci</var>
         <var name="fileType">digiHist</var>
+        <var name="timeProcess">findChunksLci</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -2102,6 +2152,7 @@
       <variables>
         <var name="parentProcess">mergeFastMonErrorLci</var>
         <var name="fileType">fastMonError</var>
+        <var name="timeProcess">findChunksLci</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -2127,6 +2178,7 @@
       <variables>
         <var name="parentProcess">mergeFastMonTupleLci</var>
         <var name="fileType">fastMonTuple</var>
+        <var name="timeProcess">findChunksLci</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -2152,6 +2204,7 @@
       <variables>
         <var name="parentProcess">mergeFastMonHistLci</var>
         <var name="fileType">fastMonHist</var>
+        <var name="timeProcess">findChunksLci</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s

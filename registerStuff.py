@@ -23,7 +23,7 @@ site = getVar(fileType, 'site')
 fileName = getVar(fileType, 'fileName')
 creator = getVar(fileType, 'creator')
 
-fcPi = pipeline.getProcessInstance('findChunks')
+fcPi = pipeline.getProcessInstance(timeProcess)
 lessBrokenTStart = fcPi.getVariable('tStart')
 lessBrokenTStop = fcPi.getVariable('tStop')
 
