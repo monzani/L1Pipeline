@@ -211,7 +211,7 @@ acqTable = 'GLASTOPS_ACQSUMMARY'
 scid = 77
 hpTaskBase = '/afs/slac/g/glast/isoc/flightOps/offline/halfPipe/prod'
 
-stVersion = 'v9r5p5'
+stVersion = 'v9r6p2'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
 #ST = os.path.join(L1Cmt, "ScienceTools", "ScienceTools-%s" % stVersion)
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
@@ -228,9 +228,13 @@ else:
 cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 
 cmtPackages = {
-     'calibTkrUtil': {
+    'calibGenTKR': {
         'repository': '',
-        'version': 'v2r2p4',
+        'version': 'v4r5',
+        },
+    'calibTkrUtil': {
+        'repository': '',
+        'version': 'v2r4',
         },
     'Common': {
         'repository': 'dataMonitoring',
@@ -370,7 +374,8 @@ apps = {
         packages['FastMon']['python'], 'pFastMonTreeProcessor.py'),
     'fastMonTuple': packages['FastMon']['app'],
     'fastMon': packages['FastMon']['app'],
-    'makeFT1': os.path.join(stBinDir, 'makeFT1'),
+    # 'makeFT1': os.path.join(stBinDir, 'makeFT1'),
+    'makeFT1': os.path.join(stBinDir, 'makeFT1_kluge'),
     'makeFT2': packages['ft2Util']['app'],
     'makeLS3': os.path.join(stBinDir, 'gtltcube'),
     'mergeFT2': os.path.join(
@@ -506,7 +511,8 @@ tdBin = {
 
 #ft1Cuts = 'DEFAULT'
 ft1Cuts = os.path.join(packages['evtClassDefs']['data'], 'pass6_FSW_cuts')
-ft1Classifier = 'Pass6_Classifier'
+#ft1Classifier = 'Pass6_Classifier'
+ft1Classifier = 'Pass6_kluge_Classifier'
 ft1Dicts = {
     'ft1': os.path.join(packages['evtClassDefs']['data'], 'FT1variables'),
     'ls1': os.path.join(packages['evtClassDefs']['data'], 'LS1variables'),

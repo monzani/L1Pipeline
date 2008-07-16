@@ -1,3 +1,11 @@
+1.61
+-----------------
+Fix bug that prevented registration of LCI data. [LONE-90@JIRA]
+Use MootSvc.ExitOnFatal="true"; when digitizing real data.
+Use makeFT1_kluge and Pass6_kluge_Classifier. [LONE-91@JIRA]
+-------------------------------------------
+
+
 1.60
 -----------------
 Use a link to point to AlarmsCfg (LONE-88).
