@@ -25,9 +25,7 @@ finishOption = config.finishOption
 evtClassDefsPython = config.packages['evtClassDefs']['python']
 
 stSetup = config.stSetup
-#app = config.apps['makeFT1']
-appSetup = os.path.join('$FITSGENROOT', 'cmt', 'setup.sh')
-app = os.path.join('$FITSGENROOT', '$CMTCONFIG', 'makeFT1.exe')
+app = os.path.join('$FITSGENROOT', '$CMTCONFIG', 'makeFT1_kluge.exe')
 
 realMeritFile = fileNames.fileName('merit', dlId, runId)
 stagedMeritFile = staged.stageIn(realMeritFile)
@@ -52,10 +50,10 @@ cfitsioPath = config.cfitsioPath
 
 cmd = '''
 cd %(workDir)s
+echo $PFILES
 source %(stSetup)s
-#source %(appSetup)s
 PYTHONPATH=%(evtClassDefsPython)s:$PYTHONPATH ; export PYTHONPATH
-#LD_LIBRARY_PATH=%(cfitsioPath)s:$LD_LIBRARY_PATH ; export LD_LIBRARY_PATH
+echo $PFILES
 %(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=%(tCuts)s event_classifier="%(classifier)s" tstart=%(tStart).17g tstop=%(tStop).17g dict_file=%(dictionary)s file_version=%(version)s
 ''' % locals()
 

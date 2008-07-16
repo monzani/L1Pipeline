@@ -215,7 +215,7 @@ stVersion = 'v9r6p2'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
 #ST = os.path.join(L1Cmt, "ScienceTools", "ScienceTools-%s" % stVersion)
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
-PFILES = ".;"
+PFILES = ".;/dev/null"
 stBinDir = os.path.join(ST, 'bin')
 #aspLauncher = '/nfs/farm/g/glast/u33/ASP/ASP/AspLauncher/v1/rh9_gcc32/aspLauncher.sh'
 #aspLauncher = '/bin/true'
@@ -234,7 +234,7 @@ cmtPackages = {
         },
     'calibTkrUtil': {
         'repository': '',
-        'version': 'v2r4',
+        'version': 'v2r4p1',
         },
     'Common': {
         'repository': 'dataMonitoring',

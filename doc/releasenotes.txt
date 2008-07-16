@@ -3,6 +3,7 @@
 Fix bug that prevented registration of LCI data. [LONE-90@JIRA]
 Use MootSvc.ExitOnFatal="true"; when digitizing real data.
 Use makeFT1_kluge and Pass6_kluge_Classifier. [LONE-91@JIRA]
+Use a private copy of calibGenTkr to go with calibTkrUtil.
 -------------------------------------------
 
 
