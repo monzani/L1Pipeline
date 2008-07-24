@@ -87,6 +87,9 @@
         <var name="%(magic7Hp_versionName)s">%(magic7Hp_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s " />
+      <depends>
+        <after process="findChunks" status="SUCCESS"/>
+      </depends>
     </process>
 
     <process name="makeM7L1">
@@ -113,7 +116,6 @@
       </script>
       <depends>
         <after process="copyM7Hp" status="SUCCESS"/>
-        <after process="findChunks" status="SUCCESS"/>
       </depends>
     </process>
  
@@ -2068,6 +2070,9 @@
         <var name="%(magic7Hp_versionName)s">%(magic7Hp_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s " />
+      <depends>
+        <after process="findChunksLci" status="SUCCESS"/>
+      </depends>
     </process>
 
     <process name="registerM7HpLci">

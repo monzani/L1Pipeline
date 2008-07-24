@@ -1,3 +1,10 @@
+
+1.62
+-----------------
+Fixed the dependencies for copyM7Hp and registerM7Hp
+-------------------------------------------
+
+
 1.61
 -----------------
 Fix bug that prevented registration of LCI data. [LONE-90@JIRA]
