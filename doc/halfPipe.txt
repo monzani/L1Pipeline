@@ -15,3 +15,6 @@ In v6r1p0, I added a per-downlink "pin" for launchL1....  just touch the file
 and it'll skip the L1Proc createstream (but still generate and deliver all the
 .txt files, etc.).
 
+
+the presence of a file called 'haltStage' will bail out prior to
+staging the .txt files, and 'haltL1' will just stop it from dispatching L1Proc.

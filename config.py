@@ -13,6 +13,8 @@ L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VE
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
+creator = '-'.join([L1Name, L1Version])
+    
 #L1Cmt = os.path.join(installRoot, 'builds')
 L1Volume = '/afs/slac/g/glast/ground/releases/volume03'
 L1CmtBase = os.environ.get('L1_BUILD_DIR') or os.path.join(L1Volume, 'L1Proc')
@@ -70,6 +72,7 @@ calibFlavors = { # not using this now, have separate JO files for LPA & MC
 
 
 L1Disk = '/nfs/farm/g/glast/u52/L1'
+if testMode: L1Disk += 'Test'
 # L1Dir = os.path.join(L1Disk, 'rootData')
 L1Dir = L1Disk
 
@@ -91,14 +94,14 @@ if testMode: L1Dir = os.path.join(L1Dir, 'test')
 
 # staging buffers with smallish integer weights
 # These are actually links so they can be swapped out easily.
+## No, they're not.
 stageDisks = [ 
-#     ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/test", 1),
-     ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/00", 1),
-     ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/01", 1),
-     ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/02", 1),
-     ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/03", 1),
-     ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/04", 1),
-     ("/afs/slac.stanford.edu/g/glast/ground/releases/volume03/L1Proc/staging/05", 1),
+     ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging", 1),
+     ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging2", 1),
+     ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging3", 1),
+     ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging4", 1),
+     ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging5", 1),
+     ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging7", 1),
     ]
 if testMode:
     stageBase = 'l1Test'
@@ -112,9 +115,10 @@ else:
 #maxCrumbSize = 6353   # ~.5Hr on tori (muons).  Also about half of (old) medium q limit
 #maxCrumbSize = 17000   # ~.5Hr on cob (skymodel).
 minCrumbCpuf = 7
-maxCrumbs = 7 # Maximum number of crumbs/chunk. Not used by current algorithm.
-crumbSize = 10000 # typical crumb size
-# crumbSize = 2000 # typical crumb size
+# maxCrumbs = 7 # Maximum number of crumbs/chunk. Not used by current algorithm.
+maxCrumbs = 25 # Maximum number of crumbs/chunk.
+# crumbSize = 10000 # typical crumb size
+crumbSize = 1000 # typical crumb size
 crumbMmr = 2.0 # largestCrumb / smallestCrumb
 
 defaultRunStatus = 'WAITING'
@@ -158,8 +162,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
-glastVersion = 'v15r24'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
+glastVersion = 'v15r31'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -224,6 +228,7 @@ if testMode:
 else:
     aspLauncher = '/afs/slac/g/glast/ground/links/data/ASP/aspLauncher.sh'
     pass
+aspAlreadyLaunched = 160
 
 cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
 
@@ -238,11 +243,11 @@ cmtPackages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v3r4p1',
+        'version': 'v3r7p0',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
-        'version': 'v4r1p6',
+        'version': 'v4r1p7',
         },
     'evtClassDefs': {
         'repository': '',
@@ -250,7 +255,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v3r4p1',
+        'version': 'v3r5p6',
         },
     'ft2Util': {
         'repository': '',
@@ -258,15 +263,15 @@ cmtPackages = {
         },
     'GPLtools': {
         'repository': '',
-        'version': 'v1r10',
+        'version': 'v1r11',
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r2p11',
+        'version': 'v1r2p16',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
-        'version': 'v0r4',
+        'version': 'v0r5',
         },
     'TestReport': {
         'repository': 'svac',
@@ -281,11 +286,11 @@ cvsPackages = {
 #         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r2p3',
+        'version': 'v1r2p10',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r3p1',
+        'version': 'v1r4p3',
         },
     'IGRF': {
         'repository': 'dataMonitoring',

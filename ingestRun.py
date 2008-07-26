@@ -29,6 +29,8 @@ app = config.runIngestor
 realInFile = fileNames.fileName(reportType, dlId, runId)
 stagedInFile = staged.stageIn(realInFile)
 
+workDir = os.path.dirname(stagedInFile)
+
 version = os.environ['L1TrendVersion']
 
 if config.testMode:
@@ -38,7 +40,10 @@ else:
     pass
 
 fileType = reportType.upper()
-cmd = '%(app)s %(stagedInFile)s %(version)s %(db)s %(reportType)s %(fileType)s %(nMetStart)s %(nMetStop)s' % locals()
+cmd = '''
+cd %(workDir)s
+%(app)s %(stagedInFile)s %(version)s %(db)s %(reportType)s %(fileType)s %(nMetStart)s %(nMetStop)s
+''' % locals()
 
 status = runner.run(cmd)
 if status: finishOption = 'wipe'

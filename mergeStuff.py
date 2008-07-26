@@ -66,12 +66,17 @@ if numInFiles == 0:
 # the expected input files.
 if numInFiles != len(expectedInFiles):
     idStr = 'run %s' % runId
+    target = '%s' %runId
     if mergeLevel == 'chunk':
         idStr += ' chunk %s' % chunkId
+        target += '.%s'  % chunkId
         pass
     msg = """Merging %(fileType)s file for %(idStr)s could not find all expected input files.""" % locals()
     print >> sys.stderr, msg
-    l1Logger.error(msg)
+
+    kwargs = {'tgt': target}
+    
+    l1Logger.error(msg, **kwargs)
 
     print >> sys.stderr, 'Supressing cleanup.'
     runDir = fileNames.fileName(None, dlId, runId)
@@ -84,7 +89,14 @@ if numInFiles != len(expectedInFiles):
 
 realOutFile = fileNames.fileName(fileType, dlId, runId, chunkId, next=True)
 
-inStage = stageFiles.StageSet()
+# avoid afs cache thash
+if mergeLevel == 'run' and fileType in []: # not obviously helpful
+    stageKWArgs = {'excludeIn': None}
+else:
+    stageKWArgs = {}
+    pass
+
+inStage = stageFiles.StageSet(**stageKWArgs)
 
 outStageDir = '_'.join(stageDirPieces)
 # outStage = stageFiles.StageSet(outStageDir, config.afsStage)

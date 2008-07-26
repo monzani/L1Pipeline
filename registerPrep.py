@@ -22,10 +22,10 @@ def prep(fileType, fileName):
     creator = '-'.join([taskName, taskVersion])
 
     variables.setVar(fileType, 'format', fileNames.fileTypes[fileType])
-    variables.setVar(fileType, 'path', config.dataCatDir)
+    # variables.setVar(fileType, 'path', config.dataCatDir) # remove me!
     variables.setVar(fileType, 'group', fileNames.dataCatGroup(fileType))
     variables.setVar(fileType, 'site', fileNames.getSite(fileName))
     variables.setVar(fileType, 'fileName', fileName)
-    variables.setVar(fileType, 'creator', creator)
+    # variables.setVar(fileType, 'creator', creator) # remove me!
 
     return

@@ -14,6 +14,8 @@
     <var name="L1_INSTALL_DIR">%(installRoot)s</var>
     <var name="L1_BUILD_DIR">%(L1CmtBase)s</var>
     <var name="L1TrendVersion">Prompt</var> <!-- override if reprocessing -->
+    <var name="creator">%(creator)s</var>
+    <var name="dataCatDir">%(dataCatDir)s</var>
     <var name="nameManglingPrefix">%(nameManglingPrefix)s</var>
   </variables>
 
@@ -1635,7 +1637,7 @@
         <var name="fileType">recon</var>
         <var name="%(recon_versionName)s">%(recon_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;20]&quot; "/>
+      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;50]&quot; "/>
       <depends>
         <after process="doChunk.mergeReconCrumbs" status="DONE"/>
       </depends>

@@ -189,6 +189,23 @@ def stageBalance(str):
     return baseDir
 
 
+def findAndReadChunkLists(runId):
+    dlId = '*'
+    pattern = fileName('chunkList', dlId, runId)
+    print >> sys.stderr, 'Looking for files of form %s' % pattern
+    chunkFiles = glob.glob(pattern)
+    print >> sys.stderr, 'Found %s' % chunkFiles
+    chunks = []
+    for chunkFile in chunkFiles:
+        these = readList(chunkFile)
+        print these
+        chunks.extend(these.items())
+        ids = sorted(this for this in these)
+        print >> sys.stderr, '%s: %s' % (chunkFile, ids)
+        continue
+    return chunks
+
+
 def findPieces(fileType, dlId, runId=None, chunkId=None):
     """@brief find chunks or crumbs to merge.
 
@@ -214,6 +231,8 @@ def findPieces(fileType, dlId, runId=None, chunkId=None):
         else:
             # We are merging chunk files into a run file.
             # We have to find a file listing chunks for each downlink.
+            #
+            # Should use findAndReadChunkLists here
             dlId = '*'
             pattern = fileName('chunkList', dlId, runId)
             print >> sys.stderr, 'Looking for files of form %s' % pattern
@@ -258,18 +277,29 @@ def findPieces(fileType, dlId, runId=None, chunkId=None):
     return pieces
 
 
-def readListOld(inFile):
-    items = [line.strip().split()[0] for line in open(inFile)]
-    return items
-
-def readListNew(inFile):
-    return cPickle.load(open(inFile))
-
-def writeList(data, outFile):
+def writeListPickle(data, outFile):
     cPickle.dump(data, open(outFile, 'w'))
     return
 
-readList = readListNew
+def readListPickle(inFile):
+    return cPickle.load(open(inFile))
+
+def writeListRepr(data, outFile):
+    open(outFile, 'w').write(repr(data))
+    return
+
+def readListRepr(inFile):
+    return eval(open(inFile).read())
+
+def readListCombo(inFile):
+    try:
+        data = readListPickle(inFile)
+    except cPickle.UnpicklingError:
+        data = readListRepr(inFile)
+    return data
+
+readList = readListCombo
+writeList = writeListRepr
 
 
 def subDirectory(fileType, dlId, runId=None, chunkId=None, crumbId=None):

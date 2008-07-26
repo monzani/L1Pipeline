@@ -17,10 +17,9 @@ import runner
 
 status = 0
 
-# dlRawDir = os.environ['DOWNLINK_RAWDIR']
-
-# head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
-# if not dlId: head, dlId = os.path.split(head)
+dlRawDir = os.environ['DOWNLINK_RAWDIR']
+head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
+if not dlId: head, dlId = os.path.split(head)
 
 # start = {}
 # stop = {}
@@ -51,5 +50,10 @@ cmd = config.aspLauncher
 
 #print >> sys.stderr, "Not running [%s]" % cmd
 status = runner.run(cmd)
+
+if status == config.aspAlreadyLaunched:
+    print >> sys.stderr, 'ASP already launched for delivery %s' % dlId
+    status = 0
+    pass
 
 sys.exit(status)

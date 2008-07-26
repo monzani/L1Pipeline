@@ -8,3 +8,11 @@ CalTupleAlg.tupleFilename = "$calCrumbFile";
 gcrSelectRootWriterAlg.gcrSelectRootFile = "$gcrCrumbFile";
 PtValsAlg.PointingHistory = {"$fakeFT2File","", ""};
 GlastDetSvc.xmlfile = "$(XMLGEODBSROOT)/xml/$(gleamGeometry)";
+
+//TkrCalibAlg.chargeInjectionCalibFlavor = "validation";
+//TkrCalibAlg.muonCalibFlavor            = "validation";
+
+//CalibDataSvc.CalibFlavorList += {"validation"};
+//CalibMySQLCnvSvc.QualityList  = {"PROD","DEV"};
+
+//Calibration.Members = {"TkrCalibAlg"};

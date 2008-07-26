@@ -25,6 +25,8 @@ app = config.trendIngestor
 realInFile = fileNames.fileName(reportType, dlId, runId)
 stagedInFile = staged.stageIn(realInFile)
 
+workDir = os.path.dirname(stagedInFile)
+
 #version = fileNames.version(realInFile)
 version = os.environ['L1TrendVersion']
 
@@ -51,7 +53,10 @@ timeBins = {
     }
 tdBin = timeBins.get(config.tdBin[reportType], 'UnknownTimeBin')
 
-cmd = '%(app)s %(stagedInFile)s %(version)s %(db)s %(process)s %(tdBin)s' % locals()
+cmd = '''
+cd %(workDir)s
+%(app)s %(stagedInFile)s %(version)s %(db)s %(process)s %(tdBin)s
+''' % locals()
 
 status = runner.run(cmd)
 if status: finishOption = 'wipe'

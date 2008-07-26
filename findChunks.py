@@ -1,4 +1,4 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc --add-env=oracle11 python2.5
+#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc --add-env=oracle11 --add-env=flightops python2.5
 
 """@brief Find new chunk files.
 
@@ -15,6 +15,7 @@ import config
 import GPLinit
 
 import acqQuery
+import chunkTester
 import fileNames
 import finders
 import lockFile
@@ -28,14 +29,23 @@ head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 
-staged = stageFiles.StageSet()
-finishOption = config.finishOption
-
 realChunkList = fileNames.fileName('chunkList', dlId, runId)
 # unmangle chunk list name to get around JIRA LONE-67
 mangledChunkList = fileNames.mangleChunkList(realChunkList)
 cmd = 'mv %s %s' % (mangledChunkList, realChunkList)
 runner.run(cmd)
+
+# check that the chunks aren't crazy
+chunks = fileNames.findAndReadChunkLists(runId)
+chunkFiles = [chunkData['chunkFile'] for chunkId, chunkData in chunks]
+if not chunkTester.verifyFiles(chunkFiles):
+    print >> sys.stderr, 'Run %s has bad crazy chunks.' % runId
+    sys.exit(1)
+    pass
+
+staged = stageFiles.StageSet()
+finishOption = config.finishOption
+
 stagedChunkList = staged.stageIn(realChunkList)
 
 subTask = config.chunkSubTask[os.environ['DATASOURCE']]

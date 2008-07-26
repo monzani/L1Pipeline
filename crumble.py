@@ -25,9 +25,12 @@ def crumble_equal(total):
 def crumble_exp_old(total):
     minCrumbSize = config.crumbSize
     maxCrumbs = config.maxCrumbs
+    mmr = config.crumbMmr # largestCrumb / smallestCrumb
     minCrumbs = max(1, int(math.floor(float(total) / minCrumbSize)))
     nCrumbs = min(maxCrumbs, minCrumbs)
-    factor = 0.95
+    print >> sys.stderr, 'nCrumbs = %d' % nCrumbs
+    factor = math.exp(-math.log(mmr) / nCrumbs)
+    print >> sys.stderr, 'Crumb growth factor = %g' % factor
     scales = []
     totScale = 0
     for iCrumb in range(nCrumbs):
@@ -38,6 +41,7 @@ def crumble_exp_old(total):
     scales.reverse()
     topCrumb = total / totScale
     crumbSizes = [int(math.ceil(topCrumb * scale)) for scale in scales]
+    print >> sys.stderr, crumbSizes
     return crumbSizes
 
 
@@ -60,10 +64,11 @@ def crumble_exp_new(total):
     scales.reverse()
     topCrumb = total / totScale
     crumbSizes = [int(math.ceil(topCrumb * scale)) for scale in scales]
+    print >> sys.stderr, crumbSizes
     return crumbSizes
 
 
-crumble = crumble_exp_new
+crumble = crumble_exp_old
 
 if __name__ == "__main__":
     import operator, sys

@@ -79,6 +79,8 @@ def concatenate_prune(outputFileName, fileNames, treeName='Digi', expectedEntrie
 
     # we don't really care if this succeeds or not...
     junk = pt.copyHeader(fileNames[0])
+    # Or maybe we do.  Check it out.
+    print >> sys.stderr, 'Result of header copy: %s' % junk
 
     # Here's where the real work happens
     retCode = pt.prune()

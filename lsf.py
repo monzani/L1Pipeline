@@ -76,6 +76,8 @@ def hostList():
         random.shuffle(hl)
         hosts.extend((host,)+types[ht] for host in hl)
         continue
+    # We often get multiple deliveries.  Shuffle the whole thing.
+    random.shuffle(hosts)
 
     print >> sys.stderr, 'TOTAL: %d hosts %d cores %f cpu' % (totHosts, totCores, totCpu)
     # put more-desireable hosts at the front of the list

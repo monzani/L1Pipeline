@@ -17,11 +17,9 @@ runNumber = int(RUNID[1:])
 
 dsName = RUNID
 fileFormat = getVar(fileType, 'format')
-dcPath = getVar(fileType, 'path')
 dcGroup = getVar(fileType, 'group')
 site = getVar(fileType, 'site')
 fileName = getVar(fileType, 'fileName')
-creator = getVar(fileType, 'creator')
 
 fcPi = pipeline.getProcessInstance(timeProcess)
 lessBrokenTStart = fcPi.getVariable('tStart')
@@ -39,5 +37,5 @@ attributes.put('nRun', runNumber)
 
 print attributes
 
-dsNew = NewDataset(dsName, fileFormat, fileType, dcPath, dcGroup, site, fileName)
+dsNew = NewDataset(dsName, fileFormat, fileType, dataCatDir, dcGroup, site, fileName)
 ds = datacatalog.registerDataset(dsNew, attributes);
