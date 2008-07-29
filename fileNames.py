@@ -198,7 +198,7 @@ def findAndReadChunkLists(runId):
     chunks = []
     for chunkFile in chunkFiles:
         these = readList(chunkFile)
-        print these
+        # print >> sys.stderr, these
         chunks.extend(these.items())
         ids = sorted(this for this in these)
         print >> sys.stderr, '%s: %s' % (chunkFile, ids)

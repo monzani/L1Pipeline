@@ -16,20 +16,19 @@ def verifyChunk((start, stop, nEvt)):
     if nEvt <= 1:
         print >> sys.stderr, 'Chunk %d has %d <= 1 events!' % (start, nEvt)
         return False
-    delta = stop - start
-    if delta < 0:
+    nMax = stop - start + 1
+    if nMax <= 0:
         print >> sys.stderr, 'Chunk %d goes backwards!' % (start)
         return False
-    dp1 = delta + 1
-    if nEvt > dp1:
-        print >> sys.stderr, 'Chunk %s has too many events: %d > %d' % (start, nEvt, dp1)
+    if nEvt > nMax:
+        print >> sys.stderr, 'Chunk %s has too many events: %d > %d' % (start, nEvt, nMax)
         return False
     return True
 
 
 def verifyList(chunks):
     print >> sys.stderr, 'Testing chunks...'
-    chunks = sorted(chunks)
+    chunks = [chunk[0] for chunk in sorted(chunks)]
     for chunk in chunks:
         if not verifyChunk(chunk): return False
         continue
@@ -48,5 +47,7 @@ def verifyList(chunks):
 
 
 def verifyFiles(inFiles):
-    chunks = [readHeader(inFile) for inFile in inFiles]
+    chunks = sorted((readHeader(inFile), inFile) for inFile in inFiles)
+    print >> sys.stderr, r"""((start, stop, nEvents), 'fileName')"""
+    for chunk in chunks: print >> sys.stderr, chunk
     return verifyList(chunks)

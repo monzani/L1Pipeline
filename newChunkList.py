@@ -33,4 +33,5 @@ outName = '_'.join([runId, dlId, 'chunkList.txt.new'])
 #outName = fileNames.fileName('chunkList', dlId, runId) + '.bork'
 
 print >> sys.stderr, 'Creating %s' % outName
+# fileNames.writeListPickle(chunks, outName) # for old format
 fileNames.writeList(chunks, outName)

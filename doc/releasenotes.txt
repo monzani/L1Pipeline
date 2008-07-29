@@ -1,7 +1,7 @@
 
 1.62
 -----------------
-Fixed the dependencies for copyM7Hp and registerM7Hp
+Fixed the dependencies for copyM7Hp and registerM7Hp and copyM7Lci.
 Don't use symlinks to buffers. [LONE-100@JIRA]
 Use a constant bigger number of smaller crumbs/chunk. [LONE-100@JIRA]
 Assign hosts to chunks in random order. [LONE-100@JIRA]
@@ -11,7 +11,7 @@ Avoid core files in log directory from ingest jobs.
 Don't fail kludgeAsp if the stream has already been launched. [ASP-26@JIRA]
 Put runId[.chunkId] in target when logging missing files on
 merge. [LONE-94@JIRA]
-Trim a couple of staic values from registerPrep/registerStuff interface.
+Trim a couple of static values from registerPrep/registerStuff interface.
 Require 50GB free scratch for merging recon.
 -------------------------------------------
 
