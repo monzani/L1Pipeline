@@ -162,8 +162,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
-glastVersion = 'v15r31'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume07')
+glastVersion = 'v15r33'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -290,7 +290,7 @@ cvsPackages = {
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r4p3',
+        'version': 'v1r4p4',
         },
     'IGRF': {
         'repository': 'dataMonitoring',
