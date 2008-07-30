@@ -76,7 +76,17 @@ def runTimes(run):
     fields = ['EVTUTC0', 'EVTUTC1']
     dtResults = query([run], fields)
 
-    row = dtResults[run]
+    try:
+        row = dtResults[run]
+    except KeyError:
+        print >> sys.stderr, "Run %s isn't in acqsummary!" % run
+        if config.testMode:
+            print >> sys.stderr, "Returning bogus times."
+            return 238555581.0, 238555742.0
+        else:
+            raise
+        pass
+        
     results = tuple(glastTime.dt2Met(dt) for dt in row)
 
     return results

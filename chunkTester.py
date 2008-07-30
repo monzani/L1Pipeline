@@ -47,6 +47,9 @@ def verifyList(chunks):
 
 
 def verifyFiles(inFiles):
+    if not inFiles:
+        print >> sys.stderr, 'No input data, cannot continue!'
+        return False
     chunks = sorted((readHeader(inFile), inFile) for inFile in inFiles)
     print >> sys.stderr, r"""((start, stop, nEvents), 'fileName')"""
     for chunk in chunks: print >> sys.stderr, chunk

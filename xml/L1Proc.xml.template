@@ -16,6 +16,8 @@
     <var name="L1TrendVersion">Prompt</var> <!-- override if reprocessing -->
     <var name="creator">%(creator)s</var>
     <var name="dataCatDir">%(dataCatDir)s</var>
+    <var name="isocMode">%(isocMode)s</var>
+    <var name="isocRun">%(isocRun)s</var>
     <var name="nameManglingPrefix">%(nameManglingPrefix)s</var>
   </variables>
 
@@ -25,7 +27,7 @@
   </prerequisites>
 
   <process name="findRunDirs">
-    <job executable="${L1ProcROOT}/findRunDirs.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d " />
+    <job executable="${isocRun} python2.5 ${L1ProcROOT}/findRunDirs.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d " />
     <createsSubtasks>
       <subtask>doRun</subtask>
       <subtask>doLci</subtask>
@@ -35,12 +37,12 @@
 
 <!--
   <process name="ft2Gaps">
-    <job executable="${L1ProcROOT}/ft2Db.py" batchOptions=" -q %(expressQ)s "/>
+    <job executable="${isocRun} python2.5 ${L1ProcROOT}/ft2Db.py" batchOptions=" -q %(expressQ)s "/>
   </process>
 -->
 
   <process name="kludgeAsp">
-    <job executable="${L1ProcROOT}/kludgeAsp.py" batchOptions=" -q %(expressQ)s " />
+    <job executable="${isocRun} python2.5 ${L1ProcROOT}/kludgeAsp.py" batchOptions=" -q %(expressQ)s " />
     <depends>
       <after process="doRun.registerFT1" status="SUCCESS"/>
       <after process="doRun.registerFT2" status="SUCCESS"/>
@@ -48,7 +50,7 @@
   </process>
 
   <process name="cleanupDl">
-    <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(expressQ)s " />
+    <job executable="${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(expressQ)s " />
     <depends>
       <after process="doInc.checkRunInc" status="SUCCESS"/>
       <after process="doLci.checkRunLci" status="SUCCESS"/>
@@ -65,7 +67,7 @@
    </prerequisites>
 
     <process name="findChunks">
-      <job executable="${L1ProcROOT}/findChunks.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py -sp %(highPriority)d " />
+      <job executable="${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/findChunks.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py -sp %(highPriority)d " />
       <createsSubtasks>
         <subtask>doChunk</subtask>
       </createsSubtasks>
@@ -88,7 +90,7 @@
       <variables>
         <var name="%(magic7Hp_versionName)s">%(magic7Hp_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s " />
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s " />
       <depends>
         <after process="findChunks" status="SUCCESS"/>
       </depends>
@@ -100,7 +102,7 @@
         <var name="tStart">${pipeline.processInstance("findChunks").getVariable("tStart") }</var>      
         <var name="tStop">${pipeline.processInstance("findChunks").getVariable("tStop") }</var>      
       </variables>
-      <job executable="${L1ProcROOT}/makeM7.py" batchOptions=" -q %(shortQ)s " />
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/makeM7.py" batchOptions=" -q %(shortQ)s " />
       <depends>
         <after process="findChunks" status="SUCCESS"/>
       </depends>
@@ -142,7 +144,7 @@
         <var name="fileType">digi</var>
         <var name="%(digi_versionName)s">%(digi_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;5]&quot; " />
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;5]&quot; " />
       <depends>
         <after process="doChunk.digitization" status="DONE"/>
       </depends>
@@ -168,7 +170,7 @@
         <var name="fileType">digiHist</var>
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <after process="doChunk.digiHist" status="DONE"/>
       </depends>
@@ -195,7 +197,7 @@
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
         <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="registerDigiHist" status="SUCCESS"/>
       </depends>
@@ -221,7 +223,7 @@
         <var name="reportType">digiHistAlarm</var>
         <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="registerDigiHistAlarm" status="SUCCESS"/>
       </depends>
@@ -232,7 +234,7 @@
         <var name="fileType">digiHistAlarm</var>
         <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="registerDigiHistAlarm" status="SUCCESS"/>
       </depends>
@@ -244,7 +246,7 @@
         <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
         <var name="%(verifyHisto_versionName)s">%(verifyHisto_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s "/>
       <depends>
         <after process="registerDigi" status="SUCCESS"/>
       </depends>
@@ -285,7 +287,7 @@
         <var name="reportType">verifyLog</var>
         <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="registerVerifyLog" status="SUCCESS"/>
       </depends>
@@ -296,7 +298,7 @@
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
         <var name="%(acdPlots_versionName)s">%(acdPlots_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/acdPlots.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/acdPlots.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="registerDigiHist" status="SUCCESS"/>
       </depends>
@@ -322,7 +324,7 @@
         <var name="fileType">digiTrend</var>
         <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <after process="doChunk.digiTrend" status="DONE"/>
       </depends>
@@ -348,7 +350,7 @@
         <var name="reportType">digiTrend</var>
         <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="registerDigiTrend" status="SUCCESS"/>
       </depends>
@@ -360,7 +362,7 @@
         <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
         <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="registerDigiTrend" status="SUCCESS"/>
       </depends>
@@ -386,7 +388,7 @@
         <var name="fileType">digiTrendAlarm</var>
         <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="registerDigiTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -397,7 +399,7 @@
         <var name="reportType">digiTrendAlarm</var>
         <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="registerDigiTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -408,7 +410,7 @@
         <var name="fileType">calHist</var>
         <var name="%(calHist_versionName)s">%(calHist_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <after process="doChunk.calHist" status="DONE"/>
       </depends>
@@ -434,7 +436,7 @@
         <var name="fileType">calTrend</var>
         <var name="%(calTrend_versionName)s">%(calTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <after process="doChunk.calTrend" status="DONE"/>
       </depends>
@@ -460,7 +462,7 @@
         <var name="reportType">calTrend</var>
         <var name="%(calTrend_versionName)s">%(calTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="registerCalTrend" status="SUCCESS"/>
       </depends>
@@ -473,7 +475,7 @@
         <var name="%(calHist_versionName)s">%(calHist_version)s</var>
         <var name="%(acdPedsAnalyzer_versionName)s">%(acdPedsAnalyzer_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s "/>
       <depends>
         <after process="registerCalHist" status="SUCCESS"/>
       </depends>
@@ -501,7 +503,7 @@
         <var name="%(calHist_versionName)s">%(calHist_version)s</var>
         <var name="%(calGainsAnalyzer_versionName)s">%(calGainsAnalyzer_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s "/>
       <depends>
         <after process="registerCalHist" status="SUCCESS"/>
       </depends>
@@ -529,7 +531,7 @@
         <var name="%(calHist_versionName)s">%(calHist_version)s</var>
         <var name="%(calPedsAnalyzer_versionName)s">%(calPedsAnalyzer_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s "/>
       <depends>
         <after process="registerCalHist" status="SUCCESS"/>
       </depends>
@@ -555,7 +557,7 @@
         <var name="fileType">fastMonError</var>
         <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s "/>
       <depends>
         <after process="doChunk.fastMonTuple" status="DONE"/>
       </depends>
@@ -581,7 +583,7 @@
         <var name="reportType">fastMonError</var>
         <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="registerFastMonError" status="SUCCESS"/>
       </depends>
@@ -592,7 +594,7 @@
         <var name="fileType">fastMonHist</var>
         <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <after process="doChunk.fastMonHist" status="DONE"/>
       </depends>
@@ -620,7 +622,7 @@
         <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
         <var name="%(compareDFm_versionName)s">%(compareDFm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/compDigiFastMon.py" batchOptions=" -q %(mediumQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/compDigiFastMon.py" batchOptions=" -q %(mediumQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <after process="registerDigiHist" status="SUCCESS"/>
         <after process="registerFastMonHist" status="SUCCESS"/>
@@ -647,7 +649,7 @@
         <var name="fileType">fastMonTuple</var>
         <var name="%(fastMonTuple_versionName)s">%(fastMonTuple_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <after process="doChunk.fastMonTuple" status="DONE"/>
       </depends>
@@ -674,7 +676,7 @@
         <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
         <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="registerFastMonHist" status="SUCCESS"/>
       </depends>
@@ -700,7 +702,7 @@
         <var name="fileType">fastMonHistAlarm</var>
         <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="registerFastMonHistAlarm" status="SUCCESS"/>
       </depends>
@@ -711,7 +713,7 @@
         <var name="reportType">fastMonHistAlarm</var>
         <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="registerFastMonHistAlarm" status="SUCCESS"/>
       </depends>
@@ -722,7 +724,7 @@
         <var name="fileType">fastMonTrend</var>
         <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <after process="doChunk.fastMonTrend" status="DONE"/>
       </depends>
@@ -748,7 +750,7 @@
         <var name="reportType">fastMonTrend</var>
         <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="registerFastMonTrend" status="SUCCESS"/>
       </depends>
@@ -760,7 +762,7 @@
         <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
         <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="registerFastMonTrend" status="SUCCESS"/>
       </depends>
@@ -786,7 +788,7 @@
         <var name="reportType">fastMonTrendAlarm</var>
         <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="registerFastMonTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -797,7 +799,7 @@
         <var name="fileType">fastMonTrendAlarm</var>
         <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="registerFastMonTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -808,7 +810,7 @@
         <var name="fileType">gcr</var>
         <var name="%(gcr_versionName)s">%(gcr_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <after process="doChunk.mergeGcrCrumbs" status="DONE"/>
       </depends>
@@ -834,7 +836,7 @@
         <var name="fileType">merit</var>
         <var name="%(merit_versionName)s">%(merit_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;2]&quot; " />
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;2]&quot; " />
       <depends>
         <after process="doChunk.mergeMeritCrumbs" status="DONE"/>
       </depends>
@@ -861,7 +863,7 @@
         <var name="%(merit_versionName)s">%(merit_version)s</var>
         <var name="%(ft1_versionName)s">%(ft1_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
         <after process="registerMerit" status="SUCCESS"/>
       </depends>
@@ -887,7 +889,7 @@
         <var name="fileType">ft1</var>
         <var name="%(ft1_versionName)s">%(ft1_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <job executable="${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
         <after process="registerFT1" status="SUCCESS"/>
       </depends>
@@ -899,7 +901,7 @@
         <var name="%(merit_versionName)s">%(merit_version)s</var>
         <var name="%(ls1_versionName)s">%(ls1_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
         <after process="registerMerit" status="SUCCESS"/>
       </depends>
@@ -925,7 +927,7 @@
         <var name="fileType">ls1</var>
         <var name="%(ls1_versionName)s">%(ls1_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <job executable="${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
         <after process="registerLS1" status="SUCCESS"/>
       </depends>
@@ -939,7 +941,7 @@
         <var name="%(merit_versionName)s">%(merit_version)s</var>
 <!--        <var name="L1_magic7L1_filename">${datacatalog.getDataset(RUNID, "/Data/Flight/Level1/"+DATASOURCE, "MAGIC7L1").getLocation("SLAC_XROOT").getPath()}</var>   -->
       </variables>
-      <job executable="${L1ProcROOT}/ft2Entries.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/ft2Entries.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
         <after process="registerDigi" status="SUCCESS"/>
         <after process="registerM7L1" status="SUCCESS"/>
@@ -967,7 +969,7 @@
       <variables>
         <var name="%(ft2Txt_versionName)s">%(ft2Txt_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/ft2Db.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/ft2Db.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
         <after process="registerFt2Txt" status="SUCCESS"/>
       </depends>
@@ -979,7 +981,7 @@
         <var name="%(ft2Txt_versionName)s">%(ft2Txt_version)s</var>
         <var name="%(ft2_versionName)s">%(ft2_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/makeFT2File.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/makeFT2File.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
         <!-- <after process="ingestFT2" status="SUCCESS"/> -->
         <after process="registerFt2Txt" status="SUCCESS"/>
@@ -1006,7 +1008,7 @@
         <var name="fileType">ft2</var>
         <var name="%(ft2_versionName)s">%(ft2_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d  -R &quot;select[scratch&gt;1]&quot; " />
+      <job executable="${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d  -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
         <after process="registerFT2" status="SUCCESS"/>
       </depends>
@@ -1018,7 +1020,7 @@
         <var name="%(ft2_versionName)s">%(ft2_version)s</var>
         <var name="%(ls3_versionName)s">%(ls3_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/makeLS3.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/makeLS3.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
         <after process="registerFT1" status="SUCCESS"/>
         <after process="registerFT2" status="SUCCESS"/>
@@ -1045,7 +1047,7 @@
         <var name="fileType">ls3</var>
         <var name="%(ls3_versionName)s">%(ls3_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <job executable="${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
         <after process="registerLS3" status="SUCCESS"/>
       </depends>
@@ -1056,7 +1058,7 @@
         <var name="fileType">cal</var>
         <var name="%(cal_versionName)s">%(cal_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;6]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;6]&quot; "/>
       <depends>
         <after process="doChunk.mergeCalCrumbs" status="DONE"/>
       </depends>
@@ -1082,7 +1084,7 @@
         <var name="fileType">meritTrend</var>
         <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <after process="doChunk.meritTrend" status="DONE"/>
       </depends>
@@ -1108,7 +1110,7 @@
         <var name="reportType">meritTrend</var>
         <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="registerMeritTrend" status="SUCCESS"/>
       </depends>
@@ -1120,7 +1122,7 @@
         <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
         <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="registerMeritTrend" status="SUCCESS"/>
       </depends>
@@ -1146,7 +1148,7 @@
         <var name="fileType">meritTrendAlarm</var>
         <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="registerMeritTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -1157,7 +1159,7 @@
         <var name="reportType">meritTrendAlarm</var>
         <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="registerMeritTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -1168,7 +1170,7 @@
         <var name="fileType">meritHist</var>
         <var name="%(meritHist_versionName)s">%(meritHist_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <after process="doChunk.meritHist" status="DONE"/>
       </depends>
@@ -1195,7 +1197,7 @@
         <var name="%(meritHist_versionName)s">%(meritHist_version)s</var>
         <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="registerMeritHist" status="SUCCESS"/>
       </depends>
@@ -1221,7 +1223,7 @@
         <var name="reportType">meritHistAlarm</var>
         <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="registerMeritHistAlarm" status="SUCCESS"/>
       </depends>
@@ -1232,7 +1234,7 @@
         <var name="fileType">meritHistAlarm</var>
         <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="registerMeritHistAlarm" status="SUCCESS"/>
       </depends>
@@ -1243,7 +1245,7 @@
         <var name="fileType">reconTrend</var>
         <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <!-- <after process="doChunk.mergeCalCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
         <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
@@ -1271,7 +1273,7 @@
         <var name="reportType">reconTrend</var>
         <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="registerReconTrend" status="SUCCESS"/>
       </depends>
@@ -1283,7 +1285,7 @@
         <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
         <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="registerReconTrend" status="SUCCESS"/>
       </depends>
@@ -1309,7 +1311,7 @@
         <var name="reportType">reconTrendAlarm</var>
         <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="registerReconTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -1320,7 +1322,7 @@
         <var name="fileType">reconTrendAlarm</var>
         <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="registerReconTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -1331,7 +1333,7 @@
         <var name="fileType">reconHist</var>
         <var name="%(reconHist_versionName)s">%(reconHist_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <!-- <after process="doChunk.mergeCalCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
         <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
@@ -1360,7 +1362,7 @@
         <var name="%(reconHist_versionName)s">%(reconHist_version)s</var>
         <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="registerReconHist" status="SUCCESS"/>
       </depends>
@@ -1386,7 +1388,7 @@
         <var name="fileType">reconHistAlarm</var>
         <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="registerReconHistAlarm" status="SUCCESS"/>
       </depends>
@@ -1397,7 +1399,7 @@
         <var name="reportType">reconHistAlarm</var>
         <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="registerReconHistAlarm" status="SUCCESS"/>
       </depends>
@@ -1409,7 +1411,7 @@
         <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
         <var name="%(reconHistAlarmDist_versionName)s">%(reconHistAlarmDist_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/alarmPostProcessor.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmPostProcessor.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="registerReconHistAlarm" status="SUCCESS"/>
       </depends>
@@ -1435,7 +1437,7 @@
         <var name="fileType">tkrAnalysis</var>
         <var name="%(tkrAnalysis_versionName)s">%(tkrAnalysis_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
         <after process="doChunk.tkrAnalysis" status="DONE"/>
@@ -1464,7 +1466,7 @@
         <var name="%(tkrReport_versionName)s">%(tkrReport_version)s</var>
         <!-- <var name="%(tkrAlarm_versionName)s">%(tkrAlarm_version)s</var> -->
       </variables>
-      <job executable="${L1ProcROOT}/tkrMonitor.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/tkrMonitor.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <after process="registerTkrAnalysis" status="SUCCESS"/>
       </depends>
@@ -1491,7 +1493,7 @@
         <var name="fileType">tkrReport</var>
         <var name="%(tkrReport_versionName)s">%(tkrReport_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/preRegister.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/preRegister.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="tkrMonitor" status="SUCCESS"/>
       </depends>
@@ -1521,7 +1523,7 @@
         <var name="fileType">tkrAlarm</var>
         <var name="%(tkrAlarm_versionName)s">%(tkrAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/preRegister.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/preRegister.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="tkrMonitor" status="SUCCESS"/>
       </depends>
@@ -1551,7 +1553,7 @@
         <var name="%(tkrMonitor_versionName)s">%(tkrMonitor_version)s</var>
         <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       <depends>
         <after process="registerTkrMonitor" status="SUCCESS"/>
       </depends>
@@ -1577,7 +1579,7 @@
         <var name="reportType">tkrTrend</var>
         <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="registerTkrTrend" status="SUCCESS"/>
       </depends>
@@ -1589,7 +1591,7 @@
         <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
         <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="registerTkrTrend" status="SUCCESS"/>
       </depends>
@@ -1615,7 +1617,7 @@
         <var name="reportType">tkrTrendAlarm</var>
         <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
       <depends>
         <after process="registerTkrTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -1626,7 +1628,7 @@
         <var name="fileType">tkrTrendAlarm</var>
         <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="registerTkrTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -1637,7 +1639,7 @@
         <var name="fileType">recon</var>
         <var name="%(recon_versionName)s">%(recon_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;50]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;50]&quot; "/>
       <depends>
         <after process="doChunk.mergeReconCrumbs" status="DONE"/>
       </depends>
@@ -1663,7 +1665,7 @@
         <var name="fileType">svac</var>
         <var name="%(svac_versionName)s">%(svac_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;6]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;6]&quot; "/>
       <depends>
         <after process="doChunk.mergeSvacCrumbs" status="DONE"/>
       </depends>
@@ -1685,7 +1687,7 @@
     </process>
 
     <process name="checkRun">
-      <job executable="${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="doChunk.checkChunk" status="SUCCESS"/>
         <after process="digiHistLogger" status="SUCCESS"/>
@@ -1771,7 +1773,7 @@
     <task name="cleanupCompleteRun" version="%(L1Version)s" type="Data">
 
       <process name="cleanupChunks">
-        <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
       </process>
 
 <!--
@@ -1795,25 +1797,25 @@
       </prerequisites>
 
       <process name="digitization">
-        <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/digitize.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
       </process>
  
       <process name="fakeFT2">
-        <job executable="${L1ProcROOT}/fakeFT2.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/fakeFT2.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
       </process>
  
       <process name="fastMonTuple">
         <variables>
           <var name="reportType">fastMonTuple</var>
         </variables>
-        <job executable="${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
       </process>
 
       <process name="fastMonHist">
         <variables>
           <var name="reportType">fastMonHist</var>
         </variables>
-        <job executable="${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="fastMonTuple" status="SUCCESS"/>
         </depends>
@@ -1823,7 +1825,7 @@
         <variables>
           <var name="reportType">fastMonTrend</var>
         </variables>
-        <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="fastMonTuple" status="SUCCESS"/>
         </depends>
@@ -1833,7 +1835,7 @@
         <variables>
           <var name="reportType">digiHist</var>
         </variables>
-        <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="digitization" status="SUCCESS"/>
         </depends>
@@ -1843,7 +1845,7 @@
         <variables>
           <var name="reportType">digiTrend</var>
         </variables>
-        <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="digitization" status="SUCCESS"/>
         </depends>
@@ -1853,7 +1855,7 @@
         <variables>
           <var name="reportType">calHist</var>
         </variables>
-        <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="digitization" status="SUCCESS"/>
         </depends>
@@ -1863,14 +1865,14 @@
         <variables>
           <var name="reportType">calTrend</var>
         </variables>
-        <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="digitization" status="SUCCESS"/>
         </depends>
       </process>
  
       <process name="setupCrumbs">
-        <job executable="${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
         <depends>
           <after process="digitization" status="SUCCESS"/>
           <after process="fakeFT2" status="SUCCESS"/>
@@ -1884,7 +1886,7 @@
         <variables>
           <var name="fileType">merit</var>
         </variables>
-        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
         </depends>
@@ -1894,7 +1896,7 @@
         <variables>
           <var name="fileType">recon</var>
         </variables>
-        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
           <after process="mergeMeritCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
@@ -1905,7 +1907,7 @@
         <variables>
           <var name="fileType">cal</var>
         </variables>
-        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
           <after process="mergeReconCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
@@ -1916,7 +1918,7 @@
         <variables>
           <var name="fileType">gcr</var>
         </variables>
-        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
           <after process="mergeCalCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
@@ -1927,7 +1929,7 @@
         <variables>
           <var name="fileType">svac</var>
         </variables>
-        <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.svacTuple" status="DONE"/>
         </depends>
@@ -1937,7 +1939,7 @@
         <variables>
           <var name="reportType">meritHist</var>
         </variables>
-        <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="SUCCESS"/>
           <after process="mergeMeritCrumbs" status="SUCCESS"/>
@@ -1948,7 +1950,7 @@
         <variables>
           <var name="reportType">meritTrend</var>
         </variables>
-        <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="SUCCESS"/>
           <after process="mergeMeritCrumbs" status="SUCCESS"/>
@@ -1959,7 +1961,7 @@
         <variables>
           <var name="reportType">reconHist</var>
         </variables>
-        <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="SUCCESS"/>
           <after process="mergeCalCrumbs" status="SUCCESS"/>
@@ -1971,7 +1973,7 @@
         <variables>
           <var name="reportType">reconTrend</var>
         </variables>
-        <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="SUCCESS"/>
           <after process="mergeCalCrumbs" status="SUCCESS"/>
@@ -1980,7 +1982,7 @@
       </process>
  
       <process name="tkrAnalysis">
-        <job executable="${L1ProcROOT}/tkrRootAnalysis.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/tkrRootAnalysis.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="SUCCESS"/>
           <after process="mergeReconCrumbs" status="SUCCESS"/>
@@ -1988,7 +1990,7 @@
       </process>
  
       <process name="checkChunk">
-        <job executable="${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s "/>
         <depends>
           <after process="doCrumb.svacTuple" status="SUCCESS"/>
           <after process="calHist" status="SUCCESS"/>
@@ -2008,7 +2010,7 @@
       </process>
 
       <process name="cleanupCrumbs">
-        <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(shortQ)s "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(shortQ)s "/>
         <depends>
           <after process="checkChunk" status="SUCCESS"/>
         </depends>
@@ -2023,11 +2025,11 @@
         </prerequisites>
 
         <process name="recon">
-          <job executable="${L1ProcROOT}/recon.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
+          <job executable="${isocRun} python2.5 ${L1ProcROOT}/recon.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
         </process>
 
         <process name="svacTuple">
-          <job executable="${L1ProcROOT}/makeSvac.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+          <job executable="${isocRun} python2.5 ${L1ProcROOT}/makeSvac.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
           <depends>
             <after process="recon" status="SUCCESS"/>
           </depends>
@@ -2048,7 +2050,7 @@
     </prerequisites>
 
     <process name="findChunksLci">
-      <job executable="${L1ProcROOT}/findChunks.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
+      <job executable="${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/findChunks.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
       <createsSubtasks>
         <subtask>doChunkLci</subtask>
       </createsSubtasks>
@@ -2071,7 +2073,7 @@
       <variables>
         <var name="%(magic7Hp_versionName)s">%(magic7Hp_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s " />
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s " />
       <depends>
         <after process="findChunksLci" status="SUCCESS"/>
       </depends>
@@ -2097,7 +2099,7 @@
         <var name="fileType">digi</var>
         <var name="%(digi_versionName)s">%(digi_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -R &quot;select[scratch&gt;5]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -R &quot;select[scratch&gt;5]&quot; "/>
       <depends>
         <after process="doChunkLci.digitizationLci" status="DONE"/>
       </depends>
@@ -2123,7 +2125,7 @@
         <var name="fileType">digiHist</var>
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;10]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;10]&quot; "/>
       <depends>
         <after process="doChunkLci.digiHistLci" status="DONE"/>
       </depends>
@@ -2149,7 +2151,7 @@
         <var name="fileType">fastMonError</var>
         <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s "/>
       <depends>
         <after process="doChunkLci.fastMonTupleLci" status="DONE"/>
       </depends>
@@ -2175,7 +2177,7 @@
         <var name="fileType">fastMonTuple</var>
         <var name="%(fastMonTuple_versionName)s">%(fastMonTuple_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;10]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;10]&quot; "/>
       <depends>
         <after process="doChunkLci.fastMonTupleLci" status="DONE"/>
       </depends>
@@ -2201,7 +2203,7 @@
         <var name="fileType">fastMonHist</var>
         <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;10]&quot; "/>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;10]&quot; "/>
       <depends>
         <after process="doChunkLci.fastMonHistLci" status="DONE"/>
       </depends>
@@ -2223,7 +2225,7 @@
     </process>
  
     <process name="checkRunLci">
-      <job executable="${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="doChunkLci.checkChunkLci" status="SUCCESS"/>
         <after process="registerDigiLci" status="SUCCESS"/>
@@ -2269,7 +2271,7 @@
     <task name="cleanupCompleteRunLci" version="%(L1Version)s" type="Data">
 
       <process name="cleanupChunksLci">
-        <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
       </process>
 
 <!--
@@ -2293,21 +2295,21 @@
       </prerequisites>
 
       <process name="digitizationLci">
-        <job executable="${L1ProcROOT}/digitize.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/digitize.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
       </process>
  
       <process name="fastMonTupleLci">
         <variables>
           <var name="reportType">fastMonTuple</var>
         </variables>
-        <job executable="${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
       </process>
  
       <process name="fastMonHistLci">
         <variables>
           <var name="reportType">fastMonHist</var>
         </variables>
-        <job executable="${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="fastMonTupleLci" status="SUCCESS"/>
         </depends>
@@ -2317,14 +2319,14 @@
         <variables>
           <var name="reportType">digiHist</var>
         </variables>
-        <job executable="${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="digitizationLci" status="SUCCESS"/>
         </depends>
       </process>
  
       <process name="checkChunkLci">
-        <job executable="${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s "/>
         <depends>
           <after process="fastMonHistLci" status="SUCCESS"/>
           <after process="digiHistLci" status="SUCCESS"/>
@@ -2344,7 +2346,7 @@
     </prerequisites>
 
     <process name="checkRunInc">
-      <job executable="${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
       <createsSubtasks>
         <subtask>cleanupIncompleteRun</subtask>
       </createsSubtasks>
@@ -2366,7 +2368,7 @@
     <task name="cleanupIncompleteRun" version="%(L1Version)s" type="Data">
 
       <process name="cleanupChunksInc">
-        <job executable="${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
       </process>
 
 <!--

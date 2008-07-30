@@ -82,6 +82,7 @@ ofp.write(bEnv("MALLOC_CHECK_", "0"))
 ofp.write(bEnv("PFILES", config.PFILES))
 ofp.write(bEnv("PYTHONPATH", config.pythonPath))
 ofp.write(bEnv("ROOTSYS", config.rootSys))
+ofp.write(bEnv("isocMode", config.isocMode))
 
 #ofp.write('%s\n' % config.isocEnv)
 
@@ -103,5 +104,6 @@ ofq.write(cEnv("MALLOC_CHECK_", "0"))
 ofq.write(cEnv("PFILES", config.PFILES))
 ofq.write(cEnv("PYTHONPATH", config.pythonPath))
 ofq.write(cEnv("ROOTSYS", config.rootSys))
+ofp.write(cEnv("isocMode", config.isocMode))
 
 
