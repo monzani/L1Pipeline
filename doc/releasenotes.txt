@@ -11,8 +11,13 @@ Avoid core files in log directory from ingest jobs.
 Don't fail kludgeAsp if the stream has already been launched. [ASP-26@JIRA]
 Put runId[.chunkId] in target when logging missing files on
 merge. [LONE-94@JIRA]
-Trim a couple of static values from registerPrep/registerStuff interface.
+Trim a couple of static values from registerPrep/registerStuff interface, put
+them in the XML.
 Require 50GB free scratch for merging recon.
+Change the way batch jobs are run so the ISOC environment can be chosen
+dynamically.
+In test mode only, acqQuery.runTimes returns bogus hardcoded values if run is
+not in ACQSUMMARY.
 -------------------------------------------
 
 
