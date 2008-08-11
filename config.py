@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.62"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.63"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -204,18 +204,19 @@ isocScript = os.path.join(isocBin, 'isoc')
 #isocEnv = 'eval `%s isoc_env --add-env=flightops --add-env=root`' % isocScript
 isocEnv = 'eval `%s isoc_env --add-env=flightops`' % isocScript
 
-
 # DB for acqsummary
 if mode == 'prod':
     connectString = '/@isocflight'
 else:
-    connectString = '/@isocnightly'
-    # connectString = '/@isocflight'
+    # connectString = '/@isocnightly'
+    connectString = '/@isocflight'
     pass
 acqTable = 'GLASTOPS_ACQSUMMARY'
 
 scid = 77
 hpTaskBase = '/afs/slac/g/glast/isoc/flightOps/offline/halfPipe/prod'
+
+l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
 
 stVersion = 'v9r6p2'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
@@ -245,11 +246,11 @@ cmtPackages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v3r7p0',
+        'version': 'v3r9p1',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
-        'version': 'v4r1p7',
+        'version': 'v4r1p8',
         },
     'evtClassDefs': {
         'repository': '',
@@ -269,7 +270,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r2p16',
+        'version': 'v1r2p18',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -277,7 +278,7 @@ cmtPackages = {
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'v6r15',
+        'version': 'v6r16',
         },
     }
 
@@ -288,11 +289,11 @@ cvsPackages = {
 #         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r2p10',
+        'version': 'v1r2p13',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r4p4',
+        'version': 'v1r4p5',
         },
     'IGRF': {
         'repository': 'dataMonitoring',
@@ -457,6 +458,11 @@ mergeConfigs = {
 
 alarmBase = os.path.join(L1Volume, 'AlarmsCfg', mode)
 alarmConfigs = {
+    'acdPedsAnalyzer': os.path.join(alarmBase, 'xml', 'acdpeds_eor_alarms.xml'),
+    'calGainsAnalyzer': os.path.join(
+        alarmBase, 'xml', 'calgains_eor_alarms.xml'),
+    'calHist': os.path.join(alarmBase, 'xml', 'calhist_alarms.xml'),
+    'calPedsAnalyzer': os.path.join(alarmBase, 'xml', 'calpeds_eor_alarms.xml'),
     'digiHist': os.path.join(alarmBase, 'xml', 'digi_eor_alarms.xml'),
     'digiTrend': os.path.join(alarmBase, 'xml', 'digi_trend_alarms.xml'),
     'fastMonHist': os.path.join(alarmBase, 'xml', 'fastmon_eor_alarms.xml'),
@@ -469,6 +475,14 @@ alarmConfigs = {
     }
 
 alarmExceptions = {
+    'acdPedsAnalyzer': os.path.join(
+        alarmBase, 'xml', 'acdpeds_eor_alarms_exceptions.xml'),
+    'calGainsAnalyzer': os.path.join(
+        alarmBase, 'xml', 'calgains_eor_alarms_exceptions.xml'),
+    'calHist': os.path.join(
+        alarmBase, 'xml', 'calhist_alarms_exceptions.xml'),
+    'calPedsAnalyzer': os.path.join(
+        alarmBase, 'xml', 'calpeds_eor_alarms_exceptions.xml'),
     'digiHist': os.path.join(
         alarmBase, 'xml', 'digi_eor_alarms_exceptions.xml'),
     'digiTrend': os.path.join(
@@ -588,20 +602,15 @@ sys.path.extend(ppComponents)
 # allocationGroup = 'glastdata' # don't use this anymore, policies have changed
 # allocationGroup="%(allocationGroup)s" # ripped from XML template
 #
-quickQueue = 'express'
-reconQueue = 'medium'
-#standardQueue = 'glastdataq'
-standardQueue = 'long'
-slowQueue = 'xlong'
-#
 # expressQ = 'express'
 # mediumQ = 'medium'
 # shortQ = 'short'
 # longQ = 'long'
-expressQ = 'glastdataq'
-mediumQ = 'glastdataq'
-shortQ = 'glastdataq'
-longQ = 'glastdataq'
+theQ = 'glastdataq'
+expressQ = theQ
+mediumQ = theQ
+shortQ = theQ
+longQ = theQ
 #
 highPriority = 75
 #

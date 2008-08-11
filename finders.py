@@ -4,6 +4,8 @@ import os
 import re
 import sys
 
+import fileNames
+
 
 def findRunDirs(dlRawDir):
     # Figure out which runs have data in this dl
@@ -47,6 +49,23 @@ def findChunkFiles(runDir):
         continue
 
     return goodChunks
+
+
+def findAndReadChunkLists(runId):
+    dlId = '*'
+    pattern = fileNames.fileName('chunkList', dlId, runId)
+    print >> sys.stderr, 'Looking for files of form %s' % pattern
+    chunkFiles = glob.glob(pattern)
+    print >> sys.stderr, 'Found %s' % chunkFiles
+    chunks = []
+    for chunkFile in chunkFiles:
+        these = fileNames.readList(chunkFile)
+        # print >> sys.stderr, these
+        chunks.extend(these.items())
+        ids = sorted(this for this in these)
+        print >> sys.stderr, '%s: %s' % (chunkFile, ids)
+        continue
+    return chunks
 
 
 def allChunks(runDirs):

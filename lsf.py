@@ -2,13 +2,25 @@
 import bisect
 import os
 import random
+import re
 import string
 import sys
 
+import config
+
 goodStates = ['ok', 'closed_Full']
 #hostsToQuery = 'genfarm'
-hostsToQuery = 'glastcobs glastyilis preemptfarm'
+#hostsToQuery = 'glastcobs glastyilis preemptfarm'
 
+
+hLRe = re.compile('^HOSTS:(\s+\w+/)+')
+hRe = re.compile('\s+(\w+)/')
+def getGroups(queue=config.theQ):
+    cmd = 'bqueues -l %s' % queue
+    lines = [line for line in os.popen(cmd).readlines() if hLRe.match(line)]
+    assert len(lines) == 1
+    groups = hRe.findall(lines[0])
+    return groups
 
 def hostInfo(hostName):
     cmd = 'bhosts -l %s' % hostName
@@ -32,7 +44,9 @@ def hostType(hostName):
 
 def hostList():
     # get list of all available hosts
-    cmd = 'bhosts -w %s' % hostsToQuery
+    #cmd = 'bhosts -w %s' % hostsToQuery
+    groups = getGroups()
+    cmd = ' '.join(['bhosts -w'] + ['%s'] * len(groups)) % tuple(groups)
 
     print >> sys.stderr, 'Listing available hosts ...',
     lines = os.popen(cmd).readlines()
@@ -86,9 +100,9 @@ def hostList():
     return hosts
 
 
-maxSlots = 20
+maxSlots = 30
 maxHosts = 10
-def balance(chunks):
+def doBalance(chunks):
     hosts = hostList()
     buckets = [[0, ic, chunk, []] for ic, chunk in enumerate(chunks)]
     full = []
@@ -114,6 +128,14 @@ def balance(chunks):
         outies[ic] = (chunk, makeMList(cHosts))
         continue
     return outies
+
+def dontBalance(chunks):
+    groups = getGroups()
+    mList = ' '.join(groups)
+    outies = [(chunk, mList) for chunk in chunks]
+    return outies
+
+balance = doBalance
 
 
 def makeMList(hosts):

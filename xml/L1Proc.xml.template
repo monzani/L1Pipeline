@@ -27,7 +27,7 @@
   </prerequisites>
 
   <process name="findRunDirs">
-    <job executable="${isocRun} python2.5 ${L1ProcROOT}/findRunDirs.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d " />
+    <job executable="${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/findRunDirs.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d " />
     <createsSubtasks>
       <subtask>doRun</subtask>
       <subtask>doLci</subtask>
@@ -428,6 +428,55 @@
       </script>
       <depends>
         <after process="mergeCalHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="calHistAlarm">
+      <variables>
+        <var name="fileType">calHist</var>
+        <var name="%(calHist_versionName)s">%(calHist_version)s</var>
+        <var name="%(calHistAlarm_versionName)s">%(calHistAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerCalHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerCalHistAlarm">
+      <variables>
+        <var name="parentProcess">calHistAlarm</var>
+        <var name="fileType">calHistAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="calHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="calHistLogger">
+      <variables>
+        <var name="fileType">calHistAlarm</var>
+        <var name="%(calHistAlarm_versionName)s">%(calHistAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerCalHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestCalHistRun">
+      <variables>
+        <var name="reportType">calHistAlarm</var>
+        <var name="%(calHistAlarm_versionName)s">%(calHistAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerCalHistAlarm" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -1689,6 +1738,7 @@
     <process name="checkRun">
       <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
+        <after process="calHistLogger" status="SUCCESS"/>
         <after process="doChunk.checkChunk" status="SUCCESS"/>
         <after process="digiHistLogger" status="SUCCESS"/>
         <after process="digiTrendLogger" status="SUCCESS"/>
@@ -1698,6 +1748,7 @@
         <after process="exportLS3" status="SUCCESS"/>
         <after process="fastMonHistLogger" status="SUCCESS"/>
         <after process="fastMonTrendLogger" status="SUCCESS"/>
+        <after process="ingestCalHistRun" status="SUCCESS"/>
         <after process="ingestCalTrend" status="SUCCESS"/>
         <after process="ingestDigiTrend" status="SUCCESS"/>
         <after process="ingestFastMonTrend" status="SUCCESS"/>

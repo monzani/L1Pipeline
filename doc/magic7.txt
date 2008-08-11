@@ -9,3 +9,8 @@ Where
  t0/t1 are ISO-8660 UTC time strings of the form "YYYY-mm-dd HH:MM:SS"
 
 This has to be run in a PROD ISOC environment, like FASTCopy.py.
+
+(20:07:14) bryson: Each ISOC environment has its own raw-packet archive location, and the incoming deliveries from the MOC populate ISOC_FLIGHT, but not _TEST or _NIGHTLY.  However, you can always point utilities like DiagRet.py to a specific raw-archive with the --arch argument.  
+
+Use --arch /nfs/farm/g/glast/u23/ISOC-flight/Archive/level0 to retrieve real observatory data.
+

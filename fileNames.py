@@ -7,19 +7,26 @@ import cPickle
 import glob
 import hashlib
 import os
+import random
 import re
 import sys
+import time
 
 import config
 
+import finders
 import variables
 
 fileTypes = {
     'acdPlots': 'tar',
+    'acdPedsAlarm': 'xml',
     'acdPedsAnalyzer': 'root',
     'cal': 'root',
-    'calHist': 'root',
+    'calGainsAlarm': 'xml',
     'calGainsAnalyzer': 'root',
+    'calHist': 'root',
+    'calHistAlarm': 'xml',
+    'calPedsAlarm': 'xml',
     'calPedsAnalyzer': 'root',
     'calTrend': 'root',
     'chunkList': 'txt',
@@ -189,23 +196,6 @@ def stageBalance(str):
     return baseDir
 
 
-def findAndReadChunkLists(runId):
-    dlId = '*'
-    pattern = fileName('chunkList', dlId, runId)
-    print >> sys.stderr, 'Looking for files of form %s' % pattern
-    chunkFiles = glob.glob(pattern)
-    print >> sys.stderr, 'Found %s' % chunkFiles
-    chunks = []
-    for chunkFile in chunkFiles:
-        these = readList(chunkFile)
-        # print >> sys.stderr, these
-        chunks.extend(these.items())
-        ids = sorted(this for this in these)
-        print >> sys.stderr, '%s: %s' % (chunkFile, ids)
-        continue
-    return chunks
-
-
 def findPieces(fileType, dlId, runId=None, chunkId=None):
     """@brief find chunks or crumbs to merge.
 
@@ -232,18 +222,8 @@ def findPieces(fileType, dlId, runId=None, chunkId=None):
             # We are merging chunk files into a run file.
             # We have to find a file listing chunks for each downlink.
             #
-            # Should use findAndReadChunkLists here
-            dlId = '*'
-            pattern = fileName('chunkList', dlId, runId)
-            print >> sys.stderr, 'Looking for files of form %s' % pattern
-            chunkFiles = glob.glob(pattern)
-            print >> sys.stderr, 'Found %s' % chunkFiles
-            chunkIds = []
-            for chunkFile in chunkFiles:
-                these = readList(chunkFile).keys()
-                chunkIds.extend(these)
-                print >> sys.stderr, '%s: %s' % (chunkFile, these)
-                continue
+            allChunks = finders.findAndReadChunkLists(runId)
+            chunkIds = [chunkData[0] for chunkData in allChunks]
             chunkIds.sort()
             argSets = [(fileType, dlId, runId, chunkId)
                        for chunkId in chunkIds]
@@ -361,3 +341,17 @@ def mangleChunkList(realName):
     # mangle chunk list name to get around JIRA LONE-67
     mangledName = realName + '.tmp'
     return mangledName
+
+
+def preMakeDirs(dirs, dlId, runId=None, chunkId=None, crumbId=None):
+    import stageFiles
+    buffers = list(uniqueStageDirs)
+    random.shuffle(buffers)
+    mid = subDirectory(None, dlId, runId, chunkId, crumbId)
+    allDirs = [os.path.join(buf, mid, sub) for buf in buffers for sub in dirs]
+    print >> sys.stderr, 'Creating directories %s ... ' % allDirs,
+    start = time.time()
+    for dir in allDirs: stageFiles.makedirs(dir)
+    stop = time.time()
+    print >> sys.stderr, '%g s.' % (stop - start)
+    return

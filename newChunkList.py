@@ -1,4 +1,4 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
+#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc --add-env=flightops python2.5
 
 """
 Generate new chunkLists to patch up halfpipe issues.
@@ -10,6 +10,7 @@ import glob
 import os
 import sys
 
+import chunkTester
 import fileNames
 import finders
 
@@ -21,6 +22,7 @@ chunks = finders.findChunkFiles(inDir)
 
 for chunk in chunks.values():
     chunk['hostList'] = hostList
+    chunk['headerData'] = chunkTester.readHeader(chunk['chunkFile'])
     continue
 
 head, runId = inDir, ''
@@ -30,7 +32,6 @@ while not runId:
 head, dlId = os.path.split(head)
 
 outName = '_'.join([runId, dlId, 'chunkList.txt.new'])
-#outName = fileNames.fileName('chunkList', dlId, runId) + '.bork'
 
 print >> sys.stderr, 'Creating %s' % outName
 # fileNames.writeListPickle(chunks, outName) # for old format

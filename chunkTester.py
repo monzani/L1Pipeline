@@ -1,56 +1,101 @@
 
+import os
 import sys
 
 import eventFile
 
 def readHeader(inFile):
+    print >> sys.stderr, 'Reading %s ...' % inFile
+    headerData = {}
+    headerData['name'] = os.path.basename(inFile)
     reader = eventFile.LSEReader(inFile)
-    start = reader.begGEM()
-    stop = reader.endGEM()
-    nEvt = reader.evtcnt()
-    return start, stop, nEvt
+    headerData['begGEM'] = reader.begGEM()
+    headerData['endGEM'] = reader.endGEM()
+    headerData['nEvt'] = reader.evtcnt()
+    headerData['begSec'] = reader.begSec()
+    headerData['endSec'] = reader.endSec()
+    print >> sys.stderr, headerData
+    return headerData
 
 
-def verifyChunk((start, stop, nEvt)):
-    print >> sys.stderr, '  Checking chunk %s' % start
+def verifyChunk(headerData):
+    begGEM = headerData['begGEM']
+    print >> sys.stderr, '  Checking chunk %s ...' % begGEM,
+
+    nEvt = headerData['nEvt']
+    endGEM = headerData['endGEM']
+    begSec = headerData['begSec']
+    endSec = headerData['endSec']
+
     if nEvt <= 1:
-        print >> sys.stderr, 'Chunk %d has %d <= 1 events!' % (start, nEvt)
+        print >> sys.stderr, 'chunk has %d <= 1 events!' % nEvt
         return False
-    nMax = stop - start + 1
+
+    nMax = endGEM - begGEM + 1
     if nMax <= 0:
-        print >> sys.stderr, 'Chunk %d goes backwards!' % (start)
+        print >> sys.stderr, 'events go backwards!'
         return False
+
     if nEvt > nMax:
-        print >> sys.stderr, 'Chunk %s has too many events: %d > %d' % (start, nEvt, nMax)
+        print >> sys.stderr, 'chunk has too many events: %d > %d' % (nEvt, nMax)
         return False
+    
+    if begSec > endSec:
+        print >> sys.stderr, 'times go backwards!'
+        return False
+
+    print >> sys.stderr, 'OK'
     return True
 
 
 def verifyList(chunks):
     print >> sys.stderr, 'Testing chunks...'
-    chunks = [chunk[0] for chunk in sorted(chunks)]
-    for chunk in chunks:
+
+    byGEM = sorted(chunks, key=lambda x:x['begGEM'])
+    for chunk in byGEM:
         if not verifyChunk(chunk): return False
         continue
-    lastStart = chunks[0][0]
-    lastStop = chunks[0][1]
-    print >> sys.stderr, 'Checking for overlap...'
-    for start, stop, nEvt in chunks[1:]:
-        if start <= lastStop:
-            print >> sys.stderr, 'Chunk %d overlaps %d!' % (start, lastStart)
+
+    print >> sys.stderr, 'Testing ordering...'
+    bySec = sorted(chunks, key=lambda x:x['begSec'])
+    if bySec != byGEM:
+        print >> sys.stderr, 'Sort by time != sort by gemId!'
+        return False
+    byName = sorted(chunks, key=lambda x:x['name'])
+    if byName != byGEM:
+        print >> sys.stderr, 'Sort by name != sort by gemId!'
+        return False
+
+    print >> sys.stderr, 'Checking for gemId overlap...'
+    lastStart = byGEM[0]['begGEM']
+    lastStop = byGEM[0]['endGEM']
+    for chunk in byGEM[1:]:
+        begGEM = chunk['begGEM']
+        endGEM = chunk['endGEM']
+        if begGEM <= lastStop:
+            print >> sys.stderr, 'Chunk %d overlaps %d!' % (begGEM, lastStart)
             return False
-        lastStart = start
-        lastStop = stop
+        lastStart = begGEM
+        lastStop = endGEM
         continue
+
+    print >> sys.stderr, 'Checking for time overlap...'
+    lastGEM = bySec[0]['begGEM']
+    lastStart = bySec[0]['begSec']
+    lastStop = bySec[0]['endSec']
+    for chunk in bySec[1:]:
+        begGEM = chunk['begGEM']
+        begSec = chunk['begSec']
+        endSec = chunk['endSec']
+        if begSec < lastStop:
+            print >> sys.stderr, 'Chunk %d overlaps %d!' % (begGEM, lastGEM)
+            return False
+        lastGEM = begGEM
+        lastStart = begSec
+        lastStop = endSec
+        continue
+
     print >> sys.stderr, 'OK'
     return True
 
 
-def verifyFiles(inFiles):
-    if not inFiles:
-        print >> sys.stderr, 'No input data, cannot continue!'
-        return False
-    chunks = sorted((readHeader(inFile), inFile) for inFile in inFiles)
-    print >> sys.stderr, r"""((start, stop, nEvents), 'fileName')"""
-    for chunk in chunks: print >> sys.stderr, chunk
-    return verifyList(chunks)

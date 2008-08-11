@@ -82,7 +82,9 @@ def runTimes(run):
         print >> sys.stderr, "Run %s isn't in acqsummary!" % run
         if config.testMode:
             print >> sys.stderr, "Returning bogus times."
-            return 238555581.0, 238555742.0
+            start = os.environ['tStart']
+            stop = os.environ['tStop']
+            return start, stop
         else:
             raise
         pass

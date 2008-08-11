@@ -36,9 +36,9 @@ cmd = 'mv %s %s' % (mangledChunkList, realChunkList)
 runner.run(cmd)
 
 # check that the chunks aren't crazy
-chunks = fileNames.findAndReadChunkLists(runId)
-chunkFiles = [chunkData['chunkFile'] for chunkId, chunkData in chunks]
-if not chunkTester.verifyFiles(chunkFiles):
+chunks = finders.findAndReadChunkLists(runId)
+chunkHeaders = [chunkData['headerData'] for chunkId, chunkData in chunks]
+if not chunkTester.verifyList(chunkHeaders):
     print >> sys.stderr, 'Run %s has bad crazy chunks.' % runId
     sys.exit(1)
     pass
@@ -66,6 +66,9 @@ for chunkId, chunkData in chunkListData.items():
     args = 'EVTFILE=%(chunkFile)s,CHUNK_ID=%(chunkId)s,HOSTLIST="%(hostList)s",tStart=%(tStart).17g,tStop=%(tStop).17g' % locals()
     pipeline.createSubStream(subTask, stream, args)
     continue
+
+chunkIds = chunkListData.keys()
+fileNames.preMakeDirs(chunkIds, dlId, runId)
 
 if status: finishOption = 'wipe'
 status |= staged.finish(finishOption)

@@ -76,6 +76,8 @@ for start, crumbId, nEvents in zip(crumbStarts, crumbIds, crumbSizes):
 
 rootFiles.hSplit(stagedDigiFile, 'Digi', crumbData)
 
+fileNames.preMakeDirs(crumbIds, dlId, runId, chunkId)
+
 if status: finishOption = 'wipe'
 status |= staged.finish(finishOption)
 

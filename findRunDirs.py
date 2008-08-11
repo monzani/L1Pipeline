@@ -1,4 +1,4 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
+#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc --add-env=flightops python2.5
 
 """@brief Find new run directories.
 
@@ -8,11 +8,13 @@
 import os
 import re
 import sys
+import time
 
 import config
 
 import GPLinit
 
+import chunkTester
 import fileNames
 import finders
 import glastTime
@@ -34,14 +36,25 @@ runDirs = finders.findRunDirs(dlRawDir)
 dataRuns = set(runDirs)
 print >> sys.stderr, "Presumed runs:[%s]" % dataRuns
 
+print >> sys.stderr, 'Reading evt headers ...'
+startTs = time.time()
 chunkKeys = []
 chunkLists = {}
 for runId, runData in runDirs.items():
+    print >> sys.stderr, runId
     runDir = runData['runDir']
     chunkListData = finders.findChunkFiles(runDir)
+    print >> sys.stderr, chunkListData
+    for chunk in chunkListData.values():
+        print >> sys.stderr, chunk
+        chunk['headerData'] = chunkTester.readHeader(chunk['chunkFile'])
+        continue
     chunkKeys.extend((runId, chunkId) for chunkId in chunkListData)
     chunkLists[runId] = chunkListData
     continue
+stopTs = time.time()
+delta = stopTs - startTs
+print >> sys.stderr, '%s s' % delta
 
 hostLists = lsf.balance(chunkKeys)
 
@@ -199,5 +212,7 @@ for runId in oldRuns:
           (stream, subTask, args)
     pipeline.createSubStream(subTask, stream, args)
     continue
+
+fileNames.preMakeDirs(dataRuns, dlId)
 
 staged.finish()

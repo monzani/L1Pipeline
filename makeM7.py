@@ -36,8 +36,10 @@ scid = config.scid
 tStart = glastTime.met2Iso8860(float(os.environ['tStart']) - config.m7Pad)
 tStop = glastTime.met2Iso8860(float(os.environ['tStop']) + config.m7Pad)
 
+arch = config.l0Archive
+
 cmd = """eval `%(isocBin)s/isoc env --add-env=flightops`
-%(python)s %(taskBase)s/scripts/DiagRet.py --scid %(scid)s -b "%(tStart)s" -e "%(tStop)s" --lsm | grep -E 'ATT|ORB' > %(stagedOutFile)s
+%(python)s %(taskBase)s/scripts/DiagRet.py --scid %(scid)s -b "%(tStart)s" -e "%(tStop)s" --lsm --arch %(arch)s | grep -E 'ATT|ORB' > %(stagedOutFile)s
 """ % locals()
 
 status = runner.run(cmd)

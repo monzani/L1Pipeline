@@ -104,6 +104,6 @@ ofq.write(cEnv("MALLOC_CHECK_", "0"))
 ofq.write(cEnv("PFILES", config.PFILES))
 ofq.write(cEnv("PYTHONPATH", config.pythonPath))
 ofq.write(cEnv("ROOTSYS", config.rootSys))
-ofp.write(cEnv("isocMode", config.isocMode))
+ofq.write(cEnv("isocMode", config.isocMode))
 
 
