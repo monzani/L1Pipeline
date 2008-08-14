@@ -162,8 +162,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume07')
-glastVersion = 'v15r33'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
+glastVersion = 'v15r36'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -242,7 +242,7 @@ cmtPackages = {
         },
     'calibTkrUtil': {
         'repository': '',
-        'version': 'v2r4p1',
+        'version': 'v2r5',
         },
     'Common': {
         'repository': 'dataMonitoring',
@@ -250,7 +250,7 @@ cmtPackages = {
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
-        'version': 'v4r1p8',
+        'version': 'v4r3',
         },
     'evtClassDefs': {
         'repository': '',
@@ -270,11 +270,11 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r2p18',
+        'version': 'v1r2p22',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
-        'version': 'v0r5',
+        'version': 'v0r6',
         },
     'TestReport': {
         'repository': 'svac',
@@ -283,13 +283,9 @@ cmtPackages = {
     }
 
 cvsPackages = {
-#     'AlarmsCfg': {
-#         'repository': 'dataMonitoring',
-#         'version': 'v2r1p1',
-#         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r2p13',
+        'version': 'v1r2p17',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',

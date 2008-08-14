@@ -1,15 +1,15 @@
 
-1.62
+1.63
 -----------------
 Add alarms on calHist.
-In test mode only, acqQuery.runTimes returns values supplied by halfpipeif run 
-is not in ACQSUMMARY.
+In test mode only, acqQuery.runTimes returns values supplied by halfpipeif run is not in ACQSUMMARY.
 Always use prod L0 archive to make magic7.
 Automatically determine host groups attached to glastdataq when making 
 host lists.
 Premake run, chunk and crumb directories on buffers to reduce concurrent
 writes.
 Fix chunk overlap testing, add more tests.
+Put CMTPATH in environment for all jobs.
 -------------------------------------------
 
 
