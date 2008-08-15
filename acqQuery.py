@@ -45,7 +45,9 @@ def query(runs, fields):
     
     '''
 
-    con = cx_Oracle.connect(config.connectString)
+    connectString = config.connectString
+    print >> sys.stderr, 'Connecting to %s' % connectString
+    con = cx_Oracle.connect(connectString)
     cur = con.cursor()
 
     augFields = ['STARTEDAT'] + list(fields)

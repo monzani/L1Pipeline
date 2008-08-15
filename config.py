@@ -163,7 +163,7 @@ installBin = os.path.join(installArea, 'bin')
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
 releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
-glastVersion = 'v15r36'
+glastVersion = 'v15r39'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -246,7 +246,7 @@ cmtPackages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v3r9p1',
+        'version': 'v4r1p0',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -258,7 +258,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v3r5p6',
+        'version': 'v4r1p3',
         },
     'ft2Util': {
         'repository': '',
@@ -270,7 +270,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r2p22',
+        'version': 'v1r2p23',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
