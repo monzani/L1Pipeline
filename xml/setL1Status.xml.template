@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline
+  xmlns="http://glast-ground.slac.stanford.edu/pipeline"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
+
+<task name="setL1Status" version="%(L1Version)s" type="Data">
+
+  <variables>
+    <var name="l1RunStatus">%(runningStatus)s</var>
+  </variables>
+
+  <prerequisites>
+    <prerequisite name="runNumber" type="string"/>
+  </prerequisites>
+
+  <process name="setStatus">
+    <script><![CDATA[
+%(statusScriptBody)s
+]]>
+    </script>
+  </process>
+
+</task>
+</pipeline>
