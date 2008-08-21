@@ -639,6 +639,55 @@
       </depends>
     </process>
 
+    <process name="fastMonErrorAlarm">
+      <variables>
+        <var name="fileType">fastMonError</var>
+        <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
+        <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerFastMonError" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonErrorAlarm">
+      <variables>
+        <var name="parentProcess">fastMonErrorAlarm</var>
+        <var name="fileType">fastMonErrorAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="fastMonErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="fastMonErrorLogger">
+      <variables>
+        <var name="fileType">fastMonErrorAlarm</var>
+        <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerFastMonErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestFastMonErrorAlarmRun">
+      <variables>
+        <var name="reportType">fastMonErrorAlarm</var>
+        <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerFastMonErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="mergeFastMonHist">
       <variables>
         <var name="fileType">fastMonHist</var>
@@ -1717,7 +1766,7 @@
       </variables>
       <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;6]&quot; "/>
       <depends>
-        <after process="doChunk.mergeSvacCrumbs" status="DONE"/>
+        <after process="doChunk.svacTuple" status="DONE"/>
       </depends>
     </process>
 
@@ -1747,6 +1796,7 @@
         <after process="exportFT2" status="SUCCESS"/>
         <after process="exportLS1" status="SUCCESS"/>
         <after process="exportLS3" status="SUCCESS"/>
+        <after process="fastMonErrorLogger" status="SUCCESS"/>
         <after process="fastMonHistLogger" status="SUCCESS"/>
         <after process="fastMonTrendLogger" status="SUCCESS"/>
         <after process="ingestCalHistRun" status="SUCCESS"/>
@@ -1758,6 +1808,7 @@
         <after process="ingestFastMonTrendRun" status="SUCCESS"/>
         <after process="ingestFastMonHistRun" status="SUCCESS"/>
         <after process="ingestFastMonErrorRun" status="SUCCESS"/>
+        <after process="ingestFastMonErrorAlarmRun" status="SUCCESS"/>
         <after process="ingestDigiTrendRun" status="SUCCESS"/>
         <after process="ingestDigiHistRun" status="SUCCESS"/>
         <after process="ingestMeritTrendRun" status="SUCCESS"/>
@@ -1977,16 +2028,6 @@
         </depends>
       </process>
 
-      <process name="mergeSvacCrumbs">
-        <variables>
-          <var name="fileType">svac</var>
-        </variables>
-        <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
-        <depends>
-          <after process="doCrumb.svacTuple" status="DONE"/>
-        </depends>
-      </process>
-
       <process name="meritHist">
         <variables>
           <var name="reportType">meritHist</var>
@@ -2041,10 +2082,17 @@
         </depends>
       </process>
  
+        <process name="svacTuple">
+          <job executable="${isocRun} python2.5 ${L1ProcROOT}/makeSvac.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+          <depends>
+            <after process="doCrumb.recon" status="SUCCESS"/>
+          </depends>
+        </process>
+
       <process name="checkChunk">
         <job executable="${isocRun} python2.5 ${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s "/>
         <depends>
-          <after process="doCrumb.svacTuple" status="SUCCESS"/>
+          <after process="doCrumb.recon" status="SUCCESS"/>
           <after process="calHist" status="SUCCESS"/>
           <after process="calTrend" status="SUCCESS"/>
           <after process="fastMonHist" status="SUCCESS"/>
@@ -2052,11 +2100,11 @@
           <after process="digiHist" status="SUCCESS"/>
           <after process="digiTrend" status="SUCCESS"/>
           <after process="mergeGcrCrumbs" status="SUCCESS"/>
-          <after process="mergeSvacCrumbs" status="SUCCESS"/>
           <after process="meritHist" status="SUCCESS"/>
           <after process="meritTrend" status="SUCCESS"/>
           <after process="reconHist" status="SUCCESS"/>
           <after process="reconTrend" status="SUCCESS"/>
+          <after process="svacTuple" status="SUCCESS"/>
           <after process="tkrAnalysis" status="SUCCESS"/>
         </depends>
       </process>
@@ -2078,13 +2126,6 @@
 
         <process name="recon">
           <job executable="${isocRun} python2.5 ${L1ProcROOT}/recon.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
-        </process>
-
-        <process name="svacTuple">
-          <job executable="${isocRun} python2.5 ${L1ProcROOT}/makeSvac.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
-          <depends>
-            <after process="recon" status="SUCCESS"/>
-          </depends>
         </process>
 
       </task> <!-- doCrumb -->

@@ -371,6 +371,8 @@ apps = {
     'digi': gleam,
     'digiHist': packages['Monitor']['app'],
     # 'errorMerger': os.path.join(L1ProcROOT, 'errorParser.py'),
+    'errorHandler': os.path.join(
+        packages['Common']['python'], 'pErrorLogger.py'),
     'errorMerger': os.path.join(
         packages['FastMon']['python'], 'pXmlErrorMerger.py'),
     'fastMonTuple': packages['FastMon']['app'],
@@ -461,6 +463,7 @@ alarmConfigs = {
     'calPedsAnalyzer': os.path.join(alarmBase, 'xml', 'calpeds_eor_alarms.xml'),
     'digiHist': os.path.join(alarmBase, 'xml', 'digi_eor_alarms.xml'),
     'digiTrend': os.path.join(alarmBase, 'xml', 'digi_trend_alarms.xml'),
+    'fastMonError': os.path.join(alarmBase, 'xml', 'fastmon_errors_alarms.xml'),
     'fastMonHist': os.path.join(alarmBase, 'xml', 'fastmon_eor_alarms.xml'),
     'fastMonTrend': os.path.join(alarmBase, 'xml', 'fastmon_trend_alarms.xml'),
     'meritHist': os.path.join(alarmBase, 'xml', 'merit_eor_alarms.xml'),

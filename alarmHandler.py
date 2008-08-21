@@ -33,13 +33,21 @@ stagedAlarmFile = staged.stageOut(realAlarmFile)
 workDir = os.path.dirname(stagedAlarmFile)
 
 python = config.python
-app = config.apps['alarmHandler']
+
+if fileType in ['fastMonError']:
+    app = config.apps['errorHandler']
+    exceptionArgs = ''
+else:
+    app = config.apps['alarmHandler']
+    exceptionFile = config.alarmExceptions[fileType]
+    exceptionArgs = '-x %s' % exceptionFile
+    pass
+
 configFile = config.alarmConfigs[fileType]
-exceptionFile = config.alarmExceptions[fileType]
 
 cmd = '''
 cd %(workDir)s
-%(python)s %(app)s -c %(configFile)s -x %(exceptionFile)s -o %(stagedAlarmFile)s %(stagedInFile)s
+%(python)s %(app)s -c %(configFile)s %(exceptionArgs)s -o %(stagedAlarmFile)s %(stagedInFile)s
 ''' % locals()
 
 status = runner.run(cmd)

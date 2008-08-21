@@ -38,6 +38,7 @@ fileTypes = {
     'digiTrend': 'root',
     'digiTrendAlarm': 'xml',
     'fastMonError': 'xml',
+    'fastMonErrorAlarm': 'xml',
     'fastMonHist': 'root',
     'fastMonHistAlarm': 'xml',
     'fastMonTrend': 'root',
