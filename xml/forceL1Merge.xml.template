@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline
+  xmlns="http://glast-ground.slac.stanford.edu/pipeline"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
+
+<task name="forceL1Merge" version="%(L1Version)s" type="Data">
+
+  <variables>
+    <var name="CMTPATH">%(cmtPath)s</var>
+    <var name="creator">%(creator)s</var>
+    <var name="dataCatDir">%(dataCatDir)s</var>
+    <var name="DATASOURCE">LPA</var>
+    <var name="DOWNLINK_ID">0</var>
+    <var name="DOWNLINK_RAWDIR">/tmp/0</var>
+    <var name="isocMode">%(isocMode)s</var>
+    <var name="isocRun">%(isocRun)s</var>
+    <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+    <var name="L1_TASK_NAME">%(L1Name)s</var>
+    <var name="L1_TASK_VERSION">%(L1Version)s</var>
+    <var name="L1_INSTALL_DIR">%(installRoot)s</var>
+    <var name="L1_BUILD_DIR">%(L1CmtBase)s</var>
+    <var name="L1TrendVersion">Prompt</var> <!-- override if reprocessing -->
+    <var name="LD_LIBRARY_PATH">%(libraryPath)s</var>
+    <var name="nameManglingPrefix">%(nameManglingPrefix)s</var>
+  </variables>
+
+  <prerequisites>
+    <prerequisite name="RUNID" type="string"/>
+  </prerequisites>
+
+
+  <process name="mergeReconChunks">
+    <variables>
+      <var name="fileType">recon</var>
+      <var name="%(recon_versionName)s">%(recon_version)s</var>
+    </variables>
+    <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;50]&quot; -E ${L1ProcROOT}/lockFile.py "/>
+  </process>
+
+  <process name="registerRecon">
+    <variables>
+      <var name="parentProcess">mergeReconChunks</var>
+      <var name="fileType">recon</var>
+      <var name="timeProcess">findChunks</var>
+    </variables>
+    <script><![CDATA[
+%(registerBody)s
+]]>
+    </script>
+    <depends>
+      <after process="mergeReconChunks" status="SUCCESS"/>
+    </depends>
+  </process>
+
+  <process name="unLockRun">
+    <variables>
+      <var name="l1LockAction">UnLock</var>
+    </variables>
+    <job executable="${isocRun} python2.5 ${L1ProcROOT}/lockFile.py" batchOptions=" -q %(expressQ)s "/>
+    <depends>
+      <after process="registerRecon" status="SUCCESS"/>
+    </depends>
+  </process>
+
+</task> <!-- forceL1Merge -->
+</pipeline>
+

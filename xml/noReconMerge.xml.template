@@ -1,0 +1,2482 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline
+  xmlns="http://glast-ground.slac.stanford.edu/pipeline"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
+
+<task name="%(L1Name)s" version="%(L1Version)s" type="Data">
+
+  <variables>
+    <var name="CMTPATH">%(cmtPath)s</var>
+    <var name="creator">%(creator)s</var>
+    <var name="dataCatDir">%(dataCatDir)s</var>
+    <var name="isocMode">%(isocMode)s</var>
+    <var name="isocRun">%(isocRun)s</var>
+    <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+    <var name="L1_TASK_NAME">%(L1Name)s</var>
+    <var name="L1_TASK_VERSION">%(L1Version)s</var>
+    <var name="L1_INSTALL_DIR">%(installRoot)s</var>
+    <var name="L1_BUILD_DIR">%(L1CmtBase)s</var>
+    <var name="L1TrendVersion">Prompt</var> <!-- override if reprocessing -->
+    <var name="LD_LIBRARY_PATH">%(libraryPath)s</var>
+    <var name="nameManglingPrefix">%(nameManglingPrefix)s</var>
+  </variables>
+
+  <prerequisites>
+    <prerequisite name="DOWNLINK_RAWDIR" type="string"/>
+    <prerequisite name="DOWNLINK_ID" type="string"/>
+  </prerequisites>
+
+  <process name="findRunDirs">
+    <job executable="${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/findRunDirs.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d " />
+    <createsSubtasks>
+      <subtask>doRun</subtask>
+      <subtask>doLci</subtask>
+      <subtask>doInc</subtask>
+    </createsSubtasks>
+  </process>
+
+<!--
+  <process name="ft2Gaps">
+    <job executable="${isocRun} python2.5 ${L1ProcROOT}/ft2Db.py" batchOptions=" -q %(expressQ)s "/>
+  </process>
+-->
+
+  <process name="kludgeAsp">
+    <job executable="${isocRun} python2.5 ${L1ProcROOT}/kludgeAsp.py" batchOptions=" -q %(expressQ)s " />
+    <depends>
+      <after process="doRun.registerFT1" status="SUCCESS"/>
+      <after process="doRun.registerFT2" status="SUCCESS"/>
+    </depends>
+  </process>
+
+  <process name="cleanupDl">
+    <job executable="${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(expressQ)s " />
+    <depends>
+      <after process="doInc.checkRunInc" status="SUCCESS"/>
+      <after process="doLci.checkRunLci" status="SUCCESS"/>
+      <after process="doRun.checkRun" status="SUCCESS"/>
+    </depends>
+  </process>
+
+  <task name="doRun" version="%(L1Version)s" type="Data">
+
+    <prerequisites>
+      <prerequisite name="DATASOURCE" type="string"/>
+      <prerequisite name="RUNID" type="string"/>
+      <prerequisite name="RUNSTATUS" type="string"/>
+   </prerequisites>
+
+    <process name="findChunks">
+      <job executable="${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/findChunks.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py -sp %(highPriority)d " />
+      <createsSubtasks>
+        <subtask>doChunk</subtask>
+      </createsSubtasks>
+    </process>
+
+    <process name="setRunning">
+      <variables>
+        <var name="l1RunStatus">%(runningStatus)s</var>
+      </variables>
+      <script><![CDATA[
+%(statusScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="findChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="copyM7Hp">
+      <variables>
+        <var name="%(magic7Hp_versionName)s">%(magic7Hp_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s " />
+      <depends>
+        <after process="findChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="makeM7L1">
+      <variables>
+        <var name="%(magic7L1_versionName)s">%(magic7L1_version)s</var>
+        <var name="tStart">${pipeline.processInstance("findChunks").getVariable("tStart") }</var>      
+        <var name="tStop">${pipeline.processInstance("findChunks").getVariable("tStop") }</var>      
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/makeM7.py" batchOptions=" -q %(shortQ)s " />
+      <depends>
+        <after process="findChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerM7Hp">
+      <variables>
+        <var name="parentProcess">copyM7Hp</var>
+        <var name="fileType">magic7Hp</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="copyM7Hp" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+
+    <process name="registerM7L1">
+      <variables>
+        <var name="parentProcess">makeM7L1</var>
+        <var name="fileType">magic7L1</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="makeM7L1" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="mergeDigi">
+      <variables>
+        <var name="fileType">digi</var>
+        <var name="%(digi_versionName)s">%(digi_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;5]&quot; " />
+      <depends>
+        <after process="doChunk.digitization" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerDigi">
+      <variables>
+        <var name="parentProcess">mergeDigi</var>
+        <var name="fileType">digi</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeDigi" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="mergeDigiHist">
+      <variables>
+        <var name="fileType">digiHist</var>
+        <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="doChunk.digiHist" status="DONE"/>
+      </depends>
+    </process>
+ 
+    <process name="registerDigiHist">
+      <variables>
+        <var name="parentProcess">mergeDigiHist</var>
+        <var name="fileType">digiHist</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeDigiHist" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="digiHistAlarm">
+      <variables>
+        <var name="fileType">digiHist</var>
+        <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
+        <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerDigiHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerDigiHistAlarm">
+      <variables>
+        <var name="parentProcess">digiHistAlarm</var>
+        <var name="fileType">digiHistAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="digiHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestDigiHistRun">
+      <variables>
+        <var name="reportType">digiHistAlarm</var>
+        <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerDigiHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="digiHistLogger">
+      <variables>
+        <var name="fileType">digiHistAlarm</var>
+        <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerDigiHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="verify">
+      <variables>
+        <var name="%(digi_versionName)s">%(digi_version)s</var>
+        <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
+        <var name="%(verifyHisto_versionName)s">%(verifyHisto_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s "/>
+      <depends>
+        <after process="registerDigi" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerVerifyHisto">
+      <variables>
+        <var name="parentProcess">verify</var>
+        <var name="fileType">verifyHisto</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="verify" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerVerifyLog">
+      <variables>
+        <var name="parentProcess">verify</var>
+        <var name="fileType">verifyLog</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="verify" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestVerifyErrorRun">
+      <variables>
+        <var name="reportType">verifyLog</var>
+        <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerVerifyLog" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="acdPlots">
+      <variables>
+        <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
+        <var name="%(acdPlots_versionName)s">%(acdPlots_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/acdPlots.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerDigiHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerAcdPlots">
+      <variables>
+        <var name="parentProcess">acdPlots</var>
+        <var name="fileType">acdPlots</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="acdPlots" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeDigiTrend">
+      <variables>
+        <var name="fileType">digiTrend</var>
+        <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="doChunk.digiTrend" status="DONE"/>
+      </depends>
+    </process>
+ 
+    <process name="registerDigiTrend">
+      <variables>
+        <var name="parentProcess">mergeDigiTrend</var>
+        <var name="fileType">digiTrend</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeDigiTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestDigiTrend">
+      <variables>
+        <var name="reportType">digiTrend</var>
+        <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerDigiTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="digiTrendAlarm">
+      <variables>
+        <var name="fileType">digiTrend</var>
+        <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
+        <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerDigiTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerDigiTrendAlarm">
+      <variables>
+        <var name="parentProcess">digiTrendAlarm</var>
+        <var name="fileType">digiTrendAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="digiTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="digiTrendLogger">
+      <variables>
+        <var name="fileType">digiTrendAlarm</var>
+        <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerDigiTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestDigiTrendRun">
+      <variables>
+        <var name="reportType">digiTrendAlarm</var>
+        <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerDigiTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeCalHist">
+      <variables>
+        <var name="fileType">calHist</var>
+        <var name="%(calHist_versionName)s">%(calHist_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="doChunk.calHist" status="DONE"/>
+      </depends>
+    </process>
+ 
+    <process name="registerCalHist">
+      <variables>
+        <var name="parentProcess">mergeCalHist</var>
+        <var name="fileType">calHist</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeCalHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="calHistAlarm">
+      <variables>
+        <var name="fileType">calHist</var>
+        <var name="%(calHist_versionName)s">%(calHist_version)s</var>
+        <var name="%(calHistAlarm_versionName)s">%(calHistAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerCalHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerCalHistAlarm">
+      <variables>
+        <var name="parentProcess">calHistAlarm</var>
+        <var name="fileType">calHistAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="calHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="calHistLogger">
+      <variables>
+        <var name="fileType">calHistAlarm</var>
+        <var name="%(calHistAlarm_versionName)s">%(calHistAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerCalHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestCalHistRun">
+      <variables>
+        <var name="reportType">calHistAlarm</var>
+        <var name="%(calHistAlarm_versionName)s">%(calHistAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerCalHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeCalTrend">
+      <variables>
+        <var name="fileType">calTrend</var>
+        <var name="%(calTrend_versionName)s">%(calTrend_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="doChunk.calTrend" status="DONE"/>
+      </depends>
+    </process>
+ 
+    <process name="registerCalTrend">
+      <variables>
+        <var name="parentProcess">mergeCalTrend</var>
+        <var name="fileType">calTrend</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeCalTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestCalTrend">
+      <variables>
+        <var name="reportType">calTrend</var>
+        <var name="%(calTrend_versionName)s">%(calTrend_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerCalTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="acdPedsAnalyzer">
+      <variables>
+        <var name="fileType">calHist</var>
+        <var name="reportType">acdPedsAnalyzer</var>
+        <var name="%(calHist_versionName)s">%(calHist_version)s</var>
+        <var name="%(acdPedsAnalyzer_versionName)s">%(acdPedsAnalyzer_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s "/>
+      <depends>
+        <after process="registerCalHist" status="SUCCESS"/>
+      </depends>
+    </process>
+   
+    <process name="registerAcdPedsAnalyzer">
+      <variables>
+        <var name="parentProcess">acdPedsAnalyzer</var>
+        <var name="fileType">acdPedsAnalyzer</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="acdPedsAnalyzer" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="calGainsAnalyzer">
+      <variables>
+        <var name="fileType">calHist</var>
+        <var name="reportType">calGainsAnalyzer</var>
+        <var name="%(calHist_versionName)s">%(calHist_version)s</var>
+        <var name="%(calGainsAnalyzer_versionName)s">%(calGainsAnalyzer_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s "/>
+      <depends>
+        <after process="registerCalHist" status="SUCCESS"/>
+      </depends>
+    </process>
+   
+    <process name="registerCalGainsAnalyzer">
+      <variables>
+        <var name="parentProcess">calGainsAnalyzer</var>
+        <var name="fileType">calGainsAnalyzer</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="calGainsAnalyzer" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="calPedsAnalyzer">
+      <variables>
+        <var name="fileType">calHist</var>
+        <var name="reportType">calPedsAnalyzer</var>
+        <var name="%(calHist_versionName)s">%(calHist_version)s</var>
+        <var name="%(calPedsAnalyzer_versionName)s">%(calPedsAnalyzer_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s "/>
+      <depends>
+        <after process="registerCalHist" status="SUCCESS"/>
+      </depends>
+    </process>
+   
+    <process name="registerCalPedsAnalyzer">
+      <variables>
+        <var name="parentProcess">calPedsAnalyzer</var>
+        <var name="fileType">calPedsAnalyzer</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="calPedsAnalyzer" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeFastMonError">
+      <variables>
+        <var name="fileType">fastMonError</var>
+        <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s "/>
+      <depends>
+        <after process="doChunk.fastMonTuple" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonError">
+      <variables>
+        <var name="parentProcess">mergeFastMonError</var>
+        <var name="fileType">fastMonError</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonError" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestFastMonErrorRun">
+      <variables>
+        <var name="reportType">fastMonError</var>
+        <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerFastMonError" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="fastMonErrorAlarm">
+      <variables>
+        <var name="fileType">fastMonError</var>
+        <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
+        <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerFastMonError" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonErrorAlarm">
+      <variables>
+        <var name="parentProcess">fastMonErrorAlarm</var>
+        <var name="fileType">fastMonErrorAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="fastMonErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="fastMonErrorLogger">
+      <variables>
+        <var name="fileType">fastMonErrorAlarm</var>
+        <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerFastMonErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestFastMonErrorAlarmRun">
+      <variables>
+        <var name="reportType">fastMonErrorAlarm</var>
+        <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerFastMonErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeFastMonHist">
+      <variables>
+        <var name="fileType">fastMonHist</var>
+        <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="doChunk.fastMonHist" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonHist">
+      <variables>
+        <var name="parentProcess">mergeFastMonHist</var>
+        <var name="fileType">fastMonHist</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonHist" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="compDigiFastMon">
+      <variables>
+        <var name="fileType">compareDFm</var>
+        <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
+        <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
+        <var name="%(compareDFm_versionName)s">%(compareDFm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/compDigiFastMon.py" batchOptions=" -q %(mediumQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="registerDigiHist" status="SUCCESS"/>
+        <after process="registerFastMonHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerCmpDFm">
+      <variables>
+        <var name="parentProcess">compDigiFastMon</var>
+        <var name="fileType">compareDFm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="compDigiFastMon" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="mergeFastMonTuple">
+      <variables>
+        <var name="fileType">fastMonTuple</var>
+        <var name="%(fastMonTuple_versionName)s">%(fastMonTuple_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="doChunk.fastMonTuple" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonTuple">
+      <variables>
+        <var name="parentProcess">mergeFastMonTuple</var>
+        <var name="fileType">fastMonTuple</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonTuple" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="fastMonHistAlarm">
+      <variables>
+        <var name="fileType">fastMonHist</var>
+        <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
+        <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerFastMonHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonHistAlarm">
+      <variables>
+        <var name="parentProcess">fastMonHistAlarm</var>
+        <var name="fileType">fastMonHistAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="fastMonHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="fastMonHistLogger">
+      <variables>
+        <var name="fileType">fastMonHistAlarm</var>
+        <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerFastMonHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestFastMonHistRun">
+      <variables>
+        <var name="reportType">fastMonHistAlarm</var>
+        <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerFastMonHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeFastMonTrend">
+      <variables>
+        <var name="fileType">fastMonTrend</var>
+        <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="doChunk.fastMonTrend" status="DONE"/>
+      </depends>
+    </process>
+ 
+    <process name="registerFastMonTrend">
+      <variables>
+        <var name="parentProcess">mergeFastMonTrend</var>
+        <var name="fileType">fastMonTrend</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestFastMonTrend">
+      <variables>
+        <var name="reportType">fastMonTrend</var>
+        <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerFastMonTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="fastMonTrendAlarm">
+      <variables>
+        <var name="fileType">fastMonTrend</var>
+        <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
+        <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerFastMonTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonTrendAlarm">
+      <variables>
+        <var name="parentProcess">fastMonTrendAlarm</var>
+        <var name="fileType">fastMonTrendAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="fastMonTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestFastMonTrendRun">
+      <variables>
+        <var name="reportType">fastMonTrendAlarm</var>
+        <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerFastMonTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="fastMonTrendLogger">
+      <variables>
+        <var name="fileType">fastMonTrendAlarm</var>
+        <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerFastMonTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeGcrChunks">
+      <variables>
+        <var name="fileType">gcr</var>
+        <var name="%(gcr_versionName)s">%(gcr_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="doChunk.mergeGcrCrumbs" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerGcr">
+      <variables>
+        <var name="parentProcess">mergeGcrChunks</var>
+        <var name="fileType">gcr</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeGcrChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeMeritChunks">
+      <variables>
+        <var name="fileType">merit</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;2]&quot; " />
+      <depends>
+        <after process="doChunk.mergeMeritCrumbs" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerMerit">
+      <variables>
+        <var name="parentProcess">mergeMeritChunks</var>
+        <var name="fileType">merit</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeMeritChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="makeFT1">
+      <variables>
+        <var name="fileType">ft1</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="%(ft1_versionName)s">%(ft1_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <depends>
+        <after process="registerMerit" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFT1">
+      <variables>
+        <var name="parentProcess">makeFT1</var>
+        <var name="fileType">ft1</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="makeFT1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="exportFT1">
+      <variables>
+        <var name="fileType">ft1</var>
+        <var name="%(ft1_versionName)s">%(ft1_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <depends>
+        <after process="registerFT1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="makeLS1">
+      <variables>
+        <var name="fileType">ls1</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="%(ls1_versionName)s">%(ls1_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <depends>
+        <after process="registerMerit" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerLS1">
+      <variables>
+        <var name="parentProcess">makeLS1</var>
+        <var name="fileType">ls1</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="makeLS1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="exportLS1">
+      <variables>
+        <var name="fileType">ls1</var>
+        <var name="%(ls1_versionName)s">%(ls1_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <depends>
+        <after process="registerLS1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ft2Runs">
+      <variables>
+        <var name="%(digi_versionName)s">%(digi_version)s</var>
+        <var name="%(ft2Txt_versionName)s">%(ft2Txt_version)s</var>
+        <var name="%(magic7L1_versionName)s">%(magic7L1_version)s</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+<!--        <var name="L1_magic7L1_filename">${datacatalog.getDataset(RUNID, "/Data/Flight/Level1/"+DATASOURCE, "MAGIC7L1").getLocation("SLAC_XROOT").getPath()}</var>   -->
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/ft2Entries.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <depends>
+        <after process="registerDigi" status="SUCCESS"/>
+        <after process="registerM7L1" status="SUCCESS"/>
+        <after process="registerMerit" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFt2Txt">
+      <variables>
+        <var name="parentProcess">ft2Runs</var>
+        <var name="fileType">ft2Txt</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="ft2Runs" status="SUCCESS"/>
+      </depends>
+    </process>
+
+<!--
+    <process name="ingestFT2">
+      <variables>
+        <var name="%(ft2Txt_versionName)s">%(ft2Txt_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/ft2Db.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <depends>
+        <after process="registerFt2Txt" status="SUCCESS"/>
+      </depends>
+    </process>
+-->
+
+    <process name="makeFT2">
+      <variables>
+        <var name="%(ft2Txt_versionName)s">%(ft2Txt_version)s</var>
+        <var name="%(ft2_versionName)s">%(ft2_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/makeFT2File.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <depends>
+        <!-- <after process="ingestFT2" status="SUCCESS"/> -->
+        <after process="registerFt2Txt" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFT2">
+      <variables>
+        <var name="parentProcess">makeFT2</var>
+        <var name="fileType">ft2</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="makeFT2" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="exportFT2">
+      <variables>
+        <var name="fileType">ft2</var>
+        <var name="%(ft2_versionName)s">%(ft2_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d  -R &quot;select[scratch&gt;1]&quot; " />
+      <depends>
+        <after process="registerFT2" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="makeLS3">
+      <variables>
+        <var name="%(ft1_versionName)s">%(ft1_version)s</var>
+        <var name="%(ft2_versionName)s">%(ft2_version)s</var>
+        <var name="%(ls3_versionName)s">%(ls3_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/makeLS3.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <depends>
+        <after process="registerFT1" status="SUCCESS"/>
+        <after process="registerFT2" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerLS3">
+      <variables>
+        <var name="parentProcess">makeLS3</var>
+        <var name="fileType">ls3</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="makeLS3" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="exportLS3">
+      <variables>
+        <var name="fileType">ls3</var>
+        <var name="%(ls3_versionName)s">%(ls3_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <depends>
+        <after process="registerLS3" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeCalChunks">
+      <variables>
+        <var name="fileType">cal</var>
+        <var name="%(cal_versionName)s">%(cal_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;6]&quot; "/>
+      <depends>
+        <after process="doChunk.mergeCalCrumbs" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerCal">
+      <variables>
+        <var name="parentProcess">mergeCalChunks</var>
+        <var name="fileType">cal</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeCalChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeMeritTrend">
+      <variables>
+        <var name="fileType">meritTrend</var>
+        <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="doChunk.meritTrend" status="DONE"/>
+      </depends>
+    </process>
+ 
+    <process name="registerMeritTrend">
+      <variables>
+        <var name="parentProcess">mergeMeritTrend</var>
+        <var name="fileType">meritTrend</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeMeritTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestMeritTrend">
+      <variables>
+        <var name="reportType">meritTrend</var>
+        <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerMeritTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="meritTrendAlarm">
+      <variables>
+        <var name="fileType">meritTrend</var>
+        <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
+        <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerMeritTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerMeritTrendAlarm">
+      <variables>
+        <var name="parentProcess">meritTrendAlarm</var>
+        <var name="fileType">meritTrendAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="meritTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="meritTrendLogger">
+      <variables>
+        <var name="fileType">meritTrendAlarm</var>
+        <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerMeritTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestMeritTrendRun">
+      <variables>
+        <var name="reportType">meritTrendAlarm</var>
+        <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerMeritTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeMeritHist">
+      <variables>
+        <var name="fileType">meritHist</var>
+        <var name="%(meritHist_versionName)s">%(meritHist_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="doChunk.meritHist" status="DONE"/>
+      </depends>
+    </process>
+ 
+    <process name="registerMeritHist">
+      <variables>
+        <var name="parentProcess">mergeMeritHist</var>
+        <var name="fileType">meritHist</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeMeritHist" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="meritHistAlarm">
+      <variables>
+        <var name="fileType">meritHist</var>
+        <var name="%(meritHist_versionName)s">%(meritHist_version)s</var>
+        <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerMeritHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerMeritHistAlarm">
+      <variables>
+        <var name="parentProcess">meritHistAlarm</var>
+        <var name="fileType">meritHistAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="meritHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestMeritHistRun">
+      <variables>
+        <var name="reportType">meritHistAlarm</var>
+        <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerMeritHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="meritHistLogger">
+      <variables>
+        <var name="fileType">meritHistAlarm</var>
+        <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerMeritHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="mergeReconTrend">
+      <variables>
+        <var name="fileType">reconTrend</var>
+        <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <!-- <after process="doChunk.mergeCalCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
+        <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
+        <after process="doChunk.reconTrend" status="DONE"/>
+      </depends>
+    </process>
+ 
+    <process name="registerReconTrend">
+      <variables>
+        <var name="parentProcess">mergeReconTrend</var>
+        <var name="fileType">reconTrend</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeReconTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestReconTrend">
+      <variables>
+        <var name="reportType">reconTrend</var>
+        <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerReconTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="reconTrendAlarm">
+      <variables>
+        <var name="fileType">reconTrend</var>
+        <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
+        <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerReconTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerReconTrendAlarm">
+      <variables>
+        <var name="parentProcess">reconTrendAlarm</var>
+        <var name="fileType">reconTrendAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="reconTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestReconTrendRun">
+      <variables>
+        <var name="reportType">reconTrendAlarm</var>
+        <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerReconTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="reconTrendLogger">
+      <variables>
+        <var name="fileType">reconTrendAlarm</var>
+        <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerReconTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="mergeReconHist">
+      <variables>
+        <var name="fileType">reconHist</var>
+        <var name="%(reconHist_versionName)s">%(reconHist_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <!-- <after process="doChunk.mergeCalCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
+        <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
+        <after process="doChunk.reconHist" status="DONE"/>
+      </depends>
+    </process>
+ 
+    <process name="registerReconHist">
+      <variables>
+        <var name="parentProcess">mergeReconHist</var>
+        <var name="fileType">reconHist</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeReconHist" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="reconHistAlarm">
+      <variables>
+        <var name="fileType">reconHist</var>
+        <var name="%(reconHist_versionName)s">%(reconHist_version)s</var>
+        <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerReconHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerReconHistAlarm">
+      <variables>
+        <var name="parentProcess">reconHistAlarm</var>
+        <var name="fileType">reconHistAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="reconHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="reconHistLogger">
+      <variables>
+        <var name="fileType">reconHistAlarm</var>
+        <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerReconHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestReconHistRun">
+      <variables>
+        <var name="reportType">reconHistAlarm</var>
+        <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerReconHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="reconHistPostProcessor">
+      <variables>
+        <var name="fileType">reconHistAlarm</var>
+        <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
+        <var name="%(reconHistAlarmDist_versionName)s">%(reconHistAlarmDist_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmPostProcessor.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerReconHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerReconHistAlarmDist">
+      <variables>
+        <var name="parentProcess">reconHistPostProcessor</var>
+        <var name="fileType">reconHistAlarmDist</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="reconHistPostProcessor" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeTkrAnalysis">
+      <variables>
+        <var name="fileType">tkrAnalysis</var>
+        <var name="%(tkrAnalysis_versionName)s">%(tkrAnalysis_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
+        <after process="doChunk.tkrAnalysis" status="DONE"/>
+      </depends>
+    </process>
+ 
+    <process name="registerTkrAnalysis">
+      <variables>
+        <var name="parentProcess">mergeTkrAnalysis</var>
+        <var name="fileType">tkrAnalysis</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeTkrAnalysis" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="tkrMonitor">
+      <variables>
+        <var name="%(tkrAnalysis_versionName)s">%(tkrAnalysis_version)s</var>
+        <var name="%(tkrMonitor_versionName)s">%(tkrMonitor_version)s</var>
+        <var name="%(tkrReport_versionName)s">%(tkrReport_version)s</var>
+        <!-- <var name="%(tkrAlarm_versionName)s">%(tkrAlarm_version)s</var> -->
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/tkrMonitor.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="registerTkrAnalysis" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerTkrMonitor">
+      <variables>
+        <var name="parentProcess">tkrMonitor</var>
+        <var name="fileType">tkrMonitor</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="tkrMonitor" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+<!--
+    <process name="preRegisterTkrReport">
+      <variables>
+        <var name="fileType">tkrReport</var>
+        <var name="%(tkrReport_versionName)s">%(tkrReport_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/preRegister.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="tkrMonitor" status="SUCCESS"/>
+      </depends>
+    </process>
+-->
+
+    <process name="registerTkrReport">
+      <variables>
+        <var name="parentProcess">tkrMonitor</var>
+        <var name="fileType">tkrReport</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="tkrMonitor" status="SUCCESS"/>
+      </depends>
+    </process>
+
+
+
+<!-- We don't have TKR alarms yet
+    <process name="preRegisterTkrAlarm">
+      <variables>
+        <var name="fileType">tkrAlarm</var>
+        <var name="%(tkrAlarm_versionName)s">%(tkrAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/preRegister.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="tkrMonitor" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerTkrAlarm">
+      <variables>
+        <var name="parentProcess">tkrMonitor</var>
+        <var name="fileType">tkrAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="tkrMonitor" status="SUCCESS"/>
+      </depends>
+    </process>
+ -->
+
+
+
+    <process name="tkrTrend">
+      <variables>
+        <var name="reportType">tkrTrend</var>
+        <var name="%(tkrMonitor_versionName)s">%(tkrMonitor_version)s</var>
+        <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
+      <depends>
+        <after process="registerTkrMonitor" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerTkrTrend">
+      <variables>
+        <var name="parentProcess">tkrTrend</var>
+        <var name="fileType">tkrTrend</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="tkrTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="ingestTkrTrend">
+      <variables>
+        <var name="reportType">tkrTrend</var>
+        <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerTkrTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="tkrTrendAlarm">
+      <variables>
+        <var name="fileType">tkrTrend</var>
+        <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
+        <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerTkrTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerTkrTrendAlarm">
+      <variables>
+        <var name="parentProcess">tkrTrendAlarm</var>
+        <var name="fileType">tkrTrendAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="tkrTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestTkrTrendRun">
+      <variables>
+        <var name="reportType">tkrTrendAlarm</var>
+        <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerTkrTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="tkrTrendLogger">
+      <variables>
+        <var name="fileType">tkrTrendAlarm</var>
+        <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerTkrTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="mergeReconChunks">
+      <variables>
+        <var name="fileType">recon</var>
+        <var name="%(recon_versionName)s">%(recon_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;50]&quot; "/>
+      <depends>
+        <after process="doChunk.mergeReconCrumbs" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerRecon">
+      <variables>
+        <var name="parentProcess">mergeReconChunks</var>
+        <var name="fileType">recon</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeReconChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeSvacChunks">
+      <variables>
+        <var name="fileType">svac</var>
+        <var name="%(svac_versionName)s">%(svac_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;6]&quot; "/>
+      <depends>
+        <after process="doChunk.svacTuple" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerSvacTuple">
+      <variables>
+        <var name="parentProcess">mergeSvacChunks</var>
+        <var name="fileType">svac</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeSvacChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="checkRun">
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="calHistLogger" status="SUCCESS"/>
+        <after process="doChunk.checkChunk" status="SUCCESS"/>
+        <after process="digiHistLogger" status="SUCCESS"/>
+        <after process="digiTrendLogger" status="SUCCESS"/>
+        <after process="exportFT1" status="SUCCESS"/>
+        <after process="exportFT2" status="SUCCESS"/>
+        <after process="exportLS1" status="SUCCESS"/>
+        <after process="exportLS3" status="SUCCESS"/>
+        <after process="fastMonErrorLogger" status="SUCCESS"/>
+        <after process="fastMonHistLogger" status="SUCCESS"/>
+        <after process="fastMonTrendLogger" status="SUCCESS"/>
+        <after process="ingestCalHistRun" status="SUCCESS"/>
+        <after process="ingestCalTrend" status="SUCCESS"/>
+        <after process="ingestDigiTrend" status="SUCCESS"/>
+        <after process="ingestFastMonTrend" status="SUCCESS"/>
+        <after process="ingestMeritTrend" status="SUCCESS"/>
+        <after process="ingestReconTrend" status="SUCCESS"/>
+        <after process="ingestFastMonTrendRun" status="SUCCESS"/>
+        <after process="ingestFastMonHistRun" status="SUCCESS"/>
+        <after process="ingestFastMonErrorRun" status="SUCCESS"/>
+        <after process="ingestFastMonErrorAlarmRun" status="SUCCESS"/>
+        <after process="ingestDigiTrendRun" status="SUCCESS"/>
+        <after process="ingestDigiHistRun" status="SUCCESS"/>
+        <after process="ingestMeritTrendRun" status="SUCCESS"/>
+        <after process="ingestMeritHistRun" status="SUCCESS"/>
+        <after process="ingestReconTrendRun" status="SUCCESS"/>
+        <after process="ingestReconHistRun" status="SUCCESS"/>
+        <after process="ingestTkrTrend" status="SUCCESS"/>
+        <after process="ingestTkrTrendRun" status="SUCCESS"/>
+        <after process="ingestVerifyErrorRun" status="SUCCESS"/>
+        <after process="meritHistLogger" status="SUCCESS"/>
+        <after process="meritTrendLogger" status="SUCCESS"/>
+        <after process="reconHistLogger" status="SUCCESS"/>
+        <after process="reconTrendLogger" status="SUCCESS"/>
+        <after process="registerAcdPlots" status="SUCCESS"/>
+        <after process="registerCal" status="SUCCESS"/>
+        <after process="registerCalGainsAnalyzer" status="SUCCESS"/>
+        <after process="registerCmpDFm" status="SUCCESS"/>
+        <after process="registerAcdPedsAnalyzer" status="SUCCESS"/>
+        <after process="registerCalPedsAnalyzer" status="SUCCESS"/>
+        <after process="registerFastMonTuple" status="SUCCESS"/>
+        <after process="registerGcr" status="SUCCESS"/>
+        <after process="registerM7Hp" status="SUCCESS"/>
+        <after process="registerMeritHist" status="SUCCESS"/>
+        <after process="registerRecon" status="SUCCESS"/>
+        <after process="registerReconHistAlarmDist" status="SUCCESS"/>
+        <after process="registerSvacTuple" status="SUCCESS"/>
+<!-- We don't have TKR alarms yet        <after process="registerTkrAlarm" status="SUCCESS"/>     -->
+        <after process="registerTkrReport" status="SUCCESS"/>
+        <after process="registerVerifyHisto" status="SUCCESS"/>
+        <after process="tkrTrendLogger" status="SUCCESS"/>
+      </depends>
+      <createsSubtasks>
+        <subtask>cleanupCompleteRun</subtask>
+      </createsSubtasks>
+    </process>
+
+    <process name="setCrashed">
+      <variables>
+        <var name="l1RunStatus">%(crashedStatus)s</var>
+      </variables>
+      <script><![CDATA[
+%(statusScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="checkRun" status="SKIPPED"/>
+        <after process="setRunning" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="setSuccessful">
+      <variables>
+        <var name="parentProcess">checkRun</var>
+      </variables>
+      <script><![CDATA[
+%(successScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="checkRun" status="SUCCESS"/>
+        <after process="setRunning" status="DONE"/>
+      </depends>
+    </process>
+
+    <task name="cleanupCompleteRun" version="%(L1Version)s" type="Data">
+
+      <process name="cleanupChunks">
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
+      </process>
+
+<!--
+      <process name="updateRunStatus">
+        <script>
+          <![CDATA[
+%(retireScriptBody)s
+]]>
+        </script>
+      </process>
+-->
+
+    </task> <!-- cleanupCompleteRun -->
+
+    <task name="doChunk" version="%(L1Version)s" type="Data">
+
+      <prerequisites>
+         <prerequisite name="CHUNK_ID" type="string"/>
+         <prerequisite name="EVTFILE" type="string"/>
+         <prerequisite name="HOSTLIST" type="string"/>
+      </prerequisites>
+
+      <process name="digitization">
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/digitize.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
+      </process>
+ 
+      <process name="fakeFT2">
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/fakeFT2.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
+      </process>
+ 
+      <process name="fastMonTuple">
+        <variables>
+          <var name="reportType">fastMonTuple</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+      </process>
+
+      <process name="fastMonHist">
+        <variables>
+          <var name="reportType">fastMonHist</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="fastMonTuple" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="fastMonTrend">
+        <variables>
+          <var name="reportType">fastMonTrend</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="fastMonTuple" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="digiHist">
+        <variables>
+          <var name="reportType">digiHist</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="digitization" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="digiTrend">
+        <variables>
+          <var name="reportType">digiTrend</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="digitization" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="calHist">
+        <variables>
+          <var name="reportType">calHist</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="digitization" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="calTrend">
+        <variables>
+          <var name="reportType">calTrend</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="digitization" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="setupCrumbs">
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
+        <depends>
+          <after process="digitization" status="SUCCESS"/>
+          <after process="fakeFT2" status="SUCCESS"/>
+        </depends>
+        <createsSubtasks>
+          <subtask>doCrumb</subtask>
+        </createsSubtasks>
+      </process>
+
+      <process name="mergeMeritCrumbs">
+        <variables>
+          <var name="fileType">merit</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
+        <depends>
+          <after process="doCrumb.recon" status="DONE"/>
+        </depends>
+      </process>
+
+      <process name="mergeReconCrumbs">
+        <variables>
+          <var name="fileType">recon</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="doCrumb.recon" status="DONE"/>
+          <after process="mergeMeritCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
+        </depends>
+      </process>
+
+      <process name="mergeCalCrumbs">
+        <variables>
+          <var name="fileType">cal</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="doCrumb.recon" status="DONE"/>
+          <after process="mergeReconCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
+        </depends>
+      </process>
+
+      <process name="mergeGcrCrumbs">
+        <variables>
+          <var name="fileType">gcr</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="doCrumb.recon" status="DONE"/>
+          <after process="mergeCalCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
+        </depends>
+      </process>
+
+      <process name="meritHist">
+        <variables>
+          <var name="reportType">meritHist</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="doCrumb.recon" status="SUCCESS"/>
+          <after process="mergeMeritCrumbs" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="meritTrend">
+        <variables>
+          <var name="reportType">meritTrend</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="doCrumb.recon" status="SUCCESS"/>
+          <after process="mergeMeritCrumbs" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="reconHist">
+        <variables>
+          <var name="reportType">reconHist</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="doCrumb.recon" status="SUCCESS"/>
+          <after process="mergeCalCrumbs" status="SUCCESS"/>
+          <after process="mergeReconCrumbs" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="reconTrend">
+        <variables>
+          <var name="reportType">reconTrend</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="doCrumb.recon" status="SUCCESS"/>
+          <after process="mergeCalCrumbs" status="SUCCESS"/>
+          <after process="mergeReconCrumbs" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="tkrAnalysis">
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/tkrRootAnalysis.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="doCrumb.recon" status="SUCCESS"/>
+          <after process="mergeReconCrumbs" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+        <process name="svacTuple">
+          <job executable="${isocRun} python2.5 ${L1ProcROOT}/makeSvac.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+          <depends>
+            <after process="doCrumb.recon" status="SUCCESS"/>
+          </depends>
+        </process>
+
+      <process name="checkChunk">
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s "/>
+        <depends>
+          <after process="doCrumb.recon" status="SUCCESS"/>
+          <after process="calHist" status="SUCCESS"/>
+          <after process="calTrend" status="SUCCESS"/>
+          <after process="fastMonHist" status="SUCCESS"/>
+          <after process="fastMonTrend" status="SUCCESS"/>
+          <after process="digiHist" status="SUCCESS"/>
+          <after process="digiTrend" status="SUCCESS"/>
+          <after process="mergeGcrCrumbs" status="SUCCESS"/>
+          <after process="meritHist" status="SUCCESS"/>
+          <after process="meritTrend" status="SUCCESS"/>
+          <after process="reconHist" status="SUCCESS"/>
+          <after process="reconTrend" status="SUCCESS"/>
+          <after process="svacTuple" status="SUCCESS"/>
+          <after process="tkrAnalysis" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="cleanupCrumbs">
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(shortQ)s "/>
+        <depends>
+          <after process="checkChunk" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <task name="doCrumb" version="%(L1Version)s" type="Data">
+
+        <prerequisites>
+          <prerequisite name="CRUMB_ID" type="string"/>
+          <prerequisite name="crumbEvents" type="string"/>
+          <prerequisite name="crumbStart" type="string"/>
+        </prerequisites>
+
+        <process name="recon">
+          <job executable="${isocRun} python2.5 ${L1ProcROOT}/recon.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
+        </process>
+
+      </task> <!-- doCrumb -->
+     
+    </task> <!-- doChunk -->
+
+  </task> <!-- doRun -->
+
+  <task name="doLci" version="%(L1Version)s" type="Data">
+
+    <prerequisites>
+      <prerequisite name="DATASOURCE" type="string"/>
+      <prerequisite name="RUNID" type="string"/>
+      <prerequisite name="RUNSTATUS" type="string"/>
+    </prerequisites>
+
+    <process name="findChunksLci">
+      <job executable="${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/findChunks.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
+      <createsSubtasks>
+        <subtask>doChunkLci</subtask>
+      </createsSubtasks>
+    </process>
+
+    <process name="setRunningLci">
+      <variables>
+        <var name="l1RunStatus">%(runningStatus)s</var>
+      </variables>
+      <script><![CDATA[
+%(statusScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="findChunksLci" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="copyM7HpLci">
+      <variables>
+        <var name="%(magic7Hp_versionName)s">%(magic7Hp_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s " />
+      <depends>
+        <after process="findChunksLci" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerM7HpLci">
+      <variables>
+        <var name="parentProcess">copyM7HpLci</var>
+        <var name="fileType">magic7Hp</var>
+        <var name="timeProcess">findChunksLci</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="copyM7HpLci" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="mergeDigiLci">
+      <variables>
+        <var name="fileType">digi</var>
+        <var name="%(digi_versionName)s">%(digi_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -R &quot;select[scratch&gt;5]&quot; "/>
+      <depends>
+        <after process="doChunkLci.digitizationLci" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerDigiLci">
+      <variables>
+        <var name="parentProcess">mergeDigiLci</var>
+        <var name="fileType">digi</var>
+        <var name="timeProcess">findChunksLci</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeDigiLci" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+     <process name="mergeDigiHistLci">
+      <variables>
+        <var name="fileType">digiHist</var>
+        <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;10]&quot; "/>
+      <depends>
+        <after process="doChunkLci.digiHistLci" status="DONE"/>
+      </depends>
+    </process>
+ 
+    <process name="registerDigiHistLci">
+      <variables>
+        <var name="parentProcess">mergeDigiHistLci</var>
+        <var name="fileType">digiHist</var>
+        <var name="timeProcess">findChunksLci</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeDigiHistLci" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeFastMonErrorLci">
+      <variables>
+        <var name="fileType">fastMonError</var>
+        <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s "/>
+      <depends>
+        <after process="doChunkLci.fastMonTupleLci" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonErrorLci">
+      <variables>
+        <var name="parentProcess">mergeFastMonErrorLci</var>
+        <var name="fileType">fastMonError</var>
+        <var name="timeProcess">findChunksLci</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonErrorLci" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeFastMonTupleLci">
+      <variables>
+        <var name="fileType">fastMonTuple</var>
+        <var name="%(fastMonTuple_versionName)s">%(fastMonTuple_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;10]&quot; "/>
+      <depends>
+        <after process="doChunkLci.fastMonTupleLci" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonTupleLci">
+      <variables>
+        <var name="parentProcess">mergeFastMonTupleLci</var>
+        <var name="fileType">fastMonTuple</var>
+        <var name="timeProcess">findChunksLci</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonTupleLci" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="mergeFastMonHistLci">
+      <variables>
+        <var name="fileType">fastMonHist</var>
+        <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;10]&quot; "/>
+      <depends>
+        <after process="doChunkLci.fastMonHistLci" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonHistLci">
+      <variables>
+        <var name="parentProcess">mergeFastMonHistLci</var>
+        <var name="fileType">fastMonHist</var>
+        <var name="timeProcess">findChunksLci</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonHistLci" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="checkRunLci">
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="doChunkLci.checkChunkLci" status="SUCCESS"/>
+        <after process="registerDigiLci" status="SUCCESS"/>
+        <after process="registerDigiHistLci" status="SUCCESS"/>
+        <after process="registerFastMonErrorLci" status="SUCCESS"/>
+        <after process="registerFastMonHistLci" status="SUCCESS"/>
+        <after process="registerFastMonTupleLci" status="SUCCESS"/>
+        <after process="registerM7HpLci" status="SUCCESS"/>
+      </depends>
+      <createsSubtasks>
+        <subtask>cleanupCompleteRunLci</subtask>
+      </createsSubtasks>
+    </process>
+
+    <process name="setCrashedLci">
+      <variables>
+        <var name="l1RunStatus">%(crashedStatus)s</var>
+      </variables>
+      <script><![CDATA[
+%(statusScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="checkRunLci" status="SKIPPED"/>
+        <after process="setRunningLci" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="setSuccessfulLci">
+      <variables>
+        <var name="parentProcess">checkRunLci</var>
+      </variables>
+      <script><![CDATA[
+%(successScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="checkRunLci" status="SUCCESS"/>
+        <after process="setRunningLci" status="DONE"/>
+      </depends>
+    </process>
+
+    <task name="cleanupCompleteRunLci" version="%(L1Version)s" type="Data">
+
+      <process name="cleanupChunksLci">
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
+      </process>
+
+<!--
+      <process name="updateRunStatusLci">
+        <script>
+          <![CDATA[
+%(retireScriptBody)s
+]]>
+        </script>
+      </process>
+-->
+
+    </task> <!-- cleanupCompleteRunLci -->
+
+    <task name="doChunkLci" version="%(L1Version)s" type="Data">
+
+      <prerequisites>
+         <prerequisite name="CHUNK_ID" type="string"/>
+         <prerequisite name="EVTFILE" type="string"/>
+         <prerequisite name="HOSTLIST" type="string"/>
+      </prerequisites>
+
+      <process name="digitizationLci">
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/digitize.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+      </process>
+ 
+      <process name="fastMonTupleLci">
+        <variables>
+          <var name="reportType">fastMonTuple</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+      </process>
+ 
+      <process name="fastMonHistLci">
+        <variables>
+          <var name="reportType">fastMonHist</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="fastMonTupleLci" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="digiHistLci">
+        <variables>
+          <var name="reportType">digiHist</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
+        <depends>
+          <after process="digitizationLci" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="checkChunkLci">
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s "/>
+        <depends>
+          <after process="fastMonHistLci" status="SUCCESS"/>
+          <after process="digiHistLci" status="SUCCESS"/>
+        </depends>
+      </process>
+
+    </task> <!-- doChunkLci -->
+
+  </task> <!-- doLci -->
+
+  <task name="doInc" version="%(L1Version)s" type="Data">
+
+    <prerequisites>
+      <prerequisite name="DATASOURCE" type="string"/>
+      <prerequisite name="RUNID" type="string"/>
+      <prerequisite name="RUNSTATUS" type="string"/>
+    </prerequisites>
+
+    <process name="checkRunInc">
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
+      <createsSubtasks>
+        <subtask>cleanupIncompleteRun</subtask>
+      </createsSubtasks>
+    </process>
+
+    <process name="setSuccessfulInc">
+      <variables>
+        <var name="parentProcess">checkRunInc</var>
+      </variables>
+      <script><![CDATA[
+%(successScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="checkRunInc" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <task name="cleanupIncompleteRun" version="%(L1Version)s" type="Data">
+
+      <process name="cleanupChunksInc">
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
+      </process>
+
+<!--
+      <process name="updateRunStatusInc">
+        <script>
+          <![CDATA[
+%(retireScriptBody)s
+]]>
+        </script>
+      </process>
+-->
+    </task> <!-- cleanupIncompleteRun -->
+
+  </task> <!-- doInc -->
+
+</task> <!-- L1Proc -->
+</pipeline>
+

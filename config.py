@@ -116,9 +116,9 @@ else:
 #maxCrumbSize = 17000   # ~.5Hr on cob (skymodel).
 minCrumbCpuf = 7
 # maxCrumbs = 7 # Maximum number of crumbs/chunk. Not used by current algorithm.
-maxCrumbs = 25 # Maximum number of crumbs/chunk.
+maxCrumbs = 20 # Maximum number of crumbs/chunk.
 # crumbSize = 10000 # typical crumb size
-crumbSize = 1000 # typical crumb size
+crumbSize = 2000 # typical crumb size
 crumbMmr = 2.0 # largestCrumb / smallestCrumb
 
 defaultRunStatus = 'WAITING'
@@ -242,11 +242,11 @@ cmtPackages = {
         },
     'calibTkrUtil': {
         'repository': '',
-        'version': 'v2r5',
+        'version': 'v2r6',
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v4r1p0',
+        'version': 'v4r8p1',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -258,7 +258,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v4r1p3',
+        'version': 'v4r2p0',
         },
     'ft2Util': {
         'repository': '',
@@ -270,7 +270,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r2p23',
+        'version': 'v1r2p24',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -285,11 +285,11 @@ cmtPackages = {
 cvsPackages = {
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r2p17',
+        'version': 'v1r2p21',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r4p5',
+        'version': 'v1r4p8',
         },
     'IGRF': {
         'repository': 'dataMonitoring',

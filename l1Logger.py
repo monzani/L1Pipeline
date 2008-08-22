@@ -25,7 +25,14 @@ eventType = '.'.join([
     ])
 
 dlNumber = os.environ['DOWNLINK_ID']
-runNumber = os.environ['runNumber']
+
+try:
+    runNumber = os.environ['runNumber']
+except KeyError:
+    runId = os.environ['RUNID']
+    runNumber = runId.lstrip('r0')
+    pass
+
 tags = {
     "tag_downlinkId": int(dlNumber),
     "tag_runId": int(runNumber),

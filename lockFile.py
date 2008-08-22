@@ -124,7 +124,17 @@ if __name__ == "__main__":
     if not dlId: head, dlId = os.path.split(head)
     runId = os.environ['RUNID']
     runDir = os.path.dirname(fileNames.fileName('chunkList', dlId, runId)) #bleh
-    print >> sys.stderr, "Attempting to lock directory [%s] at [%s]" % \
-          (runDir, time.ctime())
-    lockDir(runDir, runId, dlId)
+    action = os.environ.get('l1LockAction', 'Lock')
+    if action == 'Lock':
+        print >> sys.stderr, "Attempting to lock directory [%s] at [%s]" % \
+              (runDir, time.ctime())
+        lockDir(runDir, runId, dlId)
+    elif action == 'UnLock':
+        print >> sys.stderr, "Attempting to unlock directory [%s] at [%s]" % \
+              (runDir, time.ctime())
+        unlockDir(runDir, runId, dlId)
+    else:
+        print >> sys.stderr, "Bad lock action [%s]" % action
+        sys.exit(1)
+        pass
     pass
