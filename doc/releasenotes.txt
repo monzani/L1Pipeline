@@ -1,6 +1,14 @@
 
 1.63
 -----------------
+Move svacTuple to chunk level. [LONE-110@JIRA]
+Alarms on FastMon errors (not in main task yet). [LONE-111@JIRA]
+Start work on not merging recon on InProgress runs (not in main task yet). [LONE-109@JIRA]
+-------------------------------------------
+
+
+1.63
+-----------------
 Add alarms on calHist. [LONE-107@JIRA]
 In test mode only, acqQuery.runTimes returns values supplied by halfpipe if
 run is not in ACQSUMMARY.

@@ -1,0 +1,53 @@
+
+<!-- glue this stuff into the main xml when we can ingest the results -->
+
+<!-- Can't ingest this yet
+    <process name="fastMonErrorAlarm">
+      <variables>
+        <var name="fileType">fastMonError</var>
+        <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
+        <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerFastMonError" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonErrorAlarm">
+      <variables>
+        <var name="parentProcess">fastMonErrorAlarm</var>
+        <var name="fileType">fastMonErrorAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="fastMonErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="fastMonErrorLogger">
+      <variables>
+        <var name="fileType">fastMonErrorAlarm</var>
+        <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerFastMonErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestFastMonErrorAlarmRun">
+      <variables>
+        <var name="reportType">fastMonErrorAlarm</var>
+        <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerFastMonErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+-->

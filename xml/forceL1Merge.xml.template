@@ -30,19 +30,26 @@
   </prerequisites>
 
 
+  <process name="getTimes">
+    <job executable="${isocRun} python2.5 ${L1ProcROOT}/getTimes.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
+  </process>
+
   <process name="mergeReconChunks">
     <variables>
       <var name="fileType">recon</var>
       <var name="%(recon_versionName)s">%(recon_version)s</var>
     </variables>
-    <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;50]&quot; -E ${L1ProcROOT}/lockFile.py "/>
+    <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;50]&quot; "/>
+    <depends>
+      <after process="getTimes" status="SUCCESS"/>
+    </depends>
   </process>
 
   <process name="registerRecon">
     <variables>
       <var name="parentProcess">mergeReconChunks</var>
       <var name="fileType">recon</var>
-      <var name="timeProcess">findChunks</var>
+      <var name="timeProcess">getTimes</var>
     </variables>
     <script><![CDATA[
 %(registerBody)s
