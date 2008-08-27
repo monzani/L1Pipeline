@@ -1,6 +1,8 @@
 
-1.63
+1.64
 -----------------
+GR v15r40 (containing SC alignment, among others).
+Tkr alignment and SC aligment are back in recon JO.
 Move svacTuple to chunk level. [LONE-110@JIRA]
 Alarms on FastMon errors (not in main task yet). [LONE-111@JIRA]
 Start work on not merging recon on InProgress runs (not in main task yet). [LONE-109@JIRA]

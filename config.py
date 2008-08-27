@@ -162,8 +162,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
-glastVersion = 'v15r39'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
+glastVersion = 'v15r40'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -246,7 +246,7 @@ cmtPackages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v4r8p1',
+        'version': 'v4r9p0',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -258,7 +258,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v4r2p0',
+        'version': 'v4r4p1',
         },
     'ft2Util': {
         'repository': '',
@@ -270,7 +270,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r2p24',
+        'version': 'v1r2p25',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -285,11 +285,11 @@ cmtPackages = {
 cvsPackages = {
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r2p21',
+        'version': 'v1r2p26',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r4p8',
+        'version': 'v1r5p0',
         },
     'IGRF': {
         'repository': 'dataMonitoring',

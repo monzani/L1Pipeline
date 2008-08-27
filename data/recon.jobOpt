@@ -9,6 +9,11 @@ gcrSelectRootWriterAlg.gcrSelectRootFile = "$gcrCrumbFile";
 PtValsAlg.PointingHistory = {"$fakeFT2File","", ""};
 GlastDetSvc.xmlfile = "$(XMLGEODBSROOT)/xml/$(gleamGeometry)";
 
+FT1Alg.CorrectForAberration = true;
+FT1Alg.AlignmentFlavor      = "vanilla";
+Calibration.Members       = {"TkrCalibAlg/TkrReconCalib"};
+TkrReconCalib.calibFlavor = "vanilla";
+
 //TkrCalibAlg.chargeInjectionCalibFlavor = "validation";
 //TkrCalibAlg.muonCalibFlavor            = "validation";
 
@@ -16,3 +21,4 @@ GlastDetSvc.xmlfile = "$(XMLGEODBSROOT)/xml/$(gleamGeometry)";
 //CalibMySQLCnvSvc.QualityList  = {"PROD","DEV"};
 
 //Calibration.Members = {"TkrCalibAlg"};
+
