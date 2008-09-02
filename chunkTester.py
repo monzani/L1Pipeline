@@ -57,7 +57,7 @@ def verifyList(chunks):
         continue
 
     print >> sys.stderr, 'Testing ordering...'
-    bySec = sorted(chunks, key=lambda x:x['begSec'])
+    bySec = sorted(chunks, key=lambda x:(x['begSec'], x['endSec'], x['begGEM']))
     if bySec != byGEM:
         print >> sys.stderr, 'Sort by time != sort by gemId!'
         return False
