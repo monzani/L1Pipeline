@@ -26,12 +26,14 @@
   </variables>
 
   <prerequisites>
+    <prerequisite name="mootAlias" type="string"/>
+    <prerequisite name="mootKey" type="integer"/>
     <prerequisite name="RUNID" type="string"/>
   </prerequisites>
 
 
   <process name="getTimes">
-    <job executable="${isocRun} python2.5 ${L1ProcROOT}/getTimes.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
+    <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimes.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
   </process>
 
   <process name="mergeReconChunks">
