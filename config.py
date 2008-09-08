@@ -127,9 +127,21 @@ defaultMootKey = '0'
 defaultMootAlias = 'None'
 
 runSubTask = {
-    'LCI': 'doLci',
-    'LPA': 'doRun',
-    'MC': 'doRun',
+    'COMPLETE': {
+        'LCI': 'doLci',
+        'LPA': 'doRun',
+        'MC': 'doRun',
+        },
+    'INCOMPLETE': {
+        'LCI': 'doIncLci',
+        'LPA': 'doInc',
+        'MC': 'doInc',
+        },
+    'WAITING': {
+        'LCI': 'doLci',
+        'LPA': 'doRun',
+        'MC': 'doRun',
+        },
     }
 chunkSubTask = {
     'LCI': 'doChunkLci',
@@ -137,17 +149,19 @@ chunkSubTask = {
     'MC': 'doChunk',
     }
 cleanupSubTask = {
+    'doInc': {
+        'LPA': 'cleanupIncompleteRun',
+        'MC': 'cleanupIncompleteRun',
+        },
+    'doIncLci': {
+        'LCI': 'cleanupIncompleteRunLci',
+        },
     'doLci': {
         'LCI': 'cleanupCompleteRunLci',
         },
     'doRun': {
         'LPA': 'cleanupCompleteRun',
         'MC': 'cleanupCompleteRun',
-        },
-    'doInc': {
-        'LCI': 'cleanupIncompleteRunLci',
-        'LPA': 'cleanupIncompleteRun',
-        'MC': 'cleanupIncompleteRun',
         },
     }
 
@@ -242,7 +256,7 @@ cmtPackages = {
         },
     'calibTkrUtil': {
         'repository': '',
-        'version': 'v2r6p2',
+        'version': 'v2r7p1',
         },
     'Common': {
         'repository': 'dataMonitoring',
@@ -258,7 +272,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v4r4p1',
+        'version': 'v4r5p0',
         },
     'ft2Util': {
         'repository': '',
@@ -270,7 +284,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r2p25',
+        'version': 'v1r2p27',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -285,11 +299,11 @@ cmtPackages = {
 cvsPackages = {
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r2p26',
+        'version': 'v1r2p27',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r5p0',
+        'version': 'v1r6p0',
         },
     'IGRF': {
         'repository': 'dataMonitoring',

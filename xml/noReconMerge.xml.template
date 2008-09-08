@@ -2,7 +2,7 @@
 <pipeline
   xmlns="http://glast-ground.slac.stanford.edu/pipeline"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
+  xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-tomcat03.slac.stanford.edu:8080/Pipeline-II/schemas/2.0/pipeline.xsd">
 
 <task name="%(L1Name)s" version="%(L1Version)s" type="Data">
 
@@ -27,7 +27,7 @@
     <prerequisite name="DOWNLINK_ID" type="string"/>
   </prerequisites>
 
-  <process name="findRunDirs">
+  <process name="findRunDirs" autoRetryMaxAttempts="1">
     <job executable="${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/findRunDirs.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d " />
     <createsSubtasks>
       <subtask>doRun</subtask>
@@ -37,12 +37,12 @@
   </process>
 
 <!--
-  <process name="ft2Gaps">
+  <process name="ft2Gaps" autoRetryMaxAttempts="1">
     <job executable="${isocRun} python2.5 ${L1ProcROOT}/ft2Db.py" batchOptions=" -q %(expressQ)s "/>
   </process>
 -->
 
-  <process name="kludgeAsp">
+  <process name="kludgeAsp" autoRetryMaxAttempts="1">
     <job executable="${isocRun} python2.5 ${L1ProcROOT}/kludgeAsp.py" batchOptions=" -q %(expressQ)s " />
     <depends>
       <after process="doRun.registerFT1" status="SUCCESS"/>
@@ -50,10 +50,9 @@
     </depends>
   </process>
 
-  <process name="cleanupDl">
+  <process name="cleanupDl" autoRetryMaxAttempts="1">
     <job executable="${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(expressQ)s " />
     <depends>
-      <after process="doInc.checkRunInc" status="SUCCESS"/>
       <after process="doLci.checkRunLci" status="SUCCESS"/>
       <after process="doRun.checkRun" status="SUCCESS"/>
     </depends>
@@ -67,14 +66,14 @@
       <prerequisite name="RUNSTATUS" type="string"/>
    </prerequisites>
 
-    <process name="findChunks">
+    <process name="findChunks" autoRetryMaxAttempts="1">
       <job executable="${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/findChunks.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py -sp %(highPriority)d " />
       <createsSubtasks>
         <subtask>doChunk</subtask>
       </createsSubtasks>
     </process>
 
-    <process name="setRunning">
+    <process name="setRunning" autoRetryMaxAttempts="1">
       <variables>
         <var name="l1RunStatus">%(runningStatus)s</var>
       </variables>
@@ -87,7 +86,7 @@
       </depends>
     </process>
 
-    <process name="copyM7Hp">
+    <process name="copyM7Hp" autoRetryMaxAttempts="1">
       <variables>
         <var name="%(magic7Hp_versionName)s">%(magic7Hp_version)s</var>
       </variables>
@@ -97,7 +96,7 @@
       </depends>
     </process>
 
-    <process name="makeM7L1">
+    <process name="makeM7L1" autoRetryMaxAttempts="1">
       <variables>
         <var name="%(magic7L1_versionName)s">%(magic7L1_version)s</var>
         <var name="tStart">${pipeline.processInstance("findChunks").getVariable("tStart") }</var>      
@@ -109,7 +108,7 @@
       </depends>
     </process>
 
-    <process name="registerM7Hp">
+    <process name="registerM7Hp" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">copyM7Hp</var>
         <var name="fileType">magic7Hp</var>
@@ -125,7 +124,7 @@
     </process>
  
 
-    <process name="registerM7L1">
+    <process name="registerM7L1" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">makeM7L1</var>
         <var name="fileType">magic7L1</var>
@@ -140,7 +139,7 @@
       </depends>
     </process>
  
-    <process name="mergeDigi">
+    <process name="mergeDigi" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">digi</var>
         <var name="%(digi_versionName)s">%(digi_version)s</var>
@@ -151,7 +150,7 @@
       </depends>
     </process>
 
-    <process name="registerDigi">
+    <process name="registerDigi" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeDigi</var>
         <var name="fileType">digi</var>
@@ -166,7 +165,7 @@
       </depends>
     </process>
  
-    <process name="mergeDigiHist">
+    <process name="mergeDigiHist" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">digiHist</var>
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
@@ -177,7 +176,7 @@
       </depends>
     </process>
  
-    <process name="registerDigiHist">
+    <process name="registerDigiHist" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeDigiHist</var>
         <var name="fileType">digiHist</var>
@@ -192,7 +191,7 @@
       </depends>
     </process>
  
-    <process name="digiHistAlarm">
+    <process name="digiHistAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">digiHist</var>
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
@@ -204,7 +203,7 @@
       </depends>
     </process>
 
-    <process name="registerDigiHistAlarm">
+    <process name="registerDigiHistAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">digiHistAlarm</var>
         <var name="fileType">digiHistAlarm</var>
@@ -219,7 +218,7 @@
       </depends>
     </process>
 
-    <process name="ingestDigiHistRun">
+    <process name="ingestDigiHistRun" autoRetryMaxAttempts="1">
       <variables>
         <var name="reportType">digiHistAlarm</var>
         <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
@@ -230,7 +229,7 @@
       </depends>
     </process>
 
-    <process name="digiHistLogger">
+    <process name="digiHistLogger" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">digiHistAlarm</var>
         <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
@@ -241,7 +240,7 @@
       </depends>
     </process>
 
-    <process name="verify">
+    <process name="verify" autoRetryMaxAttempts="1">
       <variables>
         <var name="%(digi_versionName)s">%(digi_version)s</var>
         <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
@@ -253,7 +252,7 @@
       </depends>
     </process>
 
-    <process name="registerVerifyHisto">
+    <process name="registerVerifyHisto" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">verify</var>
         <var name="fileType">verifyHisto</var>
@@ -268,7 +267,7 @@
       </depends>
     </process>
 
-    <process name="registerVerifyLog">
+    <process name="registerVerifyLog" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">verify</var>
         <var name="fileType">verifyLog</var>
@@ -283,7 +282,7 @@
       </depends>
     </process>
 
-    <process name="ingestVerifyErrorRun">
+    <process name="ingestVerifyErrorRun" autoRetryMaxAttempts="1">
       <variables>
         <var name="reportType">verifyLog</var>
         <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
@@ -294,7 +293,7 @@
       </depends>
     </process>
 
-    <process name="acdPlots">
+    <process name="acdPlots" autoRetryMaxAttempts="1">
       <variables>
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
         <var name="%(acdPlots_versionName)s">%(acdPlots_version)s</var>
@@ -305,7 +304,7 @@
       </depends>
     </process>
 
-    <process name="registerAcdPlots">
+    <process name="registerAcdPlots" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">acdPlots</var>
         <var name="fileType">acdPlots</var>
@@ -320,7 +319,7 @@
       </depends>
     </process>
 
-    <process name="mergeDigiTrend">
+    <process name="mergeDigiTrend" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">digiTrend</var>
         <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
@@ -331,7 +330,7 @@
       </depends>
     </process>
  
-    <process name="registerDigiTrend">
+    <process name="registerDigiTrend" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeDigiTrend</var>
         <var name="fileType">digiTrend</var>
@@ -346,7 +345,7 @@
       </depends>
     </process>
 
-    <process name="ingestDigiTrend">
+    <process name="ingestDigiTrend" autoRetryMaxAttempts="1">
       <variables>
         <var name="reportType">digiTrend</var>
         <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
@@ -357,7 +356,7 @@
       </depends>
     </process>
 
-    <process name="digiTrendAlarm">
+    <process name="digiTrendAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">digiTrend</var>
         <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
@@ -369,7 +368,7 @@
       </depends>
     </process>
 
-    <process name="registerDigiTrendAlarm">
+    <process name="registerDigiTrendAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">digiTrendAlarm</var>
         <var name="fileType">digiTrendAlarm</var>
@@ -384,7 +383,7 @@
       </depends>
     </process>
 
-    <process name="digiTrendLogger">
+    <process name="digiTrendLogger" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">digiTrendAlarm</var>
         <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
@@ -395,7 +394,7 @@
       </depends>
     </process>
 
-    <process name="ingestDigiTrendRun">
+    <process name="ingestDigiTrendRun" autoRetryMaxAttempts="1">
       <variables>
         <var name="reportType">digiTrendAlarm</var>
         <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
@@ -406,7 +405,7 @@
       </depends>
     </process>
 
-    <process name="mergeCalHist">
+    <process name="mergeCalHist" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">calHist</var>
         <var name="%(calHist_versionName)s">%(calHist_version)s</var>
@@ -417,7 +416,7 @@
       </depends>
     </process>
  
-    <process name="registerCalHist">
+    <process name="registerCalHist" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeCalHist</var>
         <var name="fileType">calHist</var>
@@ -432,7 +431,7 @@
       </depends>
     </process>
 
-    <process name="calHistAlarm">
+    <process name="calHistAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">calHist</var>
         <var name="%(calHist_versionName)s">%(calHist_version)s</var>
@@ -444,7 +443,7 @@
       </depends>
     </process>
 
-    <process name="registerCalHistAlarm">
+    <process name="registerCalHistAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">calHistAlarm</var>
         <var name="fileType">calHistAlarm</var>
@@ -459,7 +458,7 @@
       </depends>
     </process>
 
-    <process name="calHistLogger">
+    <process name="calHistLogger" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">calHistAlarm</var>
         <var name="%(calHistAlarm_versionName)s">%(calHistAlarm_version)s</var>
@@ -470,7 +469,7 @@
       </depends>
     </process>
 
-    <process name="ingestCalHistRun">
+    <process name="ingestCalHistRun" autoRetryMaxAttempts="1">
       <variables>
         <var name="reportType">calHistAlarm</var>
         <var name="%(calHistAlarm_versionName)s">%(calHistAlarm_version)s</var>
@@ -481,7 +480,7 @@
       </depends>
     </process>
 
-    <process name="mergeCalTrend">
+    <process name="mergeCalTrend" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">calTrend</var>
         <var name="%(calTrend_versionName)s">%(calTrend_version)s</var>
@@ -492,7 +491,7 @@
       </depends>
     </process>
  
-    <process name="registerCalTrend">
+    <process name="registerCalTrend" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeCalTrend</var>
         <var name="fileType">calTrend</var>
@@ -507,7 +506,7 @@
       </depends>
     </process>
 
-    <process name="ingestCalTrend">
+    <process name="ingestCalTrend" autoRetryMaxAttempts="1">
       <variables>
         <var name="reportType">calTrend</var>
         <var name="%(calTrend_versionName)s">%(calTrend_version)s</var>
@@ -518,7 +517,7 @@
       </depends>
     </process>
  
-    <process name="acdPedsAnalyzer">
+    <process name="acdPedsAnalyzer" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">calHist</var>
         <var name="reportType">acdPedsAnalyzer</var>
@@ -531,7 +530,7 @@
       </depends>
     </process>
    
-    <process name="registerAcdPedsAnalyzer">
+    <process name="registerAcdPedsAnalyzer" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">acdPedsAnalyzer</var>
         <var name="fileType">acdPedsAnalyzer</var>
@@ -546,7 +545,7 @@
       </depends>
     </process>
 
-    <process name="calGainsAnalyzer">
+    <process name="calGainsAnalyzer" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">calHist</var>
         <var name="reportType">calGainsAnalyzer</var>
@@ -559,7 +558,7 @@
       </depends>
     </process>
    
-    <process name="registerCalGainsAnalyzer">
+    <process name="registerCalGainsAnalyzer" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">calGainsAnalyzer</var>
         <var name="fileType">calGainsAnalyzer</var>
@@ -574,7 +573,7 @@
       </depends>
     </process>
 
-    <process name="calPedsAnalyzer">
+    <process name="calPedsAnalyzer" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">calHist</var>
         <var name="reportType">calPedsAnalyzer</var>
@@ -587,7 +586,7 @@
       </depends>
     </process>
    
-    <process name="registerCalPedsAnalyzer">
+    <process name="registerCalPedsAnalyzer" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">calPedsAnalyzer</var>
         <var name="fileType">calPedsAnalyzer</var>
@@ -602,7 +601,7 @@
       </depends>
     </process>
 
-    <process name="mergeFastMonError">
+    <process name="mergeFastMonError" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">fastMonError</var>
         <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
@@ -613,7 +612,7 @@
       </depends>
     </process>
 
-    <process name="registerFastMonError">
+    <process name="registerFastMonError" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeFastMonError</var>
         <var name="fileType">fastMonError</var>
@@ -628,7 +627,7 @@
       </depends>
     </process>
 
-    <process name="ingestFastMonErrorRun">
+    <process name="ingestFastMonErrorRun" autoRetryMaxAttempts="1">
       <variables>
         <var name="reportType">fastMonError</var>
         <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
@@ -639,56 +638,9 @@
       </depends>
     </process>
 
-    <process name="fastMonErrorAlarm">
-      <variables>
-        <var name="fileType">fastMonError</var>
-        <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
-        <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
-      </variables>
-      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
-      <depends>
-        <after process="registerFastMonError" status="SUCCESS"/>
-      </depends>
-    </process>
+<!-- fastMonErrorAlarms go here -->
 
-    <process name="registerFastMonErrorAlarm">
-      <variables>
-        <var name="parentProcess">fastMonErrorAlarm</var>
-        <var name="fileType">fastMonErrorAlarm</var>
-        <var name="timeProcess">findChunks</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="fastMonErrorAlarm" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="fastMonErrorLogger">
-      <variables>
-        <var name="fileType">fastMonErrorAlarm</var>
-        <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
-      </variables>
-      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
-      <depends>
-        <after process="registerFastMonErrorAlarm" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="ingestFastMonErrorAlarmRun">
-      <variables>
-        <var name="reportType">fastMonErrorAlarm</var>
-        <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
-      </variables>
-      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
-      <depends>
-        <after process="registerFastMonErrorAlarm" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="mergeFastMonHist">
+    <process name="mergeFastMonHist" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">fastMonHist</var>
         <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
@@ -699,7 +651,7 @@
       </depends>
     </process>
 
-    <process name="registerFastMonHist">
+    <process name="registerFastMonHist" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeFastMonHist</var>
         <var name="fileType">fastMonHist</var>
@@ -714,7 +666,7 @@
       </depends>
     </process>
  
-    <process name="compDigiFastMon">
+    <process name="compDigiFastMon" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">compareDFm</var>
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
@@ -728,7 +680,7 @@
       </depends>
     </process>
 
-    <process name="registerCmpDFm">
+    <process name="registerCmpDFm" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">compDigiFastMon</var>
         <var name="fileType">compareDFm</var>
@@ -743,7 +695,7 @@
       </depends>
     </process>
  
-    <process name="mergeFastMonTuple">
+    <process name="mergeFastMonTuple" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">fastMonTuple</var>
         <var name="%(fastMonTuple_versionName)s">%(fastMonTuple_version)s</var>
@@ -754,7 +706,7 @@
       </depends>
     </process>
 
-    <process name="registerFastMonTuple">
+    <process name="registerFastMonTuple" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeFastMonTuple</var>
         <var name="fileType">fastMonTuple</var>
@@ -769,7 +721,7 @@
       </depends>
     </process>
  
-    <process name="fastMonHistAlarm">
+    <process name="fastMonHistAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">fastMonHist</var>
         <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
@@ -781,7 +733,7 @@
       </depends>
     </process>
 
-    <process name="registerFastMonHistAlarm">
+    <process name="registerFastMonHistAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">fastMonHistAlarm</var>
         <var name="fileType">fastMonHistAlarm</var>
@@ -796,7 +748,7 @@
       </depends>
     </process>
 
-    <process name="fastMonHistLogger">
+    <process name="fastMonHistLogger" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">fastMonHistAlarm</var>
         <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
@@ -807,7 +759,7 @@
       </depends>
     </process>
 
-    <process name="ingestFastMonHistRun">
+    <process name="ingestFastMonHistRun" autoRetryMaxAttempts="1">
       <variables>
         <var name="reportType">fastMonHistAlarm</var>
         <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
@@ -818,7 +770,7 @@
       </depends>
     </process>
 
-    <process name="mergeFastMonTrend">
+    <process name="mergeFastMonTrend" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">fastMonTrend</var>
         <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
@@ -829,7 +781,7 @@
       </depends>
     </process>
  
-    <process name="registerFastMonTrend">
+    <process name="registerFastMonTrend" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeFastMonTrend</var>
         <var name="fileType">fastMonTrend</var>
@@ -844,7 +796,7 @@
       </depends>
     </process>
 
-    <process name="ingestFastMonTrend">
+    <process name="ingestFastMonTrend" autoRetryMaxAttempts="1">
       <variables>
         <var name="reportType">fastMonTrend</var>
         <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
@@ -855,7 +807,7 @@
       </depends>
     </process>
 
-    <process name="fastMonTrendAlarm">
+    <process name="fastMonTrendAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">fastMonTrend</var>
         <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
@@ -867,7 +819,7 @@
       </depends>
     </process>
 
-    <process name="registerFastMonTrendAlarm">
+    <process name="registerFastMonTrendAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">fastMonTrendAlarm</var>
         <var name="fileType">fastMonTrendAlarm</var>
@@ -882,7 +834,7 @@
       </depends>
     </process>
 
-    <process name="ingestFastMonTrendRun">
+    <process name="ingestFastMonTrendRun" autoRetryMaxAttempts="1">
       <variables>
         <var name="reportType">fastMonTrendAlarm</var>
         <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
@@ -893,7 +845,7 @@
       </depends>
     </process>
 
-    <process name="fastMonTrendLogger">
+    <process name="fastMonTrendLogger" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">fastMonTrendAlarm</var>
         <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
@@ -904,7 +856,7 @@
       </depends>
     </process>
 
-    <process name="mergeGcrChunks">
+    <process name="mergeGcrChunks" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">gcr</var>
         <var name="%(gcr_versionName)s">%(gcr_version)s</var>
@@ -915,7 +867,7 @@
       </depends>
     </process>
 
-    <process name="registerGcr">
+    <process name="registerGcr" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeGcrChunks</var>
         <var name="fileType">gcr</var>
@@ -930,7 +882,7 @@
       </depends>
     </process>
 
-    <process name="mergeMeritChunks">
+    <process name="mergeMeritChunks" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">merit</var>
         <var name="%(merit_versionName)s">%(merit_version)s</var>
@@ -941,7 +893,7 @@
       </depends>
     </process>
 
-    <process name="registerMerit">
+    <process name="registerMerit" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeMeritChunks</var>
         <var name="fileType">merit</var>
@@ -956,7 +908,7 @@
       </depends>
     </process>
  
-    <process name="makeFT1">
+    <process name="makeFT1" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">ft1</var>
         <var name="%(merit_versionName)s">%(merit_version)s</var>
@@ -968,7 +920,7 @@
       </depends>
     </process>
 
-    <process name="registerFT1">
+    <process name="registerFT1" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">makeFT1</var>
         <var name="fileType">ft1</var>
@@ -983,7 +935,7 @@
       </depends>
     </process>
 
-    <process name="exportFT1">
+    <process name="exportFT1" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">ft1</var>
         <var name="%(ft1_versionName)s">%(ft1_version)s</var>
@@ -994,7 +946,7 @@
       </depends>
     </process>
 
-    <process name="makeLS1">
+    <process name="makeLS1" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">ls1</var>
         <var name="%(merit_versionName)s">%(merit_version)s</var>
@@ -1006,7 +958,7 @@
       </depends>
     </process>
 
-    <process name="registerLS1">
+    <process name="registerLS1" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">makeLS1</var>
         <var name="fileType">ls1</var>
@@ -1021,7 +973,7 @@
       </depends>
     </process>
 
-    <process name="exportLS1">
+    <process name="exportLS1" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">ls1</var>
         <var name="%(ls1_versionName)s">%(ls1_version)s</var>
@@ -1032,7 +984,7 @@
       </depends>
     </process>
 
-    <process name="ft2Runs">
+    <process name="ft2Runs" autoRetryMaxAttempts="1">
       <variables>
         <var name="%(digi_versionName)s">%(digi_version)s</var>
         <var name="%(ft2Txt_versionName)s">%(ft2Txt_version)s</var>
@@ -1048,7 +1000,7 @@
       </depends>
     </process>
 
-    <process name="registerFt2Txt">
+    <process name="registerFt2Txt" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">ft2Runs</var>
         <var name="fileType">ft2Txt</var>
@@ -1064,7 +1016,7 @@
     </process>
 
 <!--
-    <process name="ingestFT2">
+    <process name="ingestFT2" autoRetryMaxAttempts="1">
       <variables>
         <var name="%(ft2Txt_versionName)s">%(ft2Txt_version)s</var>
       </variables>
@@ -1075,7 +1027,7 @@
     </process>
 -->
 
-    <process name="makeFT2">
+    <process name="makeFT2" autoRetryMaxAttempts="1">
       <variables>
         <var name="%(ft2Txt_versionName)s">%(ft2Txt_version)s</var>
         <var name="%(ft2_versionName)s">%(ft2_version)s</var>
@@ -1087,7 +1039,7 @@
       </depends>
     </process>
 
-    <process name="registerFT2">
+    <process name="registerFT2" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">makeFT2</var>
         <var name="fileType">ft2</var>
@@ -1102,7 +1054,7 @@
       </depends>
     </process>
 
-    <process name="exportFT2">
+    <process name="exportFT2" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">ft2</var>
         <var name="%(ft2_versionName)s">%(ft2_version)s</var>
@@ -1113,7 +1065,7 @@
       </depends>
     </process>
 
-    <process name="makeLS3">
+    <process name="makeLS3" autoRetryMaxAttempts="1">
       <variables>
         <var name="%(ft1_versionName)s">%(ft1_version)s</var>
         <var name="%(ft2_versionName)s">%(ft2_version)s</var>
@@ -1126,7 +1078,7 @@
       </depends>
     </process>
 
-    <process name="registerLS3">
+    <process name="registerLS3" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">makeLS3</var>
         <var name="fileType">ls3</var>
@@ -1141,7 +1093,7 @@
       </depends>
     </process>
 
-    <process name="exportLS3">
+    <process name="exportLS3" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">ls3</var>
         <var name="%(ls3_versionName)s">%(ls3_version)s</var>
@@ -1152,7 +1104,7 @@
       </depends>
     </process>
 
-    <process name="mergeCalChunks">
+    <process name="mergeCalChunks" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">cal</var>
         <var name="%(cal_versionName)s">%(cal_version)s</var>
@@ -1163,7 +1115,7 @@
       </depends>
     </process>
 
-    <process name="registerCal">
+    <process name="registerCal" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeCalChunks</var>
         <var name="fileType">cal</var>
@@ -1178,7 +1130,7 @@
       </depends>
     </process>
 
-    <process name="mergeMeritTrend">
+    <process name="mergeMeritTrend" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">meritTrend</var>
         <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
@@ -1189,7 +1141,7 @@
       </depends>
     </process>
  
-    <process name="registerMeritTrend">
+    <process name="registerMeritTrend" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeMeritTrend</var>
         <var name="fileType">meritTrend</var>
@@ -1204,7 +1156,7 @@
       </depends>
     </process>
 
-    <process name="ingestMeritTrend">
+    <process name="ingestMeritTrend" autoRetryMaxAttempts="1">
       <variables>
         <var name="reportType">meritTrend</var>
         <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
@@ -1215,7 +1167,7 @@
       </depends>
     </process>
  
-    <process name="meritTrendAlarm">
+    <process name="meritTrendAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">meritTrend</var>
         <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
@@ -1227,7 +1179,7 @@
       </depends>
     </process>
 
-    <process name="registerMeritTrendAlarm">
+    <process name="registerMeritTrendAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">meritTrendAlarm</var>
         <var name="fileType">meritTrendAlarm</var>
@@ -1242,7 +1194,7 @@
       </depends>
     </process>
 
-    <process name="meritTrendLogger">
+    <process name="meritTrendLogger" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">meritTrendAlarm</var>
         <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
@@ -1253,7 +1205,7 @@
       </depends>
     </process>
 
-    <process name="ingestMeritTrendRun">
+    <process name="ingestMeritTrendRun" autoRetryMaxAttempts="1">
       <variables>
         <var name="reportType">meritTrendAlarm</var>
         <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
@@ -1264,7 +1216,7 @@
       </depends>
     </process>
 
-    <process name="mergeMeritHist">
+    <process name="mergeMeritHist" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">meritHist</var>
         <var name="%(meritHist_versionName)s">%(meritHist_version)s</var>
@@ -1275,7 +1227,7 @@
       </depends>
     </process>
  
-    <process name="registerMeritHist">
+    <process name="registerMeritHist" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeMeritHist</var>
         <var name="fileType">meritHist</var>
@@ -1290,7 +1242,7 @@
       </depends>
     </process>
  
-    <process name="meritHistAlarm">
+    <process name="meritHistAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">meritHist</var>
         <var name="%(meritHist_versionName)s">%(meritHist_version)s</var>
@@ -1302,7 +1254,7 @@
       </depends>
     </process>
 
-    <process name="registerMeritHistAlarm">
+    <process name="registerMeritHistAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">meritHistAlarm</var>
         <var name="fileType">meritHistAlarm</var>
@@ -1317,7 +1269,7 @@
       </depends>
     </process>
 
-    <process name="ingestMeritHistRun">
+    <process name="ingestMeritHistRun" autoRetryMaxAttempts="1">
       <variables>
         <var name="reportType">meritHistAlarm</var>
         <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
@@ -1328,7 +1280,7 @@
       </depends>
     </process>
 
-    <process name="meritHistLogger">
+    <process name="meritHistLogger" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">meritHistAlarm</var>
         <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
@@ -1339,7 +1291,7 @@
       </depends>
     </process>
  
-    <process name="mergeReconTrend">
+    <process name="mergeReconTrend" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">reconTrend</var>
         <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
@@ -1352,7 +1304,7 @@
       </depends>
     </process>
  
-    <process name="registerReconTrend">
+    <process name="registerReconTrend" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeReconTrend</var>
         <var name="fileType">reconTrend</var>
@@ -1367,7 +1319,7 @@
       </depends>
     </process>
 
-    <process name="ingestReconTrend">
+    <process name="ingestReconTrend" autoRetryMaxAttempts="1">
       <variables>
         <var name="reportType">reconTrend</var>
         <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
@@ -1378,7 +1330,7 @@
       </depends>
     </process>
  
-    <process name="reconTrendAlarm">
+    <process name="reconTrendAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">reconTrend</var>
         <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
@@ -1390,7 +1342,7 @@
       </depends>
     </process>
 
-    <process name="registerReconTrendAlarm">
+    <process name="registerReconTrendAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">reconTrendAlarm</var>
         <var name="fileType">reconTrendAlarm</var>
@@ -1405,7 +1357,7 @@
       </depends>
     </process>
 
-    <process name="ingestReconTrendRun">
+    <process name="ingestReconTrendRun" autoRetryMaxAttempts="1">
       <variables>
         <var name="reportType">reconTrendAlarm</var>
         <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
@@ -1416,7 +1368,7 @@
       </depends>
     </process>
 
-    <process name="reconTrendLogger">
+    <process name="reconTrendLogger" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">reconTrendAlarm</var>
         <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
@@ -1427,7 +1379,7 @@
       </depends>
     </process>
  
-    <process name="mergeReconHist">
+    <process name="mergeReconHist" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">reconHist</var>
         <var name="%(reconHist_versionName)s">%(reconHist_version)s</var>
@@ -1440,7 +1392,7 @@
       </depends>
     </process>
  
-    <process name="registerReconHist">
+    <process name="registerReconHist" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeReconHist</var>
         <var name="fileType">reconHist</var>
@@ -1455,7 +1407,7 @@
       </depends>
     </process>
  
-    <process name="reconHistAlarm">
+    <process name="reconHistAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">reconHist</var>
         <var name="%(reconHist_versionName)s">%(reconHist_version)s</var>
@@ -1467,7 +1419,7 @@
       </depends>
     </process>
 
-    <process name="registerReconHistAlarm">
+    <process name="registerReconHistAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">reconHistAlarm</var>
         <var name="fileType">reconHistAlarm</var>
@@ -1482,7 +1434,7 @@
       </depends>
     </process>
 
-    <process name="reconHistLogger">
+    <process name="reconHistLogger" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">reconHistAlarm</var>
         <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
@@ -1493,7 +1445,7 @@
       </depends>
     </process>
 
-    <process name="ingestReconHistRun">
+    <process name="ingestReconHistRun" autoRetryMaxAttempts="1">
       <variables>
         <var name="reportType">reconHistAlarm</var>
         <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
@@ -1504,7 +1456,7 @@
       </depends>
     </process>
 
-    <process name="reconHistPostProcessor">
+    <process name="reconHistPostProcessor" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">reconHistAlarm</var>
         <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
@@ -1516,7 +1468,7 @@
       </depends>
     </process>
 
-    <process name="registerReconHistAlarmDist">
+    <process name="registerReconHistAlarmDist" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">reconHistPostProcessor</var>
         <var name="fileType">reconHistAlarmDist</var>
@@ -1531,7 +1483,7 @@
       </depends>
     </process>
 
-    <process name="mergeTkrAnalysis">
+    <process name="mergeTkrAnalysis" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">tkrAnalysis</var>
         <var name="%(tkrAnalysis_versionName)s">%(tkrAnalysis_version)s</var>
@@ -1543,7 +1495,7 @@
       </depends>
     </process>
  
-    <process name="registerTkrAnalysis">
+    <process name="registerTkrAnalysis" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeTkrAnalysis</var>
         <var name="fileType">tkrAnalysis</var>
@@ -1558,7 +1510,7 @@
       </depends>
     </process>
  
-    <process name="tkrMonitor">
+    <process name="tkrMonitor" autoRetryMaxAttempts="1">
       <variables>
         <var name="%(tkrAnalysis_versionName)s">%(tkrAnalysis_version)s</var>
         <var name="%(tkrMonitor_versionName)s">%(tkrMonitor_version)s</var>
@@ -1571,7 +1523,7 @@
       </depends>
     </process>
 
-    <process name="registerTkrMonitor">
+    <process name="registerTkrMonitor" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">tkrMonitor</var>
         <var name="fileType">tkrMonitor</var>
@@ -1587,7 +1539,7 @@
     </process>
  
 <!--
-    <process name="preRegisterTkrReport">
+    <process name="preRegisterTkrReport" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">tkrReport</var>
         <var name="%(tkrReport_versionName)s">%(tkrReport_version)s</var>
@@ -1599,7 +1551,7 @@
     </process>
 -->
 
-    <process name="registerTkrReport">
+    <process name="registerTkrReport" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">tkrMonitor</var>
         <var name="fileType">tkrReport</var>
@@ -1617,7 +1569,7 @@
 
 
 <!-- We don't have TKR alarms yet
-    <process name="preRegisterTkrAlarm">
+    <process name="preRegisterTkrAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">tkrAlarm</var>
         <var name="%(tkrAlarm_versionName)s">%(tkrAlarm_version)s</var>
@@ -1628,7 +1580,7 @@
       </depends>
     </process>
 
-    <process name="registerTkrAlarm">
+    <process name="registerTkrAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">tkrMonitor</var>
         <var name="fileType">tkrAlarm</var>
@@ -1646,7 +1598,7 @@
 
 
 
-    <process name="tkrTrend">
+    <process name="tkrTrend" autoRetryMaxAttempts="1">
       <variables>
         <var name="reportType">tkrTrend</var>
         <var name="%(tkrMonitor_versionName)s">%(tkrMonitor_version)s</var>
@@ -1658,7 +1610,7 @@
       </depends>
     </process>
 
-    <process name="registerTkrTrend">
+    <process name="registerTkrTrend" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">tkrTrend</var>
         <var name="fileType">tkrTrend</var>
@@ -1673,7 +1625,7 @@
       </depends>
     </process>
  
-    <process name="ingestTkrTrend">
+    <process name="ingestTkrTrend" autoRetryMaxAttempts="1">
       <variables>
         <var name="reportType">tkrTrend</var>
         <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
@@ -1684,7 +1636,7 @@
       </depends>
     </process>
  
-    <process name="tkrTrendAlarm">
+    <process name="tkrTrendAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">tkrTrend</var>
         <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
@@ -1696,7 +1648,7 @@
       </depends>
     </process>
 
-    <process name="registerTkrTrendAlarm">
+    <process name="registerTkrTrendAlarm" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">tkrTrendAlarm</var>
         <var name="fileType">tkrTrendAlarm</var>
@@ -1711,7 +1663,7 @@
       </depends>
     </process>
 
-    <process name="ingestTkrTrendRun">
+    <process name="ingestTkrTrendRun" autoRetryMaxAttempts="1">
       <variables>
         <var name="reportType">tkrTrendAlarm</var>
         <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
@@ -1722,7 +1674,7 @@
       </depends>
     </process>
 
-    <process name="tkrTrendLogger">
+    <process name="tkrTrendLogger" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">tkrTrendAlarm</var>
         <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
@@ -1733,33 +1685,7 @@
       </depends>
     </process>
  
-    <process name="mergeReconChunks">
-      <variables>
-        <var name="fileType">recon</var>
-        <var name="%(recon_versionName)s">%(recon_version)s</var>
-      </variables>
-      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;50]&quot; "/>
-      <depends>
-        <after process="doChunk.mergeReconCrumbs" status="DONE"/>
-      </depends>
-    </process>
-
-    <process name="registerRecon">
-      <variables>
-        <var name="parentProcess">mergeReconChunks</var>
-        <var name="fileType">recon</var>
-        <var name="timeProcess">findChunks</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="mergeReconChunks" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="mergeSvacChunks">
+    <process name="mergeSvacChunks" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">svac</var>
         <var name="%(svac_versionName)s">%(svac_version)s</var>
@@ -1770,7 +1696,7 @@
       </depends>
     </process>
 
-    <process name="registerSvacTuple">
+    <process name="registerSvacTuple" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeSvacChunks</var>
         <var name="fileType">svac</var>
@@ -1785,7 +1711,7 @@
       </depends>
     </process>
 
-    <process name="checkRun">
+    <process name="checkRun" autoRetryMaxAttempts="1">
       <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="calHistLogger" status="SUCCESS"/>
@@ -1796,7 +1722,7 @@
         <after process="exportFT2" status="SUCCESS"/>
         <after process="exportLS1" status="SUCCESS"/>
         <after process="exportLS3" status="SUCCESS"/>
-        <after process="fastMonErrorLogger" status="SUCCESS"/>
+<!--        <after process="fastMonErrorLogger" status="SUCCESS"/> -->
         <after process="fastMonHistLogger" status="SUCCESS"/>
         <after process="fastMonTrendLogger" status="SUCCESS"/>
         <after process="ingestCalHistRun" status="SUCCESS"/>
@@ -1808,7 +1734,7 @@
         <after process="ingestFastMonTrendRun" status="SUCCESS"/>
         <after process="ingestFastMonHistRun" status="SUCCESS"/>
         <after process="ingestFastMonErrorRun" status="SUCCESS"/>
-        <after process="ingestFastMonErrorAlarmRun" status="SUCCESS"/>
+<!--        <after process="ingestFastMonErrorAlarmRun" status="SUCCESS"/> -->
         <after process="ingestDigiTrendRun" status="SUCCESS"/>
         <after process="ingestDigiHistRun" status="SUCCESS"/>
         <after process="ingestMeritTrendRun" status="SUCCESS"/>
@@ -1832,7 +1758,6 @@
         <after process="registerGcr" status="SUCCESS"/>
         <after process="registerM7Hp" status="SUCCESS"/>
         <after process="registerMeritHist" status="SUCCESS"/>
-        <after process="registerRecon" status="SUCCESS"/>
         <after process="registerReconHistAlarmDist" status="SUCCESS"/>
         <after process="registerSvacTuple" status="SUCCESS"/>
 <!-- We don't have TKR alarms yet        <after process="registerTkrAlarm" status="SUCCESS"/>     -->
@@ -1845,7 +1770,7 @@
       </createsSubtasks>
     </process>
 
-    <process name="setCrashed">
+    <process name="setCrashed" autoRetryMaxAttempts="1">
       <variables>
         <var name="l1RunStatus">%(crashedStatus)s</var>
       </variables>
@@ -1859,7 +1784,7 @@
       </depends>
     </process>
 
-    <process name="setSuccessful">
+    <process name="setSuccessful" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">checkRun</var>
       </variables>
@@ -1875,12 +1800,55 @@
 
     <task name="cleanupCompleteRun" version="%(L1Version)s" type="Data">
 
-      <process name="cleanupChunks">
+      <process name="getTimes" autoRetryMaxAttempts="1">
+        <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimes.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
+      </process>
+
+      <process name="mergeReconChunks" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="fileType">recon</var>
+          <var name="%(recon_versionName)s">%(recon_version)s</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;50]&quot; "/>
+        <depends>
+          <after process="getTimes" status="DONE"/>
+        </depends>
+      </process>
+
+      <process name="registerRecon" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="parentProcess">mergeReconChunks</var>
+          <var name="fileType">recon</var>
+          <var name="timeProcess">getTimes</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="mergeReconChunks" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="cleanupChunks" autoRetryMaxAttempts="1">
         <job executable="${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
+        <depends>
+          <after process="mergeReconChunks" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="unLockRun" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="l1LockAction">UnLock</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/lockFile.py" batchOptions=" -q %(expressQ)s "/>
+        <depends>
+          <after process="registerRecon" status="SUCCESS"/>
+        </depends>
       </process>
 
 <!--
-      <process name="updateRunStatus">
+      <process name="updateRunStatus" autoRetryMaxAttempts="1">
         <script>
           <![CDATA[
 %(retireScriptBody)s
@@ -1899,22 +1867,22 @@
          <prerequisite name="HOSTLIST" type="string"/>
       </prerequisites>
 
-      <process name="digitization">
+      <process name="digitization" autoRetryMaxAttempts="1">
         <job executable="${isocRun} python2.5 ${L1ProcROOT}/digitize.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
       </process>
  
-      <process name="fakeFT2">
+      <process name="fakeFT2" autoRetryMaxAttempts="1">
         <job executable="${isocRun} python2.5 ${L1ProcROOT}/fakeFT2.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
       </process>
  
-      <process name="fastMonTuple">
+      <process name="fastMonTuple" autoRetryMaxAttempts="1">
         <variables>
           <var name="reportType">fastMonTuple</var>
         </variables>
         <job executable="${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
       </process>
 
-      <process name="fastMonHist">
+      <process name="fastMonHist" autoRetryMaxAttempts="1">
         <variables>
           <var name="reportType">fastMonHist</var>
         </variables>
@@ -1924,7 +1892,7 @@
         </depends>
       </process>
 
-      <process name="fastMonTrend">
+      <process name="fastMonTrend" autoRetryMaxAttempts="1">
         <variables>
           <var name="reportType">fastMonTrend</var>
         </variables>
@@ -1934,7 +1902,7 @@
         </depends>
       </process>
 
-      <process name="digiHist">
+      <process name="digiHist" autoRetryMaxAttempts="1">
         <variables>
           <var name="reportType">digiHist</var>
         </variables>
@@ -1944,7 +1912,7 @@
         </depends>
       </process>
  
-      <process name="digiTrend">
+      <process name="digiTrend" autoRetryMaxAttempts="1">
         <variables>
           <var name="reportType">digiTrend</var>
         </variables>
@@ -1954,7 +1922,7 @@
         </depends>
       </process>
  
-      <process name="calHist">
+      <process name="calHist" autoRetryMaxAttempts="1">
         <variables>
           <var name="reportType">calHist</var>
         </variables>
@@ -1964,7 +1932,7 @@
         </depends>
       </process>
  
-      <process name="calTrend">
+      <process name="calTrend" autoRetryMaxAttempts="1">
         <variables>
           <var name="reportType">calTrend</var>
         </variables>
@@ -1974,7 +1942,7 @@
         </depends>
       </process>
  
-      <process name="setupCrumbs">
+      <process name="setupCrumbs" autoRetryMaxAttempts="1">
         <job executable="${isocRun} python2.5 ${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
         <depends>
           <after process="digitization" status="SUCCESS"/>
@@ -1985,7 +1953,7 @@
         </createsSubtasks>
       </process>
 
-      <process name="mergeMeritCrumbs">
+      <process name="mergeMeritCrumbs" autoRetryMaxAttempts="1">
         <variables>
           <var name="fileType">merit</var>
         </variables>
@@ -1995,7 +1963,7 @@
         </depends>
       </process>
 
-      <process name="mergeReconCrumbs">
+      <process name="mergeReconCrumbs" autoRetryMaxAttempts="1">
         <variables>
           <var name="fileType">recon</var>
         </variables>
@@ -2006,7 +1974,7 @@
         </depends>
       </process>
 
-      <process name="mergeCalCrumbs">
+      <process name="mergeCalCrumbs" autoRetryMaxAttempts="1">
         <variables>
           <var name="fileType">cal</var>
         </variables>
@@ -2017,7 +1985,7 @@
         </depends>
       </process>
 
-      <process name="mergeGcrCrumbs">
+      <process name="mergeGcrCrumbs" autoRetryMaxAttempts="1">
         <variables>
           <var name="fileType">gcr</var>
         </variables>
@@ -2028,7 +1996,7 @@
         </depends>
       </process>
 
-      <process name="meritHist">
+      <process name="meritHist" autoRetryMaxAttempts="1">
         <variables>
           <var name="reportType">meritHist</var>
         </variables>
@@ -2039,7 +2007,7 @@
         </depends>
       </process>
  
-      <process name="meritTrend">
+      <process name="meritTrend" autoRetryMaxAttempts="1">
         <variables>
           <var name="reportType">meritTrend</var>
         </variables>
@@ -2050,7 +2018,7 @@
         </depends>
       </process>
  
-      <process name="reconHist">
+      <process name="reconHist" autoRetryMaxAttempts="1">
         <variables>
           <var name="reportType">reconHist</var>
         </variables>
@@ -2062,7 +2030,7 @@
         </depends>
       </process>
  
-      <process name="reconTrend">
+      <process name="reconTrend" autoRetryMaxAttempts="1">
         <variables>
           <var name="reportType">reconTrend</var>
         </variables>
@@ -2074,7 +2042,7 @@
         </depends>
       </process>
  
-      <process name="tkrAnalysis">
+      <process name="tkrAnalysis" autoRetryMaxAttempts="1">
         <job executable="${isocRun} python2.5 ${L1ProcROOT}/tkrRootAnalysis.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="SUCCESS"/>
@@ -2082,14 +2050,15 @@
         </depends>
       </process>
  
-        <process name="svacTuple">
+        <process name="svacTuple" autoRetryMaxAttempts="1">
           <job executable="${isocRun} python2.5 ${L1ProcROOT}/makeSvac.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
           <depends>
             <after process="doCrumb.recon" status="SUCCESS"/>
+            <after process="mergeReconCrumbs" status="SUCCESS"/>
           </depends>
         </process>
 
-      <process name="checkChunk">
+      <process name="checkChunk" autoRetryMaxAttempts="1">
         <job executable="${isocRun} python2.5 ${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s "/>
         <depends>
           <after process="doCrumb.recon" status="SUCCESS"/>
@@ -2109,7 +2078,7 @@
         </depends>
       </process>
 
-      <process name="cleanupCrumbs">
+      <process name="cleanupCrumbs" autoRetryMaxAttempts="1">
         <job executable="${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(shortQ)s "/>
         <depends>
           <after process="checkChunk" status="SUCCESS"/>
@@ -2124,7 +2093,7 @@
           <prerequisite name="crumbStart" type="string"/>
         </prerequisites>
 
-        <process name="recon">
+        <process name="recon" autoRetryMaxAttempts="1">
           <job executable="${isocRun} python2.5 ${L1ProcROOT}/recon.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; " />
         </process>
 
@@ -2142,14 +2111,14 @@
       <prerequisite name="RUNSTATUS" type="string"/>
     </prerequisites>
 
-    <process name="findChunksLci">
+    <process name="findChunksLci" autoRetryMaxAttempts="1">
       <job executable="${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/findChunks.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
       <createsSubtasks>
         <subtask>doChunkLci</subtask>
       </createsSubtasks>
     </process>
 
-    <process name="setRunningLci">
+    <process name="setRunningLci" autoRetryMaxAttempts="1">
       <variables>
         <var name="l1RunStatus">%(runningStatus)s</var>
       </variables>
@@ -2162,7 +2131,7 @@
       </depends>
     </process>
 
-    <process name="copyM7HpLci">
+    <process name="copyM7HpLci" autoRetryMaxAttempts="1">
       <variables>
         <var name="%(magic7Hp_versionName)s">%(magic7Hp_version)s</var>
       </variables>
@@ -2172,7 +2141,7 @@
       </depends>
     </process>
 
-    <process name="registerM7HpLci">
+    <process name="registerM7HpLci" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">copyM7HpLci</var>
         <var name="fileType">magic7Hp</var>
@@ -2187,7 +2156,7 @@
       </depends>
     </process>
  
-    <process name="mergeDigiLci">
+    <process name="mergeDigiLci" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">digi</var>
         <var name="%(digi_versionName)s">%(digi_version)s</var>
@@ -2198,7 +2167,7 @@
       </depends>
     </process>
 
-    <process name="registerDigiLci">
+    <process name="registerDigiLci" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeDigiLci</var>
         <var name="fileType">digi</var>
@@ -2213,7 +2182,7 @@
       </depends>
     </process>
  
-     <process name="mergeDigiHistLci">
+     <process name="mergeDigiHistLci" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">digiHist</var>
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
@@ -2224,7 +2193,7 @@
       </depends>
     </process>
  
-    <process name="registerDigiHistLci">
+    <process name="registerDigiHistLci" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeDigiHistLci</var>
         <var name="fileType">digiHist</var>
@@ -2239,7 +2208,7 @@
       </depends>
     </process>
 
-    <process name="mergeFastMonErrorLci">
+    <process name="mergeFastMonErrorLci" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">fastMonError</var>
         <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
@@ -2250,7 +2219,7 @@
       </depends>
     </process>
 
-    <process name="registerFastMonErrorLci">
+    <process name="registerFastMonErrorLci" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeFastMonErrorLci</var>
         <var name="fileType">fastMonError</var>
@@ -2265,7 +2234,7 @@
       </depends>
     </process>
 
-    <process name="mergeFastMonTupleLci">
+    <process name="mergeFastMonTupleLci" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">fastMonTuple</var>
         <var name="%(fastMonTuple_versionName)s">%(fastMonTuple_version)s</var>
@@ -2276,7 +2245,7 @@
       </depends>
     </process>
 
-    <process name="registerFastMonTupleLci">
+    <process name="registerFastMonTupleLci" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeFastMonTupleLci</var>
         <var name="fileType">fastMonTuple</var>
@@ -2291,7 +2260,7 @@
       </depends>
     </process>
  
-    <process name="mergeFastMonHistLci">
+    <process name="mergeFastMonHistLci" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">fastMonHist</var>
         <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
@@ -2302,7 +2271,7 @@
       </depends>
     </process>
 
-    <process name="registerFastMonHistLci">
+    <process name="registerFastMonHistLci" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">mergeFastMonHistLci</var>
         <var name="fileType">fastMonHist</var>
@@ -2317,7 +2286,7 @@
       </depends>
     </process>
  
-    <process name="checkRunLci">
+    <process name="checkRunLci" autoRetryMaxAttempts="1">
       <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
         <after process="doChunkLci.checkChunkLci" status="SUCCESS"/>
@@ -2333,7 +2302,7 @@
       </createsSubtasks>
     </process>
 
-    <process name="setCrashedLci">
+    <process name="setCrashedLci" autoRetryMaxAttempts="1">
       <variables>
         <var name="l1RunStatus">%(crashedStatus)s</var>
       </variables>
@@ -2347,7 +2316,7 @@
       </depends>
     </process>
 
-    <process name="setSuccessfulLci">
+    <process name="setSuccessfulLci" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">checkRunLci</var>
       </variables>
@@ -2363,12 +2332,12 @@
 
     <task name="cleanupCompleteRunLci" version="%(L1Version)s" type="Data">
 
-      <process name="cleanupChunksLci">
+      <process name="cleanupChunksLci" autoRetryMaxAttempts="1">
         <job executable="${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
       </process>
 
 <!--
-      <process name="updateRunStatusLci">
+      <process name="updateRunStatusLci" autoRetryMaxAttempts="1">
         <script>
           <![CDATA[
 %(retireScriptBody)s
@@ -2387,18 +2356,18 @@
          <prerequisite name="HOSTLIST" type="string"/>
       </prerequisites>
 
-      <process name="digitizationLci">
+      <process name="digitizationLci" autoRetryMaxAttempts="1">
         <job executable="${isocRun} python2.5 ${L1ProcROOT}/digitize.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
       </process>
  
-      <process name="fastMonTupleLci">
+      <process name="fastMonTupleLci" autoRetryMaxAttempts="1">
         <variables>
           <var name="reportType">fastMonTuple</var>
         </variables>
         <job executable="${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;select[scratch&gt;1]&quot; "/>
       </process>
  
-      <process name="fastMonHistLci">
+      <process name="fastMonHistLci" autoRetryMaxAttempts="1">
         <variables>
           <var name="reportType">fastMonHist</var>
         </variables>
@@ -2408,7 +2377,7 @@
         </depends>
       </process>
 
-      <process name="digiHistLci">
+      <process name="digiHistLci" autoRetryMaxAttempts="1">
         <variables>
           <var name="reportType">digiHist</var>
         </variables>
@@ -2418,7 +2387,7 @@
         </depends>
       </process>
  
-      <process name="checkChunkLci">
+      <process name="checkChunkLci" autoRetryMaxAttempts="1">
         <job executable="${isocRun} python2.5 ${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s "/>
         <depends>
           <after process="fastMonHistLci" status="SUCCESS"/>
@@ -2438,14 +2407,14 @@
       <prerequisite name="RUNSTATUS" type="string"/>
     </prerequisites>
 
-    <process name="checkRunInc">
+    <process name="checkRunInc" autoRetryMaxAttempts="1">
       <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
       <createsSubtasks>
         <subtask>cleanupIncompleteRun</subtask>
       </createsSubtasks>
     </process>
 
-    <process name="setSuccessfulInc">
+    <process name="setSuccessfulInc" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">checkRunInc</var>
       </variables>
@@ -2460,12 +2429,55 @@
 
     <task name="cleanupIncompleteRun" version="%(L1Version)s" type="Data">
 
-      <process name="cleanupChunksInc">
+      <process name="getTimesInc" autoRetryMaxAttempts="1">
+        <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimes.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
+      </process>
+
+      <process name="mergeReconChunksInc" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="fileType">recon</var>
+          <var name="%(recon_versionName)s">%(recon_version)s</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;50]&quot; "/>
+        <depends>
+          <after process="getTimesInc" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="registerReconInc" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="parentProcess">mergeReconChunksInc</var>
+          <var name="fileType">recon</var>
+          <var name="timeProcess">findChunks</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="mergeReconChunksInc" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="unLockRunInc" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="l1LockAction">UnLock</var>
+        </variables>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/lockFile.py" batchOptions=" -q %(expressQ)s "/>
+        <depends>
+          <after process="registerReconInc" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="cleanupChunksInc" autoRetryMaxAttempts="1">
         <job executable="${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
+        <depends>
+          <after process="mergeReconChunksInc" status="SUCCESS"/>
+        </depends>
       </process>
 
 <!--
-      <process name="updateRunStatusInc">
+      <process name="updateRunStatusInc" autoRetryMaxAttempts="1">
         <script>
           <![CDATA[
 %(retireScriptBody)s
@@ -2473,9 +2485,57 @@
         </script>
       </process>
 -->
+
     </task> <!-- cleanupIncompleteRun -->
 
   </task> <!-- doInc -->
+
+  <task name="doIncLci" version="%(L1Version)s" type="Data">
+
+    <prerequisites>
+      <prerequisite name="DATASOURCE" type="string"/>
+      <prerequisite name="RUNID" type="string"/>
+      <prerequisite name="RUNSTATUS" type="string"/>
+    </prerequisites>
+
+    <process name="checkRunIncLci" autoRetryMaxAttempts="1">
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
+      <createsSubtasks>
+        <subtask>cleanupIncompleteRunLci</subtask>
+      </createsSubtasks>
+    </process>
+
+    <process name="setSuccessfulIncLci" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="parentProcess">checkRunIncLci</var>
+      </variables>
+      <script><![CDATA[
+%(successScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="checkRunIncLci" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <task name="cleanupIncompleteRunLci" version="%(L1Version)s" type="Data">
+
+      <process name="cleanupChunksIncLci" autoRetryMaxAttempts="1">
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
+      </process>
+
+<!--
+      <process name="updateRunStatusIncLci" autoRetryMaxAttempts="1">
+        <script>
+          <![CDATA[
+%(retireScriptBody)s
+]]>
+        </script>
+      </process>
+-->
+    </task> <!-- cleanupIncompleteRunLci -->
+
+  </task> <!-- doIncLci -->
 
 </task> <!-- L1Proc -->
 </pipeline>
