@@ -33,6 +33,7 @@
       <subtask>doRun</subtask>
       <subtask>doLci</subtask>
       <subtask>doInc</subtask>
+      <subtask>doIncLci</subtask>
     </createsSubtasks>
   </process>
 

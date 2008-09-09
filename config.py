@@ -256,7 +256,7 @@ cmtPackages = {
         },
     'calibTkrUtil': {
         'repository': '',
-        'version': 'v2r7p1',
+        'version': 'v2r7p2',
         },
     'Common': {
         'repository': 'dataMonitoring',

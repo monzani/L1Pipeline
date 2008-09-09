@@ -1,3 +1,10 @@
+1.65
+-----------------
+Use autoRetryMaxAttempts="1" for all processes.
+Don't merge recon for InProgress runs [LONE-109].
+Fix time order check for <1s chunks.
+-------------------------------------------
+
 
 1.64
 -----------------
