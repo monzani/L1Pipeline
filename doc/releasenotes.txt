@@ -1,3 +1,11 @@
+1.66
+-----------------
+Set 0 retries on findChunks.
+Alarms for FastMon errors, acdPeds, calGains, calPeds.
+Remove some cruft.
+-------------------------------------------
+
+
 1.65
 -----------------
 Use autoRetryMaxAttempts="1" for all processes.

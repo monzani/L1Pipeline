@@ -37,12 +37,6 @@
     </createsSubtasks>
   </process>
 
-<!--
-  <process name="ft2Gaps" autoRetryMaxAttempts="1">
-    <job executable="${isocRun} python2.5 ${L1ProcROOT}/ft2Db.py" batchOptions=" -q %(expressQ)s "/>
-  </process>
--->
-
   <process name="kludgeAsp" autoRetryMaxAttempts="1">
     <job executable="${isocRun} python2.5 ${L1ProcROOT}/kludgeAsp.py" batchOptions=" -q %(expressQ)s " />
     <depends>
@@ -67,7 +61,7 @@
       <prerequisite name="RUNSTATUS" type="string"/>
    </prerequisites>
 
-    <process name="findChunks" autoRetryMaxAttempts="1">
+    <process name="findChunks" autoRetryMaxAttempts="0"> <!-- This should not be automatically rolled back, it interacts poorly with the run lock -->
       <job executable="${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/findChunks.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py -sp %(highPriority)d " />
       <createsSubtasks>
         <subtask>doChunk</subtask>
@@ -546,6 +540,56 @@
       </depends>
     </process>
 
+    <process name="acdPedsAlarm" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="alarmFileType">acdPedsAlarm</var>
+        <var name="fileType">acdPedsAnalyzer</var>
+        <var name="%(acdPedsAnalyzer_versionName)s">%(acdPedsAnalyzer_version)s</var>
+        <var name="%(acdPedsAlarm_versionName)s">%(acdPedsAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerAcdPedsAnalyzer" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerAcdPedsAlarm" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="parentProcess">acdPedsAlarm</var>
+        <var name="fileType">acdPedsAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="acdPedsAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="acdPedsLogger" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="fileType">acdPedsAlarm</var>
+        <var name="%(acdPedsAlarm_versionName)s">%(acdPedsAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerAcdPedsAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestAcdPedsRun" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="reportType">acdPedsAlarm</var>
+        <var name="%(acdPedsAlarm_versionName)s">%(acdPedsAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerAcdPedsAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="calGainsAnalyzer" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">calHist</var>
@@ -574,6 +618,56 @@
       </depends>
     </process>
 
+    <process name="calGainsAlarm" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="alarmFileType">calGainsAlarm</var>
+        <var name="fileType">calGainsAnalyzer</var>
+        <var name="%(calGainsAnalyzer_versionName)s">%(calGainsAnalyzer_version)s</var>
+        <var name="%(calGainsAlarm_versionName)s">%(calGainsAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerCalGainsAnalyzer" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerCalGainsAlarm" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="parentProcess">calGainsAlarm</var>
+        <var name="fileType">calGainsAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="calGainsAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="calGainsLogger" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="fileType">calGainsAlarm</var>
+        <var name="%(calGainsAlarm_versionName)s">%(calGainsAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerCalGainsAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestCalGainsRun" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="reportType">calGainsAlarm</var>
+        <var name="%(calGainsAlarm_versionName)s">%(calGainsAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerCalGainsAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="calPedsAnalyzer" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">calHist</var>
@@ -599,6 +693,56 @@
       </script>
       <depends>
         <after process="calPedsAnalyzer" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="calPedsAlarm" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="alarmFileType">calPedsAlarm</var>
+        <var name="fileType">calPedsAnalyzer</var>
+        <var name="%(calPedsAnalyzer_versionName)s">%(calPedsAnalyzer_version)s</var>
+        <var name="%(calPedsAlarm_versionName)s">%(calPedsAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerCalPedsAnalyzer" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerCalPedsAlarm" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="parentProcess">calPedsAlarm</var>
+        <var name="fileType">calPedsAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="calPedsAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="calPedsLogger" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="fileType">calPedsAlarm</var>
+        <var name="%(calPedsAlarm_versionName)s">%(calPedsAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerCalPedsAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestCalPedsRun" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="reportType">calPedsAlarm</var>
+        <var name="%(calPedsAlarm_versionName)s">%(calPedsAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerCalPedsAlarm" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -639,7 +783,54 @@
       </depends>
     </process>
 
-<!-- fastMonErrorAlarms go here -->
+    <process name="fastMonErrorAlarm" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="fileType">fastMonError</var>
+        <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
+        <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerFastMonError" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonErrorAlarm" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="parentProcess">fastMonErrorAlarm</var>
+        <var name="fileType">fastMonErrorAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="fastMonErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="fastMonErrorLogger" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="fileType">fastMonErrorAlarm</var>
+        <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerFastMonErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestFastMonErrorAlarmRun" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="reportType">fastMonErrorAlarm</var>
+        <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerFastMonErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
 
     <process name="mergeFastMonHist" autoRetryMaxAttempts="1">
       <variables>
@@ -1539,19 +1730,6 @@
       </depends>
     </process>
  
-<!--
-    <process name="preRegisterTkrReport" autoRetryMaxAttempts="1">
-      <variables>
-        <var name="fileType">tkrReport</var>
-        <var name="%(tkrReport_versionName)s">%(tkrReport_version)s</var>
-      </variables>
-      <job executable="${isocRun} python2.5 ${L1ProcROOT}/preRegister.py" batchOptions=" -q %(expressQ)s "/>
-      <depends>
-        <after process="tkrMonitor" status="SUCCESS"/>
-      </depends>
-    </process>
--->
-
     <process name="registerTkrReport" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">tkrMonitor</var>
@@ -1715,7 +1893,10 @@
     <process name="checkRun" autoRetryMaxAttempts="1">
       <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
+        <after process="acdPedsLogger" status="SUCCESS"/>
+        <after process="calGainsLogger" status="SUCCESS"/>
         <after process="calHistLogger" status="SUCCESS"/>
+        <after process="calPedsLogger" status="SUCCESS"/>
         <after process="doChunk.checkChunk" status="SUCCESS"/>
         <after process="digiHistLogger" status="SUCCESS"/>
         <after process="digiTrendLogger" status="SUCCESS"/>
@@ -1723,10 +1904,13 @@
         <after process="exportFT2" status="SUCCESS"/>
         <after process="exportLS1" status="SUCCESS"/>
         <after process="exportLS3" status="SUCCESS"/>
-<!--        <after process="fastMonErrorLogger" status="SUCCESS"/> -->
+        <after process="fastMonErrorLogger" status="SUCCESS"/>
         <after process="fastMonHistLogger" status="SUCCESS"/>
         <after process="fastMonTrendLogger" status="SUCCESS"/>
+        <after process="ingestAcdPedsRun" status="SUCCESS"/>
+        <after process="ingestCalGainsRun" status="SUCCESS"/>
         <after process="ingestCalHistRun" status="SUCCESS"/>
+        <after process="ingestCalPedsRun" status="SUCCESS"/>
         <after process="ingestCalTrend" status="SUCCESS"/>
         <after process="ingestDigiTrend" status="SUCCESS"/>
         <after process="ingestFastMonTrend" status="SUCCESS"/>
@@ -1735,7 +1919,7 @@
         <after process="ingestFastMonTrendRun" status="SUCCESS"/>
         <after process="ingestFastMonHistRun" status="SUCCESS"/>
         <after process="ingestFastMonErrorRun" status="SUCCESS"/>
-<!--        <after process="ingestFastMonErrorAlarmRun" status="SUCCESS"/> -->
+        <after process="ingestFastMonErrorAlarmRun" status="SUCCESS"/>
         <after process="ingestDigiTrendRun" status="SUCCESS"/>
         <after process="ingestDigiHistRun" status="SUCCESS"/>
         <after process="ingestMeritTrendRun" status="SUCCESS"/>
@@ -1751,10 +1935,7 @@
         <after process="reconTrendLogger" status="SUCCESS"/>
         <after process="registerAcdPlots" status="SUCCESS"/>
         <after process="registerCal" status="SUCCESS"/>
-        <after process="registerCalGainsAnalyzer" status="SUCCESS"/>
         <after process="registerCmpDFm" status="SUCCESS"/>
-        <after process="registerAcdPedsAnalyzer" status="SUCCESS"/>
-        <after process="registerCalPedsAnalyzer" status="SUCCESS"/>
         <after process="registerFastMonTuple" status="SUCCESS"/>
         <after process="registerGcr" status="SUCCESS"/>
         <after process="registerM7Hp" status="SUCCESS"/>
@@ -1847,16 +2028,6 @@
           <after process="registerRecon" status="SUCCESS"/>
         </depends>
       </process>
-
-<!--
-      <process name="updateRunStatus" autoRetryMaxAttempts="1">
-        <script>
-          <![CDATA[
-%(retireScriptBody)s
-]]>
-        </script>
-      </process>
--->
 
     </task> <!-- cleanupCompleteRun -->
 
@@ -2337,16 +2508,6 @@
         <job executable="${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
       </process>
 
-<!--
-      <process name="updateRunStatusLci" autoRetryMaxAttempts="1">
-        <script>
-          <![CDATA[
-%(retireScriptBody)s
-]]>
-        </script>
-      </process>
--->
-
     </task> <!-- cleanupCompleteRunLci -->
 
     <task name="doChunkLci" version="%(L1Version)s" type="Data">
@@ -2477,16 +2638,6 @@
         </depends>
       </process>
 
-<!--
-      <process name="updateRunStatusInc" autoRetryMaxAttempts="1">
-        <script>
-          <![CDATA[
-%(retireScriptBody)s
-]]>
-        </script>
-      </process>
--->
-
     </task> <!-- cleanupIncompleteRun -->
 
   </task> <!-- doInc -->
@@ -2525,15 +2676,6 @@
         <job executable="${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
       </process>
 
-<!--
-      <process name="updateRunStatusIncLci" autoRetryMaxAttempts="1">
-        <script>
-          <![CDATA[
-%(retireScriptBody)s
-]]>
-        </script>
-      </process>
--->
     </task> <!-- cleanupIncompleteRunLci -->
 
   </task> <!-- doIncLci -->

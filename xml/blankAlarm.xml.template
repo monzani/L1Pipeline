@@ -1,0 +1,49 @@
+    <process name="Alarm" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="fileType"></var>
+        <var name="%(_versionName)s">%(_version)s</var>
+        <var name="%(_versionName)s">%(_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="register" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerAlarm" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="parentProcess">Alarm</var>
+        <var name="fileType">Alarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="Alarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="Logger" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="fileType">Alarm</var>
+        <var name="%(Alarm_versionName)s">%(Alarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestRun" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="reportType">Alarm</var>
+        <var name="%(Alarm_versionName)s">%(Alarm_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+      <depends>
+        <after process="registerAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+

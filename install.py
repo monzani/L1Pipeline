@@ -69,9 +69,9 @@ ofp = open('setup.sh', 'w')
 ofp.write('source %s\n' % config.glastSetup)
 
 ofp.write(bEnv("L1_TASK_NAME", config.L1Name))
-ofp.write(bEnv("L1_TASK_VERSION", config.L1Version))
 ofp.write(bEnv("L1_INSTALL_DIR", config.installRoot))
 ofp.write(bEnv("L1_BUILD_DIR", config.L1CmtBase))
+ofp.write(bEnv("L1_TASK_VERSION", config.L1Version))
 
 ofp.write(bEnv("CMTCONFIG", config.cmtConfig))
 ofp.write(bEnv("CMTPATH", config.cmtPath))
@@ -91,9 +91,9 @@ ofq = open('setup.csh', 'w')
 ofq.write('source %s\n' % config.glastSetupCsh)
 
 ofq.write(cEnv("L1_TASK_NAME", config.L1Name))
-ofq.write(cEnv("L1_TASK_VERSION", config.L1Version))
 ofq.write(cEnv("L1_INSTALL_DIR", config.installRoot))
 ofq.write(cEnv("L1_BUILD_DIR", config.L1CmtBase))
+ofq.write(cEnv("L1_TASK_VERSION", config.L1Version))
 
 ofq.write(cEnv("CMTCONFIG", config.cmtConfig))
 ofq.write(cEnv("CMTPATH", config.cmtPath))

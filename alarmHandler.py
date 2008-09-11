@@ -22,7 +22,8 @@ staged = stageFiles.StageSet()
 finishOption = config.finishOption
 
 fileType = os.environ['fileType']
-alarmFileType = fileType + 'Alarm'
+defaultAlarmFileType = fileType + 'Alarm'
+alarmFileType = os.environ.get('alarmFileType', defaultAlarmFileType)
 
 realInFile = fileNames.fileName(fileType, dlId, runId)
 stagedInFile = staged.stageIn(realInFile)
