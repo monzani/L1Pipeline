@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+
+import os
+import re
+import sys
+
+
+ofRe = re.compile('OutputFile<(.*?)>', re.S)
+spaceRe = re.compile('\s')
+l1JobRe = re.compile('^([0-9]+).*glastdataq')
+
+
+def l1Jobs():
+    cmd = 'bjobs -wu glastraw'
+    jobs = []
+    for line in os.popen(cmd):
+        mob = l1JobRe.match(line)
+        if mob:
+            jobs.append(mob.group(1))
+            pass
+        continue
+    return jobs
+
+
+def getLog(jobId):
+    cmd = 'bjobs -l %s' % jobId
+    data = os.popen(cmd).read()
+    data = spaceRe.sub('', data)
+    mob = ofRe.search(data)
+    name = mob.group(1)
+    return name
+
+
+def grepFile(fileName, reOb):
+    match = False
+    for line in open(fileName):
+        if reOb.search(line):
+            match = True
+            break
+        continue
+    return match
+
+def grepJob(jobId, reOb):
+    logFile = getLog(jobId)
+    match = grepFile(logFile, reOb)
+    return match
+
+
+def grepAllJobs(pattern):
+    reOb = re.compile(pattern)
+    jobs = l1Jobs()
+    matches = [job for job in jobs if grepJob(job, reOb)]
+    return matches
+
+
+def main():
+    pattern = sys.argv[1]
+    matches = grepAllJobs(pattern)
+    for match in matches:
+        print match,
+        continue
+    print
+    return
+
+
+if __name__ == "__main__":
+    main()
+    
+    
