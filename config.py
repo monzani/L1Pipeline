@@ -176,8 +176,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
-glastVersion = 'v15r40'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume07')
+glastVersion = 'v15r47p1'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -232,7 +232,7 @@ hpTaskBase = '/afs/slac/g/glast/isoc/flightOps/offline/halfPipe/prod'
 
 l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
 
-stVersion = 'v9r6p2'
+stVersion = 'v9r7p1'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
 #ST = os.path.join(L1Cmt, "ScienceTools", "ScienceTools-%s" % stVersion)
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
@@ -260,7 +260,7 @@ cmtPackages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v4r9p0',
+        'version': 'v4r10p0',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -284,7 +284,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r2p27',
+        'version': 'v1r2p31',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -299,7 +299,7 @@ cmtPackages = {
 cvsPackages = {
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r2p27',
+        'version': 'v1r2p30',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',

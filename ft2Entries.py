@@ -37,10 +37,10 @@ stagedM7File=  staged.stageIn(realM7File)
 #output
 txtFt2File = fileNames.fileName(fileType, dlId, runId, next=True)
 stagedFt2TxtFile = staged.stageOut(txtFt2File)
+ft2Seconds = fileNames.fileName('ft2Seconds', dlId, runId, next=True)
+stagedFt2FitsFile = staged.stageOut(ft2Seconds)
 
 workDir = os.path.dirname(stagedFt2TxtFile)
-
-stagedFt2FitsFile = os.path.join(workDir, 'junkFT2.fits')
 
 setupScript = config.packages['ft2Util']['setup']
 
@@ -71,6 +71,7 @@ if status: finishOption = 'wipe'
 
 if not status:
     registerPrep.prep(fileType, txtFt2File)
+    registerPrep.prep('ft2Seconds', ft2Seconds)
     pass
 
 status |= staged.finish(finishOption)

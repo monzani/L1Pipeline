@@ -1100,85 +1100,10 @@
       </depends>
     </process>
  
-    <process name="makeFT1" autoRetryMaxAttempts="1">
-      <variables>
-        <var name="fileType">ft1</var>
-        <var name="%(merit_versionName)s">%(merit_version)s</var>
-        <var name="%(ft1_versionName)s">%(ft1_version)s</var>
-      </variables>
-      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
-      <depends>
-        <after process="registerMerit" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="registerFT1" autoRetryMaxAttempts="1">
-      <variables>
-        <var name="parentProcess">makeFT1</var>
-        <var name="fileType">ft1</var>
-        <var name="timeProcess">findChunks</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="makeFT1" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="exportFT1" autoRetryMaxAttempts="1">
-      <variables>
-        <var name="fileType">ft1</var>
-        <var name="%(ft1_versionName)s">%(ft1_version)s</var>
-      </variables>
-      <job executable="${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
-      <depends>
-        <after process="registerFT1" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="makeLS1" autoRetryMaxAttempts="1">
-      <variables>
-        <var name="fileType">ls1</var>
-        <var name="%(merit_versionName)s">%(merit_version)s</var>
-        <var name="%(ls1_versionName)s">%(ls1_version)s</var>
-      </variables>
-      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
-      <depends>
-        <after process="registerMerit" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="registerLS1" autoRetryMaxAttempts="1">
-      <variables>
-        <var name="parentProcess">makeLS1</var>
-        <var name="fileType">ls1</var>
-        <var name="timeProcess">findChunks</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="makeLS1" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="exportLS1" autoRetryMaxAttempts="1">
-      <variables>
-        <var name="fileType">ls1</var>
-        <var name="%(ls1_versionName)s">%(ls1_version)s</var>
-      </variables>
-      <job executable="${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
-      <depends>
-        <after process="registerLS1" status="SUCCESS"/>
-      </depends>
-    </process>
-
     <process name="ft2Runs" autoRetryMaxAttempts="1">
       <variables>
         <var name="%(digi_versionName)s">%(digi_version)s</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
         <var name="%(ft2Txt_versionName)s">%(ft2Txt_version)s</var>
         <var name="%(magic7L1_versionName)s">%(magic7L1_version)s</var>
         <var name="%(merit_versionName)s">%(merit_version)s</var>
@@ -1196,6 +1121,21 @@
       <variables>
         <var name="parentProcess">ft2Runs</var>
         <var name="fileType">ft2Txt</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="ft2Runs" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFt2Seconds" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="parentProcess">ft2Runs</var>
+        <var name="fileType">ft2Seconds</var>
         <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
@@ -1254,6 +1194,84 @@
       <job executable="${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d  -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
         <after process="registerFT2" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="makeFT1" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="fileType">ft1</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="%(ft1_versionName)s">%(ft1_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <depends>
+        <after process="registerFt2Seconds" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFT1" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="parentProcess">makeFT1</var>
+        <var name="fileType">ft1</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="makeFT1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="exportFT1" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="fileType">ft1</var>
+        <var name="%(ft1_versionName)s">%(ft1_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <depends>
+        <after process="registerFT1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="makeLS1" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="fileType">ls1</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="%(ls1_versionName)s">%(ls1_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <depends>
+        <after process="registerFt2Seconds" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerLS1" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="parentProcess">makeLS1</var>
+        <var name="fileType">ls1</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="makeLS1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="exportLS1" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="fileType">ls1</var>
+        <var name="%(ls1_versionName)s">%(ls1_version)s</var>
+      </variables>
+      <job executable="${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
+      <depends>
+        <after process="registerLS1" status="SUCCESS"/>
       </depends>
     </process>
 

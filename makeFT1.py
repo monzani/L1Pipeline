@@ -26,9 +26,13 @@ evtClassDefsPython = config.packages['evtClassDefs']['python']
 
 stSetup = config.stSetup
 app = os.path.join('$FITSGENROOT', '$CMTCONFIG', 'makeFT1_kluge.exe')
+gtmktime = os.path.join('$DATASUBSELECTORROOT', '$CMTCONFIG', 'gtmktime.exe')
 
 realMeritFile = fileNames.fileName('merit', dlId, runId)
 stagedMeritFile = staged.stageIn(realMeritFile)
+realFt2File =fileNames.fileName('ft2Seconds', dlId, runId)
+stagedFt2File = staged.stageIn(realFt2File)
+
 realFt1File = fileNames.fileName(fileType, dlId, runId, next=True)
 stagedFt1File = staged.stageOut(realFt1File)
 
@@ -48,13 +52,17 @@ version = fileNames.version(realFt1File)
 
 cfitsioPath = config.cfitsioPath
 
+filter = 'LIVETIME>0'
+
 cmd = '''
 cd %(workDir)s
 echo $PFILES
 source %(stSetup)s
 PYTHONPATH=%(evtClassDefsPython)s:$PYTHONPATH ; export PYTHONPATH
 echo $PFILES
-%(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=%(tCuts)s event_classifier="%(classifier)s" tstart=%(tStart).17g tstop=%(tStop).17g dict_file=%(dictionary)s file_version=%(version)s
+%(app)s rootFile=%(stagedMeritFile)s fitsFile=tmpFt1_1.fits TCuts=%(tCuts)s event_classifier="%(classifier)s" tstart=%(tStart).17g tstop=%(tStop).17g dict_file=%(dictionary)s file_version=%(version)s
+echo YOW
+%(gtmktime)s overwrite=yes roicut=no scfile=%(stagedFt2File)s filter="%(filter)s" evfile=tmpFt1_1.fits outFile=%(stagedFt1File)s
 ''' % locals()
 
 status = runner.run(cmd)

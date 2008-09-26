@@ -46,6 +46,7 @@ fileTypes = {
     'fastMonTuple': 'root',
     'ft1': 'fit',
     'ft2': 'fit',
+    'ft2Seconds': 'fit',
     'ft2Fake': 'fit',
     'ft2Txt': 'txt',
     'gcr': 'root',
