@@ -19,7 +19,7 @@ head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 
-staged = stageFiles.StageSet()
+staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 
 fileType = 'acdPlots'
 

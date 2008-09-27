@@ -20,7 +20,7 @@ if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 chunkId = os.environ['CHUNK_ID']
 
-staged = stageFiles.StageSet()
+staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption
 
 reportType = os.environ['reportType']

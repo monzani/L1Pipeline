@@ -20,7 +20,7 @@ runId = os.environ['RUNID']
 
 fileType = 'magic7Hp'
 
-staged = stageFiles.StageSet()
+staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 
 realInFile = os.path.join(os.environ['DOWNLINK_RAWDIR'], 'magic7_%s.txt' % dlId)
 stagedInFile = staged.stageIn(realInFile)

@@ -30,7 +30,7 @@ else:
     next = False
     pass
 
-staged = stageFiles.StageSet()
+staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption
 
 reportType = os.environ['reportType']

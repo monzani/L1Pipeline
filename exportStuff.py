@@ -51,7 +51,7 @@ else:
     # send = "--send LISOC" # always test mode for now
 pass
 
-staged = stageFiles.StageSet()
+staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption
 
 inputFile = fileNames.fileName(fileType, dlId, runId)

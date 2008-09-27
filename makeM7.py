@@ -22,7 +22,7 @@ runId = os.environ['RUNID']
 
 fileType = 'magic7L1'
 
-staged = stageFiles.StageSet()
+staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 
 realOutFile = fileNames.fileName(fileType, dlId, runId, next=True)
 stagedOutFile = staged.stageOut(realOutFile)

@@ -22,7 +22,7 @@ if not dlId: head, dlId = os.path.split(head)
 runId = os.environ.get('RUNID')
 chunkId = os.environ.get('CHUNK_ID')
 
-staged = stageFiles.StageSet()
+staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption
 
 app = config.apps['makeFT2']

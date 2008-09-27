@@ -12,7 +12,7 @@ import fileNames
 import runner
 import stageFiles
 
-staged = stageFiles.StageSet()
+staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption
 
 head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])

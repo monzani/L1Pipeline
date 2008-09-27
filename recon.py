@@ -26,7 +26,7 @@ runId = os.environ['RUNID']
 chunkId = os.environ['CHUNK_ID']
 crumbId = os.environ['CRUMB_ID']
 
-staged = stageFiles.StageSet()
+staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption
 
 realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId, crumbId)

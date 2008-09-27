@@ -43,7 +43,7 @@ if not chunkTester.verifyList(chunkHeaders):
     sys.exit(1)
     pass
 
-staged = stageFiles.StageSet()
+staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption
 
 stagedChunkList = staged.stageIn(realChunkList)

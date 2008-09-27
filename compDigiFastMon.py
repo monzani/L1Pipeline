@@ -18,7 +18,7 @@ runId = os.environ['RUNID']
 
 fileType = os.environ['fileType']
 
-staged = stageFiles.StageSet()
+staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption
 
 app = config.apps['compareDFm']

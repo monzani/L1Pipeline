@@ -25,7 +25,7 @@ runId = os.environ['RUNID']
 chunkId = os.environ.get('CHUNK_ID')
 crumbId = os.environ.get('CRUMB_ID')
 
-staged = stageFiles.StageSet()
+staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption
 
 realInFile = fileNames.fileName('tkrAnalysis', dlId, runId, chunkId, crumbId)

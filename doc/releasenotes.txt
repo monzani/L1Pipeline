@@ -1,11 +1,12 @@
 1.66
 -----------------
-Set 0 retries on findChunks, findChunksLci, getTimes,
-getTimesInc. [LONE-111@JIRA], [LONE-107@JIRA]
-Alarms for FastMon errors, acdPeds, calGains, calPeds.
+Set 0 retries on findChunks, findChunksLci, getTimes, getTimesInc.
+Alarms for FastMon errors, acdPeds, calGains, calPeds. [LONE-111@JIRA], [LONE-107@JIRA]
 Remove some cruft.
 Keep 1-second ft2 FITS file (ft2Seconds).
 Run gtmktime to make ft1/ls1 GTIs match gaps from ft2. [LONE-78@JIRA]
+Stage files from AFS buffers to scratch disk.
+Use new version of GPLtools which checksums files as they are copied.
 -------------------------------------------
 
 

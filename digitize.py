@@ -19,7 +19,7 @@ if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 chunkId = os.environ['CHUNK_ID']
 
-staged = stageFiles.StageSet()
+staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 
 os.environ['EVTFILE'] = staged.stageIn(os.environ['EVTFILE'])
 realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId)

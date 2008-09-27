@@ -30,7 +30,7 @@ dlRawDir = os.environ['DOWNLINK_RAWDIR']
 head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
 
-staged = stageFiles.StageSet()
+staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 
 runDirs = finders.findRunDirs(dlRawDir)
 dataRuns = set(runDirs)

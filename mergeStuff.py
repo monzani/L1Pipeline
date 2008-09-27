@@ -93,7 +93,7 @@ realOutFile = fileNames.fileName(fileType, dlId, runId, chunkId, next=True)
 if mergeLevel == 'run' and fileType in []: # not obviously helpful
     stageKWArgs = {'excludeIn': None}
 else:
-    stageKWArgs = {}
+    stageKWArgs = {'excludeIn': config.excludeIn}
     pass
 
 inStage = stageFiles.StageSet(**stageKWArgs)

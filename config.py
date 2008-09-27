@@ -256,7 +256,7 @@ cmtPackages = {
         },
     'calibTkrUtil': {
         'repository': '',
-        'version': 'v2r7p2',
+        'version': 'v2r7p3',
         },
     'Common': {
         'repository': 'dataMonitoring',
@@ -280,7 +280,7 @@ cmtPackages = {
         },
     'GPLtools': {
         'repository': '',
-        'version': 'v1r11',
+        'version': 'v1r12',
         },
     'Monitor': {
         'repository': 'svac',
@@ -630,6 +630,8 @@ highPriority = 75
 reconMergeScratch = " -R &quot;select[scratch&gt;70]&quot; "
 reconCrumbCpuf = " -R &quot;select[cpuf&gt;%s]&quot; " % minCrumbCpuf
 
+# default option for stageSet input exclusion filter
+excludeIn = None
 # default option for stageFiles.stageSet.finish()
 finishOption = ''
 
