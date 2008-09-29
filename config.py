@@ -280,7 +280,7 @@ cmtPackages = {
         },
     'GPLtools': {
         'repository': '',
-        'version': 'v1r13',
+        'version': 'v1r13p1',
         },
     'Monitor': {
         'repository': 'svac',
