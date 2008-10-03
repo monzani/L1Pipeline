@@ -54,15 +54,17 @@ cfitsioPath = config.cfitsioPath
 
 filter = 'LIVETIME>0'
 
+tempFT1 = '%s/tmpFt1_1.fits' % workDir
+
 cmd = '''
 cd %(workDir)s
 echo $PFILES
 source %(stSetup)s
 PYTHONPATH=%(evtClassDefsPython)s:$PYTHONPATH ; export PYTHONPATH
 echo $PFILES
-%(app)s rootFile=%(stagedMeritFile)s fitsFile=tmpFt1_1.fits TCuts=%(tCuts)s event_classifier="%(classifier)s" tstart=%(tStart).17g tstop=%(tStop).17g dict_file=%(dictionary)s file_version=%(version)s
-echo YOW
-%(gtmktime)s overwrite=yes roicut=no scfile=%(stagedFt2File)s filter="%(filter)s" evfile=tmpFt1_1.fits outFile=%(stagedFt1File)s
+%(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=%(tCuts)s event_classifier="%(classifier)s" tstart=%(tStart).17g tstop=%(tStop).17g dict_file=%(dictionary)s file_version=%(version)s
+mv %(stagedFt1File)s %(tempFT1)s
+%(gtmktime)s overwrite=yes roicut=no scfile=%(stagedFt2File)s filter="%(filter)s" evfile=%(tempFT1)s outFile=%(stagedFt1File)s
 ''' % locals()
 
 status = runner.run(cmd)
