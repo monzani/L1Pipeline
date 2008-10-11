@@ -1,3 +1,14 @@
+1.67
+-----------------
+Port scratch cleanup scripts from SVAC pipeline, Use a wrapper that cleans up scratch before and after main job.
+Move cal (aka digi long) and merit monitoring to run level.
+Fix FILENAME keyword in ft1 and ls1.
+Be more verbose when testing chunks.
+Use run number as stream id for cleanupCompleteRun.
+Increase free scratch required for recon, svac, cal, digi merges.
+-------------------------------------------
+
+
 1.66
 -----------------
 Set 0 retries on findChunks, findChunksLci, getTimes, getTimesInc.

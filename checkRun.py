@@ -89,7 +89,7 @@ readyToRetire = hpFinal and tokenStatus
 if readyToRetire:
     print >> sys.stderr, "Run %s is as done as it's going to get, retiring." % runId
     subTask = config.cleanupSubTask[pipeline.getTask()][os.environ['DATASOURCE']]
-    stream = 0
+    stream = runNumber
     args = ''
     pipeline.createSubStream(subTask, stream, args)
     l1RunStatus = hpRunStatus

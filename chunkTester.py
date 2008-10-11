@@ -19,13 +19,14 @@ def readHeader(inFile):
 
 
 def verifyChunk(headerData):
-    begGEM = headerData['begGEM']
-    print >> sys.stderr, '  Checking chunk %s ...' % begGEM,
-
+    name = headerData['name']
     nEvt = headerData['nEvt']
+    begGEM = headerData['begGEM']
     endGEM = headerData['endGEM']
     begSec = headerData['begSec']
     endSec = headerData['endSec']
+
+    print >> sys.stderr, '  %(name)s:\t%(begSec)s\t%(endSec)s\t%(begGEM)s\t%(endGEM)s\t%(nEvt)s\t...' % locals(),
 
     if nEvt <= 1:
         print >> sys.stderr, 'chunk has %d <= 1 events!' % nEvt

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+${L1ProcROOT}/tools/_cleanupOne.csh
+
+$*
+status=$?
+
+${L1ProcROOT}/tools/_cleanupOne.csh
+
+exit $status

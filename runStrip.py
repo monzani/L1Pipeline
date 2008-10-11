@@ -21,6 +21,8 @@ head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 chunkId = os.environ.get('CHUNK_ID') # might not be set
+crumbId = os.environ.get('CRUMB_ID') # might not be set
+idArgs = (dlId, runId, chunkId, crumbId)
 
 if chunkId is None:
     level = 'run'
@@ -41,31 +43,31 @@ package = config.packages['Monitor']
 setup = package['setup']
 app = package['app']
 
-realOutFile = fileNames.fileName(reportType, dlId, runId, chunkId, next=next)
+realOutFile = fileNames.fileName(reportType, next=next, *idArgs)
 outFile = staged.stageOut(realOutFile)
 
 workDir = os.path.dirname(outFile)
 
 if 'fastMon' in reportType:
-    realFmt = fileNames.fileName('fastMonTuple', dlId, runId, chunkId)
+    realFmt = fileNames.fileName('fastMonTuple', *idArgs)
     stagedFmt = staged.stageIn(realFmt)
     inFileOpts = '-f %s' % stagedFmt
 elif 'tkrTrend' in reportType:
-    realInFile = fileNames.fileName('tkrMonitor', dlId, runId, chunkId)
+    realInFile = fileNames.fileName('tkrMonitor', *idArgs)
     stagedInFile = staged.stageIn(realInFile)
     inFileOpts = '-k %s' % stagedInFile
 else:
-    realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId)
+    realDigiFile = fileNames.fileName('digi', *idArgs)
     stagedDigiFile = staged.stageIn(realDigiFile)
     inFileOpts = '-d %s' % stagedDigiFile
     if 'recon' in reportType:
-        realReconFile = fileNames.fileName('recon', dlId, runId, chunkId)
+        realReconFile = fileNames.fileName('recon', *idArgs)
         stagedReconFile = staged.stageIn(realReconFile)
-        realCalFile = fileNames.fileName('cal', dlId, runId, chunkId)
+        realCalFile = fileNames.fileName('cal', *idArgs)
         stagedCalFile = staged.stageIn(realCalFile)
         inFileOpts += ' -r %s -a %s' % (stagedReconFile, stagedCalFile)
     elif 'merit' in reportType:
-        realMeritFile = fileNames.fileName('merit', dlId, runId, chunkId)
+        realMeritFile = fileNames.fileName('merit', *idArgs)
         stagedMeritFile = staged.stageIn(realMeritFile)
         inFileOpts += ' -m %s' % (stagedMeritFile,)
         configFile = config.normalizedRateConfigs[reportType]
