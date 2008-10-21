@@ -31,11 +31,12 @@ workDir = os.path.dirname(verifyLogFile)
 
 setupScript = config.cmtScript
 app = config.apps['runVerify']
+jobOption = config.verifyOption[completeness]
 
 cmd = '''
 cd %(workDir)s
 source %(setupScript)s
-%(app)s -d %(stagedDigiFile)s -x %(verifyLogFile)s -r %(verifyHistoFile)s
+%(app)s -d %(stagedDigiFile)s -x %(verifyLogFile)s -r %(verifyHistoFile)s %(jobOption)
 ''' % locals()
 
 status = runner.run(cmd)

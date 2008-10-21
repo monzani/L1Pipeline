@@ -5,6 +5,7 @@ Include delivery ID in messages logging alarms.
 Reserve (not just require) scratch space.
 Don't retry cleanupCrumbs.
 Don't retire runs that have merging trouble.
+Run 2 different versions of verify (for InProgress and Complete runs).
 -------------------------------------------
 
 

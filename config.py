@@ -553,6 +553,12 @@ ft1Dicts = {
     }
 
 
+verifyOptions = {
+    'InProgress': '',
+    'Complete': '-c',
+    'Incomplete': '-c',
+    }
+
 ft2Pad = 1.0 # pad time range with this on either end whan making fakeFT2
 m7Pad = 10 # pad time range with this on either end whan making m7
 

@@ -240,6 +240,7 @@
         <var name="%(digi_versionName)s">%(digi_version)s</var>
         <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
         <var name="%(verifyHisto_versionName)s">%(verifyHisto_version)s</var>
+	<var name="completeness">InProgress</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s "/>
       <depends>
@@ -2023,6 +2024,60 @@
         </depends>
       </process>
 
+      <process name="verifyComp" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="%(digi_versionName)s">%(digi_version)s</var>
+          <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
+          <var name="%(verifyHisto_versionName)s">%(verifyHisto_version)s</var>
+	  <var name="completeness">Complete</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s "/>
+        <depends>
+          <after process="getTimes" status="DONE"/>
+        </depends>
+      </process>
+
+      <process name="registerVerifyHistoComp" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="parentProcess">verifyComp</var>
+          <var name="fileType">verifyHisto</var>
+          <var name="timeProcess">findChunks</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="verifyComp" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="registerVerifyLogComp" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="parentProcess">verifyComp</var>
+          <var name="fileType">verifyLog</var>
+          <var name="timeProcess">findChunks</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="verifyComp" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="ingestVerifyErrorRunComp" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="reportType">verifyLog</var>
+          <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+        <depends>
+          <after process="registerVerifyLogComp" status="SUCCESS"/>
+        </depends>
+      </process>
+
       <process name="cleanupChunks" autoRetryMaxAttempts="1">
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
         <depends>
@@ -2037,6 +2092,7 @@
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/lockFile.py" batchOptions=" -q %(expressQ)s "/>
         <depends>
           <after process="registerRecon" status="SUCCESS"/>
+          <after process="registerVerifyHistoComp" status="SUCCESS"/>
         </depends>
       </process>
 
@@ -2609,6 +2665,60 @@
         </depends>
       </process>
 
+      <process name="verifyInc" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="%(digi_versionName)s">%(digi_version)s</var>
+          <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
+          <var name="%(verifyHisto_versionName)s">%(verifyHisto_version)s</var>
+	  <var name="completeness">Incomplete</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s "/>
+        <depends>
+          <after process="getTimesInc" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="registerVerifyHistoInc" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="parentProcess">verifyInc</var>
+          <var name="fileType">verifyHisto</var>
+          <var name="timeProcess">findChunks</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="verifyInc" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="registerVerifyLogInc" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="parentProcess">verifyInc</var>
+          <var name="fileType">verifyLog</var>
+          <var name="timeProcess">findChunks</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="verifyInc" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="ingestVerifyErrorRunInc" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="reportType">verifyLog</var>
+          <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+        <depends>
+          <after process="registerVerifyLogInc" status="SUCCESS"/>
+        </depends>
+      </process>
+
       <process name="unLockRunInc" autoRetryMaxAttempts="1">
         <variables>
           <var name="l1LockAction">UnLock</var>
@@ -2616,6 +2726,7 @@
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/lockFile.py" batchOptions=" -q %(expressQ)s "/>
         <depends>
           <after process="registerReconInc" status="SUCCESS"/>
+          <after process="registerVerifyHistoInc" status="SUCCESS"/>
         </depends>
       </process>
 
