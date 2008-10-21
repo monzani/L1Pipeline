@@ -46,11 +46,19 @@ def grepJob(jobId, reOb):
     return match
 
 
+def checkJobs(jobs):
+    test = set(jobs)
+    current = set(l1Jobs())
+    goodJobs = test & current
+    return goodJobs
+
+
 def grepAllJobs(pattern):
     reOb = re.compile(pattern)
     jobs = l1Jobs()
     matches = [job for job in jobs if grepJob(job, reOb)]
-    return matches
+    good = checkJobs(matches)
+    return good
 
 
 def main():

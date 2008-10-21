@@ -79,11 +79,7 @@ if numInFiles != len(expectedInFiles):
     l1Logger.error(msg, **kwargs)
 
     print >> sys.stderr, 'Supressing cleanup.'
-    runDir = fileNames.fileName(None, dlId, runId)
-    lfBase = 'dontCleanUp'
-    cleanupLock = os.path.join(runDir, lfBase)
-    cmd = 'touch %s' % cleanupLock
-    runner.run(cmd)
+    fileNames.makeMergeLock(runId)
     
     pass
 

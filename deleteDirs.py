@@ -32,11 +32,9 @@ if runId is not None:
         pass
 
     # check if mergeStuff has supressed cleanup due to missing files
-    runDir = fileNames.fileName(None, dlId, runId)
-    lfBase = 'dontCleanUp'
-    cleanupLock = os.path.join(runDir, lfBase)
-    if os.path.exists(cleanupLock):
-        print >> sys.stderr, '''Cleanup is supressed by %s''' % cleanupLock
+    mergeLock = fileNames.checkMergeLock(runId)
+    if mergeLock:
+        print >> sys.stderr, '''Cleanup is supressed by %s''' % mergeLock
         sys.exit(1)
         pass
     
@@ -48,16 +46,6 @@ else:
     
     chunkId = None
     pass
-
-# This is harmful; the runStatus the halfPipe gave us is not reliable
-# due to concurrency issues.
-#
-# # This decision should be made at a higher level.
-# if level == 'run' and runStatus not in ['COMPLETE', 'INCOMPLETE']:
-#     print >> sys.stderr, 'Run %s has status %s, not deleting chunks.' \
-#           % (runId, runStatus)
-#     sys.exit(0)
-#     pass
 
 goners = fileNames.findPieces(None, dlId, runId, chunkId)
 

@@ -37,10 +37,10 @@ def alarmSeverity(number):
     return severity
 
 
-def doAlarms(inFile, fileType, runId):
+def doAlarms(inFile, fileType, dlId, runId):
     number = parser(inFile)
     severity = alarmSeverity(number)
-    head = '%(fileType)s monitoring for run %(runId)s had:  ' % locals()
+    head = '%(fileType)s monitoring for run %(runId)s in delivery %(dlId)s had:  ' % locals()
     message = head + 'errors:%(error)d, warnings:%(warning)d, clean:%(clean)d, undefined:%(undefined)d.' % number
 
     print >> sys.stderr, message

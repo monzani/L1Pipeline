@@ -68,6 +68,7 @@ def checkTokens(head, runId):
     statusTokens = not tokenFiles
     return statusTokens
 
+
 head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
@@ -84,7 +85,8 @@ rootDir = os.path.dirname(fileNames.fileName('chunkList', dlId, runId)) #bleh
 
 hpFinal, hpRunStatus = checkRunStatus(runNumber)
 tokenStatus = checkTokens(head, runId)
-readyToRetire = hpFinal and tokenStatus
+mergeStatus = not fileNames.checkMergeLock(runId)
+readyToRetire = hpFinal and tokenStatus and mergeStatus
 
 if readyToRetire:
     print >> sys.stderr, "Run %s is as done as it's going to get, retiring." % runId
@@ -94,7 +96,7 @@ if readyToRetire:
     pipeline.createSubStream(subTask, stream, args)
     l1RunStatus = hpRunStatus
 else:
-    print >> sys.stderr, "Not retiring run %s: hpFinal=%s, tokenStatus=%s" % (runId, hpFinal, tokenStatus)
+    print >> sys.stderr, "Not retiring run %s: hpFinal=%s, tokenStatus=%s, mergeStatus=%s" % (runId, hpFinal, tokenStatus, mergeStatus)
     l1RunStatus = config.waitingStatus
     pass
 

@@ -27,7 +27,7 @@ stagedInFile = staged.stageIn(realInFile)
 
 workDir = os.path.dirname(stagedInFile)
 
-alarmParser.doAlarms(stagedInFile, fileType, runId)
+alarmParser.doAlarms(stagedInFile, fileType, dlId, runId)
 
 status = staged.finish(finishOption)
 

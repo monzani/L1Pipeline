@@ -3,9 +3,11 @@
 @author W. Focke <focke@slac.stanford.edu>
 """
 
+import bisect
 import cPickle
 import glob
 import hashlib
+import math
 import os
 import random
 import re
@@ -78,20 +80,48 @@ fileTypes = {
     'verifyHisto': 'root',
     }
 
-exportTags = {
+exportTags = { # files exported to FSSC use a different naming rule
     'ft1': 'gll_ph',
     'ft2': 'gll_pt',
     'ls1': 'gll_ev',
     'ls3': 'gll_lt',
     }
 
-xrootFileTypes = ['fit', 'root']
+xrootFileTypes = ['fit', 'root'] # these will be stored in xroot instead of nfs
 
 
 stageDirs = [os.path.join(disk, config.stageBase)
              for disk, weight in config.stageDisks
              for ii in range(weight)]
 uniqueStageDirs = set(stageDirs)
+
+mergeLockBase = 'dontCleanUp' # lock file for merge errors
+def mergeLockName(runId):
+    runDir = fileName(None, None, runId)
+    lockName = os.path.join(runDir, mergeLockBase)
+    return lockName
+def makeMergeLock(runId):
+    cleanupLock = mergeLockName(runId)
+    print >> sys.stderr, 'Trying to create %s ... ' % cleanupLock,
+    if os.path.exists(cleanupLock):
+        print >> sys.stderr, 'already there.'
+    else:
+        fp = open(cleanupLock, 'w')
+        fp.close()
+        print >> sys.stderr, 'OK'
+        pass
+    return
+def checkMergeLock(runId):
+    cleanupLock = mergeLockName(runId)
+    print >> sys.stderr, 'Checking for %s ... ' % cleanupLock,
+    if os.path.exists(cleanupLock):
+        print >> sys.stderr, 'yep.'
+        return cleanupLock
+    else:
+        print >> sys.stderr, 'nope.'
+        return False
+    return
+
 
 def dataCatGroup(fileType):
     dsType = fileType.upper()
@@ -357,3 +387,69 @@ def preMakeDirs(dirs, dlId, runId=None, chunkId=None, crumbId=None):
     stop = time.time()
     print >> sys.stderr, '%g s.' % (stop - start)
     return
+
+
+
+defaultMinMultiplicity = 1280
+nameCopies = 320
+big = 2 ** (16*8) # specific to MD5
+
+class consistentHash(object):
+
+    def __init__(self, slots, minMultiplicity=None):
+        """
+        @arg slots A sequence of (item, name, weight)
+                   Item can be anything, it's what is returned on a lookup.
+                   Name is a string. They have to be all different.
+                   Weight is a number.
+        """
+        if minMultiplicity is None: minMultiplicity = defaultMinMultiplicity
+        
+        # allWeights = [float(weight) for item, name, weight in slots]
+        # minWeight = min(allWeights)
+
+        table = []
+        for item, name, weight in slots:
+            # multiplicity = int(math.ceil(weight / minWeight * minMultiplicity)) # bad idea
+            multiplicity = int(math.ceil(weight * minMultiplicity))
+            for copy in range(multiplicity):
+                tag = '%s:%d' % (name*nameCopies, copy)
+                #tag = '%d:%s' % (copy, name)
+                key = myHash(tag)
+                #print tag, key
+                table.append((key, item))
+                continue
+            continue
+        table.sort()
+        # put a copy of the first entry at the end to handle wraparound
+        firstKey, firstItem = table[0]
+        wrapKey = big + firstKey
+        table.append((wrapKey, firstItem))
+
+        self.keys = []
+        self.items = []
+        for key, item in table:
+            #print key, item
+            self.keys.append(key)
+            self.items.append(item)
+            continue
+
+#         last = self.keys[0]
+#         for key in self.keys[1:]:
+#             print float(key - last) / big
+#             last = key
+#             continue
+
+        return
+
+
+    def lookup(self, item):
+        key = myHash(item)
+        pos = bisect.bisect_left(self.keys, key)
+        try:
+            slot = self.items[pos]
+        except:
+            print pos, len(self.items), key, self.keys[-1]
+        return slot
+
+    pass

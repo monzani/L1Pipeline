@@ -1,3 +1,13 @@
+1.68
+-----------------
+Move cal and merit trending back to chunk level (can't trend gappy data).
+Include delivery ID in messages logging alarms.
+Reserve (not just require) scratch space.
+Don't retry cleanupCrumbs.
+Don't retire runs that have merging trouble.
+-------------------------------------------
+
+
 1.67
 -----------------
 Port scratch cleanup scripts from SVAC pipeline, Use a wrapper that cleans up scratch before and after main job.
