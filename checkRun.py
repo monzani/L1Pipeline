@@ -106,7 +106,10 @@ else:
 # And it's not necessarily a copy.
 pipeline.setVariable('l1RunStatus', l1RunStatus)
 
-print >> sys.stderr, \
-      "Attempting to remove lock from [%s] at [%s]" % (rootDir, time.ctime())
-lockFile.unlockDir(rootDir, runId, dlId)
-
+if mergeStatus:
+    print >> sys.stderr, \
+          "Attempting to remove lock from [%s] at [%s]" % (rootDir, time.ctime())
+    lockFile.unlockDir(rootDir, runId, dlId)
+else:
+    print >> sys.stderr, 'Not removing run lock due to merging problems.'
+    pass

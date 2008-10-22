@@ -2041,7 +2041,7 @@
         <variables>
           <var name="parentProcess">verifyComp</var>
           <var name="fileType">verifyHisto</var>
-          <var name="timeProcess">findChunks</var>
+          <var name="timeProcess">getTimes</var>
         </variables>
         <script><![CDATA[
 %(registerBody)s
@@ -2056,7 +2056,7 @@
         <variables>
           <var name="parentProcess">verifyComp</var>
           <var name="fileType">verifyLog</var>
-          <var name="timeProcess">findChunks</var>
+          <var name="timeProcess">getTimes</var>
         </variables>
         <script><![CDATA[
 %(registerBody)s
@@ -2654,7 +2654,7 @@
         <variables>
           <var name="parentProcess">mergeReconChunksInc</var>
           <var name="fileType">recon</var>
-          <var name="timeProcess">findChunks</var>
+          <var name="timeProcess">getTimesInc</var>
         </variables>
         <script><![CDATA[
 %(registerBody)s
@@ -2682,7 +2682,7 @@
         <variables>
           <var name="parentProcess">verifyInc</var>
           <var name="fileType">verifyHisto</var>
-          <var name="timeProcess">findChunks</var>
+          <var name="timeProcess">getTimesInc</var>
         </variables>
         <script><![CDATA[
 %(registerBody)s
@@ -2697,7 +2697,7 @@
         <variables>
           <var name="parentProcess">verifyInc</var>
           <var name="fileType">verifyLog</var>
-          <var name="timeProcess">findChunks</var>
+          <var name="timeProcess">getTimesInc</var>
         </variables>
         <script><![CDATA[
 %(registerBody)s
