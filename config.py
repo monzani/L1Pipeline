@@ -261,7 +261,7 @@ cmtPackages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v5r4p1',
+        'version': 'v5r4p2',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -293,7 +293,7 @@ cmtPackages = {
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'v7r4',
+        'version': 'v7r5',
         },
     }
 
@@ -486,6 +486,7 @@ alarmConfigs = {
     'reconHist': os.path.join(alarmBase, 'xml', 'recon_eor_alarms.xml'),
     'reconTrend': os.path.join(alarmBase, 'xml', 'recon_trend_alarms.xml'),
     'tkrTrend': os.path.join(alarmBase, 'xml', 'trackermon_trend_alarms.xml'),
+    'verifyLog': os.path.join(alarmBase, 'xml', 'verify_errors_alarms.xml'),
     }
 
 alarmExceptions = {

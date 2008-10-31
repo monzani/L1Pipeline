@@ -289,6 +289,56 @@
       </depends>
     </process>
 
+    <process name="verifyErrorAlarm" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="fileType">verifyLog</var>
+        <var name="alarmFileType">verifyErrorAlarm</var>
+        <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
+        <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerVerifyLog" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerVerifyErrorAlarm" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="parentProcess">verifyErrorAlarm</var>
+        <var name="fileType">verifyErrorAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="verifyErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="verifyErrorLogger" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="fileType">verifyErrorAlarm</var>
+        <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerVerifyErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestVerifyErrorAlarmRun" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="reportType">verifyErrorAlarm</var>
+        <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <depends>
+        <after process="registerVerifyErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="acdPlots" autoRetryMaxAttempts="1">
       <variables>
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
@@ -1941,6 +1991,7 @@
         <after process="ingestTkrTrend" status="SUCCESS"/>
         <after process="ingestTkrTrendRun" status="SUCCESS"/>
         <after process="ingestVerifyErrorRun" status="SUCCESS"/>
+        <after process="ingestVerifyErrorAlarmRun" status="SUCCESS"/>
         <after process="meritHistLogger" status="SUCCESS"/>
         <after process="meritTrendLogger" status="SUCCESS"/>
         <after process="reconHistLogger" status="SUCCESS"/>
@@ -1958,6 +2009,7 @@
         <after process="registerTkrReport" status="SUCCESS"/>
         <after process="registerVerifyHisto" status="SUCCESS"/>
         <after process="tkrTrendLogger" status="SUCCESS"/>
+        <after process="verifyErrorLogger" status="SUCCESS"/>
       </depends>
       <createsSubtasks>
         <subtask>cleanupCompleteRun</subtask>
@@ -2078,6 +2130,56 @@
         </depends>
       </process>
 
+      <process name="verifyErrorAlarmComp" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="fileType">verifyLog</var>
+          <var name="alarmFileType">verifyErrorAlarm</var>
+          <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
+          <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+        <depends>
+          <after process="registerVerifyLogComp" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="registerVerifyErrorAlarmComp" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="parentProcess">verifyErrorAlarmComp</var>
+          <var name="fileType">verifyErrorAlarm</var>
+          <var name="timeProcess">getTimes</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="verifyErrorAlarmComp" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="verifyErrorLoggerComp" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="fileType">verifyErrorAlarm</var>
+          <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+        <depends>
+          <after process="registerVerifyErrorAlarmComp" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="ingestVerifyErrorAlarmRunComp" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="reportType">verifyErrorAlarm</var>
+          <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+        <depends>
+          <after process="registerVerifyErrorAlarmComp" status="SUCCESS"/>
+        </depends>
+      </process>
+
       <process name="cleanupChunks" autoRetryMaxAttempts="1">
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
         <depends>
@@ -2093,6 +2195,9 @@
         <depends>
           <after process="registerRecon" status="SUCCESS"/>
           <after process="registerVerifyHistoComp" status="SUCCESS"/>
+          <after process="ingestVerifyErrorRunComp" status="SUCCESS"/>
+          <after process="verifyErrorLoggerComp" status="SUCCESS"/>
+          <after process="ingestVerifyErrorAlarmRunComp" status="SUCCESS"/>
         </depends>
       </process>
 
@@ -2719,6 +2824,56 @@
         </depends>
       </process>
 
+      <process name="verifyErrorAlarmInc" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="fileType">verifyLog</var>
+          <var name="alarmFileType">verifyErrorAlarm</var>
+          <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
+          <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+        <depends>
+          <after process="registerVerifyLogInc" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="registerVerifyErrorAlarmInc" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="parentProcess">verifyErrorAlarmInc</var>
+          <var name="fileType">verifyErrorAlarm</var>
+          <var name="timeProcess">getTimesInc</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="verifyErrorAlarmInc" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="verifyErrorLoggerInc" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="fileType">verifyErrorAlarm</var>
+          <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+        <depends>
+          <after process="registerVerifyErrorAlarmInc" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="ingestVerifyErrorAlarmRunInc" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="reportType">verifyErrorAlarm</var>
+          <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+        <depends>
+          <after process="registerVerifyErrorAlarmInc" status="SUCCESS"/>
+        </depends>
+      </process>
+
       <process name="unLockRunInc" autoRetryMaxAttempts="1">
         <variables>
           <var name="l1LockAction">UnLock</var>
@@ -2727,6 +2882,9 @@
         <depends>
           <after process="registerReconInc" status="SUCCESS"/>
           <after process="registerVerifyHistoInc" status="SUCCESS"/>
+          <after process="ingestVerifyErrorRunInc" status="SUCCESS"/>
+          <after process="verifyErrorLoggerInc" status="SUCCESS"/>
+          <after process="ingestVerifyErrorAlarmRunInc" status="SUCCESS"/>
         </depends>
       </process>
 

@@ -1,3 +1,9 @@
+1.69
+-----------------
+Run the alarms mechanism on the errors from Verify [LONE-117@JIRA], [GDQMQ-250@JIRA]
+-------------------------------------------
+
+
 1.68
 -----------------
 Move cal and merit trending back to chunk level (can't trend gappy data).

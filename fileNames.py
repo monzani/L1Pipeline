@@ -78,6 +78,7 @@ fileTypes = {
     'tkrTrendAlarm': 'xml',
     'verifyLog': 'xml',
     'verifyHisto': 'root',
+    'verifyErrorAlarm': 'xml',
     }
 
 exportTags = { # files exported to FSSC use a different naming rule

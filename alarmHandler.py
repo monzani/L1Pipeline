@@ -35,7 +35,7 @@ workDir = os.path.dirname(stagedAlarmFile)
 
 python = config.python
 
-if fileType in ['fastMonError']:
+if fileType in ['fastMonError','verifyLog']:
     app = config.apps['errorHandler']
     exceptionArgs = ''
 else:
