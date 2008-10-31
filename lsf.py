@@ -18,7 +18,7 @@ hRe = re.compile('\s+(\w+)/')
 def getGroups(queue=config.theQ):
     cmd = 'bqueues -l %s' % queue
     lines = [line for line in os.popen(cmd).readlines() if hLRe.match(line)]
-    assert len(lines) == 1
+    #assert len(lines) == 1
     groups = hRe.findall(lines[0])
     return groups
 
@@ -103,6 +103,8 @@ def hostList():
 maxSlots = 30
 maxHosts = 10
 def doBalance(chunks):
+    groups = getGroups()
+    allHosts = ' '.join(groups)
     hosts = hostList()
     buckets = [[0, ic, chunk, []] for ic, chunk in enumerate(chunks)]
     full = []
@@ -125,7 +127,7 @@ def doBalance(chunks):
     buckets += full
     outies = [None] * len(chunks)
     for slots, ic, chunk, cHosts in buckets:
-        outies[ic] = (chunk, makeMList(cHosts))
+        outies[ic] = (chunk, makeMList(cHosts, allHosts))
         continue
     return outies
 
@@ -138,7 +140,7 @@ def dontBalance(chunks):
 balance = doBalance
 
 
-def makeMList(hosts):
+def makeMList(hosts, backup):
     if hosts:
         nHosts = len(hosts)
         prefs = ['%s+%d' % (host, nHosts-ih)
@@ -146,5 +148,6 @@ def makeMList(hosts):
         prefs.append('others')
         prefStr = ' '.join(prefs)
     else:
-        return hostsToQuery
+        return backup
     return prefStr
+

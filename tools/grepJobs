@@ -7,7 +7,7 @@ import sys
 
 ofRe = re.compile('OutputFile<(.*?)>', re.S)
 spaceRe = re.compile('\s')
-l1JobRe = re.compile('^([0-9]+).*glastdataq')
+l1JobRe = re.compile('^([0-9]+)\s+glastraw\s+RUN\s+glastdataq')
 
 
 def l1Jobs():

@@ -220,7 +220,10 @@ def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None, next=False)
 
 
 def myHash(str):
-    return int(hashlib.md5(str).hexdigest(), 16)
+    hasher = hashlib.md5(str)
+    digest = hasher.hexdigest()
+    hash = int(digest, 16)
+    return hash
 
 def stageBalance(str):
     index = myHash(str) % len(stageDirs)
@@ -391,12 +394,12 @@ def preMakeDirs(dirs, dlId, runId=None, chunkId=None, crumbId=None):
 
 
 defaultMinMultiplicity = 1280
-nameCopies = 320
+defaultNameCopies = 320
 big = 2 ** (16*8) # specific to MD5
 
 class consistentHash(object):
 
-    def __init__(self, slots, minMultiplicity=None):
+    def __init__(self, slots, minMultiplicity=None, nameCopies=None):
         """
         @arg slots A sequence of (item, name, weight)
                    Item can be anything, it's what is returned on a lookup.
@@ -404,6 +407,7 @@ class consistentHash(object):
                    Weight is a number.
         """
         if minMultiplicity is None: minMultiplicity = defaultMinMultiplicity
+        if nameCopies is None: nameCopies = defaultNameCopies
         
         # allWeights = [float(weight) for item, name, weight in slots]
         # minWeight = min(allWeights)
@@ -412,13 +416,8 @@ class consistentHash(object):
         for item, name, weight in slots:
             # multiplicity = int(math.ceil(weight / minWeight * minMultiplicity)) # bad idea
             multiplicity = int(math.ceil(weight * minMultiplicity))
-            for copy in range(multiplicity):
-                tag = '%s:%d' % (name*nameCopies, copy)
-                #tag = '%d:%s' % (copy, name)
-                key = myHash(tag)
-                #print tag, key
-                table.append((key, item))
-                continue
+            base = name * nameCopies
+            table.extend([(myHash(base + ':%d' % copy), item) for copy in range(multiplicity)])
             continue
         table.sort()
         # put a copy of the first entry at the end to handle wraparound
@@ -426,19 +425,7 @@ class consistentHash(object):
         wrapKey = big + firstKey
         table.append((wrapKey, firstItem))
 
-        self.keys = []
-        self.items = []
-        for key, item in table:
-            #print key, item
-            self.keys.append(key)
-            self.items.append(item)
-            continue
-
-#         last = self.keys[0]
-#         for key in self.keys[1:]:
-#             print float(key - last) / big
-#             last = key
-#             continue
+        self.keys, self.items = zip(*table)
 
         return
 

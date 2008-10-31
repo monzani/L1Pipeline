@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.68"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.69"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -241,7 +241,8 @@ stBinDir = os.path.join(ST, 'bin')
 #aspLauncher = '/nfs/farm/g/glast/u33/ASP/ASP/AspLauncher/v1/rh9_gcc32/aspLauncher.sh'
 #aspLauncher = '/bin/true'
 if testMode:
-    aspLauncher = '/afs/slac/g/glast/ground/links/data/ASP/aspLauncher_dev.sh'
+    # aspLauncher = '/afs/slac/g/glast/ground/links/data/ASP/aspLauncher_dev.sh'
+    aspLauncher = '/bin/true'
 else:
     aspLauncher = '/afs/slac/g/glast/ground/links/data/ASP/aspLauncher.sh'
     pass
@@ -260,7 +261,7 @@ cmtPackages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v4r10p0',
+        'version': 'v5r4p1',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -299,11 +300,11 @@ cmtPackages = {
 cvsPackages = {
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r2p30',
+        'version': 'v1r3p0',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r6p0',
+        'version': 'v1r6p1',
         },
     'IGRF': {
         'repository': 'dataMonitoring',
