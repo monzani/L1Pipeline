@@ -38,17 +38,19 @@ python = config.python
 if fileType in ['fastMonError','verifyLog']:
     app = config.apps['errorHandler']
     exceptionArgs = ''
+    refArgs = ''
 else:
     app = config.apps['alarmHandler']
     exceptionFile = config.alarmExceptions[fileType]
     exceptionArgs = '-x %s' % exceptionFile
+    refArgs = '-R %s' % config.alarmRefDir
     pass
 
 configFile = config.alarmConfigs[fileType]
 
 cmd = '''
 cd %(workDir)s
-%(python)s %(app)s -c %(configFile)s %(exceptionArgs)s -o %(stagedAlarmFile)s %(stagedInFile)s
+%(python)s %(app)s -c %(configFile)s %(exceptionArgs)s %(refArgs)s -o %(stagedAlarmFile)s %(stagedInFile)s
 ''' % locals()
 
 status = runner.run(cmd)

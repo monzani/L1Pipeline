@@ -261,7 +261,7 @@ cmtPackages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v5r4p2',
+        'version': 'v5r4p3',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -300,7 +300,7 @@ cmtPackages = {
 cvsPackages = {
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r3p0',
+        'version': 'v1r3p1',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
@@ -469,6 +469,8 @@ mergeConfigs = {
     }
 
 
+alarmRefBase = '/nfs/farm/g/glast/u52/Monitoring/ReferenceHistograms'
+alarmRefDir = os.path.join(alarmRefBase, mode)
 alarmBase = os.path.join(L1Volume, 'AlarmsCfg', mode)
 alarmConfigs = {
     'acdPedsAnalyzer': os.path.join(alarmBase, 'xml', 'acdpeds_eor_alarms.xml'),

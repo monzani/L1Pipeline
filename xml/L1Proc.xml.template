@@ -139,7 +139,7 @@
         <var name="fileType">digi</var>
         <var name="%(digi_versionName)s">%(digi_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=20]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=250]&quot; " />
       <depends>
         <after process="doChunk.digitization" status="DONE"/>
       </depends>
@@ -714,7 +714,7 @@
         <var name="reportType">calGainsAlarm</var>
         <var name="%(calGainsAlarm_versionName)s">%(calGainsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64][scratch=1] rusage&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerCalGainsAlarm" status="SUCCESS"/>
       </depends>
@@ -1371,7 +1371,7 @@
         <var name="fileType">cal</var>
         <var name="%(cal_versionName)s">%(cal_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=30]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=250]&quot; "/>
       <depends>
         <after process="doChunk.mergeCalCrumbs" status="DONE"/>
       </depends>
@@ -1931,7 +1931,7 @@
         <var name="fileType">svac</var>
         <var name="%(svac_versionName)s">%(svac_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=20]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=250]&quot; "/>
       <depends>
         <after process="doChunk.svacTuple" status="DONE"/>
       </depends>
@@ -2055,7 +2055,7 @@
           <var name="fileType">recon</var>
           <var name="%(recon_versionName)s">%(recon_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=200]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=250]&quot; "/>
         <depends>
           <after process="getTimes" status="DONE"/>
         </depends>
@@ -2482,7 +2482,7 @@
         <var name="fileType">digi</var>
         <var name="%(digi_versionName)s">%(digi_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -R &quot;rusage[scratch=5]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -R &quot;rusage[scratch=250]&quot; "/>
       <depends>
         <after process="doChunkLci.digitizationLci" status="DONE"/>
       </depends>
@@ -2749,7 +2749,7 @@
           <var name="fileType">recon</var>
           <var name="%(recon_versionName)s">%(recon_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=100]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=250]&quot; "/>
         <depends>
           <after process="getTimesInc" status="SUCCESS"/>
         </depends>
