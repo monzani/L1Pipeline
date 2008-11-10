@@ -27,7 +27,7 @@ def parser(inFile):
 
 
 def alarmSeverity(number):
-    if number['error'] or number['undefined']:
+    if number['error']:
         severity = l1Logger.error
     elif number['warning']:
         severity = l1Logger.warn
