@@ -62,9 +62,9 @@ echo $PFILES
 source %(stSetup)s
 PYTHONPATH=%(evtClassDefsPython)s:$PYTHONPATH ; export PYTHONPATH
 echo $PFILES
-%(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=%(tCuts)s event_classifier="%(classifier)s" tstart=%(tStart).17g tstop=%(tStop).17g dict_file=%(dictionary)s file_version=%(version)s
-mv %(stagedFt1File)s %(tempFT1)s
-%(gtmktime)s overwrite=yes roicut=no scfile=%(stagedFt2File)s filter="%(filter)s" evfile=%(tempFT1)s outFile=%(stagedFt1File)s
+%(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=%(tCuts)s event_classifier="%(classifier)s" tstart=%(tStart).17g tstop=%(tStop).17g dict_file=%(dictionary)s file_version=%(version)s || exit 1
+mv %(stagedFt1File)s %(tempFT1)s || exit 1
+%(gtmktime)s overwrite=yes roicut=no scfile=%(stagedFt2File)s filter="%(filter)s" evfile=%(tempFT1)s outFile=%(stagedFt1File)s || exit 1
 ''' % locals()
 
 status = runner.run(cmd)
