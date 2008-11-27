@@ -117,6 +117,7 @@ def main_tailStopAll():
     jobs = l1Jobs()    
     jobs = stopIfTail(jobs, reOb)
     print ' '.join(jobs)
+    if verbose: print >> sys.stderr, 'Number of suspended jobs: %s' % len(jobs)
 
     now = time.time()
     then = time.ctime(now + waitAfterStop)
