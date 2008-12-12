@@ -232,7 +232,7 @@ hpTaskBase = '/afs/slac/g/glast/isoc/flightOps/offline/halfPipe/prod'
 
 l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
 
-stVersion = 'v9r7p1'
+stVersion = 'v9r8p2'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
 #ST = os.path.join(L1Cmt, "ScienceTools", "ScienceTools-%s" % stVersion)
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
@@ -261,7 +261,7 @@ cmtPackages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v5r4p3',
+        'version': 'v5r7p0',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -273,7 +273,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v4r5p0',
+        'version': 'v4r5p1',
         },
     'ft2Util': {
         'repository': '',
@@ -285,7 +285,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r2p32',
+        'version': 'v1r2p34',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -293,14 +293,14 @@ cmtPackages = {
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'v7r5',
+        'version': 'v7r7',
         },
     }
 
 cvsPackages = {
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r3p1',
+        'version': 'v1r3p3',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
@@ -527,10 +527,10 @@ alarmPostProcessorConfigs = {
 normalizedRateConfigs = {
     'meritHist': os.path.join(
         packages['DigiReconCalMeritCfg']['root'],
-        'NormFactors_AllRunsOpsSims2.txt'),
+        'FactorsToNormRates.txt'),
     'meritTrend': os.path.join(
         packages['DigiReconCalMeritCfg']['root'],
-        'NormFactors_AllRunsOpsSims2.txt'),
+        'FactorsToNormRates.txt'),
     }
 
 tdBin = {

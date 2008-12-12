@@ -9,7 +9,6 @@
   <variables>
     <var name="CMTPATH">%(cmtPath)s</var>
     <var name="creator">%(creator)s</var>
-    <var name="dataCatDir">%(dataCatDir)s</var>
     <var name="isocMode">%(isocMode)s</var>
     <var name="isocRun">%(isocRun)s</var>
     <var name="L1ProcROOT">%(L1ProcROOT)s</var>
@@ -54,6 +53,10 @@
   </process>
 
   <task name="doRun" version="%(L1Version)s" type="Data">
+
+    <variables>
+      <var name="dataCatDir">%(dataCatBase)s/${DATASOURCE}</var>
+    </variables>
 
     <prerequisites>
       <prerequisite name="DATASOURCE" type="string"/>
@@ -2425,6 +2428,10 @@
   </task> <!-- doRun -->
 
   <task name="doLci" version="%(L1Version)s" type="Data">
+
+    <variables>
+      <var name="dataCatDir">%(dataCatBase)s/${DATASOURCE}</var>
+    </variables>
 
     <prerequisites>
       <prerequisite name="DATASOURCE" type="string"/>
