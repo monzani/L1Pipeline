@@ -25,7 +25,9 @@ leapsMet = [157766400, 252460800]
 def met(unixTime=None):
     if unixTime is None: unixTime = time.time()
     rv = unixTime - met0
-    for leap in leapsMet: if rv > leap: rv += 1
+    for leap in leapsMet:
+        if rv > leap:
+            rv += 1
     return rv
 
 
@@ -38,13 +40,17 @@ def timeStamp(unixTime=None):
 def dt2Met(dtIn):
     delta = dtIn - dtMet0
     met = delta.microseconds / 1e6 + delta.seconds + delta.days * 86400
-    for leap in leapsMet: if met > leap: met += 1
+    for leap in leapsMet:
+        if met > leap:
+            met += 1
     return met
 
 
 def met2Iso8860(met):
     deltaTimeUgly = met0
-    for leap in leapsMet: if met > leap: deltaTimeUgly -= 1
+    for leap in leapsMet:
+        if met > leap:
+            deltaTimeUgly -= 1
     unixTime = met + deltaTimeUgly
     st = time.gmtime(unixTime)
     iso = time.strftime(iso8860Fmt, st)
