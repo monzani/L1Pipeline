@@ -1249,22 +1249,49 @@
       </depends>
     </process>
 
-    <process name="makeFT1" autoRetryMaxAttempts="1">
+    <process name="mergeFT1" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="fileType">ft1BadGti</var>
+        <var name="%(ft1BadGti_versionName)s">%(ft1BadGti_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=250]&quot; "/>
+      <depends>
+        <after process="doChunk.diffRspFT1" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerFT1BadGti" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="parentProcess">mergeFT1</var>
+        <var name="fileType">ft1BadGti</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFT1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="gtiFT1" autoRetryMaxAttempts="1">
       <variables>
         <var name="fileType">ft1</var>
         <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
-        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="%(ft1BadGti_versionName)s">%(ft1BadGti_version)s</var>
         <var name="%(ft1_versionName)s">%(ft1_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/fixGTI.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
       <depends>
+        <after process="registerFT1BadGti" status="SUCCESS"/>
         <after process="registerFt2Seconds" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="registerFT1" autoRetryMaxAttempts="1">
       <variables>
-        <var name="parentProcess">makeFT1</var>
+        <var name="parentProcess">gtiFT1</var>
         <var name="fileType">ft1</var>
         <var name="timeProcess">findChunks</var>
       </variables>
@@ -1273,7 +1300,7 @@
 ]]>
       </script>
       <depends>
-        <after process="makeFT1" status="SUCCESS"/>
+        <after process="gtiFT1" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -1290,21 +1317,20 @@
 
     <process name="makeLS1" autoRetryMaxAttempts="1">
       <variables>
-        <var name="fileType">ls1</var>
-        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
+        <var name="fileType">ls1BadGti</var>
         <var name="%(merit_versionName)s">%(merit_version)s</var>
-        <var name="%(ls1_versionName)s">%(ls1_version)s</var>
+        <var name="%(ls1BadGti_versionName)s">%(ls1BadGti_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
       <depends>
-        <after process="registerFt2Seconds" status="SUCCESS"/>
+        <after process="registerMerit" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="registerLS1" autoRetryMaxAttempts="1">
+    <process name="registerLS1BadGti" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">makeLS1</var>
-        <var name="fileType">ls1</var>
+        <var name="fileType">ls1BadGti</var>
         <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
@@ -1313,6 +1339,35 @@
       </script>
       <depends>
         <after process="makeLS1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="gtiLS1" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="fileType">ls1</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
+        <var name="%(ls1BadGti_versionName)s">%(ls1BadGti_version)s</var>
+        <var name="%(ls1_versionName)s">%(ls1_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/fixGTI.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
+      <depends>
+        <after process="registerLS1BadGti" status="SUCCESS"/>
+        <after process="registerFt2Seconds" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerLS1" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="parentProcess">gtiLS1</var>
+        <var name="fileType">ls1</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="gtiLS1" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -2330,6 +2385,26 @@
         </depends>
       </process>
 
+      <process name="makeFT1" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="fileType">ft1NoDiffRsp</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
+        <depends>
+          <after process="mergeMeritCrumbs" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="diffRspFT1" autoRetryMaxAttempts="1">
+        <variables>
+          <var name="fileType">ft1BadGti</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/diffRsp.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
+        <depends>
+          <after process="makeFT1" status="SUCCESS"/>
+        </depends>
+      </process>
+
       <process name="meritTrend" autoRetryMaxAttempts="1">
         <variables>
           <var name="reportType">meritTrend</var>
@@ -2390,6 +2465,7 @@
           <after process="digiHist" status="SUCCESS"/>
           <after process="digiTrend" status="SUCCESS"/>
           <after process="calTrend" status="SUCCESS"/>
+          <after process="diffRspFT1" status="SUCCESS"/>
           <after process="mergeGcrCrumbs" status="SUCCESS"/>
           <after process="meritTrend" status="SUCCESS"/>
           <after process="reconHist" status="SUCCESS"/>

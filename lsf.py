@@ -13,8 +13,8 @@ goodStates = ['ok', 'closed_Full']
 #hostsToQuery = 'glastcobs glastyilis preemptfarm'
 
 
-hLRe = re.compile('^HOSTS:(\s+\w+/)+')
-hRe = re.compile('\s+(\w+)/')
+hLRe = re.compile('^HOSTS:(\s+\w+(/|\+[0-9]))+')
+hRe = re.compile('\s+(\w+)')
 def getGroups(queue=config.theQ):
     cmd = 'bqueues -l %s' % queue
     lines = [line for line in os.popen(cmd).readlines() if hLRe.match(line)]

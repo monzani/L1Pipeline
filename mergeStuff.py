@@ -16,10 +16,13 @@ import config
 import GPLinit
 
 import fileNames
+import fitsFiles
 import l1Logger
 import registerPrep
+import rootFiles
 import runner
 import stageFiles
+
 
 def finalize(status):
     if status:
@@ -181,13 +184,11 @@ elif fileType in ['calTrend', 'digiTrend', 'fastMonTrend', 'meritTrend',
 
 
 elif fileType in ['digi', 'recon', 'gcr', 'cal', 'svac']:
-    import rootFiles
     treeName = treeNames[fileType]
     status |= rootFiles.concatenate_prune(outFile, inFiles, treeName)
 
 
 # elif fileType in ['cal'] and mergeLevel == 'chunk':
-#     import rootFiles
 #     treeName = treeNames[fileType]
 #     rootFiles.concatenate_cal(outFile, inFiles, treeName)
 
@@ -209,6 +210,10 @@ elif fileType in ['tkrAnalysis']:
     %(python)s %(app)s %(outFile)s %(inFileString)s
     ''' % locals()
     status = runner.run(cmd)
+
+
+elif realOutFile.endswith('.fit'):
+    status |= fitsFiles.mergeFiles(outFile, inFiles)
 
 
 else:
