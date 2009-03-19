@@ -35,6 +35,9 @@ workDir = os.path.dirname(stagedAlarmFile)
 
 python = config.python
 
+package = config.packages['Common']
+setup = package['setup']
+
 if fileType in ['fastMonError','verifyLog']:
     app = config.apps['errorHandler']
     exceptionArgs = ''
@@ -50,6 +53,7 @@ configFile = config.alarmConfigs[fileType]
 
 cmd = '''
 cd %(workDir)s
+source %(setup)s
 %(python)s %(app)s -c %(configFile)s %(exceptionArgs)s %(refArgs)s -o %(stagedAlarmFile)s %(stagedInFile)s
 ''' % locals()
 

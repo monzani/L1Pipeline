@@ -35,8 +35,11 @@ workDir = os.path.dirname(stagedLs3File)
 
 version = fileNames.version(realLs3File)
 
+cmtPath = config.stCmtPath
+
 cmd = '''
 cd %(workDir)s
+export CMTPATH=%(cmtPath)s
 %(app)s evfile=%(stagedFt1File)s scfile=%(stagedFt2File)s outfile=%(stagedLs3File)s dcostheta=0.025 binsize=1 file_version=%(version)s
 ''' % locals()
 

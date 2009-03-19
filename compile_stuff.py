@@ -18,7 +18,9 @@ else:
     pass
 
 def doPackage(packName):
-    if packName in config.cmtPackages:
+    if packName in ['ft2Util']:
+        doFt2Util(packName)
+    elif packName in config.cmtPackages:
         doCmtPackage(packName)
     elif packName in config.cvsPackages:
         doCvsPackage(packName)
@@ -89,6 +91,37 @@ def doCvsPackage(packName):
 
     runner.run(cmd)
 
+    return
+
+
+def doFt2Util(packName):
+    package = config.packages[packName]
+
+    args = {
+        'L1Cmt': config.L1Cmt,
+        'l1SetupScript': os.path.join(config.L1ProcROOT, 'setup.sh'),
+        'ft2CmtPath': config.ft2CmtPath,
+        }
+    args.update(package)
+
+    cmd = '''
+    source %(l1SetupScript)s
+    export CMTPATH=%(ft2CmtPath)s
+    cd %(L1Cmt)s
+    rm -rf %(root)s
+    cmt co -r %(version)s %(checkOutName)s
+    cd %(cmtDir)s
+    cmt config
+    make clean
+    make
+    ''' % args
+
+    runner.run(cmd)
+
+    if packName == "Monitor":
+        cmd = os.path.join(config.L1ProcROOT, 'compileRunStrip.py')
+        runner.run(cmd)
+        pass
     return
 
 

@@ -1,3 +1,22 @@
+1.71
+-----------------
+Set retries in config.py (it still gets hardcoded in the XML at install time).
+Clean up LD_LIBRARY_ and CMT PATHs. [LONE-123@JIRA]
+Enable buffering on xroot. Requires GPLtools on fileOps branch, still doesn't
+do cleanup. Don't use yet. [LONE-128@JIRA]
+Put some info in dontCleanUp locks. [LONE-127@JIRA]
+Combine setSuccessful and setCrashed into a single script.
+checkRun fails if dontcleanup is present. [LONE-133@JIRA]
+Store deliveries from Halfpipe in a more official place. [LONE-119@JIRA]
+ft2Fake files cover only their chunk. [LONE-138@JIRA]
+Read data from xrootd when making magic7 file. [LONE-129@JIRA]
+mergeStuff fails before reading input data if it needs pyROOT and can't import
+it. [LONE-134@JIRA]
+When making ft1 and ls1, get start,stop times by rounding first,last event
+times down,up to .1s [DATASERV-151@JIRA]
+-------------------------------------------
+
+
 1.70
 -----------------
 Handle leap seconds since 2004.

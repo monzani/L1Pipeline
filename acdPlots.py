@@ -29,12 +29,15 @@ stagedInFile = staged.stageIn(realInFile)
 realOutFile = fileNames.fileName(fileType, dlId, runId, next=True)
 stagedOutFile = staged.stageOut(realOutFile)
 
+package = config.packages['Monitor']
+setup = package['setup']
 app = config.apps['acdPlots']
 
 libraryPath = config.libraryPath
 
 cmd = '''
-export LD_LIBRARY_PATH=%(libraryPath)s
+source %(setup)s
+#export LD_LIBRARY_PATH=%(libraryPath)s
 %(app)s -i %(stagedInFile)s -t %(stagedOutFile)s
 ''' % locals()
 

@@ -24,6 +24,9 @@ for taskName in taskNames:
     retireScript = os.path.join(config.L1ProcROOT, 'retireRun.py')
     configuration['retireScriptBody'] = open(retireScript).read()
 
+    scanScript = os.path.join(config.L1ProcROOT, 'scanSubStreams.py')
+    configuration['scanScriptBody'] = open(scanScript).read()
+
     statusScript = os.path.join(config.L1ProcROOT, 'setStatus.py')
     configuration['statusScriptBody'] = open(statusScript).read()
 

@@ -17,3 +17,5 @@ ToolSvc.FSWAuxLibsTool.FileNamePeds="cal_db_pedestals";
 ToolSvc.FSWAuxLibsTool.FileNameGains="cal_db_gains";
 
 CalibDataSvc.CalibFlavorList      = {"ideal", "MC_OktoberFest07"};
+
+//MootSvc.ExitOnFatal = false;  // Allow MootSvc to continue if the MOOT key isn't found

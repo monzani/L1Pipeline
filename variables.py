@@ -14,7 +14,7 @@ def setVar(fileType, name, value):
     return
 
 def getVar(fileType, name):
-    mangledName = '_'.join([prefix, fileType, name])
+    mangledName = mangleName(fileType, name)
     value = os.environ[mangledName]
     return value
 

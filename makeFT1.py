@@ -9,9 +9,11 @@ import GPLinit
 
 import acqQuery
 import fileNames
+import meritFiles
 import runner
 import stageFiles
 import registerPrep
+import rounding
 
 head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
@@ -44,12 +46,25 @@ classifier = config.ft1Classifier
 #tStart = float(os.environ['tStart'])
 #tStop = float(os.environ['tStop'])
 runNumber = int(os.environ['runNumber'])
+
+# run start and stop from ACQSUMMARY
 tStart, tStop = acqQuery.runTimes(runNumber)
+print 'ACQSUMMARY:', tStart, tStop
+
+# run start and stop from merit file
+mStart, mStop = meritFiles.startAndStop(stagedMeritFile)
+print 'merit:', mStart, mStop
+
+#cutStart = mStart - config.ft1Pad
+#cutStop = mStop + config.ft1Pad
+cutStart = rounding.roundDown(mStart, config.ft1Digits)
+cutStop = rounding.roundUp(mStop, config.ft1Digits)
 
 dictionary = config.ft1Dicts[fileType]
 
 version = fileNames.version(realFt1File)
 
+cmtPath = config.stCmtPath
 cfitsioPath = config.cfitsioPath
 
 filter = 'LIVETIME>0'
@@ -58,11 +73,10 @@ tempFT1 = '%s/tmpFt1_1.fits' % workDir
 
 cmd = '''
 cd %(workDir)s
-echo $PFILES
+export CMTPATH=%(cmtPath)s
 source %(stSetup)s
 PYTHONPATH=%(evtClassDefsPython)s:$PYTHONPATH ; export PYTHONPATH
-echo $PFILES
-%(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=%(tCuts)s event_classifier="%(classifier)s" tstart=%(tStart).17g tstop=%(tStop).17g dict_file=%(dictionary)s file_version=%(version)s || exit 1
+%(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=%(tCuts)s event_classifier="%(classifier)s" tstart=%(cutStart).17g tstop=%(cutStop).17g dict_file=%(dictionary)s file_version=%(version)s || exit 1
 mv %(stagedFt1File)s %(tempFT1)s || exit 1
 %(gtmktime)s overwrite=yes roicut=no scfile=%(stagedFt2File)s filter="%(filter)s" evfile=%(tempFT1)s outFile=%(stagedFt1File)s || exit 1
 ''' % locals()

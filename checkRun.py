@@ -112,4 +112,6 @@ if mergeStatus:
     lockFile.unlockDir(rootDir, runId, dlId)
 else:
     print >> sys.stderr, 'Not removing run lock due to merging problems.'
+    print >> sys.stderr, 'Failing due to presence of %s' % fileNames.mergeLockName(runId)
+    sys.exit(1)
     pass

@@ -63,7 +63,10 @@ for chunkId, chunkData in chunkListData.items():
     chunkFile = chunkData['chunkFile']
     hostList = chunkData['hostList']
     stream = chunkId[1:]
-    args = 'EVTFILE=%(chunkFile)s,CHUNK_ID=%(chunkId)s,HOSTLIST="%(hostList)s",tStart=%(tStart).17g,tStop=%(tStop).17g' % locals()
+    header = chunkData['headerData']
+    chunkStart = header['begSec']
+    chunkStop = header['endSec']
+    args = 'EVTFILE=%(chunkFile)s,CHUNK_ID=%(chunkId)s,HOSTLIST="%(hostList)s",tStart=%(chunkStart).17g,tStop=%(chunkStop).17g' % locals()
     pipeline.createSubStream(subTask, stream, args)
     continue
 
