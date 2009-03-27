@@ -38,7 +38,7 @@ python = config.python
 package = config.packages['Common']
 setup = package['setup']
 
-if fileType in ['fastMonError','verifyLog']:
+if fileType in ['fastMonError','verifyLog','verifyFt2Error']:
     app = config.apps['errorHandler']
     exceptionArgs = ''
     refArgs = ''

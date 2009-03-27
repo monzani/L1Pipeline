@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.71"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.72"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -181,8 +181,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
-glastVersion = 'v15r47p5'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
+glastVersion = 'v15r47p7'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -273,7 +273,7 @@ cmtPackages = {
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
-        'version': 'v4r3',
+        'version': 'v4r4',
         },
     'evtClassDefs': {
         'repository': '',
@@ -301,7 +301,7 @@ cmtPackages = {
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'v8r0',
+        'version': 'v9r1',
         },
     }
 
@@ -421,6 +421,8 @@ apps = {
     'trendMerge': packages['Monitor']['trendMerge'],
     'runVerify': os.path.join(
         packages['TestReport']['bin'], 'RunVerify.exe'),
+    'ft2Verify': os.path.join(
+        packages['TestReport']['bin'], 'ft2Verify.exe'),
     }
 
 
@@ -497,6 +499,7 @@ alarmConfigs = {
     'reconTrend': os.path.join(alarmBase, 'xml', 'recon_trend_alarms.xml'),
     'tkrTrend': os.path.join(alarmBase, 'xml', 'trackermon_trend_alarms.xml'),
     'verifyLog': os.path.join(alarmBase, 'xml', 'verify_errors_alarms.xml'),
+    'verifyFt2Error': os.path.join(alarmBase, 'xml', 'verify_ft2_errors_alarms.xml'),
     }
 
 alarmExceptions = {
@@ -569,6 +572,7 @@ verifyOptions = {
     'InProgress': '',
     'Complete': '-c',
     'Incomplete': '-c',
+    'Truncation': '100',
     }
 
 ft2Pad = 1.0 # pad time range with this on either end whan making fakeFT2

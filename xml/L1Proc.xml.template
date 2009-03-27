@@ -1252,6 +1252,93 @@
       </depends>
     </process>
 
+    <process name="verifyFt2" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="%(ft2_versionName)s">%(ft2_version)s</var>
+        <var name="%(verifyFt2Error_versionName)s">%(verifyFt2Error_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/verifyFt2.py" batchOptions=" -q %(mediumQ)s "/>
+      <depends>
+        <after process="registerFT2" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerVerifyFt2Error" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">verifyFt2</var>
+        <var name="fileType">verifyFt2Error</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="verifyFt2" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestVerifyFt2ErrorRun" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">verifyFt2Error</var>
+        <var name="%(verifyFt2Error_versionName)s">%(verifyFt2Error_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <depends>
+        <after process="registerVerifyFt2Error" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="verifyFt2ErrorAlarm" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="fileType">verifyFt2Error</var>
+        <var name="alarmFileType">verifyFt2ErrorAlarm</var>
+        <var name="%(verifyFt2Error_versionName)s">%(verifyFt2Error_version)s</var>
+        <var name="%(verifyFt2ErrorAlarm_versionName)s">%(verifyFt2ErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerVerifyFt2Error" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerVerifyFt2ErrorAlarm" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">verifyFt2ErrorAlarm</var>
+        <var name="fileType">verifyFt2ErrorAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="verifyFt2ErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="verifyFt2ErrorLogger" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="fileType">verifyFt2ErrorAlarm</var>
+        <var name="%(verifyFt2ErrorAlarm_versionName)s">%(verifyFt2ErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <depends>
+        <after process="registerVerifyFt2ErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestVerifyFt2ErrorAlarmRun" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">verifyFt2ErrorAlarm</var>
+        <var name="%(verifyFt2ErrorAlarm_versionName)s">%(verifyFt2ErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <depends>
+        <after process="registerVerifyFt2ErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="makeFT1" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="fileType">ft1</var>
@@ -1995,6 +2082,8 @@
         <after process="ingestTkrTrendRun" status="SUCCESS"/>
         <after process="ingestVerifyErrorRun" status="SUCCESS"/>
         <after process="ingestVerifyErrorAlarmRun" status="SUCCESS"/>
+        <after process="ingestVerifyFt2ErrorRun" status="SUCCESS"/>
+        <after process="ingestVerifyFt2ErrorAlarmRun" status="SUCCESS"/>
         <after process="meritHistLogger" status="SUCCESS"/>
         <after process="meritTrendLogger" status="SUCCESS"/>
         <after process="reconHistLogger" status="SUCCESS"/>
@@ -2013,6 +2102,7 @@
         <after process="registerVerifyHisto" status="SUCCESS"/>
         <after process="tkrTrendLogger" status="SUCCESS"/>
         <after process="verifyErrorLogger" status="SUCCESS"/>
+        <after process="verifyFt2ErrorLogger" status="SUCCESS"/>
       </depends>
       <createsSubtasks>
         <subtask>cleanupCompleteRun</subtask>

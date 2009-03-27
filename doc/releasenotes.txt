@@ -1,3 +1,8 @@
+1.72
+-----------------
+Adding the machinery to run the Verify-for-ft2 package.
+
+
 1.71
 -----------------
 Set retries in config.py (it still gets hardcoded in the XML at install time).

@@ -18,7 +18,7 @@ else:
     pass
 
 def doPackage(packName):
-    if packName in ['ft2Util']:
+    if packName in ['ft2Util','TestReport']:
         doFt2Util(packName)
     elif packName in config.cmtPackages:
         doCmtPackage(packName)

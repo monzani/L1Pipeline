@@ -32,12 +32,13 @@ workDir = os.path.dirname(verifyLogFile)
 
 setupScript = config.cmtScript
 app = config.apps['runVerify']
-jobOption = config.verifyOptions[completeness]
+jobOption = config.verifyOptions[completeness] 
+truncation = config.verifyOptions['Truncation']
 
 cmd = '''
 cd %(workDir)s
 source %(setupScript)s
-%(app)s -d %(stagedDigiFile)s -x %(verifyLogFile)s -r %(verifyHistoFile)s %(jobOption)s
+%(app)s -d %(stagedDigiFile)s -x %(verifyLogFile)s -r %(verifyHistoFile)s -t %(truncation)s %(jobOption)s
 ''' % locals()
 
 status = runner.run(cmd)

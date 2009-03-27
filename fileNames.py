@@ -79,6 +79,8 @@ fileTypes = {
     'verifyLog': 'xml',
     'verifyHisto': 'root',
     'verifyErrorAlarm': 'xml',
+    'verifyFt2Error': 'xml',
+    'verifyFt2ErrorAlarm': 'xml',
     }
 
 exportTags = { # files exported to FSSC use a different naming rule
