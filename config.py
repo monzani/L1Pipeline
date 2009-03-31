@@ -293,7 +293,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r2p35',
+        'version': 'v1r2p37',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -308,7 +308,7 @@ cmtPackages = {
 cvsPackages = {
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r3p4',
+        'version': 'v1r3p5',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
@@ -567,6 +567,7 @@ ft1Dicts = {
     'ls1': os.path.join(packages['evtClassDefs']['data'], 'LS1variables'),
     }
 
+ft2Template = '/nfs/slac/g/svac/focke/L1/newFT2.tpl'
 
 verifyOptions = {
     'InProgress': '',

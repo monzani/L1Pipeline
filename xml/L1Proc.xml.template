@@ -141,6 +141,7 @@
       <variables>
         <var name="fileType">digi</var>
         <var name="%(digi_versionName)s">%(digi_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=250]&quot; " />
       <depends>
@@ -1107,6 +1108,7 @@
       <variables>
         <var name="fileType">gcr</var>
         <var name="%(gcr_versionName)s">%(gcr_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
       <depends>
@@ -1460,6 +1462,7 @@
       <variables>
         <var name="fileType">cal</var>
         <var name="%(cal_versionName)s">%(cal_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=250]&quot; "/>
       <depends>
@@ -2020,6 +2023,7 @@
       <variables>
         <var name="fileType">svac</var>
         <var name="%(svac_versionName)s">%(svac_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=250]&quot; "/>
       <depends>
@@ -2133,6 +2137,7 @@
         <variables>
           <var name="fileType">recon</var>
           <var name="%(recon_versionName)s">%(recon_version)s</var>
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=250]&quot; "/>
         <depends>
@@ -2369,7 +2374,6 @@
         </createsSubtasks>
       </process>
 
-<!-- Don't need this yet
       <process name="scanRecon" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="subTask">doCrumb</var>
@@ -2383,27 +2387,29 @@
           <after process="doCrumb.recon" status="DONE"/>
         </depends>
       </process>
--->
 
       <process name="mergeMeritCrumbs" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="fileType">merit</var>
-          <var name="L1_crumb_list">${pipeline.processInstance("setupCrumbs").getVariable("L1_crumb_list")}</var>      
+          <!-- <var name="L1_crumb_list">${pipeline.processInstance("setupCrumbs").getVariable("L1_crumb_list")}</var> -->
+          <var name="goodPis">${pipeline.processInstance("scanRecon").getVariable("goodPis")}</var>  
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;rusage[scratch=1]&quot; " />
         <depends>
-          <after process="doCrumb.recon" status="DONE"/>
+          <after process="scanRecon" status="SUCCESS"/>
+          <!-- <after process="doCrumb.recon" status="DONE"/> -->
         </depends>
       </process>
 
       <process name="mergeReconCrumbs" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="fileType">recon</var>
-          <var name="L1_crumb_list">${pipeline.processInstance("setupCrumbs").getVariable("L1_crumb_list")}</var>      
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+          <var name="goodPis">${pipeline.processInstance("scanRecon").getVariable("goodPis")}</var>  
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
-          <after process="doCrumb.recon" status="DONE"/>
+          <after process="scanRecon" status="SUCCESS"/>
           <after process="mergeMeritCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
         </depends>
       </process>
@@ -2411,11 +2417,12 @@
       <process name="mergeCalCrumbs" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="fileType">cal</var>
-          <var name="L1_crumb_list">${pipeline.processInstance("setupCrumbs").getVariable("L1_crumb_list")}</var>      
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+          <var name="goodPis">${pipeline.processInstance("scanRecon").getVariable("goodPis")}</var>  
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
-          <after process="doCrumb.recon" status="DONE"/>
+          <after process="scanRecon" status="SUCCESS"/>
           <after process="mergeReconCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
         </depends>
       </process>
@@ -2423,11 +2430,12 @@
       <process name="mergeGcrCrumbs" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="fileType">gcr</var>
-          <var name="L1_crumb_list">${pipeline.processInstance("setupCrumbs").getVariable("L1_crumb_list")}</var>      
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+          <var name="goodPis">${pipeline.processInstance("scanRecon").getVariable("goodPis")}</var>  
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
-          <after process="doCrumb.recon" status="DONE"/>
+          <after process="scanRecon" status="SUCCESS"/>
           <after process="mergeCalCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
         </depends>
       </process>
@@ -2590,6 +2598,7 @@
       <variables>
         <var name="fileType">digi</var>
         <var name="%(digi_versionName)s">%(digi_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -R &quot;rusage[scratch=250]&quot; "/>
       <depends>

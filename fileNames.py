@@ -147,7 +147,8 @@ def getSite(fileName):
     site = sites[fileName.startswith('root:')]    
     return site
 
-def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None, next=False):
+def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None,
+             next=False, version=None):
 
     fields = []
 
@@ -182,8 +183,14 @@ def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None, next=False)
         else:
             baseDir = config.L1Dir
             pass
+        pass
 
-        
+
+    # Assign a version. Maybe.
+    verStr = None
+    if version is not None:
+        verStr = 'v%s' % version
+    elif level == 'run':
         if fileType in ['chunkList']:
             verStr = dlId
         else:
@@ -196,9 +203,9 @@ def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None, next=False)
                 verStr = '_'.join([dlId, verStr])
                 pass
             pass
-        fields.append(verStr)
         pass
-
+    if verStr is not None: fields.append(verStr)
+    
     if fileType in exportTags:
         tag = exportTags[fileType]
         pos = 0
@@ -271,14 +278,19 @@ def findPieces(fileType, dlId, runId=None, chunkId=None):
     else:
         # We are either merging crumb files into chunk files or
         # deleting crumb directories.
-        # We know the name of the file listing the crumbs.
-        # crumbFile = fileName('crumbList', dlId, runId, chunkId)
-        # crumbIds = readList(crumbFile).keys()
-        crumbVar = variables.getVar('crumb', 'list')
-        crumbIds = crumbVar.split('/')
-        crumbIds.sort()
-        argSets = [(fileType, dlId, runId, chunkId, crumbId)
-                   for crumbId in crumbIds]
+        if fileType is None:
+            crumbVar = variables.getVar('crumb', 'list')
+            crumbIds = crumbVar.split('/')
+            crumbIds.sort()
+            argSets = [(fileType, dlId, runId, chunkId, crumbId)
+                       for crumbId in crumbIds]
+        else:
+            goodPis = os.environ['goodPis']
+            tags = goodPis.split(',')
+            versionTags = [tag.split(':') for tag in tags]
+            argSets = [(fileType, dlId, runId, chunkId, crumbId, None, ver)
+                       for (crumbId, ver) in versionTags]
+            pass
         pass
     
     if fileType is None:

@@ -1,6 +1,8 @@
 1.72
 -----------------
 Adding the machinery to run the Verify-for-ft2 package.
+Versionize crumb files. [LONE-132@JIRA]
+Fix LD_LIBRARY_PATH for tree merges.
 
 
 1.71

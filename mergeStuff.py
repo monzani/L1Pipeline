@@ -217,7 +217,6 @@ elif fileType in mergeTypes['trend']:
 
 
 elif fileType in mergeTypes['tree']:
-    import rootFiles
     treeName = treeNames[fileType]
     status |= rootFiles.concatenate_prune(outFile, inFiles, treeName)
 
