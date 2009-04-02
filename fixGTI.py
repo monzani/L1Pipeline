@@ -55,11 +55,12 @@ version = fileNames.version(realOutFile)
 
 filter = 'LIVETIME>0'
 
+cmtPath = config.stCmtPath
+
 cmd = '''
 cd %(workDir)s
-echo pfiles=[$PFILES]
+export CMTPATH=%(cmtPath)s
 source %(stSetup)s
-echo pfiles=[$PFILES]
 %(app)s overwrite=yes roicut=no scfile=%(stagedFt2File)s filter="%(filter)s" evfile=%(stagedInFile)s outFile=%(stagedOutFile)s
 ''' % locals()
 

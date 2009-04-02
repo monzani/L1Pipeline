@@ -54,11 +54,12 @@ workDir = os.path.dirname(stagedOutFile)
 model = config.diffRspModel
 irf = config.diffRspIrf
 
+cmtPath = config.stCmtPath
+
 cmd = '''
 cd %(workDir)s
-echo pfiles=[$PFILES]
+export CMTPATH=%(cmtPath)s
 source %(stSetup)s
-echo pfiles=[$PFILES]
 mv %(stagedInFile)s %(stagedOutFile)s
 %(app)s scfile=%(stagedFt2File)s evfile=%(stagedOutFile)s srcmdl=%(model)s irfs=%(irf)s
 ''' % locals()
