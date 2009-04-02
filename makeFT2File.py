@@ -37,8 +37,12 @@ setupScript = config.packages['ft2Util']['setup']
 
 version = fileNames.version(fitsFt2File)
 
+cmtPath = config.ft2CmtPath
+stLibDir = config.stLibDir
+
 cmd = '''
 cd %(workDir)s
+export CMTPATH=%(cmtPath)s
 source %(setupScript)s
 %(app)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s -Version %(version)s
 ''' % locals()

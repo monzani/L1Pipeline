@@ -82,6 +82,8 @@ fileTypes = {
     'verifyLog': 'xml',
     'verifyHisto': 'root',
     'verifyErrorAlarm': 'xml',
+    'verifyFt2Error': 'xml',
+    'verifyFt2ErrorAlarm': 'xml',
     }
 
 exportTags = { # files exported to FSSC use a different naming rule
@@ -104,22 +106,23 @@ def mergeLockName(runId):
     runDir = fileName(None, None, runId)
     lockName = os.path.join(runDir, mergeLockBase)
     return lockName
-def makeMergeLock(runId):
+def makeMergeLock(runId, content=''):
     cleanupLock = mergeLockName(runId)
-    print >> sys.stderr, 'Trying to create %s ... ' % cleanupLock,
-    if os.path.exists(cleanupLock):
-        print >> sys.stderr, 'already there.'
-    else:
-        fp = open(cleanupLock, 'w')
-        fp.close()
-        print >> sys.stderr, 'OK'
-        pass
+    print >> sys.stderr, 'Trying to append to %s ... ' % cleanupLock,
+    fp = open(cleanupLock, 'a')
+    fp.write(content)
+    fp.close()
+    print >> sys.stderr, 'OK'
     return
 def checkMergeLock(runId):
     cleanupLock = mergeLockName(runId)
     print >> sys.stderr, 'Checking for %s ... ' % cleanupLock,
     if os.path.exists(cleanupLock):
         print >> sys.stderr, 'yep.'
+        fp = open(cleanupLock)
+        print >> sys.stderr, 'Contents:'
+        print >> sys.stderr, fp.read()
+        fp.close()
         return cleanupLock
     else:
         print >> sys.stderr, 'nope.'
@@ -272,8 +275,10 @@ def findPieces(fileType, dlId, runId=None, chunkId=None):
         # We are either merging crumb files into chunk files or
         # deleting crumb directories.
         # We know the name of the file listing the crumbs.
-        crumbFile = fileName('crumbList', dlId, runId, chunkId)
-        crumbIds = readList(crumbFile).keys()
+        # crumbFile = fileName('crumbList', dlId, runId, chunkId)
+        # crumbIds = readList(crumbFile).keys()
+        crumbVar = variables.getVar('crumb', 'list')
+        crumbIds = crumbVar.split('/')
         crumbIds.sort()
         argSets = [(fileType, dlId, runId, chunkId, crumbId)
                    for crumbId in crumbIds]
@@ -384,7 +389,7 @@ def mangleChunkList(realName):
 
 def preMakeDirs(dirs, dlId, runId=None, chunkId=None, crumbId=None):
     import stageFiles
-    buffers = list(uniqueStageDirs)
+    buffers = [sd for sd in uniqueStageDirs if not sd.startswith('root:')]
     random.shuffle(buffers)
     mid = subDirectory(None, dlId, runId, chunkId, crumbId)
     allDirs = [os.path.join(buf, mid, sub) for buf in buffers for sub in dirs]

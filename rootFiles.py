@@ -26,6 +26,7 @@ def getFileEvents(fileName, treeName='Digi'):
     return numEntries
 
 
+
 def concatenate_prune(outputFileName, fileNames, treeName='Digi', expectedEntries=None):
 
     from ROOT import TChain, gSystem

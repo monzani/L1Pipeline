@@ -9,9 +9,11 @@ import GPLinit
 
 import acqQuery
 import fileNames
+import meritFiles
 import runner
 import stageFiles
 import registerPrep
+import rounding
 
 head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
@@ -55,7 +57,19 @@ tCuts = config.ft1Cuts
 classifier = config.ft1Classifier
 
 runNumber = int(os.environ['runNumber'])
+
+# run start and stop from ACQSUMMARY
 tStart, tStop = acqQuery.runTimes(runNumber)
+print 'ACQSUMMARY:', tStart, tStop
+
+# run start and stop from merit file
+mStart, mStop = meritFiles.startAndStop(stagedMeritFile)
+print 'merit:', mStart, mStop
+
+#cutStart = mStart - config.ft1Pad
+#cutStop = mStop + config.ft1Pad
+cutStart = rounding.roundDown(mStart, config.ft1Digits)
+cutStop = rounding.roundUp(mStop, config.ft1Digits)
 
 dictionary = config.ft1Dicts[fileType[:3]]
 
@@ -65,12 +79,13 @@ else:
     version = 0
     pass
 
+cmtPath = config.stCmtPath
+
 cmd = '''
 cd %(workDir)s
-echo pfiles=[$PFILES]
+export CMTPATH=%(cmtPath)s
 source %(stSetup)s
 PYTHONPATH=%(evtClassDefsPython)s:$PYTHONPATH ; export PYTHONPATH
-echo pfiles=[$PFILES]
 %(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=%(tCuts)s event_classifier="%(classifier)s" tstart=%(tStart).17g tstop=%(tStop).17g dict_file=%(dictionary)s file_version=%(version)s
 ''' % locals()
 

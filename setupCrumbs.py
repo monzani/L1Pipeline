@@ -63,6 +63,11 @@ crumbIds = [cForm % start for start in crumbStarts]
 crumbListData = dict((crumbId, {}) for crumbId in crumbIds)
 fileNames.writeList(crumbListData, stagedCrumbList)
 
+# also
+# put crumb list in a variable
+crumbVar = '/'.join(crumbIds)
+pipeline.setVariable('L1_crumb_list', crumbVar)
+
 crumbData = []
 for start, crumbId, nEvents in zip(crumbStarts, crumbIds, crumbSizes):
     digiCrumbFile = fileNames.fileName('digi', dlId, runId, chunkId, crumbId)

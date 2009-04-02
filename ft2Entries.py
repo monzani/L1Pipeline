@@ -8,9 +8,10 @@ import config
 import GPLinit
 
 import fileNames
+import meritFiles
+import registerPrep
 import runner
 import stageFiles
-import registerPrep
 
 head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
@@ -60,10 +61,21 @@ else:
     mcOpt = ''
     pass
 
+cmtPath = config.ft2CmtPath
+stLibDir = config.stLibDir
+
+# run start and stop from merit file
+mStart, mStop = meritFiles.startAndStop(stagedMeritFile)
+print 'merit:', mStart, mStop
+tStart = mStart - config.ft2Pad
+tStop = mStop + config.ft2Pad
+# These are ignored if a digi file is supplied. Maybe we can get that changed.
+
 cmd = '''
 cd %(workDir)s
+export CMTPATH=%(cmtPath)s
 source %(setupScript)s
-%(app)s -DigiFile %(stagedDigiFile)s -MeritFile %(stagedMeritFile)s -M7File %(stagedM7File)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s %(gapOpts)s %(mcOpt)s
+%(app)s -DigiFile %(stagedDigiFile)s -MeritFile %(stagedMeritFile)s -M7File %(stagedM7File)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s %(gapOpts)s %(mcOpt)s -DigiTstart %(tStart).17g -DigiTstop %(tStop).17g
 ''' % locals()
 
 status = runner.run(cmd)

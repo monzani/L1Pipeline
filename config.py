@@ -9,14 +9,14 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.70"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.73"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
 creator = '-'.join([L1Name, L1Version])
     
 #L1Cmt = os.path.join(installRoot, 'builds')
-L1Volume = '/afs/slac/g/glast/ground/releases/volume03'
+L1Volume = '/afs/slac/g/glast/ground/releases/volume01'
 L1CmtBase = os.environ.get('L1_BUILD_DIR') or os.path.join(L1Volume, 'L1Proc')
 L1Cmt = os.path.join(L1CmtBase, L1Version)
 
@@ -76,7 +76,7 @@ if testMode: L1Disk += 'Test'
 # L1Dir = os.path.join(L1Disk, 'rootData')
 L1Dir = L1Disk
 
-dlStorage = os.path.join(L1Disk, 'rootData/dl')
+dlStorage = os.path.join(L1Disk, 'deliveries')
 if testMode: dlStorage = os.path.join(dlStorage, 'test')
 saveDl = True
 
@@ -96,6 +96,7 @@ if testMode: L1Dir = os.path.join(L1Dir, 'test')
 # These are actually links so they can be swapped out easily.
 ## No, they're not.
 stageDisks = [ 
+     # ("root://sysdev4500//glast", 1),
      ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging", 1),
      ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging2", 1),
      ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging3", 1),
@@ -143,11 +144,14 @@ runSubTask = {
         'MC': 'doRun',
         },
     }
+runSubTask['INPROGRESS'] = runSubTask['WAITING']
+
 chunkSubTask = {
     'LCI': 'doChunkLci',
     'LPA': 'doChunk',
     'MC': 'doChunk',
     }
+
 cleanupSubTask = {
     'doInc': {
         'LPA': 'cleanupIncompleteRun',
@@ -165,6 +169,7 @@ cleanupSubTask = {
         },
     }
 
+
 glastRoot = '/afs/slac.stanford.edu/g/glast'
 groundRoot = os.path.join(glastRoot, 'ground')
 glastSetup = os.path.join(groundRoot, 'scripts', 'group.sh')
@@ -176,8 +181,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume07')
-glastVersion = 'v15r47p1'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
+glastVersion = 'v15r47p7'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -238,6 +243,7 @@ ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % st
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
 PFILES = ".;/dev/null"
 stBinDir = os.path.join(ST, 'bin')
+stLibDir = os.path.join(ST, 'lib')
 #aspLauncher = '/nfs/farm/g/glast/u33/ASP/ASP/AspLauncher/v1/rh9_gcc32/aspLauncher.sh'
 #aspLauncher = '/bin/true'
 if testMode:
@@ -248,7 +254,9 @@ else:
     pass
 aspAlreadyLaunched = 160
 
-cmtPath = ':'.join((L1Cmt, glastLocation, glastExt, ST))
+cmtPath = ':'.join([L1Cmt, glastLocation, glastExt])
+stCmtPath = ':'.join([L1Cmt, ST, glastExt])
+ft2CmtPath = ':'.join([L1Cmt, glastLocation, ST, glastExt])
 
 cmtPackages = {
     'calibGenTKR': {
@@ -265,11 +273,11 @@ cmtPackages = {
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
-        'version': 'v4r3',
+        'version': 'v4r4',
         },
     'evtClassDefs': {
         'repository': '',
-        'version': 'v0r6',
+        'version': 'v0r6p1',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
@@ -285,11 +293,11 @@ cmtPackages = {
         },
     'GPLtools': {
         'repository': '',
-        'version': 'v1r14p1',
+        'version': 'fileOps1',
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r2p34',
+        'version': 'v1r2p35',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -297,14 +305,14 @@ cmtPackages = {
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'v7r7',
+        'version': 'v9r1',
         },
     }
 
 cvsPackages = {
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r3p3',
+        'version': 'v1r3p4',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
@@ -332,25 +340,16 @@ for packName in packages:
     continue
 
 # add nonstandard package info
-#packages['AlarmsCfg']['xml'] = os.path.join(
-#    packages['AlarmsCfg']['root'], 'xml')
-
-#packages['Common']['python'] = os.path.join(
-#    packages['Common']['root'], 'python')
 
 packages['EngineeringModelRoot']['app'] = os.path.join(
     packages['EngineeringModelRoot']['bin'], 'RunRootAnalyzer.exe')
 
 packages['evtClassDefs']['data'] = os.path.join(
     packages['evtClassDefs']['root'], 'data')
-#packages['evtClassDefs']['python'] = os.path.join(
-#    packages['evtClassDefs']['root'], 'python')
 
 packages['ft2Util']['app'] = os.path.join(
     packages['ft2Util']['bin'], 'makeFT2Entries.exe')
 
-#packages['FastMon']['python'] = os.path.join(
-#    packages['FastMon']['root'], 'python')
 packages['FastMon']['app'] = os.path.join(
     packages['FastMon']['python'], 'pDataProcessor.py')
 packages['FastMon']['configDir'] = os.path.join(
@@ -359,11 +358,6 @@ packages['FastMon']['env'] = {
     'XML_CONFIG_DIR': packages['FastMon']['configDir']
     }
 packages['FastMon']['extraSetup'] = isocEnv
-
-#packages['GPLtools']['python'] = os.path.join(
-#    packages['GPLtools']['root'], 'python')
-
-#packages['IGRF']['python'] = os.path.join(packages['IGRF']['root'], 'python')
 
 packages['Monitor']['app'] = os.path.join(
     packages['Monitor']['bin'], 'runStrip_t.exe')
@@ -417,6 +411,8 @@ apps = {
     'trendMerge': packages['Monitor']['trendMerge'],
     'runVerify': os.path.join(
         packages['TestReport']['bin'], 'RunVerify.exe'),
+    'ft2Verify': os.path.join(
+        packages['TestReport']['bin'], 'ft2Verify.exe'),
     }
 
 
@@ -475,7 +471,8 @@ mergeConfigs = {
 
 alarmRefBase = '/nfs/farm/g/glast/u52/Monitoring/ReferenceHistograms'
 alarmRefDir = os.path.join(alarmRefBase, mode)
-alarmBase = os.path.join(L1Volume, 'AlarmsCfg', mode)
+alarmCfgBase = '/afs/slac/g/glast/ground/releases/volume03'
+alarmBase = os.path.join(alarmCfgBase, 'AlarmsCfg', mode)
 alarmConfigs = {
     'acdPedsAnalyzer': os.path.join(alarmBase, 'xml', 'acdpeds_eor_alarms.xml'),
     'calGainsAnalyzer': os.path.join(
@@ -493,6 +490,7 @@ alarmConfigs = {
     'reconTrend': os.path.join(alarmBase, 'xml', 'recon_trend_alarms.xml'),
     'tkrTrend': os.path.join(alarmBase, 'xml', 'trackermon_trend_alarms.xml'),
     'verifyLog': os.path.join(alarmBase, 'xml', 'verify_errors_alarms.xml'),
+    'verifyFt2Error': os.path.join(alarmBase, 'xml', 'verify_ft2_errors_alarms.xml'),
     }
 
 alarmExceptions = {
@@ -568,10 +566,13 @@ verifyOptions = {
     'InProgress': '',
     'Complete': '-c',
     'Incomplete': '-c',
+    'Truncation': '100',
     }
 
 ft2Pad = 1.0 # pad time range with this on either end whan making fakeFT2
 m7Pad = 10 # pad time range with this on either end whan making m7
+# not used # ft1Pad = 1.0 # pad time range with this on either end whan making ft1 and ls1
+ft1Digits = 1 # round times given to makeFT1 out to this many digits past the decimal point
 
 if testMode:
     trendMode = 'dev'
@@ -581,6 +582,7 @@ else:
 trendIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/%s/bin/ingestTrendingFile' % trendMode
 runIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/%s/bin/ingestRunFile' % trendMode
 
+grPath = os.path.join(glastLocation, 'lib')
 cfitsioPath = os.path.join(glastExt, 'cfitsio/v3060/lib')
 clhepPath = os.path.join(glastExt, 'CLHEP/1.9.2.2/lib')
 cppunitPath = os.path.join(glastExt, 'cppunit/1.10.2/lib')
@@ -591,20 +593,24 @@ rootPath = os.path.join(rootSys, 'lib')
 xercesPath = os.path.join(glastExt, 'xerces/2.7.0/lib')
 
 libraryPath = ':'.join(
-    [os.path.join(L1Cmt, 'lib'), 
-     os.path.join(glastLocation, 'lib'), 
-     oraclePath,
-     rootPath,
-     # It seems like the rest of this should not be necessary if everyone
-     # had their requirements set up right.  Maybe some of these are not
-     # required anymore.  But each of them was at some point.
-     clhepPath,
-     cppunitPath,
-     xercesPath,
-     gaudiPath,
-     mysqlPath,
-     #cfitsioPath,
-     ])
+    [
+        os.path.join(L1Cmt, 'lib'), 
+        # grPath, 
+        # oraclePath,
+        rootPath,
+        # It seems like the rest of this should not be necessary if everyone
+        # had their requirements set up right.  Maybe some of these are not
+        # required anymore.  But each of them was at some point.
+        #
+        # Or maybe I just need to source the setup scripts.
+        #
+        # clhepPath,
+        # cppunitPath,
+        # xercesPath,
+        # gaudiPath,
+        # mysqlPath,
+        #cfitsioPath,
+        ])
 
 # #GPL2 = '/nfs/slac/g/svac/focke/builds/GPLtools/dev'
 # gplBase = '/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/GPLtools'
@@ -646,6 +652,9 @@ highPriority = 75
 #
 reconMergeScratch = " -R &quot;select[scratch&gt;70]&quot; "
 reconCrumbCpuf = " -R &quot;select[cpuf&gt;%s]&quot; " % minCrumbCpuf
+
+# number of autoretries for processes that do that
+retries = 1
 
 # default option for stageSet input exclusion filter
 excludeIn = None

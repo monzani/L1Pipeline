@@ -10,6 +10,7 @@ import os
 import shutil
 import string
 import sys
+import time
 
 import config
 
@@ -18,6 +19,7 @@ import GPLinit
 import fileNames
 import fitsFiles
 import l1Logger
+import pipeline
 import registerPrep
 import rootFiles
 import runner
@@ -50,13 +52,39 @@ else:
     stageDirPieces = [dlId, runId, chunkId, fileType]
     pass
 
+# This is backwards. Should be a map from fileType to merge function.
+# Which requires putting the per-type merge code into functions.
+# Which has some scope issues.
+mergeTypes = {
+    'report': ['calHist', 'digiHist', 'fastMonHist', 'reconHist', 'meritHist'],
+    'trend': ['calTrend', 'digiTrend', 'fastMonTrend', 'meritTrend', 'reconTrend'],
+    'tree': ['digi', 'recon', 'gcr', 'cal', 'svac'],
+    'error': ['fastMonError'],
+    'tkr': ['tkrAnalysis'],
+    }
+# Check whether any types occur in multiple lists.
+# This would not be necessary if the comments above were implemented.
+checkedTypes = set()
+for key, values in mergeTypes.items():
+    newTypes = set(values)
+    assert not newTypes & checkedTypes
+    checkedTypes |= newTypes
+    continue
+
+# This import is a bit flaky. If we attempt it (and it fails):
+# - when we actually need it, after staging input, we do unneeded I/O;
+# - unconditionally, we sometimes fail when we didn't even need that code.
+if fileType in mergeTypes['tree']: import rootFiles
+
 expectedInFiles = fileNames.findPieces(fileType, dlId, runId, chunkId)
 realInFiles = []
+missingInFiles = []
 for inFile in expectedInFiles:
-    if os.path.isfile(inFile):
+    if stageFiles.checkFile(inFile):
         realInFiles.append(inFile)
     else:
         print >> sys.stderr, "Couldn't find input file %s" % inFile
+        missingInFiles.append(inFile)
         pass
     continue
 numInFiles = len(realInFiles)
@@ -82,7 +110,16 @@ if numInFiles != len(expectedInFiles):
     l1Logger.error(msg, **kwargs)
 
     print >> sys.stderr, 'Supressing cleanup.'
-    fileNames.makeMergeLock(runId)
+
+    process = pipeline.getProcess()
+    streamPath = os.environ.get('PIPELINE_STREAMPATH')
+    processInstance = os.environ.get('PIPELINE_PROCESSINSTANCE')
+    timeStamp = time.ctime()
+    content = 'Locked by %s %s pipk = %s at %s\n' % (process, streamPath, processInstance, timeStamp)
+    for inFile in missingInFiles:
+        content += '%s\n' % inFile
+        continue
+    fileNames.makeMergeLock(runId, content)
     
     pass
 
@@ -158,7 +195,7 @@ status = 0
 
 
 
-if fileType in ['calHist', 'digiHist', 'fastMonHist', 'reconHist', 'meritHist']:
+if fileType in mergeTypes['report']:
     setup = config.packages['Monitor']['setup']
     mergeConfig = config.mergeConfigs[fileType]
     app = config.apps['reportMerge']
@@ -170,8 +207,7 @@ if fileType in ['calHist', 'digiHist', 'fastMonHist', 'reconHist', 'meritHist']:
     status |= runner.run(cmd)
 
 
-elif fileType in ['calTrend', 'digiTrend', 'fastMonTrend', 'meritTrend',
-                  'reconTrend']:
+elif fileType in mergeTypes['trend']:
     setup = config.packages['Monitor']['setup']
     app = config.apps['trendMerge']
     treeName = 'Time'
@@ -183,7 +219,7 @@ elif fileType in ['calTrend', 'digiTrend', 'fastMonTrend', 'meritTrend',
     status |= runner.run(cmd)
 
 
-elif fileType in ['digi', 'recon', 'gcr', 'cal', 'svac']:
+elif fileType in mergeTypes['tree']:
     treeName = treeNames[fileType]
     status |= rootFiles.concatenate_prune(outFile, inFiles, treeName)
 
@@ -193,7 +229,7 @@ elif fileType in ['digi', 'recon', 'gcr', 'cal', 'svac']:
 #     rootFiles.concatenate_cal(outFile, inFiles, treeName)
 
 
-elif fileType in ['fastMonError']:
+elif fileType in mergeTypes['error']:
     app = config.apps['errorMerger']
     cmd = '''
     %(app)s -o %(outFile)s %(inFileString)s
@@ -201,7 +237,7 @@ elif fileType in ['fastMonError']:
     status |= runner.run(cmd)
 
 
-elif fileType in ['tkrAnalysis']:
+elif fileType in mergeTypes['tkr']:
     python = config.python
     app = config.apps['tkrMerger']
     inFileString = ' %s' * len(inFiles) % tuple(inFiles)
