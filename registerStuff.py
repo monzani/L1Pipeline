@@ -20,10 +20,13 @@ fileFormat = getVar(fileType, 'format')
 dcGroup = getVar(fileType, 'group')
 site = getVar(fileType, 'site')
 fileName = getVar(fileType, 'fileName')
+version = getVar(fileType, 'ver')
 
 fcPi = pipeline.getProcessInstance(timeProcess)
 lessBrokenTStart = fcPi.getVariable('tStart')
 lessBrokenTStop = fcPi.getVariable('tStop')
+mootAlias = fcPi.getVariable('mootAlias')
+mootKey = fcPi.getVariable('mootKey')
 
 attributes = HashMap()
 attributes.put('sCreator', creator)
@@ -38,4 +41,5 @@ attributes.put('nRun', runNumber)
 print attributes
 
 dsNew = NewDataset(dsName, fileFormat, fileType, dataCatDir, dcGroup, site, fileName)
+dsNew.setVersionID(version)
 ds = datacatalog.registerDataset(dsNew, attributes);

@@ -12,7 +12,7 @@ import variables
 
 #os.chdir(config.L1ProcROOT) # ?
 
-taskNames = ['forceL1Merge', 'L1Proc', 'noReconMerge', 'setL1Status', 'testVerify']
+taskNames = ['forceL1Merge', 'L1Proc', 'noReconMerge', 'setL1Status', 'testVerify', 'reprocessFt2']
 
 for taskName in taskNames:
     #taskFile = os.path.join(config.L1Xml, config.fullTaskName + '.xml')
@@ -46,7 +46,8 @@ for taskName in taskNames:
         group = fileNames.dataCatGroup(fileType)
         path = config.dataCatBase
         vTag = fileType + '_version'
-        value = '${datacatalog.getDatasetLatestVersion(RUNID, "%(path)s/"+DATASOURCE, "%(group)s")}' % locals()
+        #value = '${datacatalog.getDatasetLatestVersion(RUNID, "%(path)s/"+DATASOURCE, "%(group)s")}' % locals()
+        value = '${datacatalog.getDatasetLatestVersion(RUNID, "%(path)s/", "%(group)s")}' % locals()
         configuration[vTag] = value
         # print vTag, value
         continue

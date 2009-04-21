@@ -53,6 +53,7 @@ fileTypes = {
     'ft2Seconds': 'fit',
     'ft2Fake': 'fit',
     'ft2Txt': 'txt',
+    'gap': 'txt',
     'gcr': 'root',
     'ls1': 'fit',
     'ls1BadGti': 'fit',
@@ -151,6 +152,14 @@ def getSite(fileName):
     return site
 
 def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None, next=False):
+    if fileType is not None:
+        try:
+            fullName = variables.getVar(fileType, 'fileName')
+        except KeyError:
+            fullName = None
+            pass
+        if fullName is not None: return fullName
+        pass
 
     fields = []
 
@@ -193,6 +202,7 @@ def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None, next=False)
             verNum = int(variables.getVar(fileType, 'ver'))
             if next:
                 verNum += 1
+                verNum = max(verNum, config.baseVersion)
                 pass
             verStr = 'v%03d' % verNum
             if fileType in ['magic7Hp']:

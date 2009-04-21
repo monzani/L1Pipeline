@@ -21,11 +21,14 @@ def prep(fileType, fileName):
     taskVersion =  os.environ['PIPELINE_TASKVERSION']
     creator = '-'.join([taskName, taskVersion])
 
+    fileVersion = fileNames.version(fileName)
+
     variables.setVar(fileType, 'format', fileNames.fileTypes[fileType])
     # variables.setVar(fileType, 'path', config.dataCatDir) # remove me!
     variables.setVar(fileType, 'group', fileNames.dataCatGroup(fileType))
     variables.setVar(fileType, 'site', fileNames.getSite(fileName))
     variables.setVar(fileType, 'fileName', fileName)
+    variables.setVar(fileType, 'ver', fileVersion)
     # variables.setVar(fileType, 'creator', creator) # remove me!
 
     return

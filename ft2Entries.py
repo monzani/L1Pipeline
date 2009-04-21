@@ -7,11 +7,14 @@ import config
 
 import GPLinit
 
+import acqQuery
 import fileNames
 import meritFiles
 import registerPrep
 import runner
 import stageFiles
+
+import ft2Columns
 
 head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
@@ -36,17 +39,18 @@ realM7File = fileNames.fileName('magic7L1', dlId, runId)
 stagedM7File=  staged.stageIn(realM7File)
 
 #output
-txtFt2File = fileNames.fileName(fileType, dlId, runId, next=True)
-stagedFt2TxtFile = staged.stageOut(txtFt2File)
+#txtFt2File = fileNames.fileName(fileType, dlId, runId, next=True)
+#stagedFt2TxtFile = staged.stageOut(txtFt2File)
 ft2Seconds = fileNames.fileName('ft2Seconds', dlId, runId, next=True)
 stagedFt2FitsFile = staged.stageOut(ft2Seconds)
 
-workDir = os.path.dirname(stagedFt2TxtFile)
+workDir = os.path.dirname(stagedFt2FitsFile)
 
 setupScript = config.packages['ft2Util']['setup']
 
-realGapFile = os.path.join(
-    os.environ['DOWNLINK_RAWDIR'], 'event_gaps_%s.txt' % dlId)
+#realGapFile = os.path.join(
+#    os.environ['DOWNLINK_RAWDIR'], 'event_gaps_%s.txt' % dlId)
+realGapFile = fileNames.fileName('gap', dlId, runId)
 if os.path.exists(realGapFile):
     stagedGapFile =  staged.stageIn(realGapFile)
     gapOpts = ' -Gaps_File %s ' % stagedGapFile
@@ -71,18 +75,31 @@ tStart = mStart - config.ft2Pad
 tStop = mStop + config.ft2Pad
 # These are ignored if a digi file is supplied. Maybe we can get that changed.
 
+template = config.ft2Template
+templOpt = '-new_tpl %s' % template
+
+qualStr = os.environ['runQuality']
+print >> sys.stderr, 'Run quality:', qualStr
+dataQuality = ft2Columns.qualityFlag(qualStr)
+qualOpt = '-DataQual %d' % dataQuality
+
+mootAlias = os.environ['mootAlias']
+print >> sys.stderr, 'MOOT alias:', mootAlias
+latConfig = ft2Columns.configFlag(mootAlias)
+configOpt = '-LatConfig %d' % latConfig
+
 cmd = '''
 cd %(workDir)s
 export CMTPATH=%(cmtPath)s
 source %(setupScript)s
-%(app)s -DigiFile %(stagedDigiFile)s -MeritFile %(stagedMeritFile)s -M7File %(stagedM7File)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s %(gapOpts)s %(mcOpt)s -DigiTstart %(tStart).17g -DigiTstop %(tStop).17g
+%(app)s -DigiFile %(stagedDigiFile)s -MeritFile %(stagedMeritFile)s -M7File %(stagedM7File)s -FT2_fits_File %(stagedFt2FitsFile)s %(gapOpts)s %(mcOpt)s -DigiTstart %(tStart).17g -DigiTstop %(tStop).17g %(templOpt)s %(qualOpt)s %(configOpt)s
 ''' % locals()
 
 status = runner.run(cmd)
 if status: finishOption = 'wipe'
 
 if not status:
-    registerPrep.prep(fileType, txtFt2File)
+    #registerPrep.prep(fileType, txtFt2File)
     registerPrep.prep('ft2Seconds', ft2Seconds)
     pass
 
