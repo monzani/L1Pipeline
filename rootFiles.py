@@ -171,11 +171,13 @@ def hSplit(inFile, treeName, crumbData):
     selection = ""
     option = "fast"
 
-    oldFP = ROOT.TFile(inFile)
-    oldTree = oldFP.Get(treeName)
-
     for outFile, numEvents, firstEvent in crumbData:
 
+        # ROOT 5.18 used to let us do these outside the loop
+        # but with 5.20, they have to be in here
+        oldFP = ROOT.TFile(inFile)
+        oldTree = oldFP.Get(treeName)
+        
         print >> sys.stderr, outFile, numEvents, firstEvent,
         start = time.time()
 
@@ -189,6 +191,23 @@ def hSplit(inFile, treeName, crumbData):
         continue
 
     return
+
+
+def filter(inFile, treeName, outFile, cut):
+
+    status = 0
+
+    option = "fast"
+
+    oldFP = ROOT.TFile(inFile)
+    oldTree = oldFP.Get(treeName)
+    
+    newFP = ROOT.TFile(outFile, "recreate")
+    newTree = oldTree.CopyTree(cut, option, sys.maxint, 0)
+    newTree.AutoSave();
+    newFP.Close()
+
+    return status
 
 
 if __name__ == "__main__":

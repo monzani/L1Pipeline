@@ -21,7 +21,6 @@ import fitsFiles
 import l1Logger
 import pipeline
 import registerPrep
-import rootFiles
 import runner
 import stageFiles
 

@@ -46,6 +46,7 @@ fileTypes = {
     'fastMonTrend': 'root',
     'fastMonTrendAlarm': 'xml',
     'fastMonTuple': 'root',
+    'filteredMerit': 'root',
     'ft1': 'fit',
     'ft1BadGti': 'fit',
     'ft1NoDiffRsp': 'fit',
@@ -146,12 +147,20 @@ def dataCatName(fileType, fileName):
     name = ':'.join([folder, baseName])
     return name
 
+dataCatExceptions = { 
+    'filteredMerit': 'MERIT',
+    }
+def dataCatType(fileType):
+    dcType = dataCatExceptions.get(fileType) or fileType.upper()
+    return dcType
+
 sites = ['SLAC', 'SLAC_XROOT']
 def getSite(fileName):
     site = sites[fileName.startswith('root:')]    
     return site
 
-def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None, next=False):
+def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None,
+             next=False, version=None):
     if fileType is not None:
         try:
             fullName = variables.getVar(fileType, 'fileName')
@@ -195,22 +204,30 @@ def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None, next=False)
             baseDir = config.L1Dir
             pass
 
+        pass
         
+    # Assign a version. Maybe.
+    verStr = None
+    if version is not None:
+        verStr = 'v%s' % version
+    elif level == 'run':
         if fileType in ['chunkList']:
             verStr = dlId
         else:
             verNum = int(variables.getVar(fileType, 'ver'))
             if next:
                 verNum += 1
-                verNum = max(verNum, config.baseVersion)
                 pass
             verStr = 'v%03d' % verNum
             if fileType in ['magic7Hp']:
                 verStr = '_'.join([dlId, verStr])
                 pass
             pass
-        fields.append(verStr)
+        pass # emacs is crazy
+    elif level == 'chunk':
+        verStr = 'v0'
         pass
+    if verStr is not None: fields.append(verStr)
 
     if fileType in exportTags:
         tag = exportTags[fileType]
@@ -284,14 +301,19 @@ def findPieces(fileType, dlId, runId=None, chunkId=None):
     else:
         # We are either merging crumb files into chunk files or
         # deleting crumb directories.
-        # We know the name of the file listing the crumbs.
-        # crumbFile = fileName('crumbList', dlId, runId, chunkId)
-        # crumbIds = readList(crumbFile).keys()
-        crumbVar = variables.getVar('crumb', 'list')
-        crumbIds = crumbVar.split('/')
-        crumbIds.sort()
-        argSets = [(fileType, dlId, runId, chunkId, crumbId)
-                   for crumbId in crumbIds]
+        if fileType is None:
+            crumbVar = variables.getVar('crumb', 'list')
+            crumbIds = crumbVar.split(os.sep)
+            crumbIds.sort()
+            argSets = [(fileType, dlId, runId, chunkId, crumbId)
+                       for crumbId in crumbIds]
+        else:
+            goodPis = os.environ['goodPis']
+            tags = goodPis.split(',')
+            versionTags = [tag.split(':') for tag in tags]
+            argSets = [(fileType, dlId, runId, chunkId, crumbId, None, ver)
+                       for (crumbId, ver) in versionTags]
+            pass
         pass
     
     if fileType is None:

@@ -80,11 +80,13 @@ dlStorage = os.path.join(L1Disk, 'deliveries')
 if testMode: dlStorage = os.path.join(dlStorage, 'test')
 saveDl = True
 
-#dataCatBase = '/Data/Flight/Level1'
-#dataSource = os.environ.get('DATASOURCE', 'LPA')
-#dataCatDir = '/'.join([dataCatBase, dataSource])
-dataCatDir = '/Data/Flight/Reprocess/P100'
-dataCatBase = dataCatDir
+# normal
+dataCatBase = '/Data/Flight/Level1'
+dataSource = os.environ.get('DATASOURCE', 'LPA')
+dataCatDir = '/'.join([dataCatBase, dataSource])
+# reprocess
+#dataCatDir = '/Data/Flight/Reprocess/P100'
+#dataCatBase = dataCatDir
 
 xrootGlast = 'root://glast-rdr.slac.stanford.edu//glast'
 xrootSubDir = '%s/%s/%s' % (dataCatDir, mode, L1Version)
@@ -185,8 +187,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
-glastVersion = 'v15r47p7'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume02')
+glastVersion = 'v17r17'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -211,7 +213,8 @@ reconOptions = {
     'MC': os.path.join(L1Data, 'recon.jobOpt.mc'),
 }
 
-rootSys = os.path.join(glastExt, 'ROOT/v5.18.00c-gl1/root')
+#rootSys = os.path.join(glastExt, 'ROOT/v5.20.00-gl1/root')
+rootSys = os.path.join(glastExt, 'ROOT/v5.20.00-gl1/gcc32')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
@@ -241,7 +244,8 @@ hpTaskBase = '/afs/slac/g/glast/isoc/flightOps/offline/halfPipe/prod'
 
 l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
 
-stVersion = 'v9r8p2'
+#stVersion = 'v9r8p2'
+stVersion = 'v9r11'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
 #ST = os.path.join(L1Cmt, "ScienceTools", "ScienceTools-%s" % stVersion)
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
@@ -291,6 +295,10 @@ cmtPackages = {
 #         'repository': '',
 #         'version': 'v4r2',
 #         },
+    'findGaps': {
+        'repository': 'svac',
+        'version': 'v1r2',
+        },
     'ft2Util': {
         'repository': '',
         'version': 'v1r2p25',
@@ -301,7 +309,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r2p35',
+        'version': 'v1r2p37',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -316,7 +324,7 @@ cmtPackages = {
 cvsPackages = {
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r3p4',
+        'version': 'v1r3p5',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
@@ -397,6 +405,8 @@ apps = {
         packages['FastMon']['python'], 'pFastMonTreeProcessor.py'),
     'fastMonTuple': packages['FastMon']['app'],
     'fastMon': packages['FastMon']['app'],
+    'findGaps': os.path.join(
+        packages['findGaps']['bin'], 'findGaps.exe'),
     # 'makeFT1': os.path.join(stBinDir, 'makeFT1'),
     'makeFT1': os.path.join(stBinDir, 'makeFT1_kluge'),
     'makeFT2': packages['ft2Util']['app'],
@@ -576,7 +586,7 @@ verifyOptions = {
 ft2Pad = 1.0 # pad time range with this on either end whan making fakeFT2
 m7Pad = 10 # pad time range with this on either end whan making m7
 # not used # ft1Pad = 1.0 # pad time range with this on either end whan making ft1 and ls1
-ft1Digits = 1 # round times given to makeFT1 out to this many digits past the decimal point
+ft1Digits = 1 # round times given to makeFT1 OUT (round start down, end up) to this many digits past the decimal point - i.e. 1 makes numbers like 254760591.0
 
 ft2Template = os.path.join(L1ProcROOT, 'data', 'ft2.tpl')
 

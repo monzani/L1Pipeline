@@ -14,30 +14,37 @@ import variables
 
 taskNames = ['forceL1Merge', 'L1Proc', 'noReconMerge', 'setL1Status', 'testVerify', 'reprocessFt2']
 
+scriptNames = {
+    'placeHolderBody': 'placeHolder.py',
+    'qualityScriptBody': 'getQuality.py',
+    'registerBody': 'registerStuff.py',
+    'retireScriptBody': 'retireRun.py',
+    'runningScriptBody': 'setRunning.py',
+    'scanScriptBody': 'scanSubStreams.py',
+    'statusScriptBody': 'setStatus.py',
+    'successScriptBody': 'setSuccessful.py',
+    }
+
+def qualify(name):
+    fullPath = os.path.join(config.L1ProcROOT, scriptNames[name])
+    return fullPath
+def embody_inline(script):
+    body = open(script).read()
+    return body
+def embody_exec(script):
+    body = "execfile('%s')" % script
+    return body
+embody = embody_exec
+
+scriptBodies = dict((name, embody(qualify(name))) for name in scriptNames)
+
 for taskName in taskNames:
     #taskFile = os.path.join(config.L1Xml, config.fullTaskName + '.xml')
     taskFile = os.path.join(config.L1Xml, taskName + '-' + config.L1Version + '.xml')
     template = os.path.join(config.L1Xml, taskName + '.xml.template')
 
     configuration = dict(config.__dict__)
-
-    retireScript = os.path.join(config.L1ProcROOT, 'retireRun.py')
-    configuration['retireScriptBody'] = open(retireScript).read()
-
-    scanScript = os.path.join(config.L1ProcROOT, 'scanSubStreams.py')
-    configuration['scanScriptBody'] = open(scanScript).read()
-
-    statusScript = os.path.join(config.L1ProcROOT, 'setStatus.py')
-    configuration['statusScriptBody'] = open(statusScript).read()
-
-    successScript = os.path.join(config.L1ProcROOT, 'setSuccessful.py')
-    configuration['successScriptBody'] = open(successScript).read()
-
-    placeHolderScript = os.path.join(config.L1ProcROOT, 'placeHolder.py')
-    configuration['placeHolderBody'] = open(placeHolderScript).read()
-
-    registerScript = os.path.join(config.L1ProcROOT, 'registerStuff.py')
-    configuration['registerBody'] = open(registerScript).read()
+    configuration.update(scriptBodies)
 
     for fileType in fileNames.fileTypes:
         nTag = fileType + '_versionName'
@@ -46,8 +53,7 @@ for taskName in taskNames:
         group = fileNames.dataCatGroup(fileType)
         path = config.dataCatBase
         vTag = fileType + '_version'
-        #value = '${datacatalog.getDatasetLatestVersion(RUNID, "%(path)s/"+DATASOURCE, "%(group)s")}' % locals()
-        value = '${datacatalog.getDatasetLatestVersion(RUNID, "%(path)s/", "%(group)s")}' % locals()
+        value = '${datacatalog.getDatasetLatestVersion(RUNID, "%(path)s/"+DATASOURCE, "%(group)s")}' % locals()
         configuration[vTag] = value
         # print vTag, value
         continue

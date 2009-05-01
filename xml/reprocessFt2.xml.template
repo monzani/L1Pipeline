@@ -4,18 +4,18 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
 
-<task name="%(L1Name)s" version="%(L1Version)s" type="Data">
+<task name="P100-FT2" version="%(L1Version)s" type="Data">
 
   <variables>
     <var name="DATASOURCE">LPA</var>
     <var name="DOWNLINK_ID">0</var>
     <var name="DOWNLINK_RAWDIR">/nowhere/0</var>
     <var name="CMTPATH">%(cmtPath)s</var>
-    <var name="creator">%(creator)s</var>
+    <var name="creator">{L1_TASK_NAME}-{L1_TASK_VERSION}</var>
     <var name="isocMode">%(isocMode)s</var>
     <var name="isocRun">%(isocRun)s</var>
     <var name="L1ProcROOT">%(L1ProcROOT)s</var>
-    <var name="L1_TASK_NAME">%(L1Name)s</var>
+    <var name="L1_TASK_NAME">P100-FT2</var>
     <var name="L1_TASK_VERSION">%(L1Version)s</var>
     <var name="L1_INSTALL_DIR">%(installRoot)s</var>
     <var name="L1_BUILD_DIR">%(L1CmtBase)s</var>
@@ -88,7 +88,7 @@ execfile(L1ProcROOT + '/lookupScript.py')
  
     <process name="getQuality" autoRetryMaxAttempts="%(retries)s">
        <script><![CDATA[
-execfile(L1ProcROOT + '/getQuality.py')
+%(qualityScriptBody)s
 ]]> 
       </script>
     </process>

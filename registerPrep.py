@@ -24,6 +24,7 @@ def prep(fileType, fileName):
     fileVersion = fileNames.version(fileName)
 
     variables.setVar(fileType, 'format', fileNames.fileTypes[fileType])
+    variables.setVar(fileType, 'dcType', fileNames.dataCatType(fileType))
     # variables.setVar(fileType, 'path', config.dataCatDir) # remove me!
     variables.setVar(fileType, 'group', fileNames.dataCatGroup(fileType))
     variables.setVar(fileType, 'site', fileNames.getSite(fileName))

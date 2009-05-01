@@ -17,6 +17,7 @@ import config
 import GPLinit
 
 import fileNames
+import pipeline
 import runner
 import stageFiles
 
@@ -26,6 +27,10 @@ runId = os.environ['RUNID']
 chunkId = os.environ['CHUNK_ID']
 crumbId = os.environ['CRUMB_ID']
 
+pipeline.setVariable('L1_PI_ID', crumbId)
+version = os.environ['PIPELINE_PROCESSINSTANCE']
+pipeline.setVariable('L1_PI_version', version)
+
 staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption
 
@@ -34,14 +39,18 @@ os.environ['digiChunkFile'] = staged.stageIn(realDigiFile)
 realFT2Fake = fileNames.fileName('ft2Fake', dlId, runId, chunkId)
 os.environ['fakeFT2File'] = staged.stageIn(realFT2Fake)
 
-realReconFile = fileNames.fileName('recon', dlId, runId, chunkId, crumbId)
+realReconFile = fileNames.fileName('recon', dlId, runId, chunkId, crumbId,
+                                   version=version)
 stagedReconFile = staged.stageOut(realReconFile)
 os.environ['reconCrumbFile'] = stagedReconFile
-realMeritFile = fileNames.fileName('merit', dlId, runId, chunkId, crumbId)
+realMeritFile = fileNames.fileName('merit', dlId, runId, chunkId, crumbId,
+                                   version=version)
 os.environ['meritCrumbFile'] = staged.stageOut(realMeritFile)
-realCalFile = fileNames.fileName('cal', dlId, runId, chunkId, crumbId)
+realCalFile = fileNames.fileName('cal', dlId, runId, chunkId, crumbId,
+                                 version=version)
 os.environ['calCrumbFile'] = staged.stageOut(realCalFile)
-realGcrFile = fileNames.fileName('gcr', dlId, runId, chunkId, crumbId)
+realGcrFile = fileNames.fileName('gcr', dlId, runId, chunkId, crumbId,
+                                 version=version)
 os.environ['gcrCrumbFile'] = staged.stageOut(realGcrFile)
 
 workDir = os.path.dirname(stagedReconFile)

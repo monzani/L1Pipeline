@@ -76,7 +76,7 @@
         <var name="l1RunStatus">%(runningStatus)s</var>
       </variables>
       <script><![CDATA[
-%(statusScriptBody)s
+%(runningScriptBody)s
 ]]>
       </script>
       <depends>
@@ -97,8 +97,8 @@
     <process name="makeM7L1" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="%(magic7L1_versionName)s">%(magic7L1_version)s</var>
-        <var name="tStart">${pipeline.processInstance("findChunks").getVariable("tStart") }</var>      
-        <var name="tStop">${pipeline.processInstance("findChunks").getVariable("tStop") }</var>      
+        <var name="tStart">${pipeline.processInstance("findChunks").getVariable("tStart")}</var>      
+        <var name="tStop">${pipeline.processInstance("findChunks").getVariable("tStop")}</var>      
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeM7.py" batchOptions=" -q %(shortQ)s -R linux32 " />
       <depends>
@@ -141,6 +141,7 @@
       <variables>
         <var name="fileType">digi</var>
         <var name="%(digi_versionName)s">%(digi_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=250]&quot; " />
       <depends>
@@ -1107,6 +1108,7 @@
       <variables>
         <var name="fileType">gcr</var>
         <var name="%(gcr_versionName)s">%(gcr_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
       <depends>
@@ -1155,27 +1157,24 @@
       </depends>
     </process>
  
-    <process name="ft2Runs" autoRetryMaxAttempts="%(retries)s">
+    <process name="filterMerit" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="%(digi_versionName)s">%(digi_version)s</var>
-        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
-        <var name="%(ft2Txt_versionName)s">%(ft2Txt_version)s</var>
-        <var name="%(magic7L1_versionName)s">%(magic7L1_version)s</var>
+        <var name="inFileTypes">merit</var>
         <var name="%(merit_versionName)s">%(merit_version)s</var>
-<!--        <var name="L1_magic7L1_filename">${datacatalog.getDataset(RUNID, "/Data/Flight/Level1/"+DATASOURCE, "MAGIC7L1").getLocation("SLAC_XROOT").getPath()}</var>   -->
+        <var name="outFileTypes">filteredMerit</var>
+        <var name="%(filteredMerit_versionName)s">%(filteredMerit_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ft2Entries.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -R &quot;rusage[scratch=15]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -R &quot;rusage[scratch=2]&quot; " />
       <depends>
-        <after process="registerDigi" status="SUCCESS"/>
-        <after process="registerM7L1" status="SUCCESS"/>
         <after process="registerMerit" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="registerFt2Txt" autoRetryMaxAttempts="%(retries)s">
+    <process name="registerFilteredMerit" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="parentProcess">ft2Runs</var>
-        <var name="fileType">ft2Txt</var>
+        <var name="parentProcess">filterMerit</var>
+        <var name="fileType">filteredMerit</var>
         <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
@@ -1183,7 +1182,51 @@
 ]]>
       </script>
       <depends>
-        <after process="ft2Runs" status="SUCCESS"/>
+        <after process="filterMerit" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="makeGaps" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="%(digi_versionName)s">%(digi_version)s</var>
+        <var name="%(gap_versionName)s">%(gap_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeGaps.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=5]&quot; " />
+      <depends>
+        <after process="registerDigi" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerGaps" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">makeGaps</var>
+        <var name="fileType">gap</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="makeGaps" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="ft2Runs" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="%(digi_versionName)s">%(digi_version)s</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
+        <var name="%(gap_versionName)s">%(gap_version)s</var>
+        <var name="%(magic7L1_versionName)s">%(magic7L1_version)s</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="runQuality">${pipeline.processInstance("setRunning").getVariable("runQuality")}</var>
+<!--        <var name="L1_magic7L1_filename">${datacatalog.getDataset(RUNID, "/Data/Flight/Level1/"+DATASOURCE, "MAGIC7L1").getLocation("SLAC_XROOT").getPath()}</var>   -->
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ft2Entries.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -R &quot;rusage[scratch=15]&quot; " />
+      <depends>
+        <after process="registerGaps" status="SUCCESS"/>
+        <after process="registerM7L1" status="SUCCESS"/>
+        <after process="registerMerit" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -1216,13 +1259,13 @@
 
     <process name="makeFT2" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="%(ft2Txt_versionName)s">%(ft2Txt_version)s</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
         <var name="%(ft2_versionName)s">%(ft2_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeFT2File.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
       <depends>
         <!-- <after process="ingestFT2" status="SUCCESS"/> -->
-        <after process="registerFt2Txt" status="SUCCESS"/>
+        <after process="registerFt2Seconds" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -1515,6 +1558,7 @@
       <variables>
         <var name="fileType">cal</var>
         <var name="%(cal_versionName)s">%(cal_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=250]&quot; "/>
       <depends>
@@ -1632,6 +1676,7 @@
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
       <depends>
+        <after process="doChunk.allRecon" status="SUCCESS"/>
         <after process="registerDigi" status="SUCCESS"/>
         <after process="registerMerit" status="SUCCESS"/>
       </depends>
@@ -2075,6 +2120,7 @@
       <variables>
         <var name="fileType">svac</var>
         <var name="%(svac_versionName)s">%(svac_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=250]&quot; "/>
       <depends>
@@ -2147,6 +2193,7 @@
         <after process="registerCal" status="SUCCESS"/>
         <after process="registerCmpDFm" status="SUCCESS"/>
         <after process="registerFastMonTuple" status="SUCCESS"/>
+        <after process="registerFilteredMerit" status="SUCCESS"/>
         <after process="registerGcr" status="SUCCESS"/>
         <after process="registerM7Hp" status="SUCCESS"/>
         <after process="registerMeritHist" status="SUCCESS"/>
@@ -2188,6 +2235,7 @@
         <variables>
           <var name="fileType">recon</var>
           <var name="%(recon_versionName)s">%(recon_version)s</var>
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=250]&quot; "/>
         <depends>
@@ -2424,7 +2472,6 @@
         </createsSubtasks>
       </process>
 
-<!-- Don't need this yet
       <process name="scanRecon" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="subTask">doCrumb</var>
@@ -2438,27 +2485,37 @@
           <after process="doCrumb.recon" status="DONE"/>
         </depends>
       </process>
--->
+
+      <process name="allRecon" autoRetryMaxAttempts="%(retries)s">
+        <script><![CDATA[
+%(placeHolderBody)s
+]]>
+        </script>
+        <depends>
+          <after process="doCrumb.recon" status="SUCCESS"/>
+        </depends>
+      </process>
 
       <process name="mergeMeritCrumbs" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="fileType">merit</var>
-          <var name="L1_crumb_list">${pipeline.processInstance("setupCrumbs").getVariable("L1_crumb_list")}</var>      
+          <var name="goodPis">${pipeline.processInstance("scanRecon").getVariable("goodPis")}</var>  
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -m &quot;${HOSTLIST}&quot; -R &quot;rusage[scratch=1]&quot; " />
         <depends>
-          <after process="doCrumb.recon" status="DONE"/>
+          <after process="scanRecon" status="SUCCESS"/>
         </depends>
       </process>
 
       <process name="mergeReconCrumbs" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="fileType">recon</var>
-          <var name="L1_crumb_list">${pipeline.processInstance("setupCrumbs").getVariable("L1_crumb_list")}</var>      
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+          <var name="goodPis">${pipeline.processInstance("scanRecon").getVariable("goodPis")}</var>  
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
-          <after process="doCrumb.recon" status="DONE"/>
+          <after process="scanRecon" status="SUCCESS"/>
           <after process="mergeMeritCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
         </depends>
       </process>
@@ -2466,11 +2523,12 @@
       <process name="mergeCalCrumbs" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="fileType">cal</var>
-          <var name="L1_crumb_list">${pipeline.processInstance("setupCrumbs").getVariable("L1_crumb_list")}</var>      
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+          <var name="goodPis">${pipeline.processInstance("scanRecon").getVariable("goodPis")}</var>  
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
-          <after process="doCrumb.recon" status="DONE"/>
+          <after process="scanRecon" status="SUCCESS"/>
           <after process="mergeReconCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
         </depends>
       </process>
@@ -2478,11 +2536,12 @@
       <process name="mergeGcrCrumbs" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="fileType">gcr</var>
-          <var name="L1_crumb_list">${pipeline.processInstance("setupCrumbs").getVariable("L1_crumb_list")}</var>      
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+          <var name="goodPis">${pipeline.processInstance("scanRecon").getVariable("goodPis")}</var>  
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -m &quot;${HOSTLIST}&quot; -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
-          <after process="doCrumb.recon" status="DONE"/>
+          <after process="scanRecon" status="SUCCESS"/>
           <after process="mergeCalCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
         </depends>
       </process>
@@ -2513,7 +2572,7 @@
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
-          <after process="doCrumb.recon" status="SUCCESS"/>
+          <after process="allRecon" status="SUCCESS"/>
           <after process="mergeMeritCrumbs" status="SUCCESS"/>
         </depends>
       </process>
@@ -2524,7 +2583,7 @@
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
-          <after process="doCrumb.recon" status="SUCCESS"/>
+          <after process="allRecon" status="SUCCESS"/>
           <after process="mergeCalCrumbs" status="SUCCESS"/>
           <after process="mergeReconCrumbs" status="SUCCESS"/>
         </depends>
@@ -2536,7 +2595,7 @@
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
-          <after process="doCrumb.recon" status="SUCCESS"/>
+          <after process="allRecon" status="SUCCESS"/>
           <after process="mergeCalCrumbs" status="SUCCESS"/>
           <after process="mergeReconCrumbs" status="SUCCESS"/>
         </depends>
@@ -2545,7 +2604,7 @@
       <process name="tkrAnalysis" autoRetryMaxAttempts="%(retries)s">
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/tkrRootAnalysis.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
-          <after process="doCrumb.recon" status="SUCCESS"/>
+          <after process="allRecon" status="SUCCESS"/>
           <after process="mergeReconCrumbs" status="SUCCESS"/>
         </depends>
       </process>
@@ -2553,7 +2612,7 @@
         <process name="svacTuple" autoRetryMaxAttempts="%(retries)s">
           <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeSvac.py" batchOptions=" -q %(longQ)s -m &quot;${HOSTLIST}&quot; -R &quot;rusage[scratch=1]&quot; "/>
           <depends>
-            <after process="doCrumb.recon" status="SUCCESS"/>
+            <after process="allRecon" status="SUCCESS"/>
             <after process="mergeReconCrumbs" status="SUCCESS"/>
           </depends>
         </process>
@@ -2561,7 +2620,6 @@
       <process name="checkChunk" autoRetryMaxAttempts="%(retries)s">
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s "/>
         <depends>
-          <after process="doCrumb.recon" status="SUCCESS"/>
           <after process="fastMonHist" status="SUCCESS"/>
           <after process="fastMonTrend" status="SUCCESS"/>
           <after process="digiHist" status="SUCCESS"/>
@@ -2629,7 +2687,7 @@
         <var name="l1RunStatus">%(runningStatus)s</var>
       </variables>
       <script><![CDATA[
-%(statusScriptBody)s
+%(runningScriptBody)s
 ]]>
       </script>
       <depends>
@@ -2666,6 +2724,7 @@
       <variables>
         <var name="fileType">digi</var>
         <var name="%(digi_versionName)s">%(digi_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -R &quot;rusage[scratch=250]&quot; "/>
       <depends>
@@ -2808,21 +2867,7 @@
       </createsSubtasks>
     </process>
 
-    <process name="setCrashedLci" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="l1RunStatus">%(crashedStatus)s</var>
-      </variables>
-      <script><![CDATA[
-%(statusScriptBody)s
-]]>
-      </script>
-      <depends>
-        <after process="checkRunLci" status="SKIPPED"/>
-        <after process="setRunningLci" status="DONE"/>
-      </depends>
-    </process>
-
-    <process name="setSuccessfulLci" autoRetryMaxAttempts="%(retries)s">
+    <process name="setStatusLci" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="parentProcess">checkRunLci</var>
       </variables>
@@ -2831,7 +2876,7 @@
 ]]>
       </script>
       <depends>
-        <after process="checkRunLci" status="SUCCESS"/>
+        <after process="checkRunLci" status="DONE"/>
         <after process="setRunningLci" status="DONE"/>
       </depends>
     </process>
@@ -2910,7 +2955,7 @@
       </createsSubtasks>
     </process>
 
-    <process name="setSuccessfulInc" autoRetryMaxAttempts="%(retries)s">
+    <process name="setStatusInc" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="parentProcess">checkRunInc</var>
       </variables>
@@ -2919,7 +2964,7 @@
 ]]>
       </script>
       <depends>
-        <after process="checkRunInc" status="SUCCESS"/>
+        <after process="checkRunInc" status="DONE"/>
       </depends>
     </process>
 
@@ -3099,7 +3144,7 @@
       </createsSubtasks>
     </process>
 
-    <process name="setSuccessfulIncLci" autoRetryMaxAttempts="%(retries)s">
+    <process name="setStatusIncLci" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="parentProcess">checkRunIncLci</var>
       </variables>
@@ -3108,7 +3153,7 @@
 ]]>
       </script>
       <depends>
-        <after process="checkRunIncLci" status="SUCCESS"/>
+        <after process="checkRunIncLci" status="DONE"/>
       </depends>
     </process>
 

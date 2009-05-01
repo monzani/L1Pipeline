@@ -7,7 +7,6 @@ import config
 
 import GPLinit
 
-import acqQuery
 import fileNames
 import meritFiles
 import registerPrep

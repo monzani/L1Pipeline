@@ -1,6 +1,30 @@
+1.73
+-----------------
+Make ft1 on chunks.
+Add diffuse response to ft1.
+Make filtered merit.
+Make our own gap file.
+Add quality and config to ft2.
+Move a bunch of stuff from setSuccessful to setRunning.
+Allow specifying the version to fileNames.fileName.
+Add version tochunk file names (but it's always 0 at the mo).
+Tweak hsplit to work around ROOT 5.20 issue.
+Allow data catalog type to differ from group.
+Allow attaching extra metadata when registering files - use to specify cut for
+filtered merit.
+fileNames.fileName can get file name from a variable, if so it overrides the
+normal rules.
+Allow execing scripts instead of including them in the XML. Shouldn't use this
+for prod.
+Add P100-FT2 task.
+Start work on genericScript to reduce boilerplate.
+
+
 1.72
 -----------------
 Adding the machinery to run the Verify-for-ft2 package.
+Versionize crumb files. [LONE-132@JIRA]
+Fix LD_LIBRARY_PATH for tree merges.
 
 
 1.71
