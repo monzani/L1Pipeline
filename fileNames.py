@@ -35,6 +35,7 @@ fileTypes = {
     'compareDFm': 'xml',
     'crumbList': 'txt',
     'digi': 'root',
+    'digiGap': 'txt',
     'digiHist': 'root',
     'digiHistAlarm': 'xml',
     'digiTrend': 'root',
@@ -54,7 +55,6 @@ fileTypes = {
     'ft2Seconds': 'fit',
     'ft2Fake': 'fit',
     'ft2Txt': 'txt',
-    'gap': 'txt',
     'gcr': 'root',
     'ls1': 'fit',
     'ls1BadGti': 'fit',
@@ -217,6 +217,11 @@ def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None,
             verNum = int(variables.getVar(fileType, 'ver'))
             if next:
                 verNum += 1
+
+                # if we're reprocessing, we probably aren't starting from 0
+                baseVersion = int(os.environ.get('baseVersion', '0'))
+                verNum = max(verNum, baseVersion)
+                
                 pass
             verStr = 'v%03d' % verNum
             if fileType in ['magic7Hp']:

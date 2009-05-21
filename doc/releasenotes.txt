@@ -1,4 +1,4 @@
-1.73
+1.74
 -----------------
 Make ft1 on chunks.
 Add diffuse response to ft1.
@@ -7,7 +7,7 @@ Make our own gap file.
 Add quality and config to ft2.
 Move a bunch of stuff from setSuccessful to setRunning.
 Allow specifying the version to fileNames.fileName.
-Add version tochunk file names (but it's always 0 at the mo).
+Add version to chunk file names (but it's always 0 at the mo).
 Tweak hsplit to work around ROOT 5.20 issue.
 Allow data catalog type to differ from group.
 Allow attaching extra metadata when registering files - use to specify cut for
@@ -18,6 +18,12 @@ Allow execing scripts instead of including them in the XML. Shouldn't use this
 for prod.
 Add P100-FT2 task.
 Start work on genericScript to reduce boilerplate.
+Use pass7 cuts for ft1 and electrons.
+
+
+1.73
+-----------------
+Adding an automatic throttling mechanism.
 
 
 1.72

@@ -13,13 +13,14 @@ runId = os.environ['RUNID']
 fileTypes = os.environ['fileTypes']
 typeList = fileTypes.split(',')
 
+newFolder = os.environ['dataCatDir']
 oldFolder = '/Data/Flight/Level1/LPA'
 folders = {
     'DIGI': oldFolder,
     'MAGIC7L1': oldFolder,
     }
 
-datacat = '''/afs/slac.stanford.edu/u/gl/glast/datacat/dev/datacat find --group %s --filter 'Name=="%s"'  --show-unscanned-locations   --show-non-ok-locations  %s '''
+datacat = '''/afs/slac.stanford.edu/u/gl/glast/datacat/prod/datacat find --group %s --filter 'Name=="%s"'  --show-unscanned-locations   --show-non-ok-locations  %s '''
 
 then = time.time()
 print >> sys.stderr, then
@@ -27,7 +28,7 @@ for fileType in typeList:
     uType = fileType.upper()
     print >> sys.stderr, 'type:', uType
 
-    folder = folders.get(uType, config.dataCatDir)
+    folder = folders.get(uType, newFolder)
 
     cmd = datacat % (uType, runId, folder)
     print >> sys.stderr, cmd

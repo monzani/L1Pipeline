@@ -49,7 +49,7 @@ setupScript = config.packages['ft2Util']['setup']
 
 #realGapFile = os.path.join(
 #    os.environ['DOWNLINK_RAWDIR'], 'event_gaps_%s.txt' % dlId)
-realGapFile = fileNames.fileName('gap', dlId, runId)
+realGapFile = fileNames.fileName('digiGap', dlId, runId)
 if os.path.exists(realGapFile):
     stagedGapFile =  staged.stageIn(realGapFile)
     gapOpts = ' -Gaps_File %s ' % stagedGapFile
@@ -72,7 +72,6 @@ mStart, mStop = meritFiles.startAndStop(stagedMeritFile)
 print 'merit:', mStart, mStop
 tStart = mStart - config.ft2Pad
 tStop = mStop + config.ft2Pad
-# These are ignored if a digi file is supplied. Maybe we can get that changed.
 
 template = config.ft2Template
 templOpt = '-new_tpl %s' % template

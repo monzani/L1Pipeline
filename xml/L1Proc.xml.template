@@ -1189,7 +1189,7 @@
     <process name="makeGaps" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="%(digi_versionName)s">%(digi_version)s</var>
-        <var name="%(gap_versionName)s">%(gap_version)s</var>
+        <var name="%(digiGap_versionName)s">%(digiGap_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeGaps.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=5]&quot; " />
       <depends>
@@ -1200,7 +1200,7 @@
     <process name="registerGaps" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="parentProcess">makeGaps</var>
-        <var name="fileType">gap</var>
+        <var name="fileType">digiGap</var>
         <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
@@ -1216,7 +1216,7 @@
       <variables>
         <var name="%(digi_versionName)s">%(digi_version)s</var>
         <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
-        <var name="%(gap_versionName)s">%(gap_version)s</var>
+        <var name="%(digiGap_versionName)s">%(digiGap_version)s</var>
         <var name="%(magic7L1_versionName)s">%(magic7L1_version)s</var>
         <var name="%(merit_versionName)s">%(merit_version)s</var>
         <var name="runQuality">${pipeline.processInstance("setRunning").getVariable("runQuality")}</var>

@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.73"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.74"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -84,6 +84,7 @@ saveDl = True
 dataCatBase = '/Data/Flight/Level1'
 dataSource = os.environ.get('DATASOURCE', 'LPA')
 dataCatDir = '/'.join([dataCatBase, dataSource])
+dataCatDir = os.environ.get('dataCatDir', dataCatDir)
 # reprocess
 #dataCatDir = '/Data/Flight/Reprocess/P100'
 #dataCatBase = dataCatDir
@@ -96,7 +97,8 @@ if testMode: L1Dir = os.path.join(L1Dir, 'test')
 #L1Dir = os.path.join(L1Dir, dataSource)
 
 # start versions from here for reprocessing
-baseVersion = 100
+#baseVersion = 100
+# maybe we don't need this here
 
 # staging buffers with smallish integer weights
 # These are actually links so they can be swapped out easily.
@@ -285,7 +287,7 @@ cmtPackages = {
         },
     'evtClassDefs': {
         'repository': '',
-        'version': 'v0r6p1',
+        'version': 'v0r7',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
@@ -301,7 +303,7 @@ cmtPackages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r2p25',
+        'version': 'v1r2p26',
         },
     'GPLtools': {
         'repository': '',
@@ -564,9 +566,9 @@ tdBin = {
 
 
 #ft1Cuts = 'DEFAULT'
-ft1Cuts = os.path.join(packages['evtClassDefs']['data'], 'pass6_FSW_cuts')
-#ft1Classifier = 'Pass6_Classifier'
-ft1Classifier = 'Pass6_kluge_Classifier'
+ft1Cuts = os.path.join(packages['evtClassDefs']['data'], 'pass7_FSW_cuts')
+electronCuts = os.path.join(packages['evtClassDefs']['data'], 'pass7_Electrons_FSW_cuts')
+ft1Classifier = 'Pass7_Classifier'
 ft1Dicts = {
     'ft1': os.path.join(packages['evtClassDefs']['data'], 'FT1variables'),
     'ls1': os.path.join(packages['evtClassDefs']['data'], 'LS1variables'),

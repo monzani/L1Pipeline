@@ -12,7 +12,7 @@ import variables
 
 #os.chdir(config.L1ProcROOT) # ?
 
-taskNames = ['forceL1Merge', 'L1Proc', 'noReconMerge', 'setL1Status', 'testVerify', 'reprocessFt2']
+taskNames = ['forceL1Merge', 'L1Proc', 'noReconMerge', 'setL1Status', 'testVerify', 'P100-FT2']
 
 scriptNames = {
     'placeHolderBody': 'placeHolder.py',
@@ -34,7 +34,10 @@ def embody_inline(script):
 def embody_exec(script):
     body = "execfile('%s')" % script
     return body
-embody = embody_exec
+
+whichBody = os.environ.get('L1_EMBODY', 'inline')
+bodies = {'inline': embody_inline, 'exec': embody_exec}
+embody = bodies[whichBody]
 
 scriptBodies = dict((name, embody(qualify(name))) for name in scriptNames)
 
@@ -81,6 +84,7 @@ ofp.write('source %s\n' % config.glastSetup)
 ofp.write(bEnv("L1_TASK_NAME", config.L1Name))
 ofp.write(bEnv("L1_INSTALL_DIR", config.installRoot))
 ofp.write(bEnv("L1_BUILD_DIR", config.L1CmtBase))
+ofp.write(bEnv("L1_EMBODY", whichBody))
 ofp.write(bEnv("L1_TASK_VERSION", config.L1Version))
 ofp.write(bEnv("L1ProcROOT", config.L1ProcROOT))
 
@@ -97,6 +101,9 @@ ofp.write(bEnv("isocMode", config.isocMode))
 
 #ofp.write('%s\n' % config.isocEnv)
 
+ofp.close()
+
+
 ofq = open('setup.csh', 'w')
 
 ofq.write('source %s\n' % config.glastSetupCsh)
@@ -104,6 +111,7 @@ ofq.write('source %s\n' % config.glastSetupCsh)
 ofq.write(cEnv("L1_TASK_NAME", config.L1Name))
 ofq.write(cEnv("L1_INSTALL_DIR", config.installRoot))
 ofq.write(cEnv("L1_BUILD_DIR", config.L1CmtBase))
+ofq.write(cEnv("L1_EMBODY", whichBody))
 ofq.write(cEnv("L1_TASK_VERSION", config.L1Version))
 ofq.write(cEnv("L1ProcROOT", config.L1ProcROOT))
 
@@ -118,4 +126,4 @@ ofq.write(cEnv("PYTHONPATH", config.pythonPath))
 ofq.write(cEnv("ROOTSYS", config.rootSys))
 ofq.write(cEnv("isocMode", config.isocMode))
 
-
+ofq.close()
