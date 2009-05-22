@@ -1,3 +1,9 @@
+
+1.73
+-----------------
+Adding an automatic throttling mechanism.
+
+
 1.72
 -----------------
 Adding the machinery to run the Verify-for-ft2 package.

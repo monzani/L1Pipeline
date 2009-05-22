@@ -22,6 +22,7 @@ import pipeline
 import registerPrep
 import runner
 import stageFiles
+import lockFile
 
 def finalize(status):
     if status:
@@ -170,6 +171,10 @@ if numInFiles == 1:
           (inFiles[0], realOutFile)
     #shutil.copyfile(inFiles[0], realOutFile) # Dude, we've got an INTERFACE for that!
     stageFiles.copy(inFiles[0], realOutFile) # Much better.
+    if  fileType in ['merit'] and mergeLevel == 'run':
+        print >> sys.stderr, \
+            "Attempting to remove throttling lock for [%s,%s] at [%s]" % (dlId,runId,time.ctime())
+        lockFile.unlockThrottle(dlId,runId)
     finalize(0)
     pass
 
@@ -259,5 +264,10 @@ else:
     pass
 
 print >> sys.stderr, '------------------- finish merge -----------------'
+
+if  fileType in ['merit'] and mergeLevel == 'run':
+    print >> sys.stderr, \
+          "Attempting to remove throttling lock for [%s,%s] at [%s]" % (dlId,runId,time.ctime())
+    lockFile.unlockThrottle(dlId,runId)
 
 finalize(status)

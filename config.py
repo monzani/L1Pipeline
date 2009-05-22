@@ -9,14 +9,14 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.72"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.73"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
 creator = '-'.join([L1Name, L1Version])
     
 #L1Cmt = os.path.join(installRoot, 'builds')
-L1Volume = '/afs/slac/g/glast/ground/releases/volume03'
+L1Volume = '/afs/slac/g/glast/ground/releases/volume01'
 L1CmtBase = os.environ.get('L1_BUILD_DIR') or os.path.join(L1Volume, 'L1Proc')
 L1Cmt = os.path.join(L1CmtBase, L1Version)
 
@@ -91,6 +91,10 @@ xrootBase = xrootGlast + xrootSubDir
 
 if testMode: L1Dir = os.path.join(L1Dir, 'test')
 #L1Dir = os.path.join(L1Dir, dataSource)
+
+#throttle parameters
+throttleDir =  os.path.join(L1Dir, 'throttle')
+throttleLimit = 3
 
 # staging buffers with smallish integer weights
 # These are actually links so they can be swapped out easily.
