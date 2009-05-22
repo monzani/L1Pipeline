@@ -100,6 +100,10 @@ if testMode: L1Dir = os.path.join(L1Dir, 'test')
 #baseVersion = 100
 # maybe we don't need this here
 
+#throttle parameters
+throttleDir =  os.path.join(L1Dir, 'throttle')
+throttleLimit = 3
+
 # staging buffers with smallish integer weights
 # These are actually links so they can be swapped out easily.
 ## No, they're not.

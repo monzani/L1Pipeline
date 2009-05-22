@@ -65,6 +65,9 @@
    </prerequisites>
 
     <process name="findChunks" autoRetryMaxAttempts="0"> <!-- This should not be automatically rolled back, it interacts poorly with the run lock -->
+      <variables>
+        <var name="l1LockAction">LockAndThrottle</var>
+      </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/findChunks.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py -sp %(highPriority)d " />
       <createsSubtasks>
         <subtask>doChunk</subtask>
@@ -2228,6 +2231,9 @@
     <task name="cleanupCompleteRun" version="%(L1Version)s" type="Data">
 
       <process name="getTimes" autoRetryMaxAttempts="0">
+        <variables>
+	      <var name="l1LockAction">LockDirOnly</var>
+        </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimes.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
       </process>
 
@@ -2676,6 +2682,9 @@
     </prerequisites>
 
     <process name="findChunksLci" autoRetryMaxAttempts="0">
+      <variables>
+        <var name="l1LockAction">LockAndThrottle</var>
+      </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/findChunks.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
       <createsSubtasks>
         <subtask>doChunkLci</subtask>
@@ -2949,6 +2958,9 @@
     </prerequisites>
 
     <process name="checkRunInc" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="l1LockAction">LockDirOnly</var>
+      </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
       <createsSubtasks>
         <subtask>cleanupIncompleteRun</subtask>
@@ -2971,6 +2983,9 @@
     <task name="cleanupIncompleteRun" version="%(L1Version)s" type="Data">
 
       <process name="getTimesInc" autoRetryMaxAttempts="0">
+        <variables>
+          <var name="l1LockAction">LockDirOnly</var>
+        </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimes.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
       </process>
 
