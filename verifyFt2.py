@@ -27,12 +27,16 @@ verifyFt2File = staged.stageOut(realVerifyFt2File)
 
 workDir = os.path.dirname(verifyFt2File)
 
-setupScript = config.cmtScript
+cmtPath = config.ft2CmtPath
+
+package = config.packages['TestReport']
+setupScript = package['setup']
 app = config.apps['ft2Verify']
 truncation = config.verifyOptions['Truncation']
 
 cmd = '''
 cd %(workDir)s
+export CMTPATH=%(cmtPath)s
 source %(setupScript)s
 %(app)s -f %(stagedFt2File)s -x %(verifyFt2File)s -t %(truncation)s
 ''' % locals()
