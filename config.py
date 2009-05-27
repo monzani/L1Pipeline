@@ -193,8 +193,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume02')
-glastVersion = 'v17r17'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume11')
+glastVersion = 'v17r31'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -251,7 +251,7 @@ hpTaskBase = '/afs/slac/g/glast/isoc/flightOps/offline/halfPipe/prod'
 l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
 
 #stVersion = 'v9r8p2'
-stVersion = 'v9r11'
+stVersion = 'v9r13'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
 #ST = os.path.join(L1Cmt, "ScienceTools", "ScienceTools-%s" % stVersion)
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
@@ -275,11 +275,11 @@ ft2CmtPath = ':'.join([L1Cmt, glastLocation, ST, glastExt])
 cmtPackages = {
     'calibGenTKR': {
         'repository': '',
-        'version': 'v4r5',
+        'version': 'v4r8',
         },
     'calibTkrUtil': {
         'repository': '',
-        'version': 'v2r7p3',
+        'version': 'v2r9',
         },
     'Common': {
         'repository': 'dataMonitoring',
@@ -323,7 +323,7 @@ cmtPackages = {
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'v9r1',
+        'version': 'v9r2',
         },
     }
 

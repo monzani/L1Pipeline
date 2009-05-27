@@ -34,6 +34,11 @@ for fileType in typeList:
     print >> sys.stderr, cmd
     fileName = os.popen(cmd).read().strip()
 
+    if not fileName:
+        print >> sys.stderr, "Couldn't get file name for %s" % fileType
+        sys.exit(1)
+        pass
+    
     variables.setVar(fileType, 'fileName', fileName)
 
     now = time.time()
