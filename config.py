@@ -11,13 +11,13 @@ import sys
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
 L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.74"
 fullTaskName = '-'.join([L1Name, L1Version])
-installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
+installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/P100-FT2"
 
 creator = '-'.join([L1Name, L1Version])
     
 #L1Cmt = os.path.join(installRoot, 'builds')
 L1Volume = '/afs/slac/g/glast/ground/releases/volume01'
-L1CmtBase = os.environ.get('L1_BUILD_DIR') or os.path.join(L1Volume, 'L1Proc')
+L1CmtBase = os.environ.get('L1_BUILD_DIR') or os.path.join(L1Volume, 'P100-FT2')
 L1Cmt = os.path.join(L1CmtBase, L1Version)
 
 doCleanup = True
