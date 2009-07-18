@@ -14,14 +14,11 @@ import chunkTester
 import fileNames
 import finders
 
-hostList = 'preemptfarm glastyilis glastcobs'
-
 inDir = sys.argv[1]
 
 chunks = finders.findChunkFiles(inDir)
 
 for chunk in chunks.values():
-    chunk['hostList'] = hostList
     chunk['headerData'] = chunkTester.readHeader(chunk['chunkFile'])
     continue
 

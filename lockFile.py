@@ -209,9 +209,11 @@ def unlockThrottle(id,run):
             print >> sys.stderr, "Lock %s successfully removed" % thrLockFile
             return
             
-    raise LockedError, "Couldn't find any throttle lock for %s!" %id
+    # If lock wasn't found, generate a warning
+    msg = "Couldn't find any throttle lock for %s,%s (probably it was already removed?)" %(id,run)
+    print >> sys.stderr, msg
+    l1Logger.warn(msg)
     return
-    
 
 def readLock(directory, base, id):
     lockFile = os.path.join(directory, lockFileName(base))

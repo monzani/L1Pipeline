@@ -1,3 +1,7 @@
+1.74
+-----------------
+Removing the chunk-based HOSTLIST
+
 
 1.73
 -----------------

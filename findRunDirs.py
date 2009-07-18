@@ -56,12 +56,6 @@ stopTs = time.time()
 delta = stopTs - startTs
 print >> sys.stderr, '%s s' % delta
 
-hostLists = lsf.balance(chunkKeys)
-
-for (runId, chunkId), hostList in hostLists:
-    chunkLists[runId][chunkId]['hostList'] = hostList
-    continue
-
 for runId, chunkListData in chunkLists.items():
     realChunkList = fileNames.fileName('chunkList', dlId, runId)
     # temporarily mangle chunk list name to get around JIRA LONE-67    

@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.73"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.74"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -185,8 +185,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
-glastVersion = 'v15r47p7'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume13')
+glastVersion = 'v15r47p9'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -273,7 +273,7 @@ cmtPackages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v5r7p0',
+        'version': 'v6r0p0',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -285,7 +285,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v4r5p1',
+        'version': 'v5r0p0',
         },
     'ft2Util': {
         'repository': '',
@@ -305,18 +305,18 @@ cmtPackages = {
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'v9r1',
+        'version': 'v9r2',
         },
     }
 
 cvsPackages = {
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r3p5',
+        'version': 'v1r4p1',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r6p1',
+        'version': 'v2r0p0',
         },
     'IGRF': {
         'repository': 'dataMonitoring',
