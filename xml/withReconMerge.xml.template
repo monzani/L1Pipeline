@@ -1060,7 +1060,7 @@
         <var name="fileType">ft2</var>
         <var name="%(ft2_versionName)s">%(ft2_version)s</var>
       </variables>
-      <job executable="${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d  -R &quot;select[scratch&gt;1]&quot; " />
+      <job executable="${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       <depends>
         <after process="registerFT2" status="SUCCESS"/>
       </depends>
@@ -1852,25 +1852,25 @@
       </prerequisites>
 
       <process name="digitization">
-        <job executable="${isocRun} python2.5 ${L1ProcROOT}/digitize.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d  -R &quot;select[scratch&gt;1]&quot; " />
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/digitize.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       </process>
  
       <process name="fakeFT2">
-        <job executable="${isocRun} python2.5 ${L1ProcROOT}/fakeFT2.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d  -R &quot;select[scratch&gt;1]&quot; " />
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/fakeFT2.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
       </process>
  
       <process name="fastMonTuple">
         <variables>
           <var name="reportType">fastMonTuple</var>
         </variables>
-        <job executable="${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s  -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
       </process>
 
       <process name="fastMonHist">
         <variables>
           <var name="reportType">fastMonHist</var>
         </variables>
-        <job executable="${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s  -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="fastMonTuple" status="SUCCESS"/>
         </depends>
@@ -1880,7 +1880,7 @@
         <variables>
           <var name="reportType">fastMonTrend</var>
         </variables>
-        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s  -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="fastMonTuple" status="SUCCESS"/>
         </depends>
@@ -1890,7 +1890,7 @@
         <variables>
           <var name="reportType">digiHist</var>
         </variables>
-        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s  -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="digitization" status="SUCCESS"/>
         </depends>
@@ -1900,7 +1900,7 @@
         <variables>
           <var name="reportType">digiTrend</var>
         </variables>
-        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s  -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="digitization" status="SUCCESS"/>
         </depends>
@@ -1910,7 +1910,7 @@
         <variables>
           <var name="reportType">calHist</var>
         </variables>
-        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s  -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="digitization" status="SUCCESS"/>
         </depends>
@@ -1920,14 +1920,14 @@
         <variables>
           <var name="reportType">calTrend</var>
         </variables>
-        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s  -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="digitization" status="SUCCESS"/>
         </depends>
       </process>
  
       <process name="setupCrumbs">
-        <job executable="${isocRun} python2.5 ${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d  -R &quot;select[scratch&gt;1]&quot; " />
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
         <depends>
           <after process="digitization" status="SUCCESS"/>
           <after process="fakeFT2" status="SUCCESS"/>
@@ -1941,7 +1941,7 @@
         <variables>
           <var name="fileType">merit</var>
         </variables>
-        <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d  -R &quot;select[scratch&gt;1]&quot; " />
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
         </depends>
@@ -1951,7 +1951,7 @@
         <variables>
           <var name="fileType">recon</var>
         </variables>
-        <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s  -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
           <after process="mergeMeritCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
@@ -1962,7 +1962,7 @@
         <variables>
           <var name="fileType">cal</var>
         </variables>
-        <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s  -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
           <after process="mergeReconCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
@@ -1973,7 +1973,7 @@
         <variables>
           <var name="fileType">gcr</var>
         </variables>
-        <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s  -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="DONE"/>
           <after process="mergeCalCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
@@ -1984,7 +1984,7 @@
         <variables>
           <var name="reportType">meritHist</var>
         </variables>
-        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s  -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="SUCCESS"/>
           <after process="mergeMeritCrumbs" status="SUCCESS"/>
@@ -1995,7 +1995,7 @@
         <variables>
           <var name="reportType">meritTrend</var>
         </variables>
-        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s  -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="SUCCESS"/>
           <after process="mergeMeritCrumbs" status="SUCCESS"/>
@@ -2006,7 +2006,7 @@
         <variables>
           <var name="reportType">reconHist</var>
         </variables>
-        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s  -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="SUCCESS"/>
           <after process="mergeCalCrumbs" status="SUCCESS"/>
@@ -2018,7 +2018,7 @@
         <variables>
           <var name="reportType">reconTrend</var>
         </variables>
-        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s  -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="SUCCESS"/>
           <after process="mergeCalCrumbs" status="SUCCESS"/>
@@ -2027,7 +2027,7 @@
       </process>
  
       <process name="tkrAnalysis">
-        <job executable="${isocRun} python2.5 ${L1ProcROOT}/tkrRootAnalysis.py" batchOptions=" -q %(longQ)s  -R &quot;select[scratch&gt;1]&quot; "/>
+        <job executable="${isocRun} python2.5 ${L1ProcROOT}/tkrRootAnalysis.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="SUCCESS"/>
           <after process="mergeReconCrumbs" status="SUCCESS"/>
@@ -2035,7 +2035,7 @@
       </process>
  
         <process name="svacTuple">
-          <job executable="${isocRun} python2.5 ${L1ProcROOT}/makeSvac.py" batchOptions=" -q %(longQ)s  -R &quot;select[scratch&gt;1]&quot; "/>
+          <job executable="${isocRun} python2.5 ${L1ProcROOT}/makeSvac.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
           <depends>
             <after process="doCrumb.recon" status="SUCCESS"/>
           </depends>
@@ -2077,7 +2077,7 @@
         </prerequisites>
 
         <process name="recon">
-          <job executable="${isocRun} python2.5 ${L1ProcROOT}/recon.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d  -R &quot;select[scratch&gt;1]&quot; " />
+          <job executable="${isocRun} python2.5 ${L1ProcROOT}/recon.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -R &quot;select[scratch&gt;1]&quot; " />
         </process>
 
       </task> <!-- doCrumb -->

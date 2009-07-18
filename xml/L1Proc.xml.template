@@ -1251,7 +1251,7 @@
         <var name="fileType">ft2</var>
         <var name="%(ft2_versionName)s">%(ft2_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d  -R &quot;rusage[scratch=1]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
       <depends>
         <after process="registerFT2" status="SUCCESS"/>
       </depends>
@@ -2369,7 +2369,7 @@
         <variables>
           <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d  -R &quot;rusage[scratch=1]&quot; " />
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
         <depends>
           <after process="digitization" status="SUCCESS"/>
           <after process="fakeFT2" status="SUCCESS"/>
@@ -2399,7 +2399,7 @@
           <!-- <var name="L1_crumb_list">${pipeline.processInstance("setupCrumbs").getVariable("L1_crumb_list")}</var> -->
           <var name="goodPis">${pipeline.processInstance("scanRecon").getVariable("goodPis")}</var>  
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d  -R &quot;rusage[scratch=1]&quot; " />
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
         <depends>
           <after process="scanRecon" status="SUCCESS"/>
           <!-- <after process="doCrumb.recon" status="DONE"/> -->
@@ -2412,7 +2412,7 @@
           <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
           <var name="goodPis">${pipeline.processInstance("scanRecon").getVariable("goodPis")}</var>  
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s  -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
           <after process="scanRecon" status="SUCCESS"/>
           <after process="mergeMeritCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
@@ -2425,7 +2425,7 @@
           <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
           <var name="goodPis">${pipeline.processInstance("scanRecon").getVariable("goodPis")}</var>  
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s  -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
           <after process="scanRecon" status="SUCCESS"/>
           <after process="mergeReconCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
@@ -2438,7 +2438,7 @@
           <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
           <var name="goodPis">${pipeline.processInstance("scanRecon").getVariable("goodPis")}</var>  
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s  -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
           <after process="scanRecon" status="SUCCESS"/>
           <after process="mergeCalCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
@@ -2460,7 +2460,7 @@
         <variables>
           <var name="reportType">reconHist</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s  -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="SUCCESS"/>
           <after process="mergeCalCrumbs" status="SUCCESS"/>
@@ -2472,7 +2472,7 @@
         <variables>
           <var name="reportType">reconTrend</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s  -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="SUCCESS"/>
           <after process="mergeCalCrumbs" status="SUCCESS"/>
@@ -2481,7 +2481,7 @@
       </process>
  
       <process name="tkrAnalysis" autoRetryMaxAttempts="%(retries)s">
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/tkrRootAnalysis.py" batchOptions=" -q %(longQ)s  -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/tkrRootAnalysis.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
           <after process="doCrumb.recon" status="SUCCESS"/>
           <after process="mergeReconCrumbs" status="SUCCESS"/>
@@ -2489,7 +2489,7 @@
       </process>
  
         <process name="svacTuple" autoRetryMaxAttempts="%(retries)s">
-          <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeSvac.py" batchOptions=" -q %(longQ)s  -R &quot;rusage[scratch=1]&quot; "/>
+          <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeSvac.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
           <depends>
             <after process="doCrumb.recon" status="SUCCESS"/>
             <after process="mergeReconCrumbs" status="SUCCESS"/>
@@ -2533,7 +2533,7 @@
         </prerequisites>
 
         <process name="recon" autoRetryMaxAttempts="%(retries)s">
-          <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/recon.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d  -R &quot;rusage[scratch=1]&quot; " />
+          <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/recon.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
         </process>
 
       </task> <!-- doCrumb -->
