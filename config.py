@@ -8,8 +8,8 @@
 import os
 import sys
 
-L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.74"
+L1Name = os.environ.get('L1_TASK_NAME') or "P100-FT2"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.75"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/P100-FT2"
 
@@ -193,8 +193,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume11')
-glastVersion = 'v17r31'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume13')
+glastVersion = 'v15r47p9'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -219,8 +219,8 @@ reconOptions = {
     'MC': os.path.join(L1Data, 'recon.jobOpt.mc'),
 }
 
-#rootSys = os.path.join(glastExt, 'ROOT/v5.20.00-gl1/root')
-rootSys = os.path.join(glastExt, 'ROOT/v5.20.00-gl1/gcc32')
+rootSys = os.path.join(glastExt, 'ROOT/v5.18.00c-gl1/root')
+#rootSys = os.path.join(glastExt, 'ROOT/v5.20.00-gl1/gcc32')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
@@ -250,8 +250,8 @@ hpTaskBase = '/afs/slac/g/glast/isoc/flightOps/offline/halfPipe/prod'
 
 l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
 
-#stVersion = 'v9r8p2'
-stVersion = 'v9r13'
+stVersion = 'v9r8p2'
+#stVersion = 'v9r15p2'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
 #ST = os.path.join(L1Cmt, "ScienceTools", "ScienceTools-%s" % stVersion)
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
@@ -307,7 +307,7 @@ cmtPackages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r2p26',
+        'version': 'v1r2p28',
         },
     'GPLtools': {
         'repository': '',

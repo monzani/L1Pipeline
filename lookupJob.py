@@ -18,6 +18,7 @@ oldFolder = '/Data/Flight/Level1/LPA'
 folders = {
     'DIGI': oldFolder,
     'MAGIC7L1': oldFolder,
+    'MERIT': oldFolder,
     }
 
 datacat = '''/afs/slac.stanford.edu/u/gl/glast/datacat/prod/datacat find --group %s --filter 'Name=="%s"'  --show-unscanned-locations   --show-non-ok-locations  %s '''
