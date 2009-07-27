@@ -1,6 +1,7 @@
 1.74
 -----------------
-Removing the chunk-based HOSTLIST
+Removing the chunk-based HOSTLIST.
+unlockThrottle doesn't fail if the throttle lock has already been removed.
 
 
 1.73
