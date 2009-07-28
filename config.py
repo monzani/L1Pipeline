@@ -94,7 +94,7 @@ if testMode: L1Dir = os.path.join(L1Dir, 'test')
 
 #throttle parameters
 throttleDir =  os.path.join(L1Dir, 'throttle')
-throttleLimit = 3
+throttleLimit = 2
 
 # staging buffers with smallish integer weights
 # These are actually links so they can be swapped out easily.
