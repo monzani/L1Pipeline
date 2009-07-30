@@ -54,6 +54,8 @@ workDir = os.path.dirname(stagedOutFile)
 model = config.diffRspModel
 irf = config.diffRspIrf
 
+diffRspMinClass = config.diffRspMinClass
+
 cmtPath = config.stCmtPath
 
 cmd = '''
@@ -61,7 +63,7 @@ cd %(workDir)s
 export CMTPATH=%(cmtPath)s
 source %(stSetup)s
 mv %(stagedInFile)s %(stagedOutFile)s
-%(app)s scfile=%(stagedFt2File)s evfile=%(stagedOutFile)s srcmdl=%(model)s irfs=%(irf)s
+%(app)s scfile=%(stagedFt2File)s evfile=%(stagedOutFile)s srcmdl=%(model)s irfs=%(irf)s evclsmin=%(diffRspMinClass)r
 ''' % locals()
 
 status = runner.run(cmd)

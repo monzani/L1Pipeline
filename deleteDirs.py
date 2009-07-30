@@ -10,6 +10,7 @@ import sys
 
 import config
 
+import fileOps
 import fileNames
 import runner
 
@@ -71,8 +72,7 @@ totG = len(goners)
 for ig, goner in enumerate(goners):
     if config.doCleanup:
         print >> sys.stderr, "Deleting %s. (%d/%d)" % (goner, ig+1, totG)
-        cmd = 'rm -rf %(goner)s' % locals()
-        status |= runner.run(cmd)
+        status |= fileOps.rmtree(goner)
         print >> sys.stderr, '%s has left the building.' % goner
     else:
         print >> sys.stderr, "NOT Deleting %s." % goner

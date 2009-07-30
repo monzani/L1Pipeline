@@ -17,6 +17,7 @@ import config
 import GPLinit
 
 import fileNames
+import fileOps
 import pipeline
 import runner
 import stageFiles
@@ -87,9 +88,9 @@ if status: # save any core files
         runDir = os.path.dirname(realReconFile)
         pass
     for cf in coreFiles:
-        # and stageFiles.copy should accept a directory as the destination
+        # and fileOps.copy should accept a directory as the destination
         dest = os.path.join(runDir, os.path.basename(cf))
-        stageFiles.copy(cf, dest)
+        fileOps.copy(cf, dest)
         cmd = 'chmod a+r %s' % dest
         runner.run(cmd)
         cmd = 'chmod g+w %s' % dest

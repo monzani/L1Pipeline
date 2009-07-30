@@ -16,6 +16,12 @@ import time
 
 import config
 
+try:
+    import fileOps
+except ImportError:
+    print >> sys.stderr, "Couldn't import fileOps. This is normal when installing, but may cause trouble otherwise."
+    pass
+
 import finders
 import variables
 
@@ -35,10 +41,14 @@ fileTypes = {
     'compareDFm': 'xml',
     'crumbList': 'txt',
     'digi': 'root',
+    'digiGap': 'txt',
     'digiHist': 'root',
     'digiHistAlarm': 'xml',
     'digiTrend': 'root',
     'digiTrendAlarm': 'xml',
+    'electronFt1': 'fit',
+    'electronFt1BadGti': 'fit',
+    'electronMerit': 'root',
     'fastMonError': 'xml',
     'fastMonErrorAlarm': 'xml',
     'fastMonHist': 'root',
@@ -46,13 +56,17 @@ fileTypes = {
     'fastMonTrend': 'root',
     'fastMonTrendAlarm': 'xml',
     'fastMonTuple': 'root',
+    'filteredMerit': 'root',
     'ft1': 'fit',
+    'ft1BadGti': 'fit',
+    'ft1NoDiffRsp': 'fit',
     'ft2': 'fit',
     'ft2Seconds': 'fit',
     'ft2Fake': 'fit',
     'ft2Txt': 'txt',
     'gcr': 'root',
     'ls1': 'fit',
+    'ls1BadGti': 'fit',
     'ls3': 'fit',
     'magic7Hp': 'txt',
     'magic7L1': 'txt',
@@ -142,6 +156,13 @@ def dataCatName(fileType, fileName):
     name = ':'.join([folder, baseName])
     return name
 
+dataCatExceptions = { 
+    'filteredMerit': 'MERIT',
+    }
+def dataCatType(fileType):
+    dcType = dataCatExceptions.get(fileType) or fileType.upper()
+    return dcType
+
 sites = ['SLAC', 'SLAC_XROOT']
 def getSite(fileName):
     site = sites[fileName.startswith('root:')]    
@@ -149,6 +170,14 @@ def getSite(fileName):
 
 def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None,
              next=False, version=None):
+    if fileType is not None:
+        try:
+            fullName = variables.getVar(fileType, 'fileName')
+        except KeyError:
+            fullName = None
+            pass
+        if fullName is not None: return fullName
+        pass
 
     fields = []
 
@@ -183,9 +212,9 @@ def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None,
         else:
             baseDir = config.L1Dir
             pass
+
         pass
-
-
+        
     # Assign a version. Maybe.
     verStr = None
     if version is not None:
@@ -197,15 +226,23 @@ def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None,
             verNum = int(variables.getVar(fileType, 'ver'))
             if next:
                 verNum += 1
+
+                # if we're reprocessing, we probably aren't starting from 0
+                baseVersion = int(os.environ.get('baseVersion', '0'))
+                verNum = max(verNum, baseVersion)
+                
                 pass
             verStr = 'v%03d' % verNum
             if fileType in ['magic7Hp']:
                 verStr = '_'.join([dlId, verStr])
                 pass
             pass
+        pass # emacs is crazy
+    elif level == 'chunk':
+        verStr = 'v0'
         pass
     if verStr is not None: fields.append(verStr)
-    
+
     if fileType in exportTags:
         tag = exportTags[fileType]
         pos = 0
@@ -280,7 +317,7 @@ def findPieces(fileType, dlId, runId=None, chunkId=None):
         # deleting crumb directories.
         if fileType is None:
             crumbVar = variables.getVar('crumb', 'list')
-            crumbIds = crumbVar.split('/')
+            crumbIds = crumbVar.split(os.sep)
             crumbIds.sort()
             argSets = [(fileType, dlId, runId, chunkId, crumbId)
                        for crumbId in crumbIds]
@@ -404,7 +441,7 @@ def preMakeDirs(dirs, dlId, runId=None, chunkId=None, crumbId=None):
     allDirs = [os.path.join(buf, mid, sub) for buf in buffers for sub in dirs]
     print >> sys.stderr, 'Creating directories %s ... ' % allDirs,
     start = time.time()
-    for dir in allDirs: stageFiles.makedirs(dir)
+    for dir in allDirs: fileOps.makedirs(dir)
     stop = time.time()
     print >> sys.stderr, '%g s.' % (stop - start)
     return

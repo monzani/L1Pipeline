@@ -22,6 +22,8 @@ def mergeFiles(outFile, inFiles):
     outBase = os.path.basename(outFile)
     pHead.update('FILENAME', outBase)
     del pHead['CHECKSUM']
+
+    copyKeyWords(pHead, files[-1][0].header)
     
     hduList = pyfits.HDUList([primary])
 
@@ -49,6 +51,8 @@ def mergeHdus(inputs):
     del header['CHECKSUM']
     del header['DATASUM']
 
+    copyKeyWords(header, inputs[-1].header)
+
     columns = inputs[0].columns
 
     nRows = 0
@@ -68,6 +72,14 @@ def checkHdus(inputs):
     baseline = inputs[0].columns
     #for hdu in inputs[1:]: status &= (hdu.columns == baseline)
     return status
+
+
+kwToCopy = ['DATE-END', 'TSTOP']
+def copyKeyWords(target, source):
+    for kw in kwToCopy:
+        target.update(kw, source[kw])
+        continue
+    return
 
 
 def main():

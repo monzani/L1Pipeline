@@ -150,6 +150,12 @@ for runId in dataRuns | oldRuns:
     stream = runNumber
 
     runStatus = runStatuses[runId]
+    if runStatus == "INCOMPLETE" and runId in dataRuns:
+        newStatus = "WAITING"
+        print >> sys.stderr, "%s has data, but status is %s, changing it to %s" % (runId, runStatus, newStatus)
+        runStatus = newStatus
+        pass
+    
     subTask = config.runSubTask[runStatus][source]
 
     try:

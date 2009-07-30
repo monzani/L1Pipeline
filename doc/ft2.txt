@@ -18,3 +18,31 @@ makeFT2Entries.exe -DigiFile digi.root -MeritFile merit.root -M7File m7.txt -FT2
 the Gleam command line should look like:
 makeFT2Entries.exe --Gleam -M7File magic7.txt  -FT2_txt_File  ft2.txt -FT2_fits_File ft2.fits -DigiTstart 2.573483e8
 -DigiTstop 2.573485e8
+
+
+the new tag is v1r2p25
+the new ft2 tpl file is: /afs/slac.stanford.edu/u/gl/tramacer/fitsGen/ScienceTools-LATEST-1-2481/data/ft2.tpl
+copy it where you want.
+
+A)To merge:
+  1) to use the default template
+   mergeFT2Entries.exe -FT2_fits_File ft2.fits  -FT2_fits_merged_File ft2merged.fits
+
+  2) to use the new template
+   mergeFT2Entries.exe -FT2_fits_File ft2.fits -FT2_fits_merged_File ft2merged.fits -new_tpl path-to-your-tpl-file
+
+B)For the real FT2 file is the same:
+   1) to use the new template
+   add to the usual command line : makeFT2Entries.exe -DigiFile .......... -new_tpl path-to-your-tpl-file
+
+   2)To put DataQauliy and LatConfig
+   add to the command line    -LatConfig  <integer value>   -DataQual <integer value    >
+
+C)Gleam
+   use the default templates, I mean don't put -new_tpl path-to-your-tpl-file on the command line.
+   Did gleam use the txt or the fits fake file?
+
+
+D) All the txt file have not been changed so they are insensitive to the ft2 tpl you are using, it means
+    they will use always the old template despite the command line options.
+

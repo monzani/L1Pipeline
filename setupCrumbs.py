@@ -65,7 +65,7 @@ fileNames.writeList(crumbListData, stagedCrumbList)
 
 # also
 # put crumb list in a variable
-crumbVar = '/'.join(crumbIds)
+crumbVar = os.sep.join(crumbIds)
 pipeline.setVariable('L1_crumb_list', crumbVar)
 
 crumbData = []

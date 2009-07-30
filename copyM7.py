@@ -8,6 +8,7 @@ import config
 import GPLinit
 
 import fileNames
+import fileOps
 import registerPrep
 import stageFiles
 
@@ -29,7 +30,7 @@ stagedInFile = staged.stageIn(realInFile)
 #outBase = os.path.basename(realInFile)
 realOutFile = fileNames.fileName(fileType, dlId, runId, next=True)
 
-if not status: status |= stageFiles.copy(stagedInFile, realOutFile)
+if not status: status |= fileOps.copy(stagedInFile, realOutFile)
 
 if status: finishOption = 'wipe'
 status |= staged.finish(finishOption)

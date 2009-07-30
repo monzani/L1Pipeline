@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.74"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.75"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -80,46 +80,78 @@ dlStorage = os.path.join(L1Disk, 'deliveries')
 if testMode: dlStorage = os.path.join(dlStorage, 'test')
 saveDl = True
 
+# normal
 dataCatBase = '/Data/Flight/Level1'
-#dataSource = os.environ.get('DATASOURCE', 'TheWrongPlace')
 dataSource = os.environ.get('DATASOURCE', 'LPA')
 dataCatDir = '/'.join([dataCatBase, dataSource])
+dataCatDir = os.environ.get('dataCatDir', dataCatDir)
+# reprocess
+#dataCatDir = '/Data/Flight/Reprocess/P100'
+#dataCatBase = dataCatDir
 
-xrootGlast = 'root://glast-rdr.slac.stanford.edu//glast'
+if testMode:
+    xrootGlast = 'root://glast-test-rdr.slac.stanford.edu//glast'
+else:
+    xrootGlast = 'root://glast-rdr.slac.stanford.edu//glast'
+    pass
 xrootSubDir = '%s/%s/%s' % (dataCatDir, mode, L1Version)
 xrootBase = xrootGlast + xrootSubDir
 
 if testMode: L1Dir = os.path.join(L1Dir, 'test')
 #L1Dir = os.path.join(L1Dir, dataSource)
 
+# start versions from here for reprocessing
+#baseVersion = 100
+# maybe we don't need this here
+
 #throttle parameters
 throttleDir =  os.path.join(L1Dir, 'throttle')
 throttleLimit = 2
 
 # staging buffers with smallish integer weights
-# These are actually links so they can be swapped out easily.
-## No, they're not.
+#
+# Dev version for crumbs only on xroot
+# stageDisks = {
+#     'crumb': [ 
+#         (os.path.join(xrootGlast, 'Scratch'), 1),
+#     ],
+#     'chunk': [ 
+#         # ("root://sysdev4500//glast", 1),
+#         ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging", 1),
+#         ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging2", 1),
+#         ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging3", 1),
+#         ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging4", 1),
+#         ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging5", 1),
+#         ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging7", 1),
+#     ],
+#     }
+#
+# Dev version for everything on xroot
+# stageDisks = [ 
+#     (os.path.join(xrootGlast, 'scratch'), 1),
+#     ]
+#
+# AFS
 stageDisks = [ 
-     # ("root://sysdev4500//glast", 1),
-     ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging", 1),
-     ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging2", 1),
-     ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging3", 1),
-     ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging4", 1),
-     ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging5", 1),
-     ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging7", 1),
+    # ("root://sysdev4500//glast", 1),
+    ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging", 1),
+    ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging2", 1),
+    ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging3", 1),
+    ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging4", 1),
+    ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging5", 1),
+    ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging7", 1),
     ]
+
 if testMode:
     stageBase = 'l1Test'
 else:
     stageBase = 'l1Stage'
     pass
-#stageDirs = [os.path.join(disk, stageBase) for disk in stageDisks]
 
 #maxCrumbSize = 48000 # SVAC pipeline uses this
 #maxCrumbSize = 250   # tiny
 #maxCrumbSize = 6353   # ~.5Hr on tori (muons).  Also about half of (old) medium q limit
 #maxCrumbSize = 17000   # ~.5Hr on cob (skymodel).
-minCrumbCpuf = 7
 # maxCrumbs = 7 # Maximum number of crumbs/chunk. Not used by current algorithm.
 maxCrumbs = 20 # Maximum number of crumbs/chunk.
 # crumbSize = 10000 # typical crumb size
@@ -185,8 +217,10 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
+#releaseDir = os.path.join(groundRoot, 'releases', 'volume11')
+#glastVersion = 'v17r31'
 releaseDir = os.path.join(groundRoot, 'releases', 'volume13')
-glastVersion = 'v15r47p12'
+glastVersion = 'v15r47p13'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -211,7 +245,8 @@ reconOptions = {
     'MC': os.path.join(L1Data, 'recon.jobOpt.mc'),
 }
 
-rootSys = os.path.join(glastExt, 'ROOT/v5.18.00c-gl1/root')
+#rootSys = os.path.join(glastExt, 'ROOT/v5.18.00c-gl1/root')
+rootSys = os.path.join(glastExt, 'ROOT/v5.20.00-gl4/gcc32')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
@@ -241,9 +276,9 @@ hpTaskBase = '/afs/slac/g/glast/isoc/flightOps/offline/halfPipe/prod'
 
 l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
 
-stVersion = 'v9r8p2'
+stVersion = 'v9r15p3'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
-#ST = os.path.join(L1Cmt, "ScienceTools", "ScienceTools-%s" % stVersion)
+# ST = os.path.join(L1Cmt, "ScienceTools", "ScienceTools-%s" % stVersion) # We should really have our own copy of ScienceTools, but it gave trouble.
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
 PFILES = ".;/dev/null"
 stBinDir = os.path.join(ST, 'bin')
@@ -281,19 +316,27 @@ cmtPackages = {
         },
     'evtClassDefs': {
         'repository': '',
-        'version': 'v0r6',
+        'version': 'v0r12',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
         'version': 'v5r0p0',
         },
+#     'fitsGen': {
+#         'repository': '',
+#         'version': 'v4r2',
+#         },
+    'findGaps': {
+        'repository': 'svac',
+        'version': 'v1r2',
+        },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r2p23',
+        'version': 'v1r2p29',
         },
     'GPLtools': {
         'repository': '',
-        'version': 'fileOps1',
+        'version': 'fileOps3',
         },
     'Monitor': {
         'repository': 'svac',
@@ -340,25 +383,16 @@ for packName in packages:
     continue
 
 # add nonstandard package info
-#packages['AlarmsCfg']['xml'] = os.path.join(
-#    packages['AlarmsCfg']['root'], 'xml')
-
-#packages['Common']['python'] = os.path.join(
-#    packages['Common']['root'], 'python')
 
 packages['EngineeringModelRoot']['app'] = os.path.join(
     packages['EngineeringModelRoot']['bin'], 'RunRootAnalyzer.exe')
 
 packages['evtClassDefs']['data'] = os.path.join(
     packages['evtClassDefs']['root'], 'data')
-#packages['evtClassDefs']['python'] = os.path.join(
-#    packages['evtClassDefs']['root'], 'python')
 
 packages['ft2Util']['app'] = os.path.join(
     packages['ft2Util']['bin'], 'makeFT2Entries.exe')
 
-#packages['FastMon']['python'] = os.path.join(
-#    packages['FastMon']['root'], 'python')
 packages['FastMon']['app'] = os.path.join(
     packages['FastMon']['python'], 'pDataProcessor.py')
 packages['FastMon']['configDir'] = os.path.join(
@@ -367,11 +401,6 @@ packages['FastMon']['env'] = {
     'XML_CONFIG_DIR': packages['FastMon']['configDir']
     }
 packages['FastMon']['extraSetup'] = isocEnv
-
-#packages['GPLtools']['python'] = os.path.join(
-#    packages['GPLtools']['root'], 'python')
-
-#packages['IGRF']['python'] = os.path.join(packages['IGRF']['root'], 'python')
 
 packages['Monitor']['app'] = os.path.join(
     packages['Monitor']['bin'], 'runStrip_t.exe')
@@ -407,6 +436,8 @@ apps = {
         packages['FastMon']['python'], 'pFastMonTreeProcessor.py'),
     'fastMonTuple': packages['FastMon']['app'],
     'fastMon': packages['FastMon']['app'],
+    'findGaps': os.path.join(
+        packages['findGaps']['bin'], 'findGaps.exe'),
     # 'makeFT1': os.path.join(stBinDir, 'makeFT1'),
     'makeFT1': os.path.join(stBinDir, 'makeFT1_kluge'),
     'makeFT2': packages['ft2Util']['app'],
@@ -485,7 +516,8 @@ mergeConfigs = {
 
 alarmRefBase = '/nfs/farm/g/glast/u52/Monitoring/ReferenceHistograms'
 alarmRefDir = os.path.join(alarmRefBase, mode)
-alarmBase = os.path.join(L1Volume, 'AlarmsCfg', mode)
+alarmCfgBase = '/afs/slac/g/glast/ground/releases/volume03'
+alarmBase = os.path.join(alarmCfgBase, 'AlarmsCfg', mode)
 alarmConfigs = {
     'acdPedsAnalyzer': os.path.join(alarmBase, 'xml', 'acdpeds_eor_alarms.xml'),
     'calGainsAnalyzer': os.path.join(
@@ -563,15 +595,32 @@ tdBin = {
 
 
 #ft1Cuts = 'DEFAULT'
-ft1Cuts = os.path.join(packages['evtClassDefs']['data'], 'pass6_FSW_cuts')
-#ft1Classifier = 'Pass6_Classifier'
-ft1Classifier = 'Pass6_kluge_Classifier'
+evclData = packages['evtClassDefs']['data']
+ft1Cuts = os.path.join(evclData, 'pass7_FSW_cuts')
+electronCuts = os.path.join(evclData, 'pass7_Electrons_FSW_cuts')
+cutFiles = {
+    'electronFt1BadGti': electronCuts,
+    'electronMerit': electronCuts,
+    'filteredMerit': ft1Cuts,
+    'ft1': ft1Cuts,
+    'ft1NoDiffRsp': ft1Cuts,
+    'ls1': ft1Cuts,
+    'ls1BadGti': ft1Cuts,
+    }
+ft1Classifier = 'Pass6_Reprocessing_Classifier'
+ft1Vars = os.path.join(evclData, 'FT1variables')
+ls1Vars = os.path.join(evclData, 'LS1variables')
 ft1Dicts = {
-    'ft1': os.path.join(packages['evtClassDefs']['data'], 'FT1variables'),
-    'ls1': os.path.join(packages['evtClassDefs']['data'], 'LS1variables'),
+    'ele': ft1Vars, # fragile
+    'ft1': ft1Vars,
+    'ls1': ls1Vars,
     }
 
-ft2Template = '/nfs/slac/g/svac/focke/L1/newFT2.tpl'
+#diffRspModel = os.path.join(L1Volume, 'diffRsp', 'v0r0p0', 'data', 'source_model_v01.xml')
+#diffRspModel = os.path.join(L1ProcROOT, 'data', 'diffuseModel.xml')
+diffRspModel = '/afs/slac.stanford.edu/g/glast/ground/releases/analysisFiles/diffuse/v2/source_model_v02.xml'
+diffRspIrf = 'P6_V3_DIFFUSE'
+diffRspMinClass = 3
 
 verifyOptions = {
     'InProgress': '',
@@ -581,9 +630,14 @@ verifyOptions = {
     }
 
 ft2Pad = 1.0 # pad time range with this on either end whan making fakeFT2
+ft2Template = os.path.join(L1ProcROOT, 'data', 'ft2.tpl')
+ft2liveTimeTolerance = '1e-12'
+
 m7Pad = 10 # pad time range with this on either end whan making m7
+
 # not used # ft1Pad = 1.0 # pad time range with this on either end whan making ft1 and ls1
-ft1Digits = 1 # round times given to makeFT1 out to this many digits past the decimal point
+ft1Digits = 1 # round times given to makeFT1 OUT (round start down, end up) to this many digits past the decimal point - i.e. 1 makes numbers like 254760591.0
+
 
 if testMode:
     trendMode = 'dev'
@@ -594,7 +648,7 @@ trendIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/%s/
 runIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/%s/bin/ingestRunFile' % trendMode
 
 grPath = os.path.join(glastLocation, 'lib')
-cfitsioPath = os.path.join(glastExt, 'cfitsio/v3060/lib')
+cfitsioPath = os.path.join(glastExt, 'cfitsio/v3060A/lib')
 clhepPath = os.path.join(glastExt, 'CLHEP/1.9.2.2/lib')
 cppunitPath = os.path.join(glastExt, 'cppunit/1.10.2/lib')
 gaudiPath = os.path.join(glastExt, 'gaudi/v18r1-gl4/lib')
@@ -645,6 +699,20 @@ ppComponents = [
 pythonPath = ':'.join(ppComponents)
 sys.path.extend(ppComponents)
 
+# make directories world-writeable when testing
+if testMode:
+    try:
+        import fileOps
+        fileOps.dirMode = 0777
+    except ImportError:
+        pass
+    pass
+try:
+    import stageFiles
+    stageFiles.defaultStrictSetup = True
+except ImportError:
+    pass
+
 # LSF stuff
 # allocationGroup = 'glastdata' # don't use this anymore, policies have changed
 # allocationGroup="%(allocationGroup)s" # ripped from XML template
@@ -659,7 +727,11 @@ mediumQ = theQ
 shortQ = theQ
 longQ = theQ
 #
-highPriority = 75
+highPriority = 75     # for exports and their dependencies
+midPriority = 60      # monitoring & dependencies
+standardPriority = 50 # everything else (which isn't much, really)
+#
+minCrumbCpuf = 9
 #
 reconMergeScratch = " -R &quot;select[scratch&gt;70]&quot; "
 reconCrumbCpuf = " -R &quot;select[cpuf&gt;%s]&quot; " % minCrumbCpuf

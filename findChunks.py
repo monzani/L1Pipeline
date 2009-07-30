@@ -58,6 +58,10 @@ tStart, tStop = acqQuery.runTimes(runNumber)
 pipeline.setVariable('tStart', '%.17g' % tStart)
 pipeline.setVariable('tStop', '%.17g' % tStop)
 
+mootKey, mootAlias = acqQuery.query([runNumber], ['moot_key', 'moot_alias'])[runNumber]
+pipeline.setVariable('mootKey', mootKey)
+pipeline.setVariable('mootAlias', mootAlias)
+
 # set up a subStream for each chunk
 for chunkId, chunkData in chunkListData.items():
     chunkFile = chunkData['chunkFile']

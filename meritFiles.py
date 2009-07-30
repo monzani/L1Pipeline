@@ -1,3 +1,5 @@
+#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
+
 import ROOT
 
 def startAndStop(fileName, treeName='MeritTuple'):
@@ -16,3 +18,17 @@ def startAndStop(fileName, treeName='MeritTuple'):
         vals.append(tree.EvtElapsedTime)
         continue
     return tuple(vals)
+
+
+def main():
+    import sys
+    fileNames = sys.argv[1:]
+    for fileName in fileNames:
+        start, stop = startAndStop(fileName)
+        print "%s %.17f %.17f" % (fileName, start, stop)
+        continue
+    return
+
+if __name__ == "__main__":
+    main()
+    

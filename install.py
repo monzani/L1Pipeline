@@ -12,7 +12,34 @@ import variables
 
 #os.chdir(config.L1ProcROOT) # ?
 
-taskNames = ['forceL1Merge', 'L1Proc', 'noReconMerge', 'setL1Status', 'testVerify']
+taskNames = ['forceL1Merge', 'L1Proc', 'noReconMerge', 'setL1Status', 'testVerify', 'P100-FT2']
+
+scriptNames = {
+    'placeHolderBody': 'placeHolder.py',
+    'qualityScriptBody': 'getQuality.py',
+    'registerBody': 'registerStuff.py',
+    'retireScriptBody': 'retireRun.py',
+    'runningScriptBody': 'setRunning.py',
+    'scanScriptBody': 'scanSubStreams.py',
+    'statusScriptBody': 'setStatus.py',
+    'successScriptBody': 'setSuccessful.py',
+    }
+
+def qualify(name):
+    fullPath = os.path.join(config.L1ProcROOT, scriptNames[name])
+    return fullPath
+def embody_inline(script):
+    body = open(script).read()
+    return body
+def embody_exec(script):
+    body = "execfile('%s')" % script
+    return body
+
+whichBody = os.environ.get('L1_EMBODY', 'inline')
+bodies = {'inline': embody_inline, 'exec': embody_exec}
+embody = bodies[whichBody]
+
+scriptBodies = dict((name, embody(qualify(name))) for name in scriptNames)
 
 for taskName in taskNames:
     #taskFile = os.path.join(config.L1Xml, config.fullTaskName + '.xml')
@@ -20,24 +47,7 @@ for taskName in taskNames:
     template = os.path.join(config.L1Xml, taskName + '.xml.template')
 
     configuration = dict(config.__dict__)
-
-    retireScript = os.path.join(config.L1ProcROOT, 'retireRun.py')
-    configuration['retireScriptBody'] = open(retireScript).read()
-
-    scanScript = os.path.join(config.L1ProcROOT, 'scanSubStreams.py')
-    configuration['scanScriptBody'] = open(scanScript).read()
-
-    statusScript = os.path.join(config.L1ProcROOT, 'setStatus.py')
-    configuration['statusScriptBody'] = open(statusScript).read()
-
-    successScript = os.path.join(config.L1ProcROOT, 'setSuccessful.py')
-    configuration['successScriptBody'] = open(successScript).read()
-
-    placeHolderScript = os.path.join(config.L1ProcROOT, 'placeHolder.py')
-    configuration['placeHolderBody'] = open(placeHolderScript).read()
-
-    registerScript = os.path.join(config.L1ProcROOT, 'registerStuff.py')
-    configuration['registerBody'] = open(registerScript).read()
+    configuration.update(scriptBodies)
 
     for fileType in fileNames.fileTypes:
         nTag = fileType + '_versionName'
@@ -74,6 +84,7 @@ ofp.write('source %s\n' % config.glastSetup)
 ofp.write(bEnv("L1_TASK_NAME", config.L1Name))
 ofp.write(bEnv("L1_INSTALL_DIR", config.installRoot))
 ofp.write(bEnv("L1_BUILD_DIR", config.L1CmtBase))
+ofp.write(bEnv("L1_EMBODY", whichBody))
 ofp.write(bEnv("L1_TASK_VERSION", config.L1Version))
 ofp.write(bEnv("L1ProcROOT", config.L1ProcROOT))
 
@@ -90,6 +101,9 @@ ofp.write(bEnv("isocMode", config.isocMode))
 
 #ofp.write('%s\n' % config.isocEnv)
 
+ofp.close()
+
+
 ofq = open('setup.csh', 'w')
 
 ofq.write('source %s\n' % config.glastSetupCsh)
@@ -97,6 +111,7 @@ ofq.write('source %s\n' % config.glastSetupCsh)
 ofq.write(cEnv("L1_TASK_NAME", config.L1Name))
 ofq.write(cEnv("L1_INSTALL_DIR", config.installRoot))
 ofq.write(cEnv("L1_BUILD_DIR", config.L1CmtBase))
+ofq.write(cEnv("L1_EMBODY", whichBody))
 ofq.write(cEnv("L1_TASK_VERSION", config.L1Version))
 ofq.write(cEnv("L1ProcROOT", config.L1ProcROOT))
 
@@ -111,4 +126,4 @@ ofq.write(cEnv("PYTHONPATH", config.pythonPath))
 ofq.write(cEnv("ROOTSYS", config.rootSys))
 ofq.write(cEnv("isocMode", config.isocMode))
 
-
+ofq.close()

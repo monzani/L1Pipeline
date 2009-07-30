@@ -24,8 +24,8 @@ fileType = 'ft2'
 app = config.apps['mergeFT2']
 
 # input
-txtFt2File = fileNames.fileName('ft2Txt', dlId, runId)
-stagedFt2TxtFile = staged.stageIn(txtFt2File)
+ft2SecondsFile = fileNames.fileName('ft2Seconds', dlId, runId)
+stagedFt2SecondsFile = staged.stageIn(ft2SecondsFile)
 
 # output
 fitsFt2File = fileNames.fileName(fileType, dlId, runId, next=True)
@@ -40,11 +40,14 @@ version = fileNames.version(fitsFt2File)
 cmtPath = config.ft2CmtPath
 stLibDir = config.stLibDir
 
+template = config.ft2Template
+templOpt = '-new_tpl %s' % template
+
 cmd = '''
 cd %(workDir)s
 export CMTPATH=%(cmtPath)s
 source %(setupScript)s
-%(app)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s -Version %(version)s
+%(app)s -FT2_fits_File %(stagedFt2SecondsFile)s -FT2_fits_merged_File %(stagedFt2FitsFile)s -Version %(version)s %(templOpt)s
 ''' % locals()
 
 status = runner.run(cmd)

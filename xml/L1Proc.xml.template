@@ -19,6 +19,9 @@
     <var name="L1TrendVersion">Prompt</var> <!-- override if reprocessing -->
     <var name="LD_LIBRARY_PATH">%(libraryPath)s</var>
     <var name="nameManglingPrefix">%(nameManglingPrefix)s</var>
+    <var name="highPriority">%(highPriority)d</var>
+    <var name="midPriority">%(midPriority)d</var>
+    <var name="standardPriority">%(standardPriority)d</var>
   </variables>
 
   <prerequisites>
@@ -27,7 +30,7 @@
   </prerequisites>
 
   <process name="findRunDirs" autoRetryMaxAttempts="%(retries)s">
-    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/findRunDirs.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d " />
+    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/findRunDirs.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} " />
     <createsSubtasks>
       <subtask>doRun</subtask>
       <subtask>doLci</subtask>
@@ -37,7 +40,7 @@
   </process>
 
   <process name="kludgeAsp" autoRetryMaxAttempts="%(retries)s">
-    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/kludgeAsp.py" batchOptions=" -q %(expressQ)s " />
+    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/kludgeAsp.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} " />
     <depends>
       <after process="doRun.registerFT1" status="SUCCESS"/>
       <after process="doRun.registerFT2" status="SUCCESS"/>
@@ -45,7 +48,7 @@
   </process>
 
   <process name="cleanupDl" autoRetryMaxAttempts="%(retries)s">
-    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(expressQ)s " />
+    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} " />
     <depends>
       <after process="doLci.checkRunLci" status="SUCCESS"/>
       <after process="doRun.checkRun" status="SUCCESS"/>
@@ -68,7 +71,7 @@
       <variables>
         <var name="l1LockAction">LockAndThrottle</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/findChunks.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py -sp %(highPriority)d " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/findChunks.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -E ${L1ProcROOT}/lockFile.py " />
       <createsSubtasks>
         <subtask>doChunk</subtask>
       </createsSubtasks>
@@ -79,7 +82,7 @@
         <var name="l1RunStatus">%(runningStatus)s</var>
       </variables>
       <script><![CDATA[
-%(statusScriptBody)s
+%(runningScriptBody)s
 ]]>
       </script>
       <depends>
@@ -91,19 +94,7 @@
       <variables>
         <var name="%(magic7Hp_versionName)s">%(magic7Hp_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s " />
-      <depends>
-        <after process="findChunks" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="makeM7L1" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="%(magic7L1_versionName)s">%(magic7L1_version)s</var>
-        <var name="tStart">${pipeline.processInstance("findChunks").getVariable("tStart") }</var>      
-        <var name="tStop">${pipeline.processInstance("findChunks").getVariable("tStop") }</var>      
-      </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeM7.py" batchOptions=" -q %(shortQ)s -R linux32 " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s -sp ${standardPriority} " />
       <depends>
         <after process="findChunks" status="SUCCESS"/>
       </depends>
@@ -124,6 +115,17 @@
       </depends>
     </process>
  
+    <process name="makeM7L1" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="%(magic7L1_versionName)s">%(magic7L1_version)s</var>
+        <var name="tStart">${pipeline.processInstance("findChunks").getVariable("tStart")}</var>      
+        <var name="tStop">${pipeline.processInstance("findChunks").getVariable("tStop")}</var>      
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeM7.py" batchOptions=" -q %(shortQ)s -sp ${highPriority} -R linux32 " />
+      <depends>
+        <after process="findChunks" status="SUCCESS"/>
+      </depends>
+    </process>
 
     <process name="registerM7L1" autoRetryMaxAttempts="%(retries)s">
       <variables>
@@ -146,7 +148,7 @@
         <var name="%(digi_versionName)s">%(digi_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=250]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;rusage[scratch=250]&quot; " />
       <depends>
         <after process="doChunk.digitization" status="DONE"/>
       </depends>
@@ -172,7 +174,7 @@
         <var name="fileType">digiHist</var>
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
       <depends>
         <after process="doChunk.digiHist" status="DONE"/>
       </depends>
@@ -199,7 +201,7 @@
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
         <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerDigiHist" status="SUCCESS"/>
       </depends>
@@ -225,7 +227,7 @@
         <var name="reportType">digiHistAlarm</var>
         <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerDigiHistAlarm" status="SUCCESS"/>
       </depends>
@@ -236,7 +238,7 @@
         <var name="fileType">digiHistAlarm</var>
         <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerDigiHistAlarm" status="SUCCESS"/>
       </depends>
@@ -249,7 +251,7 @@
         <var name="%(verifyHisto_versionName)s">%(verifyHisto_version)s</var>
 	<var name="completeness">InProgress</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerDigi" status="SUCCESS"/>
       </depends>
@@ -290,7 +292,7 @@
         <var name="reportType">verifyLog</var>
         <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerVerifyLog" status="SUCCESS"/>
       </depends>
@@ -303,7 +305,7 @@
         <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
         <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerVerifyLog" status="SUCCESS"/>
       </depends>
@@ -329,7 +331,7 @@
         <var name="fileType">verifyErrorAlarm</var>
         <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerVerifyErrorAlarm" status="SUCCESS"/>
       </depends>
@@ -340,7 +342,7 @@
         <var name="reportType">verifyErrorAlarm</var>
         <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerVerifyErrorAlarm" status="SUCCESS"/>
       </depends>
@@ -351,7 +353,7 @@
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
         <var name="%(acdPlots_versionName)s">%(acdPlots_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/acdPlots.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/acdPlots.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerDigiHist" status="SUCCESS"/>
       </depends>
@@ -377,7 +379,7 @@
         <var name="fileType">digiTrend</var>
         <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
       <depends>
         <after process="doChunk.digiTrend" status="DONE"/>
       </depends>
@@ -403,7 +405,7 @@
         <var name="reportType">digiTrend</var>
         <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerDigiTrend" status="SUCCESS"/>
       </depends>
@@ -415,7 +417,7 @@
         <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
         <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerDigiTrend" status="SUCCESS"/>
       </depends>
@@ -441,7 +443,7 @@
         <var name="fileType">digiTrendAlarm</var>
         <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerDigiTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -452,7 +454,7 @@
         <var name="reportType">digiTrendAlarm</var>
         <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerDigiTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -464,7 +466,7 @@
         <var name="%(calHist_versionName)s">%(calHist_version)s</var>
         <var name="%(digi_versionName)s">%(digi_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerDigi" status="SUCCESS"/>
       </depends>
@@ -491,7 +493,7 @@
         <var name="%(calHist_versionName)s">%(calHist_version)s</var>
         <var name="%(calHistAlarm_versionName)s">%(calHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerCalHist" status="SUCCESS"/>
       </depends>
@@ -517,7 +519,7 @@
         <var name="fileType">calHistAlarm</var>
         <var name="%(calHistAlarm_versionName)s">%(calHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerCalHistAlarm" status="SUCCESS"/>
       </depends>
@@ -528,7 +530,7 @@
         <var name="reportType">calHistAlarm</var>
         <var name="%(calHistAlarm_versionName)s">%(calHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerCalHistAlarm" status="SUCCESS"/>
       </depends>
@@ -539,7 +541,7 @@
         <var name="fileType">calTrend</var>
         <var name="%(calTrend_versionName)s">%(calTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
       <depends>
         <after process="doChunk.calTrend" status="DONE"/>
       </depends>
@@ -565,7 +567,7 @@
         <var name="reportType">calTrend</var>
         <var name="%(calTrend_versionName)s">%(calTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerCalTrend" status="SUCCESS"/>
       </depends>
@@ -578,7 +580,7 @@
         <var name="%(calHist_versionName)s">%(calHist_version)s</var>
         <var name="%(acdPedsAnalyzer_versionName)s">%(acdPedsAnalyzer_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerCalHist" status="SUCCESS"/>
       </depends>
@@ -606,7 +608,7 @@
         <var name="%(acdPedsAnalyzer_versionName)s">%(acdPedsAnalyzer_version)s</var>
         <var name="%(acdPedsAlarm_versionName)s">%(acdPedsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerAcdPedsAnalyzer" status="SUCCESS"/>
       </depends>
@@ -632,7 +634,7 @@
         <var name="fileType">acdPedsAlarm</var>
         <var name="%(acdPedsAlarm_versionName)s">%(acdPedsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerAcdPedsAlarm" status="SUCCESS"/>
       </depends>
@@ -643,7 +645,7 @@
         <var name="reportType">acdPedsAlarm</var>
         <var name="%(acdPedsAlarm_versionName)s">%(acdPedsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerAcdPedsAlarm" status="SUCCESS"/>
       </depends>
@@ -656,7 +658,7 @@
         <var name="%(calHist_versionName)s">%(calHist_version)s</var>
         <var name="%(calGainsAnalyzer_versionName)s">%(calGainsAnalyzer_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerCalHist" status="SUCCESS"/>
       </depends>
@@ -684,7 +686,7 @@
         <var name="%(calGainsAnalyzer_versionName)s">%(calGainsAnalyzer_version)s</var>
         <var name="%(calGainsAlarm_versionName)s">%(calGainsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerCalGainsAnalyzer" status="SUCCESS"/>
       </depends>
@@ -710,7 +712,7 @@
         <var name="fileType">calGainsAlarm</var>
         <var name="%(calGainsAlarm_versionName)s">%(calGainsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerCalGainsAlarm" status="SUCCESS"/>
       </depends>
@@ -721,7 +723,7 @@
         <var name="reportType">calGainsAlarm</var>
         <var name="%(calGainsAlarm_versionName)s">%(calGainsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerCalGainsAlarm" status="SUCCESS"/>
       </depends>
@@ -734,7 +736,7 @@
         <var name="%(calHist_versionName)s">%(calHist_version)s</var>
         <var name="%(calPedsAnalyzer_versionName)s">%(calPedsAnalyzer_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerCalHist" status="SUCCESS"/>
       </depends>
@@ -762,7 +764,7 @@
         <var name="%(calPedsAnalyzer_versionName)s">%(calPedsAnalyzer_version)s</var>
         <var name="%(calPedsAlarm_versionName)s">%(calPedsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerCalPedsAnalyzer" status="SUCCESS"/>
       </depends>
@@ -788,7 +790,7 @@
         <var name="fileType">calPedsAlarm</var>
         <var name="%(calPedsAlarm_versionName)s">%(calPedsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerCalPedsAlarm" status="SUCCESS"/>
       </depends>
@@ -799,7 +801,7 @@
         <var name="reportType">calPedsAlarm</var>
         <var name="%(calPedsAlarm_versionName)s">%(calPedsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerCalPedsAlarm" status="SUCCESS"/>
       </depends>
@@ -810,7 +812,7 @@
         <var name="fileType">fastMonError</var>
         <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} "/>
       <depends>
         <after process="doChunk.fastMonTuple" status="DONE"/>
       </depends>
@@ -836,7 +838,7 @@
         <var name="reportType">fastMonError</var>
         <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerFastMonError" status="SUCCESS"/>
       </depends>
@@ -848,7 +850,7 @@
         <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
         <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerFastMonError" status="SUCCESS"/>
       </depends>
@@ -874,7 +876,7 @@
         <var name="fileType">fastMonErrorAlarm</var>
         <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerFastMonErrorAlarm" status="SUCCESS"/>
       </depends>
@@ -885,7 +887,7 @@
         <var name="reportType">fastMonErrorAlarm</var>
         <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerFastMonErrorAlarm" status="SUCCESS"/>
       </depends>
@@ -896,7 +898,7 @@
         <var name="fileType">fastMonHist</var>
         <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -R &quot;rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
       <depends>
         <after process="doChunk.fastMonHist" status="DONE"/>
       </depends>
@@ -924,7 +926,7 @@
         <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
         <var name="%(compareDFm_versionName)s">%(compareDFm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/compDigiFastMon.py" batchOptions=" -q %(mediumQ)s -R &quot;rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/compDigiFastMon.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerDigiHist" status="SUCCESS"/>
         <after process="registerFastMonHist" status="SUCCESS"/>
@@ -951,7 +953,7 @@
         <var name="fileType">fastMonTuple</var>
         <var name="%(fastMonTuple_versionName)s">%(fastMonTuple_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -R &quot;rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
       <depends>
         <after process="doChunk.fastMonTuple" status="DONE"/>
       </depends>
@@ -978,7 +980,7 @@
         <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
         <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerFastMonHist" status="SUCCESS"/>
       </depends>
@@ -1004,7 +1006,7 @@
         <var name="fileType">fastMonHistAlarm</var>
         <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerFastMonHistAlarm" status="SUCCESS"/>
       </depends>
@@ -1015,7 +1017,7 @@
         <var name="reportType">fastMonHistAlarm</var>
         <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerFastMonHistAlarm" status="SUCCESS"/>
       </depends>
@@ -1026,7 +1028,7 @@
         <var name="fileType">fastMonTrend</var>
         <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
       <depends>
         <after process="doChunk.fastMonTrend" status="DONE"/>
       </depends>
@@ -1052,7 +1054,7 @@
         <var name="reportType">fastMonTrend</var>
         <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerFastMonTrend" status="SUCCESS"/>
       </depends>
@@ -1064,7 +1066,7 @@
         <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
         <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerFastMonTrend" status="SUCCESS"/>
       </depends>
@@ -1090,7 +1092,7 @@
         <var name="reportType">fastMonTrendAlarm</var>
         <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerFastMonTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -1101,7 +1103,7 @@
         <var name="fileType">fastMonTrendAlarm</var>
         <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerFastMonTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -1113,7 +1115,7 @@
         <var name="%(gcr_versionName)s">%(gcr_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;rusage[scratch=1]&quot; "/>
       <depends>
         <after process="doChunk.mergeGcrCrumbs" status="DONE"/>
       </depends>
@@ -1138,8 +1140,9 @@
       <variables>
         <var name="fileType">merit</var>
         <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=2]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;rusage[scratch=2]&quot; " />
       <depends>
         <after process="doChunk.mergeMeritCrumbs" status="DONE"/>
       </depends>
@@ -1160,27 +1163,24 @@
       </depends>
     </process>
  
-    <process name="ft2Runs" autoRetryMaxAttempts="%(retries)s">
+    <process name="filterMerit" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="%(digi_versionName)s">%(digi_version)s</var>
-        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
-        <var name="%(ft2Txt_versionName)s">%(ft2Txt_version)s</var>
-        <var name="%(magic7L1_versionName)s">%(magic7L1_version)s</var>
+        <var name="inFileTypes">merit</var>
         <var name="%(merit_versionName)s">%(merit_version)s</var>
-<!--        <var name="L1_magic7L1_filename">${datacatalog.getDataset(RUNID, "/Data/Flight/Level1/"+DATASOURCE, "MAGIC7L1").getLocation("SLAC_XROOT").getPath()}</var>   -->
+        <var name="outFileTypes">filteredMerit</var>
+        <var name="%(filteredMerit_versionName)s">%(filteredMerit_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ft2Entries.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -R &quot;rusage[scratch=15]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;rusage[scratch=2]&quot; " />
       <depends>
-        <after process="registerDigi" status="SUCCESS"/>
-        <after process="registerM7L1" status="SUCCESS"/>
         <after process="registerMerit" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="registerFt2Txt" autoRetryMaxAttempts="%(retries)s">
+    <process name="registerFilteredMerit" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="parentProcess">ft2Runs</var>
-        <var name="fileType">ft2Txt</var>
+        <var name="parentProcess">filterMerit</var>
+        <var name="fileType">filteredMerit</var>
         <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
@@ -1188,7 +1188,82 @@
 ]]>
       </script>
       <depends>
-        <after process="ft2Runs" status="SUCCESS"/>
+        <after process="filterMerit" status="SUCCESS"/>
+      </depends>
+    </process>
+
+ <!-- no electrons in pass 6
+    <process name="electronMerit" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">merit</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="outFileTypes">electronMerit</var>
+        <var name="%(electronMerit_versionName)s">%(electronMerit_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;rusage[scratch=2]&quot; " />
+      <depends>
+        <after process="registerMerit" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerElectronMerit" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">electronMerit</var>
+        <var name="fileType">electronMerit</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="electronMerit" status="SUCCESS"/>
+      </depends>
+    </process>
+ -->
+
+    <process name="makeGaps" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="%(digi_versionName)s">%(digi_version)s</var>
+        <var name="%(digiGap_versionName)s">%(digiGap_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeGaps.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;rusage[scratch=5]&quot; " />
+      <depends>
+        <after process="registerDigi" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerGaps" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">makeGaps</var>
+        <var name="fileType">digiGap</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="makeGaps" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="ft2Runs" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="%(digi_versionName)s">%(digi_version)s</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
+        <var name="%(digiGap_versionName)s">%(digiGap_version)s</var>
+        <var name="%(magic7L1_versionName)s">%(magic7L1_version)s</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="runQuality">${pipeline.processInstance("setRunning").getVariable("runQuality")}</var>
+<!--        <var name="L1_magic7L1_filename">${datacatalog.getDataset(RUNID, "/Data/Flight/Level1/"+DATASOURCE, "MAGIC7L1").getLocation("SLAC_XROOT").getPath()}</var>   -->
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ft2Entries.py" batchOptions=" -q %(longQ)s -sp ${highPriority} -R &quot;rusage[scratch=15]&quot; " />
+      <depends>
+        <after process="registerGaps" status="SUCCESS"/>
+        <after process="registerM7L1" status="SUCCESS"/>
+        <after process="registerMerit" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -1212,7 +1287,7 @@
       <variables>
         <var name="%(ft2Txt_versionName)s">%(ft2Txt_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ft2Db.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ft2Db.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;rusage[scratch=1]&quot; " />
       <depends>
         <after process="registerFt2Txt" status="SUCCESS"/>
       </depends>
@@ -1221,13 +1296,13 @@
 
     <process name="makeFT2" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="%(ft2Txt_versionName)s">%(ft2Txt_version)s</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
         <var name="%(ft2_versionName)s">%(ft2_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeFT2File.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeFT2File.py" batchOptions=" -q %(shortQ)s -sp ${highPriority} -R &quot;rusage[scratch=1]&quot; " />
       <depends>
         <!-- <after process="ingestFT2" status="SUCCESS"/> -->
-        <after process="registerFt2Txt" status="SUCCESS"/>
+        <after process="registerFt2Seconds" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -1251,7 +1326,7 @@
         <var name="fileType">ft2</var>
         <var name="%(ft2_versionName)s">%(ft2_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;rusage[scratch=1]&quot; " />
       <depends>
         <after process="registerFT2" status="SUCCESS"/>
       </depends>
@@ -1262,7 +1337,7 @@
         <var name="%(ft2_versionName)s">%(ft2_version)s</var>
         <var name="%(verifyFt2Error_versionName)s">%(verifyFt2Error_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/verifyFt2.py" batchOptions=" -q %(mediumQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/verifyFt2.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerFT2" status="SUCCESS"/>
       </depends>
@@ -1288,7 +1363,7 @@
         <var name="reportType">verifyFt2Error</var>
         <var name="%(verifyFt2Error_versionName)s">%(verifyFt2Error_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerVerifyFt2Error" status="SUCCESS"/>
       </depends>
@@ -1301,7 +1376,7 @@
         <var name="%(verifyFt2Error_versionName)s">%(verifyFt2Error_version)s</var>
         <var name="%(verifyFt2ErrorAlarm_versionName)s">%(verifyFt2ErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerVerifyFt2Error" status="SUCCESS"/>
       </depends>
@@ -1327,7 +1402,7 @@
         <var name="fileType">verifyFt2ErrorAlarm</var>
         <var name="%(verifyFt2ErrorAlarm_versionName)s">%(verifyFt2ErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerVerifyFt2ErrorAlarm" status="SUCCESS"/>
       </depends>
@@ -1338,28 +1413,55 @@
         <var name="reportType">verifyFt2ErrorAlarm</var>
         <var name="%(verifyFt2ErrorAlarm_versionName)s">%(verifyFt2ErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerVerifyFt2ErrorAlarm" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="makeFT1" autoRetryMaxAttempts="%(retries)s">
+    <process name="mergeFT1" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="fileType">ft1BadGti</var>
+        <var name="%(ft1BadGti_versionName)s">%(ft1BadGti_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${highPriority} -R &quot;rusage[scratch=250]&quot; "/>
+      <depends>
+        <after process="doChunk.diffRspFT1" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="registerFT1BadGti" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeFT1</var>
+        <var name="fileType">ft1BadGti</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFT1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="gtiFT1" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="fileType">ft1</var>
         <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
-        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="%(ft1BadGti_versionName)s">%(ft1BadGti_version)s</var>
         <var name="%(ft1_versionName)s">%(ft1_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/fixGTI.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;rusage[scratch=1]&quot; " />
       <depends>
+        <after process="registerFT1BadGti" status="SUCCESS"/>
         <after process="registerFt2Seconds" status="SUCCESS"/>
       </depends>
     </process>
 
     <process name="registerFT1" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="parentProcess">makeFT1</var>
+        <var name="parentProcess">gtiFT1</var>
         <var name="fileType">ft1</var>
         <var name="timeProcess">findChunks</var>
       </variables>
@@ -1368,7 +1470,7 @@
 ]]>
       </script>
       <depends>
-        <after process="makeFT1" status="SUCCESS"/>
+        <after process="gtiFT1" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -1377,29 +1479,86 @@
         <var name="fileType">ft1</var>
         <var name="%(ft1_versionName)s">%(ft1_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;rusage[scratch=1]&quot; " />
       <depends>
         <after process="registerFT1" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="makeLS1" autoRetryMaxAttempts="%(retries)s">
+<!-- No electrons in pass 6
+    <process name="electronFt1BadGti" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">ls1</var>
-        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
+        <var name="fileType">electronFt1BadGti</var>
         <var name="%(merit_versionName)s">%(merit_version)s</var>
-        <var name="%(ls1_versionName)s">%(ls1_version)s</var>
+        <var name="%(electronFt1BadGti_versionName)s">%(electronFt1BadGti_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;rusage[scratch=1]&quot; " />
       <depends>
+        <after process="registerMerit" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerElectronFt1BadGti" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="parentProcess">electronFt1BadGti</var>
+        <var name="fileType">electronFt1BadGti</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="electronFt1BadGti" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="gtiElectronFt1" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="fileType">electronFt1</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
+        <var name="%(electronFt1BadGti_versionName)s">%(electronFt1BadGti_version)s</var>
+        <var name="%(electronFt1_versionName)s">%(electronFt1_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/fixGTI.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;rusage[scratch=1]&quot; " />
+      <depends>
+        <after process="registerElectronFt1BadGti" status="SUCCESS"/>
         <after process="registerFt2Seconds" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="registerLS1" autoRetryMaxAttempts="%(retries)s">
+    <process name="registerElectronFt1" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">gtiElectronFt1</var>
+        <var name="fileType">electronFt1</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="gtiElectronFt1" status="SUCCESS"/>
+      </depends>
+    </process>
+-->
+
+    <process name="makeLS1" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="fileType">ls1BadGti</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="%(ls1BadGti_versionName)s">%(ls1BadGti_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;rusage[scratch=1]&quot; " />
+      <depends>
+        <after process="registerMerit" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerLS1BadGti" autoRetryMaxAttempts="1">
       <variables>
         <var name="parentProcess">makeLS1</var>
-        <var name="fileType">ls1</var>
+        <var name="fileType">ls1BadGti</var>
         <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
@@ -1411,12 +1570,41 @@
       </depends>
     </process>
 
+    <process name="gtiLS1" autoRetryMaxAttempts="1">
+      <variables>
+        <var name="fileType">ls1</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
+        <var name="%(ls1BadGti_versionName)s">%(ls1BadGti_version)s</var>
+        <var name="%(ls1_versionName)s">%(ls1_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/fixGTI.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;rusage[scratch=1]&quot; " />
+      <depends>
+        <after process="registerLS1BadGti" status="SUCCESS"/>
+        <after process="registerFt2Seconds" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerLS1" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">gtiLS1</var>
+        <var name="fileType">ls1</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="gtiLS1" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="exportLS1" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="fileType">ls1</var>
         <var name="%(ls1_versionName)s">%(ls1_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;rusage[scratch=1]&quot; " />
       <depends>
         <after process="registerLS1" status="SUCCESS"/>
       </depends>
@@ -1428,7 +1616,7 @@
         <var name="%(ft2_versionName)s">%(ft2_version)s</var>
         <var name="%(ls3_versionName)s">%(ls3_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeLS3.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeLS3.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;rusage[scratch=1]&quot; " />
       <depends>
         <after process="registerFT1" status="SUCCESS"/>
         <after process="registerFT2" status="SUCCESS"/>
@@ -1455,7 +1643,7 @@
         <var name="fileType">ls3</var>
         <var name="%(ls3_versionName)s">%(ls3_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;rusage[scratch=1]&quot; " />
       <depends>
         <after process="registerLS3" status="SUCCESS"/>
       </depends>
@@ -1467,7 +1655,7 @@
         <var name="%(cal_versionName)s">%(cal_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=250]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;rusage[scratch=250]&quot; "/>
       <depends>
         <after process="doChunk.mergeCalCrumbs" status="DONE"/>
       </depends>
@@ -1493,7 +1681,7 @@
         <var name="fileType">meritTrend</var>
         <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
       <depends>
         <after process="doChunk.meritTrend" status="DONE"/>
       </depends>
@@ -1519,7 +1707,7 @@
         <var name="reportType">meritTrend</var>
         <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerMeritTrend" status="SUCCESS"/>
       </depends>
@@ -1531,7 +1719,7 @@
         <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
         <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerMeritTrend" status="SUCCESS"/>
       </depends>
@@ -1557,7 +1745,7 @@
         <var name="fileType">meritTrendAlarm</var>
         <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerMeritTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -1568,7 +1756,7 @@
         <var name="reportType">meritTrendAlarm</var>
         <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerMeritTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -1581,8 +1769,9 @@
         <var name="%(merit_versionName)s">%(merit_version)s</var>
         <var name="%(meritHist_versionName)s">%(meritHist_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
       <depends>
+        <after process="doChunk.allRecon" status="SUCCESS"/>
         <after process="registerDigi" status="SUCCESS"/>
         <after process="registerMerit" status="SUCCESS"/>
       </depends>
@@ -1609,7 +1798,7 @@
         <var name="%(meritHist_versionName)s">%(meritHist_version)s</var>
         <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerMeritHist" status="SUCCESS"/>
       </depends>
@@ -1635,7 +1824,7 @@
         <var name="reportType">meritHistAlarm</var>
         <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerMeritHistAlarm" status="SUCCESS"/>
       </depends>
@@ -1646,7 +1835,7 @@
         <var name="fileType">meritHistAlarm</var>
         <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerMeritHistAlarm" status="SUCCESS"/>
       </depends>
@@ -1657,7 +1846,7 @@
         <var name="fileType">reconTrend</var>
         <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
       <depends>
         <!-- <after process="doChunk.mergeCalCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
         <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
@@ -1685,7 +1874,7 @@
         <var name="reportType">reconTrend</var>
         <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerReconTrend" status="SUCCESS"/>
       </depends>
@@ -1697,7 +1886,7 @@
         <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
         <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerReconTrend" status="SUCCESS"/>
       </depends>
@@ -1723,7 +1912,7 @@
         <var name="reportType">reconTrendAlarm</var>
         <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerReconTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -1734,7 +1923,7 @@
         <var name="fileType">reconTrendAlarm</var>
         <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerReconTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -1745,7 +1934,7 @@
         <var name="fileType">reconHist</var>
         <var name="%(reconHist_versionName)s">%(reconHist_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
       <depends>
         <!-- <after process="doChunk.mergeCalCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
         <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
@@ -1774,7 +1963,7 @@
         <var name="%(reconHist_versionName)s">%(reconHist_version)s</var>
         <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerReconHist" status="SUCCESS"/>
       </depends>
@@ -1800,7 +1989,7 @@
         <var name="fileType">reconHistAlarm</var>
         <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerReconHistAlarm" status="SUCCESS"/>
       </depends>
@@ -1811,7 +2000,7 @@
         <var name="reportType">reconHistAlarm</var>
         <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerReconHistAlarm" status="SUCCESS"/>
       </depends>
@@ -1823,7 +2012,7 @@
         <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
         <var name="%(reconHistAlarmDist_versionName)s">%(reconHistAlarmDist_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmPostProcessor.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmPostProcessor.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerReconHistAlarm" status="SUCCESS"/>
       </depends>
@@ -1849,7 +2038,7 @@
         <var name="fileType">tkrAnalysis</var>
         <var name="%(tkrAnalysis_versionName)s">%(tkrAnalysis_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
       <depends>
         <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
         <after process="doChunk.tkrAnalysis" status="DONE"/>
@@ -1878,7 +2067,7 @@
         <var name="%(tkrReport_versionName)s">%(tkrReport_version)s</var>
         <!-- <var name="%(tkrAlarm_versionName)s">%(tkrAlarm_version)s</var> -->
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/tkrMonitor.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/tkrMonitor.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerTkrAnalysis" status="SUCCESS"/>
       </depends>
@@ -1941,7 +2130,7 @@
         <var name="%(tkrMonitor_versionName)s">%(tkrMonitor_version)s</var>
         <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerTkrMonitor" status="SUCCESS"/>
       </depends>
@@ -1967,7 +2156,7 @@
         <var name="reportType">tkrTrend</var>
         <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerTkrTrend" status="SUCCESS"/>
       </depends>
@@ -1979,7 +2168,7 @@
         <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
         <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerTkrTrend" status="SUCCESS"/>
       </depends>
@@ -2005,7 +2194,7 @@
         <var name="reportType">tkrTrendAlarm</var>
         <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
       <depends>
         <after process="registerTkrTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -2016,7 +2205,7 @@
         <var name="fileType">tkrTrendAlarm</var>
         <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
       <depends>
         <after process="registerTkrTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -2028,7 +2217,7 @@
         <var name="%(svac_versionName)s">%(svac_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=250]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;rusage[scratch=250]&quot; "/>
       <depends>
         <after process="doChunk.svacTuple" status="DONE"/>
       </depends>
@@ -2050,7 +2239,7 @@
     </process>
 
     <process name="checkRun" autoRetryMaxAttempts="%(retries)s">
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} "/>
       <depends>
         <after process="acdPedsLogger" status="SUCCESS"/>
         <after process="calGainsLogger" status="SUCCESS"/>
@@ -2098,7 +2287,12 @@
         <after process="registerAcdPlots" status="SUCCESS"/>
         <after process="registerCal" status="SUCCESS"/>
         <after process="registerCmpDFm" status="SUCCESS"/>
+<!--
+        <after process="registerElectronFt1" status="SUCCESS"/>
+        <after process="registerElectronMerit" status="SUCCESS"/>
+-->
         <after process="registerFastMonTuple" status="SUCCESS"/>
+        <after process="registerFilteredMerit" status="SUCCESS"/>
         <after process="registerGcr" status="SUCCESS"/>
         <after process="registerM7Hp" status="SUCCESS"/>
         <after process="registerMeritHist" status="SUCCESS"/>
@@ -2134,9 +2328,9 @@
 
       <process name="getTimes" autoRetryMaxAttempts="0">
         <variables>
-	  <var name="l1LockAction">LockDirOnly</var>
+	      <var name="l1LockAction">LockDirOnly</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimes.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimes.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -E ${L1ProcROOT}/lockFile.py "/>
       </process>
 
       <process name="mergeReconChunks" autoRetryMaxAttempts="%(retries)s">
@@ -2145,7 +2339,7 @@
           <var name="%(recon_versionName)s">%(recon_version)s</var>
           <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=250]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;rusage[scratch=250]&quot; "/>
         <depends>
           <after process="getTimes" status="DONE"/>
         </depends>
@@ -2173,7 +2367,7 @@
           <var name="%(verifyHisto_versionName)s">%(verifyHisto_version)s</var>
 	  <var name="completeness">Complete</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} "/>
         <depends>
           <after process="getTimes" status="DONE"/>
         </depends>
@@ -2214,7 +2408,7 @@
           <var name="reportType">verifyLog</var>
           <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
         <depends>
           <after process="registerVerifyLogComp" status="SUCCESS"/>
         </depends>
@@ -2227,7 +2421,7 @@
           <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
           <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
         <depends>
           <after process="registerVerifyLogComp" status="SUCCESS"/>
         </depends>
@@ -2253,7 +2447,7 @@
           <var name="fileType">verifyErrorAlarm</var>
           <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
         <depends>
           <after process="registerVerifyErrorAlarmComp" status="SUCCESS"/>
         </depends>
@@ -2264,14 +2458,14 @@
           <var name="reportType">verifyErrorAlarm</var>
           <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
         <depends>
           <after process="registerVerifyErrorAlarmComp" status="SUCCESS"/>
         </depends>
       </process>
 
       <process name="cleanupChunks" autoRetryMaxAttempts="%(retries)s">
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} "/>
         <depends>
           <after process="mergeReconChunks" status="SUCCESS"/>
         </depends>
@@ -2281,7 +2475,7 @@
         <variables>
           <var name="l1LockAction">UnLock</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/lockFile.py" batchOptions=" -q %(expressQ)s "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/lockFile.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} "/>
         <depends>
           <after process="registerRecon" status="SUCCESS"/>
           <after process="registerVerifyHistoComp" status="SUCCESS"/>
@@ -2301,25 +2495,25 @@
       </prerequisites>
 
       <process name="digitization" autoRetryMaxAttempts="%(retries)s">
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/digitize.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/digitize.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;rusage[scratch=1]&quot; " />
       </process>
  
       <process name="fakeFT2" autoRetryMaxAttempts="%(retries)s">
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/fakeFT2.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/fakeFT2.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;rusage[scratch=1]&quot; " />
       </process>
  
       <process name="fastMonTuple" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="reportType">fastMonTuple</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
       </process>
 
       <process name="fastMonHist" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="reportType">fastMonHist</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
           <after process="fastMonTuple" status="SUCCESS"/>
         </depends>
@@ -2329,7 +2523,7 @@
         <variables>
           <var name="reportType">fastMonTrend</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
           <after process="fastMonTuple" status="SUCCESS"/>
         </depends>
@@ -2339,7 +2533,7 @@
         <variables>
           <var name="reportType">digiHist</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
           <after process="digitization" status="SUCCESS"/>
         </depends>
@@ -2349,7 +2543,7 @@
         <variables>
           <var name="reportType">digiTrend</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
           <after process="digitization" status="SUCCESS"/>
         </depends>
@@ -2359,7 +2553,7 @@
         <variables>
           <var name="reportType">calTrend</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
           <after process="digitization" status="SUCCESS"/>
         </depends>
@@ -2369,7 +2563,7 @@
         <variables>
           <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q %(mediumQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/setupCrumbs.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;rusage[scratch=1]&quot; " />
         <depends>
           <after process="digitization" status="SUCCESS"/>
           <after process="fakeFT2" status="SUCCESS"/>
@@ -2393,16 +2587,25 @@
         </depends>
       </process>
 
+      <process name="allRecon" autoRetryMaxAttempts="%(retries)s">
+        <script><![CDATA[
+%(placeHolderBody)s
+]]>
+        </script>
+        <depends>
+          <after process="doCrumb.recon" status="SUCCESS"/>
+        </depends>
+      </process>
+
       <process name="mergeMeritCrumbs" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="fileType">merit</var>
-          <!-- <var name="L1_crumb_list">${pipeline.processInstance("setupCrumbs").getVariable("L1_crumb_list")}</var> -->
           <var name="goodPis">${pipeline.processInstance("scanRecon").getVariable("goodPis")}</var>  
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp ${highPriority} -R &quot;rusage[scratch=1]&quot; " />
         <depends>
           <after process="scanRecon" status="SUCCESS"/>
-          <!-- <after process="doCrumb.recon" status="DONE"/> -->
         </depends>
       </process>
 
@@ -2412,10 +2615,10 @@
           <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
           <var name="goodPis">${pipeline.processInstance("scanRecon").getVariable("goodPis")}</var>  
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
           <after process="scanRecon" status="SUCCESS"/>
-          <after process="mergeMeritCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
+<!--          <after process="mergeMeritCrumbs" status="DONE"/>  This is an I/O optimization, not logically required. -->
         </depends>
       </process>
 
@@ -2425,10 +2628,10 @@
           <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
           <var name="goodPis">${pipeline.processInstance("scanRecon").getVariable("goodPis")}</var>  
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
           <after process="scanRecon" status="SUCCESS"/>
-          <after process="mergeReconCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
+<!--          <after process="mergeReconCrumbs" status="DONE"/>  This is an I/O optimization, not logically required. -->
         </depends>
       </process>
 
@@ -2438,10 +2641,30 @@
           <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
           <var name="goodPis">${pipeline.processInstance("scanRecon").getVariable("goodPis")}</var>  
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp ${standardPriority} -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
           <after process="scanRecon" status="SUCCESS"/>
-          <after process="mergeCalCrumbs" status="DONE"/> <!-- This is an I/O optimization, not logically required. -->
+<!--          <after process="mergeCalCrumbs" status="DONE"/>  This is an I/O optimization, not logically required. -->
+        </depends>
+      </process>
+
+      <process name="makeFT1" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="fileType">ft1NoDiffRsp</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;rusage[scratch=1]&quot; " />
+        <depends>
+          <after process="mergeMeritCrumbs" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="diffRspFT1" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="fileType">ft1BadGti</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/diffRsp.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;rusage[scratch=1]&quot; " />
+        <depends>
+          <after process="makeFT1" status="SUCCESS"/>
         </depends>
       </process>
 
@@ -2449,9 +2672,9 @@
         <variables>
           <var name="reportType">meritTrend</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
-          <after process="doCrumb.recon" status="SUCCESS"/>
+          <after process="allRecon" status="SUCCESS"/>
           <after process="mergeMeritCrumbs" status="SUCCESS"/>
         </depends>
       </process>
@@ -2460,9 +2683,9 @@
         <variables>
           <var name="reportType">reconHist</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
-          <after process="doCrumb.recon" status="SUCCESS"/>
+          <after process="allRecon" status="SUCCESS"/>
           <after process="mergeCalCrumbs" status="SUCCESS"/>
           <after process="mergeReconCrumbs" status="SUCCESS"/>
         </depends>
@@ -2472,39 +2695,39 @@
         <variables>
           <var name="reportType">reconTrend</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
-          <after process="doCrumb.recon" status="SUCCESS"/>
+          <after process="allRecon" status="SUCCESS"/>
           <after process="mergeCalCrumbs" status="SUCCESS"/>
           <after process="mergeReconCrumbs" status="SUCCESS"/>
         </depends>
       </process>
  
       <process name="tkrAnalysis" autoRetryMaxAttempts="%(retries)s">
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/tkrRootAnalysis.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/tkrRootAnalysis.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
-          <after process="doCrumb.recon" status="SUCCESS"/>
+          <after process="allRecon" status="SUCCESS"/>
           <after process="mergeReconCrumbs" status="SUCCESS"/>
         </depends>
       </process>
  
         <process name="svacTuple" autoRetryMaxAttempts="%(retries)s">
-          <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeSvac.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+          <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeSvac.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;rusage[scratch=1]&quot; "/>
           <depends>
-            <after process="doCrumb.recon" status="SUCCESS"/>
+            <after process="allRecon" status="SUCCESS"/>
             <after process="mergeReconCrumbs" status="SUCCESS"/>
           </depends>
         </process>
 
       <process name="checkChunk" autoRetryMaxAttempts="%(retries)s">
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} "/>
         <depends>
-          <after process="doCrumb.recon" status="SUCCESS"/>
           <after process="fastMonHist" status="SUCCESS"/>
           <after process="fastMonTrend" status="SUCCESS"/>
           <after process="digiHist" status="SUCCESS"/>
           <after process="digiTrend" status="SUCCESS"/>
           <after process="calTrend" status="SUCCESS"/>
+          <after process="diffRspFT1" status="SUCCESS"/>
           <after process="mergeGcrCrumbs" status="SUCCESS"/>
           <after process="meritTrend" status="SUCCESS"/>
           <after process="reconHist" status="SUCCESS"/>
@@ -2518,7 +2741,7 @@
         <variables>
           <var name="L1_crumb_list">${pipeline.processInstance("setupCrumbs").getVariable("L1_crumb_list")}</var>      
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(shortQ)s "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(shortQ)s -sp ${standardPriority} "/>
         <depends>
           <after process="checkChunk" status="SUCCESS"/>
         </depends>
@@ -2533,7 +2756,7 @@
         </prerequisites>
 
         <process name="recon" autoRetryMaxAttempts="%(retries)s">
-          <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/recon.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
+          <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/recon.py" batchOptions=" -q %(longQ)s -sp ${highPriority} -R &quot;rusage[scratch=1]&quot; " />
         </process>
 
       </task> <!-- doCrumb -->
@@ -2558,7 +2781,7 @@
       <variables>
         <var name="l1LockAction">LockDirOnly</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/findChunks.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/findChunks.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -E ${L1ProcROOT}/lockFile.py "/>
       <createsSubtasks>
         <subtask>doChunkLci</subtask>
       </createsSubtasks>
@@ -2569,7 +2792,7 @@
         <var name="l1RunStatus">%(runningStatus)s</var>
       </variables>
       <script><![CDATA[
-%(statusScriptBody)s
+%(runningScriptBody)s
 ]]>
       </script>
       <depends>
@@ -2581,7 +2804,7 @@
       <variables>
         <var name="%(magic7Hp_versionName)s">%(magic7Hp_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s -sp ${standardPriority} " />
       <depends>
         <after process="findChunksLci" status="SUCCESS"/>
       </depends>
@@ -2608,7 +2831,7 @@
         <var name="%(digi_versionName)s">%(digi_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -R &quot;rusage[scratch=250]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;rusage[scratch=250]&quot; "/>
       <depends>
         <after process="doChunkLci.digitizationLci" status="DONE"/>
       </depends>
@@ -2634,7 +2857,7 @@
         <var name="fileType">digiHist</var>
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=10]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=10]&quot; "/>
       <depends>
         <after process="doChunkLci.digiHistLci" status="DONE"/>
       </depends>
@@ -2660,7 +2883,7 @@
         <var name="fileType">fastMonError</var>
         <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} "/>
       <depends>
         <after process="doChunkLci.fastMonTupleLci" status="DONE"/>
       </depends>
@@ -2686,7 +2909,7 @@
         <var name="fileType">fastMonTuple</var>
         <var name="%(fastMonTuple_versionName)s">%(fastMonTuple_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=10]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=10]&quot; "/>
       <depends>
         <after process="doChunkLci.fastMonTupleLci" status="DONE"/>
       </depends>
@@ -2712,7 +2935,7 @@
         <var name="fileType">fastMonHist</var>
         <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=10]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=10]&quot; "/>
       <depends>
         <after process="doChunkLci.fastMonHistLci" status="DONE"/>
       </depends>
@@ -2734,7 +2957,7 @@
     </process>
  
     <process name="checkRunLci" autoRetryMaxAttempts="%(retries)s">
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} "/>
       <depends>
         <after process="doChunkLci.checkChunkLci" status="SUCCESS"/>
         <after process="registerDigiLci" status="SUCCESS"/>
@@ -2749,21 +2972,7 @@
       </createsSubtasks>
     </process>
 
-    <process name="setCrashedLci" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="l1RunStatus">%(crashedStatus)s</var>
-      </variables>
-      <script><![CDATA[
-%(statusScriptBody)s
-]]>
-      </script>
-      <depends>
-        <after process="checkRunLci" status="SKIPPED"/>
-        <after process="setRunningLci" status="DONE"/>
-      </depends>
-    </process>
-
-    <process name="setSuccessfulLci" autoRetryMaxAttempts="%(retries)s">
+    <process name="setStatusLci" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="parentProcess">checkRunLci</var>
       </variables>
@@ -2772,7 +2981,7 @@
 ]]>
       </script>
       <depends>
-        <after process="checkRunLci" status="SUCCESS"/>
+        <after process="checkRunLci" status="DONE"/>
         <after process="setRunningLci" status="DONE"/>
       </depends>
     </process>
@@ -2780,7 +2989,7 @@
     <task name="cleanupCompleteRunLci" version="%(L1Version)s" type="Data">
 
       <process name="cleanupChunksLci" autoRetryMaxAttempts="%(retries)s">
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} "/>
       </process>
 
     </task> <!-- cleanupCompleteRunLci -->
@@ -2793,21 +3002,21 @@
       </prerequisites>
 
       <process name="digitizationLci" autoRetryMaxAttempts="%(retries)s">
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/digitize.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/digitize.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
       </process>
  
       <process name="fastMonTupleLci" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="reportType">fastMonTuple</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
       </process>
  
       <process name="fastMonHistLci" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="reportType">fastMonHist</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
           <after process="fastMonTupleLci" status="SUCCESS"/>
         </depends>
@@ -2817,14 +3026,14 @@
         <variables>
           <var name="reportType">digiHist</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;rusage[scratch=1]&quot; "/>
         <depends>
           <after process="digitizationLci" status="SUCCESS"/>
         </depends>
       </process>
  
       <process name="checkChunkLci" autoRetryMaxAttempts="%(retries)s">
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} "/>
         <depends>
           <after process="fastMonHistLci" status="SUCCESS"/>
           <after process="digiHistLci" status="SUCCESS"/>
@@ -2847,13 +3056,13 @@
       <variables>
         <var name="l1LockAction">LockDirOnly</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -E ${L1ProcROOT}/lockFile.py "/>
       <createsSubtasks>
         <subtask>cleanupIncompleteRun</subtask>
       </createsSubtasks>
     </process>
 
-    <process name="setSuccessfulInc" autoRetryMaxAttempts="%(retries)s">
+    <process name="setStatusInc" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="parentProcess">checkRunInc</var>
       </variables>
@@ -2862,7 +3071,7 @@
 ]]>
       </script>
       <depends>
-        <after process="checkRunInc" status="SUCCESS"/>
+        <after process="checkRunInc" status="DONE"/>
       </depends>
     </process>
 
@@ -2872,7 +3081,7 @@
         <variables>
           <var name="l1LockAction">LockDirOnly</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimes.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimes.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -E ${L1ProcROOT}/lockFile.py "/>
       </process>
 
       <process name="mergeReconChunksInc" autoRetryMaxAttempts="%(retries)s">
@@ -2880,7 +3089,7 @@
           <var name="fileType">recon</var>
           <var name="%(recon_versionName)s">%(recon_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;rusage[scratch=250]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;rusage[scratch=250]&quot; "/>
         <depends>
           <after process="getTimesInc" status="SUCCESS"/>
         </depends>
@@ -2908,7 +3117,7 @@
           <var name="%(verifyHisto_versionName)s">%(verifyHisto_version)s</var>
 	  <var name="completeness">Incomplete</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} "/>
         <depends>
           <after process="getTimesInc" status="SUCCESS"/>
         </depends>
@@ -2949,7 +3158,7 @@
           <var name="reportType">verifyLog</var>
           <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[scratch&gt;1 &amp;&amp; linux64]&quot; "/>
         <depends>
           <after process="registerVerifyLogInc" status="SUCCESS"/>
         </depends>
@@ -2962,7 +3171,7 @@
           <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
           <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
         <depends>
           <after process="registerVerifyLogInc" status="SUCCESS"/>
         </depends>
@@ -2988,7 +3197,7 @@
           <var name="fileType">verifyErrorAlarm</var>
           <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} "/>
         <depends>
           <after process="registerVerifyErrorAlarmInc" status="SUCCESS"/>
         </depends>
@@ -2999,7 +3208,7 @@
           <var name="reportType">verifyErrorAlarm</var>
           <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[linux64] rusage[scratch=1]&quot; "/>
         <depends>
           <after process="registerVerifyErrorAlarmInc" status="SUCCESS"/>
         </depends>
@@ -3009,7 +3218,7 @@
         <variables>
           <var name="l1LockAction">UnLock</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/lockFile.py" batchOptions=" -q %(expressQ)s "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/lockFile.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} "/>
         <depends>
           <after process="registerReconInc" status="SUCCESS"/>
           <after process="registerVerifyHistoInc" status="SUCCESS"/>
@@ -3020,7 +3229,7 @@
       </process>
 
       <process name="cleanupChunksInc" autoRetryMaxAttempts="%(retries)s">
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} "/>
         <depends>
           <after process="mergeReconChunksInc" status="SUCCESS"/>
         </depends>
@@ -3039,13 +3248,13 @@
     </prerequisites>
 
     <process name="checkRunIncLci" autoRetryMaxAttempts="%(retries)s">
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -E ${L1ProcROOT}/lockFile.py "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -E ${L1ProcROOT}/lockFile.py "/>
       <createsSubtasks>
         <subtask>cleanupIncompleteRunLci</subtask>
       </createsSubtasks>
     </process>
 
-    <process name="setSuccessfulIncLci" autoRetryMaxAttempts="%(retries)s">
+    <process name="setStatusIncLci" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="parentProcess">checkRunIncLci</var>
       </variables>
@@ -3054,14 +3263,14 @@
 ]]>
       </script>
       <depends>
-        <after process="checkRunIncLci" status="SUCCESS"/>
+        <after process="checkRunIncLci" status="DONE"/>
       </depends>
     </process>
 
     <task name="cleanupIncompleteRunLci" version="%(L1Version)s" type="Data">
 
       <process name="cleanupChunksIncLci" autoRetryMaxAttempts="%(retries)s">
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} "/>
       </process>
 
     </task> <!-- cleanupIncompleteRunLci -->
