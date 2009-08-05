@@ -9,15 +9,12 @@ Allow specifying the version to fileNames.fileName.
 Add version to chunk file names (but it's always 0 at the mo).
 Tweak hsplit to work around ROOT 5.20 issue.
 Allow data catalog type to differ from group.
-Allow attaching extra metadata when registering files - use to specify cut for
-filtered merit.
-fileNames.fileName can get file name from a variable, if so it overrides the
-normal rules.
-Allow execing scripts instead of including them in the XML. Shouldn't use this
-for prod.
+Allow attaching extra metadata when registering files - use to specify cut for filtered merit.
+fileNames.fileName can get file name from a variable, if so it overrides the normal rules.
+Allow execing scripts instead of including them in the XML. Shouldn't use this for prod.
 Add P100-FT2 task.
-Start work on genericScript to reduce boilerplate.
-Use pass7 cuts for ft1 and electrons.
+Start work on genericScript to reduce boilerplate [not yet].
+Use pass7 cuts for ft1 and electrons [backed out of].
 
 
 1.74
