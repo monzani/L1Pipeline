@@ -4,6 +4,7 @@ Make ft1 on chunks.
 Add diffuse response to ft1.
 Make our own gap file.
 Add quality and config to ft2.
+Creating filtered Merit files (photons only, for now).
 Move a bunch of stuff from setSuccessful to setRunning.
 Allow specifying the version to fileNames.fileName.
 Add version to chunk file names (but it's always 0 at the mo).
