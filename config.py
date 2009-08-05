@@ -319,7 +319,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v5r0p1',
+        'version': 'v5r0p0',
         },
 #     'fitsGen': {
 #         'repository': '',
