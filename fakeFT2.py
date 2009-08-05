@@ -47,6 +47,9 @@ setupScript = config.packages['ft2Util']['setup']
 tStart = float(os.environ['tStart']) - config.ft2Pad
 tStop = float(os.environ['tStop']) + config.ft2Pad
 
+template = config.ft2Template
+templOpt = '-new_tpl %s' % template
+
 cmtPath = config.ft2CmtPath
 stLibDir = config.stLibDir
 
@@ -54,7 +57,7 @@ cmd = '''
 cd %(workDir)s
 export CMTPATH=%(cmtPath)s
 source %(setupScript)s
-%(app)s -M7File %(stagedM7File)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s --Gleam --test-quaternion -DigiTstart %(tStart).17g -DigiTstop %(tStop).17g
+%(app)s -M7File %(stagedM7File)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s --Gleam --test-quaternion -DigiTstart %(tStart).17g -DigiTstop %(tStop).17g %(templOpt)s
 ''' % locals()
 
 status = runner.run(cmd)

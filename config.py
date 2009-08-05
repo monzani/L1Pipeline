@@ -245,7 +245,6 @@ reconOptions = {
     'MC': os.path.join(L1Data, 'recon.jobOpt.mc'),
 }
 
-#rootSys = os.path.join(glastExt, 'ROOT/v5.18.00c-gl1/root')
 rootSys = os.path.join(glastExt, 'ROOT/v5.20.00-gl4/gcc32')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
@@ -304,7 +303,7 @@ cmtPackages = {
         },
     'calibTkrUtil': {
         'repository': '',
-        'version': 'v2r7p3',
+        'version': 'v2r9p1',
         },
     'Common': {
         'repository': 'dataMonitoring',
@@ -316,7 +315,7 @@ cmtPackages = {
         },
     'evtClassDefs': {
         'repository': '',
-        'version': 'v0r12',
+        'version': 'v0r14p0',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
@@ -324,7 +323,7 @@ cmtPackages = {
         },
 #     'fitsGen': {
 #         'repository': '',
-#         'version': 'v4r2',
+#         'version': 'v4r5',
 #         },
     'findGaps': {
         'repository': 'svac',
@@ -438,8 +437,8 @@ apps = {
     'fastMon': packages['FastMon']['app'],
     'findGaps': os.path.join(
         packages['findGaps']['bin'], 'findGaps.exe'),
-    # 'makeFT1': os.path.join(stBinDir, 'makeFT1'),
-    'makeFT1': os.path.join(stBinDir, 'makeFT1_kluge'),
+    'makeFT1': os.path.join(stBinDir, 'makeFT1'),
+    # 'makeFT1': os.path.join(stBinDir, 'makeFT1_kluge'),
     'makeFT2': packages['ft2Util']['app'],
     'makeLS3': os.path.join(stBinDir, 'gtltcube'),
     'mergeFT2': os.path.join(
@@ -596,7 +595,8 @@ tdBin = {
 
 #ft1Cuts = 'DEFAULT'
 evclData = packages['evtClassDefs']['data']
-ft1Cuts = os.path.join(evclData, 'pass7_FSW_cuts')
+#ft1Cuts = os.path.join(evclData, 'pass7_FSW_cuts') 
+ft1Cuts = os.path.join(evclData, 'pass6_FSW_cuts')
 electronCuts = os.path.join(evclData, 'pass7_Electrons_FSW_cuts')
 cutFiles = {
     'electronFt1BadGti': electronCuts,
@@ -630,7 +630,10 @@ verifyOptions = {
     }
 
 ft2Pad = 1.0 # pad time range with this on either end whan making fakeFT2
-ft2Template = os.path.join(L1ProcROOT, 'data', 'ft2.tpl')
+#ft2Template = os.path.join(L1ProcROOT, 'data', 'ft2.tpl')
+# this is really really bad (I'm including the fitsGen version in the path):
+# should use $FITSGENROOT... but then, I need to execute stSetup everywhere
+ft2Template = os.path.join(ST, 'fitsGen', 'v4r5', 'data', 'ft2.tpl')
 ft2liveTimeTolerance = '1e-12'
 
 m7Pad = 10 # pad time range with this on either end whan making m7
