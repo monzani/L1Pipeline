@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline
+  xmlns="http://glast-ground.slac.stanford.edu/pipeline"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
+
+<task name="P100-FT2" version="%(L1Version)s" type="Data">
+
+  <variables>
+    <var name="DATASOURCE">LPA</var>
+    <var name="DOWNLINK_ID">0</var>
+    <var name="DOWNLINK_RAWDIR">/nowhere/0</var>
+    <var name="CMTPATH">%(cmtPath)s</var>
+    <var name="creator">${L1_TASK_NAME}-${L1_TASK_VERSION}</var>
+    <var name="isocMode">%(isocMode)s</var>
+    <var name="isocRun">%(isocRun)s</var>
+    <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+    <var name="L1_TASK_NAME">P100-FT2</var>
+    <var name="L1_TASK_VERSION">%(L1Version)s</var>
+    <var name="L1_INSTALL_DIR">%(installRoot)s</var>
+    <var name="L1_BUILD_DIR">%(L1CmtBase)s</var>
+    <var name="L1TrendVersion">Prompt</var> <!-- override if reprocessing -->
+    <var name="LD_LIBRARY_PATH">%(libraryPath)s</var>
+    <var name="nameManglingPrefix">%(nameManglingPrefix)s</var>
+    <var name="dataCatDir">/Data/Flight/Reprocess/P100</var>
+    <var name="baseVersion">100</var>
+  </variables>
+
+  <prerequisites>
+      <prerequisite name="RUNID" type="string"/>
+   </prerequisites>
+
+    <process name="lookupFiles" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="fileTypes">digi,merit,magic7L1</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/lookupJob.py" batchOptions=" -q %(shortQ)s " />
+    </process>
+
+      <process name="getTimes" autoRetryMaxAttempts="%(retries)s">
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimes.py" batchOptions=" -q %(expressQ)s "/>
+      </process>
+
+
+    <process name="makeGaps" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="L1_digi_fileName">${pipeline.processInstance("lookupFiles").getVariable("L1_digi_fileName")}</var>
+        <var name="%(digiGap_versionName)s">${datacatalog.getDatasetLatestVersion(RUNID, dataCatDir, "DIGIGAP")}</var>
+     </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeGaps.py" batchOptions=" -q %(shortQ)s " />
+      <depends>
+        <after process="getTimes" status="SUCCESS"/>
+        <after process="lookupFiles" status="SUCCESS"/>
+      </depends>
+    </process>
+
+
+    <process name="registerGaps" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">makeGaps</var>
+        <var name="fileType">digiGap</var>
+        <var name="timeProcess">getTimes</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="makeGaps" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="getQuality" autoRetryMaxAttempts="%(retries)s">
+       <script><![CDATA[
+%(qualityScriptBody)s
+]]> 
+      </script>
+    </process>
+
+    <process name="ft2Runs" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="L1_digi_fileName">${pipeline.processInstance("lookupFiles").getVariable("L1_digi_fileName")}</var>
+        <var name="L1_digiGap_fileName">${pipeline.processInstance("makeGaps").getVariable("L1_digiGap_fileName")}</var>
+        <var name="%(ft2Seconds_versionName)s">${datacatalog.getDatasetLatestVersion(RUNID, dataCatDir, "FT2SECONDS")}</var>
+        <var name="L1_magic7L1_fileName">${pipeline.processInstance("lookupFiles").getVariable("L1_magic7L1_fileName")}</var>
+        <var name="L1_merit_fileName">${pipeline.processInstance("lookupFiles").getVariable("L1_merit_fileName")}</var>
+        <var name="runQuality">${pipeline.processInstance("getQuality").getVariable("runQuality")}</var>
+        <var name="mootAlias">${pipeline.processInstance("getTimes").getVariable("mootAlias")}</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ft2Entries.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -R &quot;rusage[scratch=15]&quot; " />
+      <depends>
+        <after process="registerGaps" status="SUCCESS"/>
+        <after process="getQuality" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFt2Seconds" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">ft2Runs</var>
+        <var name="fileType">ft2Seconds</var>
+        <var name="timeProcess">getTimes</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="ft2Runs" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="makeFT2" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="%(ft2Seconds_versionName)s">${datacatalog.getDatasetLatestVersion(RUNID, dataCatDir, "FT2SECONDS")}</var>
+        <var name="%(ft2_versionName)s">${datacatalog.getDatasetLatestVersion(RUNID, dataCatDir, "FT2")}</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeFT2File.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
+      <depends>
+        <after process="registerFt2Seconds" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFT2" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">makeFT2</var>
+        <var name="fileType">ft2</var>
+        <var name="timeProcess">getTimes</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="makeFT2" status="SUCCESS"/>
+      </depends>
+    </process>
+
+
+</task> <!-- reprocessFt2 -->
+</pipeline>
+
