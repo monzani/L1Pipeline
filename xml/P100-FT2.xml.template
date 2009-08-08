@@ -4,7 +4,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
 
-<task name="P100-FT2" version="%(L1Version)s" type="Data">
+<task name="P105-FT2" version="%(L1Version)s" type="Data">
 
   <variables>
     <var name="DATASOURCE">LPA</var>
@@ -22,8 +22,8 @@
     <var name="L1TrendVersion">Prompt</var> <!-- override if reprocessing -->
     <var name="LD_LIBRARY_PATH">%(libraryPath)s</var>
     <var name="nameManglingPrefix">%(nameManglingPrefix)s</var>
-    <var name="dataCatDir">/Data/Flight/Reprocess/P100</var>
-    <var name="baseVersion">100</var>
+    <var name="dataCatDir">/Data/Flight/Reprocess/P105</var>
+    <var name="baseVersion">105</var>
   </variables>
 
   <prerequisites>

@@ -8,16 +8,16 @@
 import os
 import sys
 
-L1Name = os.environ.get('L1_TASK_NAME') or "P100-FT2"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.75"
+L1Name = os.environ.get('L1_TASK_NAME') or "P105-FT2"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.76"
 fullTaskName = '-'.join([L1Name, L1Version])
-installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/P100-FT2"
+installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/P105-FT2"
 
 creator = '-'.join([L1Name, L1Version])
     
 #L1Cmt = os.path.join(installRoot, 'builds')
 L1Volume = '/afs/slac/g/glast/ground/releases/volume01'
-L1CmtBase = os.environ.get('L1_BUILD_DIR') or os.path.join(L1Volume, 'P100-FT2')
+L1CmtBase = os.environ.get('L1_BUILD_DIR') or os.path.join(L1Volume, 'P105-FT2')
 L1Cmt = os.path.join(L1CmtBase, L1Version)
 
 doCleanup = True
@@ -194,7 +194,7 @@ installBin = os.path.join(installArea, 'bin')
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
 releaseDir = os.path.join(groundRoot, 'releases', 'volume13')
-glastVersion = 'v15r47p9'
+glastVersion = 'v15r47p12'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -307,7 +307,7 @@ cmtPackages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r2p28',
+        'version': 'ft2Util-01-02-31',
         },
     'GPLtools': {
         'repository': '',
