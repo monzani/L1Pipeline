@@ -333,7 +333,7 @@ cmtPackages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'v1r2p29',
+        'version': 'v1r2p31',
         },
     'GPLtools': {
         'repository': '',
