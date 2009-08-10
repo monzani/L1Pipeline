@@ -652,6 +652,7 @@ else:
 trendIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/%s/bin/ingestTrendingFile' % trendMode
 runIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/%s/bin/ingestRunFile' % trendMode
 
+grPath = os.path.join(glastLocation, 'lib')
 rootPath = os.path.join(rootSys, 'lib')
 
 libraryPath = ':'.join(
