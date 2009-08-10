@@ -220,7 +220,7 @@ glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #releaseDir = os.path.join(groundRoot, 'releases', 'volume11')
 #glastVersion = 'v17r31'
 releaseDir = os.path.join(groundRoot, 'releases', 'volume13')
-glastVersion = 'v15r47p13'
+glastVersion = 'v15r47p12'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -245,7 +245,8 @@ reconOptions = {
     'MC': os.path.join(L1Data, 'recon.jobOpt.mc'),
 }
 
-rootSys = os.path.join(glastExt, 'ROOT/v5.20.00-gl4/gcc32')
+#rootSys = os.path.join(glastExt, 'ROOT/v5.20.00-gl4/gcc32')
+rootSys = os.path.join(glastExt, 'ROOT/v5.18.00c-gl1/root')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
@@ -275,7 +276,7 @@ hpTaskBase = '/afs/slac/g/glast/isoc/flightOps/offline/halfPipe/prod'
 
 l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
 
-stVersion = 'v9r15p3'
+stVersion = 'v9r15p3gl2'
 ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
 # ST = os.path.join(L1Cmt, "ScienceTools", "ScienceTools-%s" % stVersion) # We should really have our own copy of ScienceTools, but it gave trouble.
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
@@ -303,7 +304,8 @@ cmtPackages = {
         },
     'calibTkrUtil': {
         'repository': '',
-        'version': 'v2r9p1',
+        #'version': 'v2r9p1',
+        'version': 'v2r7p3',
         },
     'Common': {
         'repository': 'dataMonitoring',
@@ -650,34 +652,12 @@ else:
 trendIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/%s/bin/ingestTrendingFile' % trendMode
 runIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/%s/bin/ingestRunFile' % trendMode
 
-grPath = os.path.join(glastLocation, 'lib')
-cfitsioPath = os.path.join(glastExt, 'cfitsio/v3060A/lib')
-clhepPath = os.path.join(glastExt, 'CLHEP/1.9.2.2/lib')
-cppunitPath = os.path.join(glastExt, 'cppunit/1.10.2/lib')
-gaudiPath = os.path.join(glastExt, 'gaudi/v18r1-gl4/lib')
-mysqlPath = os.path.join(glastExt, 'MYSQL/4.1.18/lib/mysql')
-oraclePath = '/afs/slac/package/oracle/new/lib'
 rootPath = os.path.join(rootSys, 'lib')
-xercesPath = os.path.join(glastExt, 'xerces/2.7.0/lib')
 
 libraryPath = ':'.join(
     [
         os.path.join(L1Cmt, 'lib'), 
-        # grPath, 
-        # oraclePath,
         rootPath,
-        # It seems like the rest of this should not be necessary if everyone
-        # had their requirements set up right.  Maybe some of these are not
-        # required anymore.  But each of them was at some point.
-        #
-        # Or maybe I just need to source the setup scripts.
-        #
-        # clhepPath,
-        # cppunitPath,
-        # xercesPath,
-        # gaudiPath,
-        # mysqlPath,
-        #cfitsioPath,
         ])
 
 # #GPL2 = '/nfs/slac/g/svac/focke/builds/GPLtools/dev'
