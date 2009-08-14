@@ -52,6 +52,7 @@ def mergeHdus(inputs):
     del header['DATASUM']
 
     copyKeyWords(header, inputs[-1].header)
+    if header['EXTNAME'] == 'GTI': fixGti(header)
 
     columns = inputs[0].columns
 
@@ -70,7 +71,8 @@ def mergeHdus(inputs):
 def checkHdus(inputs):
     status = True
     baseline = inputs[0].columns
-    #for hdu in inputs[1:]: status &= (hdu.columns == baseline)
+    # for hdu in inputs[1:]: status &= (hdu.columns == baseline)
+    # check that all EXTNAMES match
     return status
 
 
@@ -79,6 +81,14 @@ def copyKeyWords(target, source):
     for kw in kwToCopy:
         target.update(kw, source[kw])
         continue
+    return
+
+
+def fixGti(header):
+    tStart = header['TSTART']
+    tStop = header['TSTOP']
+    tElapse = tStop - tStart
+    header['TELAPSE'] = tElapse
     return
 
 
