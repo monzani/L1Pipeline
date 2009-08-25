@@ -57,11 +57,19 @@ def mergeHdus(inputs):
     columns = inputs[0].columns
 
     nRows = 0
-    for hdu in inputs: nRows += hdu.data.shape[0]
+    dataHdus = []
+    for hdu in inputs:
+        if hdu.header['NAXIS2'] == 0: continue
+        dataHdus.append(hdu)
+        nRows += hdu.data.shape[0]
+        continue
 
     newHdu = pyfits.new_table(columns, header=header, nrows=nRows)
+
+    if nRows == 0: return newHdu
+    
     for name in columns.names:
-        newColumn = N.concatenate([hdu.data.field(name) for hdu in inputs ])
+        newColumn = N.concatenate([hdu.data.field(name) for hdu in dataHdus])
         newHdu.data.field(name)[:] = newColumn
         continue
 
