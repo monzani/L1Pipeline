@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.75"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.76"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -217,8 +217,6 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-#releaseDir = os.path.join(groundRoot, 'releases', 'volume11')
-#glastVersion = 'v17r31'
 releaseDir = os.path.join(groundRoot, 'releases', 'volume13')
 glastVersion = 'v15r47p12'
 releaseName = 'GlastRelease'
@@ -271,13 +269,21 @@ else:
     pass
 acqTable = 'GLASTOPS_ACQSUMMARY'
 
+# parameters for retrying failed DB connections
+dbRetries = 5
+minDbWait = 30
+maxDbWait = 120
+
 scid = 77
 hpTaskBase = '/afs/slac/g/glast/isoc/flightOps/offline/halfPipe/prod'
 
 l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
 
+# LSF pre-exec option for run & throttle locking
+lockOption = " -E &quot;${isocRun} ${L1ProcROOT}/lockFile.py&quot; "
+
 stVersion = 'v9r15p3gl2'
-ST="/nfs/farm/g/glast/u30/builds/rh9_gcc32opt/ScienceTools/ScienceTools-%s" % stVersion
+ST = "/nfs/farm/g/glast/u30/builds/%s/ScienceTools/ScienceTools-%s" % (cmtConfig, stVersion)
 # ST = os.path.join(L1Cmt, "ScienceTools", "ScienceTools-%s" % stVersion) # We should really have our own copy of ScienceTools, but it gave trouble.
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
 PFILES = ".;/dev/null"
@@ -517,7 +523,8 @@ mergeConfigs = {
 
 alarmRefBase = '/nfs/farm/g/glast/u52/Monitoring/ReferenceHistograms'
 alarmRefDir = os.path.join(alarmRefBase, mode)
-alarmBase = os.path.join(L1Volume, 'AlarmsCfg', mode)
+alarmCfgBase = '/afs/slac/g/glast/ground/releases/volume01'
+alarmBase = os.path.join(alarmCfgBase, 'AlarmsCfg', mode)
 alarmConfigs = {
     'acdPedsAnalyzer': os.path.join(alarmBase, 'xml', 'acdpeds_eor_alarms.xml'),
     'calGainsAnalyzer': os.path.join(

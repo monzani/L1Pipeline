@@ -67,11 +67,11 @@
       <prerequisite name="RUNSTATUS" type="string"/>
    </prerequisites>
 
-    <process name="findChunks" autoRetryMaxAttempts="0"> <!-- This should not be automatically rolled back, it interacts poorly with the run lock -->
+    <process name="findChunks" autoRetryMaxAttempts="1"> <!-- This should not be automatically rolled back, it interacts poorly with the run lock. Except I think that's fixed now? -->
       <variables>
         <var name="l1LockAction">LockAndThrottle</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/findChunks.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -E ${L1ProcROOT}/lockFile.py " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} %(lockOption)s " />
       <createsSubtasks>
         <subtask>doChunk</subtask>
       </createsSubtasks>
@@ -121,7 +121,7 @@
         <var name="tStart">${pipeline.processInstance("findChunks").getVariable("tStart")}</var>      
         <var name="tStop">${pipeline.processInstance("findChunks").getVariable("tStop")}</var>      
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeM7.py" batchOptions=" -q %(shortQ)s -sp ${highPriority} -R linux32 " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeM7.py" batchOptions=" -q %(shortQ)s -sp ${highPriority} -R linux64 " />
       <depends>
         <after process="findChunks" status="SUCCESS"/>
       </depends>
@@ -2326,11 +2326,11 @@
 
     <task name="cleanupCompleteRun" version="%(L1Version)s" type="Data">
 
-      <process name="getTimes" autoRetryMaxAttempts="0">
+      <process name="getTimes" autoRetryMaxAttempts="0"> <!-- Should use genericScript.py with a cleanup routine here -->
         <variables>
 	      <var name="l1LockAction">LockDirOnly</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimes.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -E ${L1ProcROOT}/lockFile.py "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimes.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} %(lockOption)s "/>
       </process>
 
       <process name="mergeReconChunks" autoRetryMaxAttempts="%(retries)s">
@@ -2737,7 +2737,7 @@
         </depends>
       </process>
 
-      <process name="cleanupCrumbs" autoRetryMaxAttempts="0">
+      <process name="cleanupCrumbs" autoRetryMaxAttempts="1"> <!-- Retrying usually doesn't work here, but once in a while it does, and when it doesn't, it's pretty cheap. -->
         <variables>
           <var name="L1_crumb_list">${pipeline.processInstance("setupCrumbs").getVariable("L1_crumb_list")}</var>      
         </variables>
@@ -2777,11 +2777,11 @@
       <prerequisite name="RUNSTATUS" type="string"/>
     </prerequisites>
 
-    <process name="findChunksLci" autoRetryMaxAttempts="0">
+    <process name="findChunksLci" autoRetryMaxAttempts="1">
       <variables>
         <var name="l1LockAction">LockDirOnly</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/findChunks.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -E ${L1ProcROOT}/lockFile.py "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/findChunks.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} %(lockOption)s "/>
       <createsSubtasks>
         <subtask>doChunkLci</subtask>
       </createsSubtasks>
@@ -3056,7 +3056,7 @@
       <variables>
         <var name="l1LockAction">LockDirOnly</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -E ${L1ProcROOT}/lockFile.py "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} %(lockOption)s "/>
       <createsSubtasks>
         <subtask>cleanupIncompleteRun</subtask>
       </createsSubtasks>
@@ -3077,11 +3077,11 @@
 
     <task name="cleanupIncompleteRun" version="%(L1Version)s" type="Data">
 
-      <process name="getTimesInc" autoRetryMaxAttempts="0">
+      <process name="getTimesInc" autoRetryMaxAttempts="0"> <!-- Should use genericScript.py with a cleanup routine here -->
         <variables>
           <var name="l1LockAction">LockDirOnly</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimes.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -E ${L1ProcROOT}/lockFile.py "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimes.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} %(lockOption)s "/>
       </process>
 
       <process name="mergeReconChunksInc" autoRetryMaxAttempts="%(retries)s">
@@ -3248,7 +3248,7 @@
     </prerequisites>
 
     <process name="checkRunIncLci" autoRetryMaxAttempts="%(retries)s">
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -E ${L1ProcROOT}/lockFile.py "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} %(lockOption)s "/>
       <createsSubtasks>
         <subtask>cleanupIncompleteRunLci</subtask>
       </createsSubtasks>

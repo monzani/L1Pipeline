@@ -38,6 +38,10 @@ def lockData(id,base):
         }
     return data
 
+
+# Probably most of these routines should return a status.
+
+
 def lockDir(directory, base, id):
 
     if not os.path.isdir(directory): os.system('mkdir -p %s' % directory)

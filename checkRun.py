@@ -9,12 +9,13 @@ import os
 import sys
 import time
 
-import cx_Oracle
+#import cx_Oracle
 
 import config
 
 import GPLinit
 
+import acqQuery
 import fileNames
 import l1Logger
 import lockFile
@@ -22,14 +23,7 @@ import pipeline
 
 
 def checkRunStatus(runNumber):
-    con = cx_Oracle.connect(config.connectString)
-    cur = con.cursor()
-    cmd = 'select STATUS from GLASTOPS_ACQSUMMARY where STARTEDAT = %s' % runNumber
-    print >> sys.stderr, cmd
-    
-    stuff = cur.execute(cmd)
-    results = cur.fetchall()
-    con.close()
+    results = acqQuery.query([runNumber], ['STATUS'])
 
     if len(results) != 1:
         # If the run is not in ACQSUMMARY, something is wrong.
@@ -37,14 +31,16 @@ def checkRunStatus(runNumber):
         # In either case, err on the side of caution.
         print >> sys.stderr, "Did not get exactly 1 status for run %s, results=%s; not retiring." % (runNumber, results)
         return False, "WeirdlyBroken"
+    print >> sys.stderr, results
     
-    runStatus = results[0][0]
+    runStatus = results[runNumber][0]
     statusFinal = runStatus in ['Complete', 'Incomplete']
 
     print >> sys.stderr, 'Run %s has status %s, final=%s' % \
           (runNumber, runStatus, statusFinal)
 
     return statusFinal, runStatus
+
 
 def checkTokens(head, runId):
     tokenDir = fileNames.tokenDir(head, runId)
@@ -73,7 +69,7 @@ head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
 
-runNumber = os.environ['runNumber']
+runNumber = int(os.environ['runNumber'])
 
 rootDir = os.path.dirname(fileNames.fileName('chunkList', dlId, runId)) #bleh
 
@@ -100,10 +96,6 @@ else:
     l1RunStatus = config.waitingStatus
     pass
 
-# Here we should copy the run status from ACQSUMMARY to Karen's table.
-#
-# No, a dependent process does that.
-# And it's not necessarily a copy.
 pipeline.setVariable('l1RunStatus', l1RunStatus)
 
 if mergeStatus:

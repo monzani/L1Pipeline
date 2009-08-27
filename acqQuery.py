@@ -1,6 +1,8 @@
 
 import os
+import random
 import sys
+import time
 
 import cx_Oracle
 
@@ -9,29 +11,17 @@ import config
 #import GPLinit
 
 
+class acqError(Exception):
+    pass
 
-def checkRunStatus(runNumber, field):
-    '''broken junk'''
-    con = cx_Oracle.connect(config.connectString)
-    cur = con.cursor()
-    cmd = 'select %s from %s where STARTEDAT = %s' % \
-          (field, config.acqTable, runNumber)
-    print >> sys.stderr, cmd
-    
-    stuff = cur.execute(cmd)
-    results = cur.fetchall()
-    con.close()
 
-    if len(results) != 1:
-        print >> sys.stderr, "Did not get exactly 1 status for run %s, results=%s; not retiring." % (runNumber, results)
-    
-    runStatus = results[0][0]
-    statusFinal = runStatus in ['Complete', 'Incomplete']
-
-    print >> sys.stderr, 'Run %s has status %s, final=%s' % \
-          (runNumber, runStatus, statusFinal)
-
-    return statusFinal, runStatus
+def waitABit(minDelay=None, maxDelay=None):
+    if minDelay is None: minDelay = config.minDbWait
+    if maxDelay is None: maxDelay = config.maxDbWait
+    delay = random.randrange(minDelay, maxDelay+1)
+    log.info("Waiting %d seconds." % delay)
+    time.sleep(delay)
+    return
 
 
 def query(runs, fields):
@@ -46,20 +36,31 @@ def query(runs, fields):
     
     '''
 
-    connectString = config.connectString
-    print >> sys.stderr, 'Connecting to %s' % connectString
-    con = cx_Oracle.connect(connectString)
-    cur = con.cursor()
-
     augFields = ['STARTEDAT'] + list(fields)
     fieldStr = ', '.join(augFields)
     runStr = '(' + ', '.join(str(run) for run in runs) + ')'
     cmd = 'select %s from %s where STARTEDAT in %s' % (fieldStr, config.acqTable, runStr)
     print >> sys.stderr, cmd
     
-    stuff = cur.execute(cmd)
-    results = cur.fetchall()
-    con.close()
+    connectString = config.connectString
+    print >> sys.stderr, 'Connecting to %s' % connectString
+
+    for retry in range(config.dbRetries):
+        try:
+            if retry: waitABit()
+            dbOk = False
+            con = cx_Oracle.connect(connectString)
+            cur = con.cursor()
+            stuff = cur.execute(cmd)
+            results = cur.fetchall()
+            con.close()
+            dbOk = True
+            break
+        except cx_Oracle.DatabaseError:
+            continue
+        continue
+    print >> sys.stderr, 'Status %s after %d tries.' % (dbOk, retry+1)
+    if not dbOk: raise acqError
 
     dResults = dict((row[0], row[1:]) for row in results)
 
