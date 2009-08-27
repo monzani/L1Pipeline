@@ -56,7 +56,7 @@ def query(runs, fields):
             con.close()
             dbOk = True
             break
-        except cx_Oracle.DatabaseError:
+        except:
             continue
         continue
     print >> sys.stderr, 'Status %s after %d tries.' % (dbOk, retry+1)

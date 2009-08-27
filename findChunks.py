@@ -22,13 +22,19 @@ import runner
 
 
 def cleanup(status, idArgs, **extra):
+    if not status: return status
     myStatus = 0
+    
     dlId, runId = idArgs[:2]
     runDir = fileNames.fileName(None, *idArgs)
-    if status:
-        lockFile.unlockDir(runDir, runId, dlId)
-        lockFile.unlockThrottle(dlId, runId)
-        pass
+    lockFile.unlockDir(runDir, runId, dlId)
+    lockFile.unlockThrottle(dlId, runId)
+
+    realChunkList = fileNames.fileName('chunkList', *idArgs)
+    mangledChunkList = fileNames.mangleChunkList(realChunkList)
+    cmd = 'mv %s %s' % (realChunkList, mangledChunkList)
+    myStatus |= runner.run(cmd)
+    
     return myStatus
 
 
