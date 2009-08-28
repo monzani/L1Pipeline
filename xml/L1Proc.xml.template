@@ -121,7 +121,7 @@
         <var name="tStart">${pipeline.processInstance("findChunks").getVariable("tStart")}</var>      
         <var name="tStop">${pipeline.processInstance("findChunks").getVariable("tStop")}</var>      
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeM7.py" batchOptions=" -q %(shortQ)s -sp ${highPriority} -R linux64 " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeM7.py" batchOptions=" -q %(shortQ)s -sp ${highPriority} -R linux32 " />
       <depends>
         <after process="findChunks" status="SUCCESS"/>
       </depends>
