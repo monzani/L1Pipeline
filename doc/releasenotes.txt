@@ -5,6 +5,8 @@ genericScript.py catches exceptions in the main function and does cleanup.
 Convert findChunks to use genericScript.py, with a cleanup routine that
 removes the throttle and run lock if status != 0, so it's safe to autoretry.
 Enable autoretry on findChunks.
+Invoke locking preexec script with 'python script' instead of 'script' with a
+shebang. Hopefully this will stop the "bad interpreter" error messages.
 
 1.75
 -----------------
