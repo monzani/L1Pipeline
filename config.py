@@ -345,7 +345,7 @@ cmtPackages = {
         },
     'GPLtools': {
         'repository': '',
-        'version': 'fileOps4',
+        'version': 'fileOps3',
         },
     'Monitor': {
         'repository': 'svac',
