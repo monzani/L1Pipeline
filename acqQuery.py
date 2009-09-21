@@ -3,6 +3,7 @@ import os
 import random
 import sys
 import time
+import traceback
 
 import cx_Oracle
 
@@ -46,6 +47,7 @@ def query(runs, fields):
     print >> sys.stderr, 'Connecting to %s' % connectString
 
     for retry in range(config.dbRetries):
+        print >> sys.stderr, 'Attempt %s' % (retry+1)
         try:
             if retry: waitABit()
             dbOk = False
@@ -57,6 +59,7 @@ def query(runs, fields):
             dbOk = True
             break
         except:
+            traceback.print_exc()
             continue
         continue
     print >> sys.stderr, 'Status %s after %d tries.' % (dbOk, retry+1)

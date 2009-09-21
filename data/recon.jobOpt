@@ -22,3 +22,4 @@ TkrReconCalib.calibFlavor = "vanilla";
 
 //Calibration.Members = {"TkrCalibAlg"};
 
+ApplicationMgr.EvtMax = 2147483647;

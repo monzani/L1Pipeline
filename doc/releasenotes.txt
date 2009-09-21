@@ -1,3 +1,8 @@
+1.77
+-----------------
+Stage crumbs (but not chunks) on xroot.
+
+
 1.76
 -----------------
 Retry failed DB connections.

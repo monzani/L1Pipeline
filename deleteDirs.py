@@ -41,10 +41,6 @@ if runId is not None:
     
 else:
     level = 'downlink'
-
-    # print >> sys.stderr, 'Not doing cleanup.'
-    # sys.exit(0)
-    
     chunkId = None
     pass
 

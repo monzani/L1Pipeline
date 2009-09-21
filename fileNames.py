@@ -26,6 +26,7 @@ import finders
 import variables
 
 fileTypes = {
+    None: None,
     'acdPlots': 'tar',
     'acdPedsAlarm': 'xml',
     'acdPedsAnalyzer': 'root',
@@ -198,22 +199,15 @@ def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None,
         fields.append(dlId)
         pass
 
-    subDir = subDirectory(fileType, dlId, runId, chunkId, crumbId)
-    
-    if level == 'run':
-        runDir = os.path.join(config.L1Dir, subDir)
-
-        if fileType is None:
-            return runDir
-        
-        if fileTypes[fileType] in xrootFileTypes:
-            subDir = xrootSubDirectory(fileType, dlId, runId)
-            baseDir = config.xrootBase
-        else:
-            baseDir = config.L1Dir
-            pass
-
+    if level == 'run' and fileTypes[fileType] in xrootFileTypes:
+        subDir = xrootSubDirectory(fileType, dlId, runId)
+    else:
+        subDir = subDirectory(fileType, dlId, runId, chunkId, crumbId)
         pass
+    
+    if level == 'run' and fileType is None:
+        runDir = os.path.join(config.L1Dir, subDir)
+        return runDir
         
     # Assign a version. Maybe.
     verStr = None
@@ -255,13 +249,8 @@ def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None,
     baseName = '.'.join(['_'.join(fields), fileTypes[fileType]])
     relativePath = os.path.join(subDir, baseName)
 
-    if level != 'run':
-        # temporary staging; load balance
-        #index = myHash(relativePath) % len(config.stageDirs)
-        #baseDir = config.stageDirs[index]
-        baseDir = stageBalance(relativePath)
-        pass
-
+    baseDir = baseDirectory(fileType, level, relativePath)
+    
     fullName = os.path.join(baseDir, relativePath)
 
     return fullName
@@ -294,10 +283,18 @@ def findPieces(fileType, dlId, runId=None, chunkId=None):
     @return A sequence of file names
     """
 
-    if runId is None:
+    if chunkId is not None:
+        level = 'chunk'
+    elif runId is not None:
+        level = 'run'
+    else:
+        level = 'downlink'
+        pass
+
+    if level == 'downlink':
         # We're not merging anything, just finding downlink dirs to delete.
         argSets = [(fileType, dlId)]
-    elif chunkId is None:
+    elif level == 'run':
         if fileType is None:
             # Just finding run buffers to delete
             argSets = [(fileType, dlId, runId, chunkId)]
@@ -339,9 +336,15 @@ def findPieces(fileType, dlId, runId=None, chunkId=None):
     pieces = [funk(*args) for args in argSets]
 
     if fileType is None:
+        if level in ['run', 'downlink']:
+            baseDirs = list(uniqueStageDirs) + [config.xrootStage]
+        else:
+            baseDirs = [baseDirectory(fileType, level, pieces[0])]
+            pass
+
         pieces = [os.path.join(baseDir, piece)
                   for piece in pieces
-                  for baseDir in uniqueStageDirs]
+                  for baseDir in baseDirs]
         pass
 
     return pieces
@@ -405,6 +408,30 @@ def subDirectory(fileType, dlId, runId=None, chunkId=None, crumbId=None):
 def xrootSubDirectory(fileType, dlId, runId=None):
     subDir = fileType
     return subDir
+
+
+def baseDirectory(fileType, level, relativePath):
+    if level == 'downlink':
+        baseDir = config.L1Dir
+    elif level == 'run':
+        if fileTypes[fileType] in xrootFileTypes:
+            baseDir = config.xrootBase
+        else:
+            baseDir = config.L1Dir
+            pass
+    elif level == 'chunk':
+        if fileType is None:
+            # deleting crumb directories
+            baseDir = config.xrootStage
+        else:
+            # temporary staging; load balance
+            baseDir = stageBalance(relativePath)
+            pass
+        pass
+    elif level == 'crumb':
+        baseDir = config.xrootStage
+        pass
+    return baseDir
 
 
 versRe = re.compile('_v([0-9]+)[\._][^/]+$')

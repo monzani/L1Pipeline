@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.76"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.77"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -147,6 +147,8 @@ if testMode:
 else:
     stageBase = 'l1Stage'
     pass
+
+xrootStage = os.path.join(xrootGlast, 'Scratch', stageBase)
 
 #maxCrumbSize = 48000 # SVAC pipeline uses this
 #maxCrumbSize = 250   # tiny
@@ -343,7 +345,7 @@ cmtPackages = {
         },
     'GPLtools': {
         'repository': '',
-        'version': 'fileOps3',
+        'version': 'fileOps4',
         },
     'Monitor': {
         'repository': 'svac',
