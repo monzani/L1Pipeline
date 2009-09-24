@@ -40,7 +40,6 @@ permanentFt2File = os.path.join(runDir, ft2FakeBase)
 stagedFt2FitsFile = staged.stageOut(fakeFt2File, permanentFt2File)
 
 workDir = os.path.dirname(stagedFt2FitsFile)
-stagedFt2TxtFile = os.path.join(workDir, 'junkFT2.txt')
 
 setupScript = config.packages['ft2Util']['setup']
 
@@ -57,7 +56,7 @@ cmd = '''
 cd %(workDir)s
 export CMTPATH=%(cmtPath)s
 source %(setupScript)s
-%(app)s -M7File %(stagedM7File)s -FT2_txt_File %(stagedFt2TxtFile)s -FT2_fits_File %(stagedFt2FitsFile)s --Gleam --test-quaternion -DigiTstart %(tStart).17g -DigiTstop %(tStop).17g %(templOpt)s
+%(app)s -M7File %(stagedM7File)s -FT2_fits_File %(stagedFt2FitsFile)s --Gleam --test-quaternion -DigiTstart %(tStart).17g -DigiTstop %(tStop).17g %(templOpt)s
 ''' % locals()
 
 status = runner.run(cmd)

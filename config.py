@@ -150,15 +150,11 @@ else:
 
 xrootStage = os.path.join(xrootGlast, 'Scratch', stageBase)
 
-#maxCrumbSize = 48000 # SVAC pipeline uses this
-#maxCrumbSize = 250   # tiny
-#maxCrumbSize = 6353   # ~.5Hr on tori (muons).  Also about half of (old) medium q limit
-#maxCrumbSize = 17000   # ~.5Hr on cob (skymodel).
-# maxCrumbs = 7 # Maximum number of crumbs/chunk. Not used by current algorithm.
-maxCrumbs = 20 # Maximum number of crumbs/chunk.
-# crumbSize = 10000 # typical crumb size
-crumbSize = 2000 # typical crumb size
+maxCrumbs = 30 # Maximum number of crumbs/chunk.
+crumbSize = 1500 # minimum average crumb size (chunkEvents/nCrumbs)
 crumbMmr = 2.0 # largestCrumb / smallestCrumb
+
+maxChunks = 1000 # We can't handle too many chunks. Fail if more.
 
 defaultRunStatus = 'WAITING'
 defaultDataSource = 'LPA'

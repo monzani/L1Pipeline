@@ -4,6 +4,9 @@ import sys
 
 import eventFile
 
+import config
+
+
 def readHeader(inFile):
     print >> sys.stderr, 'Reading %s ...' % inFile
     headerData = {}
@@ -52,6 +55,12 @@ def verifyChunk(headerData):
 def verifyList(chunks):
     print >> sys.stderr, 'Testing chunks...'
 
+    nChunks = len(chunks)
+    if nChunks > config.maxChunks:
+        print >> sys.stderr, '%d chunks is too many (%d max), failing.' % \
+              (nChunks, config.maxChunks)
+        return False
+    
     byGEM = sorted(chunks, key=lambda x:x['begGEM'])
     for chunk in byGEM:
         if not verifyChunk(chunk): return False

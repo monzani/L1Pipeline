@@ -7,6 +7,7 @@
 
 import os
 import sys
+import traceback
 
 import config
 
@@ -110,6 +111,7 @@ def main():
         status |= function(**args)
     except:
         print >> sys.stderr, 'Failed!'
+        traceback.print_exc()
         status |= 1
         pass
     print >> sys.stderr, 'Status = %s' % status

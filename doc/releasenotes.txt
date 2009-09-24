@@ -1,6 +1,9 @@
 1.77
 -----------------
 Stage crumbs (but not chunks) on xroot.
+Make more smaller crumbs.
+Fail fast if too many chunks.
+Don't make ft2Txt file.
 
 
 1.76
