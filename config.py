@@ -345,7 +345,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r3p2',
+        'version': 'v1r3p3',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
