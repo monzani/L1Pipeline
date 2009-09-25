@@ -50,6 +50,7 @@ for taskName in taskNames:
     configuration.update(scriptBodies)
 
     for fileType in fileNames.fileTypes:
+        if fileType is None: continue
         nTag = fileType + '_versionName'
         varName = variables.mangleName(fileType, 'ver')
         configuration[nTag] = varName
