@@ -313,7 +313,7 @@ cmtPackages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v6r0p0',
+        'version': 'v6r1p1',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -325,7 +325,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v5r0p0',
+        'version': 'v5r1p0',
         },
 #     'fitsGen': {
 #         'repository': '',
@@ -345,7 +345,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r2p37',
+        'version': 'v1r3p2',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -360,11 +360,11 @@ cmtPackages = {
 cvsPackages = {
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r4p1',
+        'version': 'v1r4p2',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v2r0p0',
+        'version': 'v2r0p1',
         },
     'IGRF': {
         'repository': 'dataMonitoring',
