@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.77"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.78"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -313,7 +313,7 @@ cmtPackages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'v6r1p1',
+        'version': 'Common-06-01-01',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -325,7 +325,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'v5r1p0',
+        'version': 'FastMon-05-01-00',
         },
 #     'fitsGen': {
 #         'repository': '',
@@ -345,7 +345,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'v1r3p3',
+        'version': 'Monitor-01-03-03',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -353,7 +353,7 @@ cmtPackages = {
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'v9r2',
+        'version': 'TestReport-10-01-00',
         },
     }
 
@@ -364,7 +364,7 @@ cvsPackages = {
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v2r0p1',
+        'version': 'FastMonCfg-02-00-01',
         },
     'IGRF': {
         'repository': 'dataMonitoring',

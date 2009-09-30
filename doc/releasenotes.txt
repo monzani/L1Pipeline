@@ -1,3 +1,8 @@
+1.78
+-----------------
+Use new style tags for monitoring packages.
+
+
 1.77
 -----------------
 Stage crumbs (but not chunks) on xroot.
