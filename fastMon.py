@@ -23,6 +23,8 @@ chunkId = os.environ['CHUNK_ID']
 staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption
 
+package = config.packages['FastMon']
+
 reportType = os.environ['reportType']
 if reportType == 'fastMonTuple':
     realInFile = os.environ['EVTFILE']
@@ -32,7 +34,8 @@ if reportType == 'fastMonTuple':
     m7File = staged.stageIn(realM7File)
     realTupleFile = fileNames.fileName('fastMonTuple', dlId, runId, chunkId)
     tupleFile = staged.stageOut(realTupleFile)
-    varArgs = '-o %(tupleFile)s -e %(errorFile)s -m %(m7File)s' % locals()
+    saaDef = package['saaDefinition']
+    varArgs = '-o %(tupleFile)s -e %(errorFile)s -m %(m7File)s -s %(saaDef)s' % locals()
     app = config.apps['fastMonTuple']
     workDir = os.path.dirname(errorFile)
 elif reportType == 'fastMonHist':
@@ -46,7 +49,6 @@ elif reportType == 'fastMonHist':
 
 inFile = staged.stageIn(realInFile)
 
-package = config.packages['FastMon']
 os.environ.update(package['env'])
 
 dmRoot = config.L1Cmt

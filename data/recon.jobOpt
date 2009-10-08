@@ -1,25 +1,9 @@
 #include "$GLEAMROOT/src/jobOptions/pipeline/readigi_runrecon.txt"
 digiRootReaderAlg.digiRootFileList = { "$digiChunkFile" } ;
-//RootIoSvc.StartingIndex = $crumbStart;
-//ApplicationMgr.EvtMax = $crumbEvents;
 reconRootWriterAlg.reconRootFile = "$reconCrumbFile";
 RootTupleSvc.filename = "$meritCrumbFile";
 CalTupleAlg.tupleFilename = "$calCrumbFile";
 gcrSelectRootWriterAlg.gcrSelectRootFile = "$gcrCrumbFile";
 PtValsAlg.PointingHistory = {"$fakeFT2File","", ""};
 GlastDetSvc.xmlfile = "$(XMLGEODBSROOT)/xml/$(gleamGeometry)";
-
-FT1Alg.CorrectForAberration = true;
-FT1Alg.AlignmentFlavor      = "vanilla";
-Calibration.Members       = {"TkrCalibAlg/TkrReconCalib"};
-TkrReconCalib.calibFlavor = "vanilla";
-
-//TkrCalibAlg.chargeInjectionCalibFlavor = "validation";
-//TkrCalibAlg.muonCalibFlavor            = "validation";
-
-//CalibDataSvc.CalibFlavorList += {"validation"};
-//CalibMySQLCnvSvc.QualityList  = {"PROD","DEV"};
-
-//Calibration.Members = {"TkrCalibAlg"};
-
-ApplicationMgr.EvtMax = 2147483647;
+ApplicationMgr.EvtMax = 2147483647; 

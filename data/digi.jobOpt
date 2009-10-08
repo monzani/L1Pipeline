@@ -1,8 +1,3 @@
 #include "$GLEAMROOT/src/jobOptions/pipeline/ldf2digi.txt"
-EventSelector.StorageType = "CCSDSFILE";
 EventSelector.FileName = "$EVTFILE";
-digiRootWriterAlg.digiRootFile = "$digiChunkFile";
-ToolSvc.FSWAuxLibsTool.FileNamePeds="cal_db_pedestals";
-ToolSvc.FSWAuxLibsTool.FileNameGains="cal_db_gains";
-//MootSvc.ExitOnFatal = false;  // Allow MootSvc to continue if the MOOT key isn't found
-TriggerAlg.failOnFmxKeyMismatch = true;
+digiRootWriterAlg.digiRootFile = "$digiChunkFile"; 

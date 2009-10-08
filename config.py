@@ -215,8 +215,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume13')
-glastVersion = 'v15r47p12'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume11')
+glastVersion = 'v15r47p12gr06'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -280,9 +280,11 @@ l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
 # LSF pre-exec option for run & throttle locking
 lockOption = " -E &quot;${isocRun} ${L1ProcROOT}/lockFile.py&quot; "
 
+stDir = os.path.join(groundRoot, 'releases', 'volume02')
 stVersion = 'v9r15p3gl2'
-ST = "/nfs/farm/g/glast/u30/builds/%s/ScienceTools/ScienceTools-%s" % (cmtConfig, stVersion)
-# ST = os.path.join(L1Cmt, "ScienceTools", "ScienceTools-%s" % stVersion) # We should really have our own copy of ScienceTools, but it gave trouble.
+stName = 'ScienceTools'
+
+ST = os.path.join(stDir, "ScienceTools-%s" % stVersion)
 stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
 PFILES = ".;/dev/null"
 stBinDir = os.path.join(ST, 'bin')
@@ -401,11 +403,13 @@ packages['ft2Util']['app'] = os.path.join(
 packages['FastMon']['app'] = os.path.join(
     packages['FastMon']['python'], 'pDataProcessor.py')
 packages['FastMon']['configDir'] = os.path.join(
-        packages['FastMonCfg']['root'], 'xml')
+    packages['FastMonCfg']['root'], 'xml')
 packages['FastMon']['env'] = {
     'XML_CONFIG_DIR': packages['FastMon']['configDir']
     }
 packages['FastMon']['extraSetup'] = isocEnv
+packages['FastMon']['saaDefinition'] = os.path.join(
+    packages['FastMon']['configDir'], 'saaDefinition.xml')
 
 packages['Monitor']['app'] = os.path.join(
     packages['Monitor']['bin'], 'runStrip_t.exe')

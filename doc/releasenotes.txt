@@ -1,6 +1,9 @@
 1.78
 -----------------
 Use new style tags for monitoring packages.
+FastMon called with the -s option (SAA config).
+Running the ScienceTools from afs.
+Cleaning up the JO for digi/recon.
 
 
 1.77
