@@ -1,3 +1,9 @@
+1.79
+-----------------
+Use rh4 builds.
+Avoid rh3 for all jobs, and rh5 for the jobs that won't run there.
+
+
 1.78
 -----------------
 Use new style tags for monitoring packages.

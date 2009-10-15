@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.78"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.79"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -209,13 +209,13 @@ groundRoot = os.path.join(glastRoot, 'ground')
 glastSetup = os.path.join(groundRoot, 'scripts', 'group.sh')
 glastSetupCsh = os.path.join(groundRoot, 'scripts', 'group.cshrc')
 #
-cmtConfig = 'rh9_gcc32opt'
+cmtConfig = 'rhel4_gcc34opt'
 installArea = os.path.join(L1Cmt, 'InstallArea', cmtConfig)
 installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume11')
+releaseDir = os.path.join(groundRoot, 'releases', 'volume07')
 glastVersion = 'v15r47p12gr06'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
@@ -249,7 +249,7 @@ hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
 isoc = '/afs/slac/g/glast/isoc/flightOps'
 #isocPlatform = os.popen(os.path.join(isoc, 'isoc-platform')).readline().strip()
-isocPlatform = 'rhel3_gcc32'
+isocPlatform = 'rhel4_gcc34'
 isocMode = os.environ.get('isocMode', 'ISOC_PROD')
 isocBin = os.path.join(isoc, isocPlatform, isocMode, 'bin')
 isocRun = os.path.join(isoc, isocPlatform, '${isocMode}', 'bin', 'isoc run')
@@ -280,7 +280,7 @@ l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
 # LSF pre-exec option for run & throttle locking
 lockOption = " -E &quot;${isocRun} ${L1ProcROOT}/lockFile.py&quot; "
 
-stDir = os.path.join(groundRoot, 'releases', 'volume02')
+stDir = os.path.join(groundRoot, 'releases', 'volume03')
 stVersion = 'v9r15p3gl2'
 stName = 'ScienceTools'
 
@@ -289,8 +289,6 @@ stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
 PFILES = ".;/dev/null"
 stBinDir = os.path.join(ST, 'bin')
 stLibDir = os.path.join(ST, 'lib')
-#aspLauncher = '/nfs/farm/g/glast/u33/ASP/ASP/AspLauncher/v1/rh9_gcc32/aspLauncher.sh'
-#aspLauncher = '/bin/true'
 if testMode:
     # aspLauncher = '/afs/slac/g/glast/ground/links/data/ASP/aspLauncher_dev.sh'
     aspLauncher = '/bin/true'
@@ -343,7 +341,7 @@ cmtPackages = {
         },
     'GPLtools': {
         'repository': '',
-        'version': 'fileOps3',
+        'version': 'GPLtools-01-15-01-fo04',
         },
     'Monitor': {
         'repository': 'svac',
@@ -713,7 +711,9 @@ except ImportError:
 # mediumQ = 'medium'
 # shortQ = 'short'
 # longQ = 'long'
+#
 theQ = 'glastdataq'
+# theQ = 'rhel5testq'
 expressQ = theQ
 mediumQ = theQ
 shortQ = theQ
@@ -724,6 +724,9 @@ midPriority = 60      # monitoring & dependencies
 standardPriority = 50 # everything else (which isn't much, really)
 #
 minCrumbCpuf = 9
+standardSelect = 'rhel40 || rhel50'
+standardRusage = 'scratch=1'
+bigRusage = 'scratch=250'
 #
 reconMergeScratch = " -R &quot;select[scratch&gt;70]&quot; "
 reconCrumbCpuf = " -R &quot;select[cpuf&gt;%s]&quot; " % minCrumbCpuf
