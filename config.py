@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.79"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.80"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -215,8 +215,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume07')
-glastVersion = 'v15r47p12gr06'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
+glastVersion = 'v15r47p12gr08'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -241,8 +241,8 @@ reconOptions = {
     'MC': os.path.join(L1Data, 'recon.jobOpt.mc'),
 }
 
-#rootSys = os.path.join(glastExt, 'ROOT/v5.20.00-gl4/gcc32')
-rootSys = os.path.join(glastExt, 'ROOT/v5.18.00c-gl1/root')
+rootSys = os.path.join(glastExt, 'ROOT/v5.20.00-gl5/gcc34')
+#rootSys = os.path.join(glastExt, 'ROOT/v5.18.00c-gl1/root')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
@@ -280,8 +280,8 @@ l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
 # LSF pre-exec option for run & throttle locking
 lockOption = " -E &quot;${isocRun} ${L1ProcROOT}/lockFile.py&quot; "
 
-stDir = os.path.join(groundRoot, 'releases', 'volume03')
-stVersion = 'v9r15p3gl2'
+stDir = os.path.join(groundRoot, 'releases', 'volume02')
+stVersion = 'v9r15p5'
 stName = 'ScienceTools'
 
 ST = os.path.join(stDir, "ScienceTools-%s" % stVersion)
@@ -308,8 +308,8 @@ cmtPackages = {
         },
     'calibTkrUtil': {
         'repository': '',
-        #'version': 'v2r9p1',
-        'version': 'v2r7p3',
+        'version': 'v2r9p1',
+        #'version': 'v2r7p3',
         },
     'Common': {
         'repository': 'dataMonitoring',
@@ -638,10 +638,7 @@ verifyOptions = {
     }
 
 ft2Pad = 1.0 # pad time range with this on either end whan making fakeFT2
-#ft2Template = os.path.join(L1ProcROOT, 'data', 'ft2.tpl')
-# this is really really bad (I'm including the fitsGen version in the path):
-# should use $FITSGENROOT... but then, I need to execute stSetup everywhere
-ft2Template = os.path.join(ST, 'fitsGen', 'v4r5', 'data', 'ft2.tpl')
+ft2Template = os.path.join('$FITSGENROOT', 'data', 'ft2.tpl')
 ft2liveTimeTolerance = '1e-12'
 
 m7Pad = 10 # pad time range with this on either end whan making m7
