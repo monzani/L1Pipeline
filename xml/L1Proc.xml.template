@@ -18,6 +18,7 @@
     <var name="L1_BUILD_DIR">%(L1CmtBase)s</var>
     <var name="L1TrendVersion">Prompt</var> <!-- override if reprocessing -->
     <var name="LD_LIBRARY_PATH">%(libraryPath)s</var>
+    <var name="logRoot">%(logRoot)s</var>
     <var name="nameManglingPrefix">%(nameManglingPrefix)s</var>
     <var name="highPriority">%(highPriority)d</var>
     <var name="midPriority">%(midPriority)d</var>

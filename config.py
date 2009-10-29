@@ -80,6 +80,8 @@ dlStorage = os.path.join(L1Disk, 'deliveries')
 if testMode: dlStorage = os.path.join(dlStorage, 'test')
 saveDl = True
 
+logRoot = os.path.join(L1Disk, 'logs')
+
 # normal
 dataCatBase = '/Data/Flight/Level1'
 dataSource = os.environ.get('DATASOURCE', 'LPA')
