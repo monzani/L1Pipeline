@@ -1,3 +1,9 @@
+1.81
+-----------------
+Fix LONE-148@JIRA
+GR v15r47p12gr10 (newer astro, calibSvc retries MySQL connections)
+
+
 1.80
 -----------------
 Use ROOT 5.20-gl5, GR v15r47p12gr08, ST v9r15p5

@@ -1,9 +1,19 @@
 substreams = pipeline.getSubstreams(subTask)
-pis = [(stream.getStream(), stream.getProcessInstance(subProcess)) for stream in substreams]
+
+lSubs = {}
+for stream in substreams:
+    id = stream.getStream()
+    pi = stream.getProcessInstance(subProcess)
+    pk = pi.getPrimaryKey()
+    tup = (pk, pi)
+    if not lSubs.has_key(id) or lSubs[id] < tup: lSubs[id] = tup
+    continue
+pis = lSubs.items()
 pis.sort()
+
 versionTags = []
 print 'Exit codes for subprocesses %s.%s:' % (subTask, subProcess)
-for streamId, subPi in pis:
+for streamId, (pk, subPi) in pis:
     ec = subPi.getExitCode()
     statStr = subPi.getStatus()
     print streamId, ec, statStr

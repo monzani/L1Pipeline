@@ -464,7 +464,7 @@
       </depends>
     </process>
 
-    <process name="calHist" autoRetryMaxAttempts="3">
+    <process name="calHist" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="reportType">calHist</var>
         <var name="%(calHist_versionName)s">%(calHist_version)s</var>
@@ -540,7 +540,7 @@
       </depends>
     </process>
 
-    <process name="mergeCalTrend" autoRetryMaxAttempts="3">
+    <process name="mergeCalTrend" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="fileType">calTrend</var>
         <var name="%(calTrend_versionName)s">%(calTrend_version)s</var>
@@ -2349,7 +2349,7 @@
         </depends>
       </process>
 
-      <process name="registerRecon" autoRetryMaxAttempts="3">
+      <process name="registerRecon" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="parentProcess">mergeReconChunks</var>
           <var name="fileType">recon</var>
@@ -2498,7 +2498,7 @@
          <prerequisite name="EVTFILE" type="string"/>
       </prerequisites>
 
-      <process name="digitization" autoRetryMaxAttempts="3">
+      <process name="digitization" autoRetryMaxAttempts="%(retries)s">
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/digitize.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       </process>
  

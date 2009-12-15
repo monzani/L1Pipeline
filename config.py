@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.80"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.81"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -80,7 +80,8 @@ dlStorage = os.path.join(L1Disk, 'deliveries')
 if testMode: dlStorage = os.path.join(dlStorage, 'test')
 saveDl = True
 
-logRoot = os.path.join(L1Disk, 'logs')
+#logRoot = os.path.join(L1Disk, 'logs')
+logRoot = '/nfs/farm/g/glast/u39/L1/logs'
 
 # normal
 dataCatBase = '/Data/Flight/Level1'
@@ -217,8 +218,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
-glastVersion = 'v15r47p12gr08'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
+glastVersion = 'v15r47p12gr10'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
