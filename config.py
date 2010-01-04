@@ -371,7 +371,7 @@ cvsPackages = {
         },
     'IGRF': {
         'repository': 'dataMonitoring',
-        'version': 'v1r0p1',
+        'version': 'IGRF-02-00-00',
         },
     }
 
