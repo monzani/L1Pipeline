@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.81"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.82"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -316,7 +316,7 @@ cmtPackages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'Common-06-01-01',
+        'version': 'Common-06-06-01',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -328,7 +328,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'FastMon-05-01-00',
+        'version': 'FastMon-05-01-01',
         },
 #     'fitsGen': {
 #         'repository': '',
@@ -348,7 +348,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'Monitor-01-03-03',
+        'version': 'Monitor-01-05-00',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -363,11 +363,11 @@ cmtPackages = {
 cvsPackages = {
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'v1r4p3',
+        'version': 'DigiReconCalMeritCfg-01-04-06',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'FastMonCfg-02-00-01',
+        'version': 'FastMonCfg-02-01-01',
         },
     'IGRF': {
         'repository': 'dataMonitoring',
@@ -582,12 +582,12 @@ alarmPostProcessorConfigs = {
     }
 
 normalizedRateConfigs = {
-    'meritHist': os.path.join(
-        packages['DigiReconCalMeritCfg']['root'],
-        'FactorsToNormRates.txt'),
+#    'meritHist': os.path.join(
+#        packages['DigiReconCalMeritCfg']['root'],
+#        'FactorsToNormRates.txt'),
     'meritTrend': os.path.join(
         packages['DigiReconCalMeritCfg']['root'],
-        'FactorsToNormRates.txt'),
+        'FactorsToNormRates_EarthLimb.txt'),
     }
 
 tdBin = {

@@ -2345,7 +2345,7 @@
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=250]&quot; "/>
         <depends>
-          <after process="getTimes" status="DONE"/>
+          <after process="getTimes" status="SUCCESS"/>
         </depends>
       </process>
 
@@ -2373,7 +2373,7 @@
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
-          <after process="getTimes" status="DONE"/>
+          <after process="getTimes" status="SUCCESS"/>
         </depends>
       </process>
 
