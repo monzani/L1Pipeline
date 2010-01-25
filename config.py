@@ -582,9 +582,9 @@ alarmPostProcessorConfigs = {
     }
 
 normalizedRateConfigs = {
-#    'meritHist': os.path.join(
-#        packages['DigiReconCalMeritCfg']['root'],
-#        'FactorsToNormRates.txt'),
+    'meritHist': os.path.join(
+        packages['DigiReconCalMeritCfg']['root'],
+        'FactorsToNormRates_EarthLimb.txt'),
     'meritTrend': os.path.join(
         packages['DigiReconCalMeritCfg']['root'],
         'FactorsToNormRates_EarthLimb.txt'),

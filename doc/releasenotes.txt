@@ -1,9 +1,9 @@
 1.82
 -----------------
 Unfix LONE-148@JIRA
-Make processes in cleanupCompleteRun depend on getTimes being successful, not
-done.
-Use new normalized rate format for merit trending.
+Make processes in cleanupCompleteRun depend on getTimes SUCCESS, not DONE.
+Use new normalized rate format for merit trending & histos.
+Fix a bug in db retry logging.
 
 
 1.81

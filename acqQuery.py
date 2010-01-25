@@ -20,7 +20,7 @@ def waitABit(minDelay=None, maxDelay=None):
     if minDelay is None: minDelay = config.minDbWait
     if maxDelay is None: maxDelay = config.maxDbWait
     delay = random.randrange(minDelay, maxDelay+1)
-    log.info("Waiting %d seconds." % delay)
+    print >> sys.stderr, "Waiting %d seconds." % delay
     time.sleep(delay)
     return
 
