@@ -1,0 +1,79 @@
+in findRunDirs:
+====================
+
+acquire queue lock else:
+	wait a bit
+	retry
+
+create a queue ticket for each run in the delivery
+# maybe these could optionally include the specific delivery
+
+create $runDir/$runId_$dlId_chunklist.txt.tmp for each run in delivery
+
+release queue lock
+
+====================
+
+findChunks preexec:
+====================
+
+acquire run lock else fail
+
+acquire queue lock else:
+	wait a bit
+	retry
+
+examine $rundir/*_chunkList.txt.tmp
+if this isn't the rdl with the least data:
+        release run lock
+        fail
+rdlsWaiting = how many
+
+openChannels = config.throttleMax - (number of locks in throttle dir)
+
+waitingRuns = []
+
+tickets = files in queue directory, sorted by name (not including the lock)
+
+for ticket in tickets:
+	if not openChannels:
+		# no channel avaialable for us
+		release queue lock
+		release run lock
+		fail
+	elif ticket.run == this.run:
+		# Yay! it's our turn!
+		break
+	elif ticket.run is locked:
+		# ticket.run is running, not waiting. Ignore it
+		continue
+	elif ticket.run has no *_chunklist.txt.tmp:
+		# There's a ticket, but no data yet. Ignore it.
+		continue
+	elif ticket.run in waitingRuns:
+		# We've already counted this run (it has multiple tickets).
+		continue
+	else:
+		# ticket.run is waiting, and ahead of us in queue
+		openChannels -= 1
+		waitingRuns.append(ticket.run)
+		continue
+if not openChannels:
+	release queue lock
+	release run lock
+	fail
+
+acquire throttle else:
+	release queue lock
+	release run lock
+	fail
+
+if rdlsWaiting == 1: # this is the last one
+	examine all files in queue directory
+	remove all that contain $runId
+
+release queue lock
+
+succeed
+
+====================
