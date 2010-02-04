@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.82"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.83"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -81,7 +81,7 @@ if testMode: dlStorage = os.path.join(dlStorage, 'test')
 saveDl = True
 
 #logRoot = os.path.join(L1Disk, 'logs')
-logRoot = '/nfs/farm/g/glast/u39/L1/logs'
+logRoot = '/nfs/farm/g/glast/u52/L1/logs'
 
 # normal
 dataCatBase = '/Data/Flight/Level1'
@@ -316,7 +316,7 @@ cmtPackages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'Common-06-07-00',
+        'version': 'Common-06-07-01',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -437,6 +437,8 @@ apps = {
     'digi': gleam,
     'digiHist': packages['Monitor']['app'],
     # 'errorMerger': os.path.join(L1ProcROOT, 'errorParser.py'),
+    'drawOrbit': os.path.join(
+        packages['FastMon']['python'], 'drawOrbit2d.py'),
     'errorHandler': os.path.join(
         packages['Common']['python'], 'pErrorLogger.py'),
     'errorMerger': os.path.join(

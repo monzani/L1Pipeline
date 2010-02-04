@@ -125,7 +125,7 @@
         <var name="tStart">${pipeline.processInstance("findChunks").getVariable("tStart")}</var>      
         <var name="tStop">${pipeline.processInstance("findChunks").getVariable("tStop")}</var>      
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeM7.py" batchOptions=" -q %(shortQ)s -sp ${highPriority} -R &quot;select[rhel40] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeM7.py" batchOptions=" -q %(shortQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="findChunks" status="SUCCESS"/>
       </depends>
@@ -146,6 +146,35 @@
       </depends>
     </process>
  
+    <process name="drawOrbit" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">magic7L1</var>
+        <var name="%(magic7L1_versionName)s">%(magic7L1_version)s</var>
+        <var name="outFileTypes">orbitPlot</var>
+        <var name="%(orbitPlot_versionName)s">%(orbitPlot_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <depends>
+        <after process="registerM7L1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerOrbitPlot" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">drawOrbit</var>
+        <var name="fileType">orbitPlot</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="drawOrbit" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="mergeDigi" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="fileType">digi</var>
@@ -1330,7 +1359,7 @@
         <var name="fileType">ft2</var>
         <var name="%(ft2_versionName)s">%(ft2_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[rhel40] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerFT2" status="SUCCESS"/>
       </depends>
@@ -1483,7 +1512,7 @@
         <var name="fileType">ft1</var>
         <var name="%(ft1_versionName)s">%(ft1_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[rhel40] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerFT1" status="SUCCESS"/>
       </depends>
@@ -1608,7 +1637,7 @@
         <var name="fileType">ls1</var>
         <var name="%(ls1_versionName)s">%(ls1_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[rhel40] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerLS1" status="SUCCESS"/>
       </depends>
@@ -1647,7 +1676,7 @@
         <var name="fileType">ls3</var>
         <var name="%(ls3_versionName)s">%(ls3_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[rhel40] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerLS3" status="SUCCESS"/>
       </depends>
@@ -2300,6 +2329,7 @@
         <after process="registerGcr" status="SUCCESS"/>
         <after process="registerM7Hp" status="SUCCESS"/>
         <after process="registerMeritHist" status="SUCCESS"/>
+        <after process="registerOrbitPlot" status="SUCCESS"/>
         <after process="registerReconHistAlarmDist" status="SUCCESS"/>
         <after process="registerSvacTuple" status="SUCCESS"/>
 <!-- We don't have TKR alarms yet        <after process="registerTkrAlarm" status="SUCCESS"/>     -->

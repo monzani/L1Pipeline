@@ -76,6 +76,7 @@ fileTypes = {
     'meritHistAlarm': 'xml',
     'meritTrend': 'root',
     'meritTrendAlarm': 'xml',
+    'orbitPlot': 'png',
     'recon': 'root',
     'reconHist': 'root',
     'reconHistAlarm': 'xml',
