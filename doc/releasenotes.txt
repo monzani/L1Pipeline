@@ -3,6 +3,8 @@
 Switch logs back to u52.
 Remove requirement for rhel40 from jobs that run isoc code.
 Add 2d orbit plot.
+Reserve big scratch for calHist.
+Add baseVersion task variable.
 
 
 1.82

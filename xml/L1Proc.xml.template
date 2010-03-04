@@ -7,6 +7,7 @@
 <task name="%(L1Name)s" version="%(L1Version)s" type="Data">
 
   <variables>
+    <var name="baseVersion">%(baseVersion)s</var>
     <var name="CMTPATH">%(cmtPath)s</var>
     <var name="creator">%(creator)s</var>
     <var name="isocMode">%(isocMode)s</var>
@@ -499,7 +500,7 @@
         <var name="%(calHist_versionName)s">%(calHist_version)s</var>
         <var name="%(digi_versionName)s">%(digi_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/runStrip.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${bigRusage}]&quot; "/>
       <depends>
         <after process="registerDigi" status="SUCCESS"/>
       </depends>

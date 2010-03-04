@@ -103,9 +103,9 @@ xrootBase = xrootGlast + xrootSubDir
 if testMode: L1Dir = os.path.join(L1Dir, 'test')
 #L1Dir = os.path.join(L1Dir, dataSource)
 
-# start versions from here for reprocessing
-#baseVersion = 100
-# maybe we don't need this here
+# optional override for versions looked up from datacat
+# actual version will be max of the normal version and this. 
+baseVersion = 0
 
 #throttle parameters
 throttleDir =  os.path.join(L1Dir, 'throttle')
@@ -344,7 +344,7 @@ cmtPackages = {
         },
     'GPLtools': {
         'repository': '',
-        'version': 'GPLtools-01-15-01-fo04',
+        'version': 'GPLtools-01-15-01-fo05',
         },
     'Monitor': {
         'repository': 'svac',

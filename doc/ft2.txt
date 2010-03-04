@@ -46,3 +46,16 @@ C)Gleam
 D) All the txt file have not been changed so they are insensitive to the ft2 tpl you are using, it means
     they will use always the old template despite the command line options.
 
+
+
+
+jrb:
+
+$ setenv INST_DIR /nfs/farm/g/glast/u54/jrb/ft2Util-scons
+$ setenv GLAST_EXT
+$ source $INST_DIR/bin/redhat4-i686-32bit-gcc34-Debug/_setup.csh
+
+(or analogous  for bash, in which case change "csh" to "sh" in the last line)
+
+This takes care of LD_LIBRARY_PATH.  Then it should be possible to invoke the executables directly.
+
