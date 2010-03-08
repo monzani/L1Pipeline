@@ -348,7 +348,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'Monitor-01-05-00',
+        'version': 'Monitor-01-06-00',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -371,7 +371,7 @@ cvsPackages = {
         },
     'IGRF': {
         'repository': 'dataMonitoring',
-        'version': 'IGRF-02-00-00',
+        'version': 'IGRF-02-01-00',
         },
     }
 
