@@ -344,7 +344,7 @@ cmtPackages = {
         },
     'GPLtools': {
         'repository': '',
-        'version': 'GPLtools-01-15-01-fo05',
+        'version': 'GPLtools-01-15-01-fo06',
         },
     'Monitor': {
         'repository': 'svac',
