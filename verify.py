@@ -7,9 +7,10 @@ import config
 import GPLinit
 
 import fileNames
+import pipeline
+import registerPrep
 import runner
 import stageFiles
-import registerPrep
 
 
 head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
@@ -46,6 +47,11 @@ source %(setupScript)s
 ''' % locals()
 
 status = runner.run(cmd)
+if status == 153: 
+    pipeline.setVariable('verifyMissingData','true')
+    status = 0
+else: pipeline.setVariable('verifyMissingData','false')  
+
 if status: finishOption = 'wipe'
 
 status |= staged.finish(finishOption)
