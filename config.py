@@ -218,8 +218,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
-glastVersion = 'v15r47p12gr10'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume07')
+glastVersion = 'v15r47p12gr11'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -244,8 +244,7 @@ reconOptions = {
     'MC': os.path.join(L1Data, 'recon.jobOpt.mc'),
 }
 
-rootSys = os.path.join(glastExt, 'ROOT/v5.20.00-gl5/gcc34')
-#rootSys = os.path.join(glastExt, 'ROOT/v5.18.00c-gl1/root')
+rootSys = os.path.join(glastExt, 'ROOT/v5.26.00a-gl1/gcc34')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
@@ -284,7 +283,7 @@ l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
 lockOption = " -E &quot;${isocRun} ${L1ProcROOT}/lockFile.py&quot; "
 
 stDir = os.path.join(groundRoot, 'releases', 'volume02')
-stVersion = 'v9r15p5'
+stVersion = 'v9r16p1'
 stName = 'ScienceTools'
 
 ST = os.path.join(stDir, "ScienceTools-%s" % stVersion)
@@ -348,7 +347,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'Monitor-01-06-00',
+        'version': 'Monitor-01-06-01',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',

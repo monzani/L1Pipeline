@@ -2273,6 +2273,9 @@
     </process>
 
     <process name="checkRun" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="verifyMissingData">${pipeline.processInstance("verify").getVariable("verifyMissingData")}</var>
+      </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="acdPedsLogger" status="SUCCESS"/>
@@ -2321,7 +2324,7 @@
         <after process="registerAcdPlots" status="SUCCESS"/>
         <after process="registerCal" status="SUCCESS"/>
         <after process="registerCmpDFm" status="SUCCESS"/>
-<!--
+<!-- No electrons in pass 6
         <after process="registerElectronFt1" status="SUCCESS"/>
         <after process="registerElectronMerit" status="SUCCESS"/>
 -->
@@ -2333,7 +2336,9 @@
         <after process="registerOrbitPlot" status="SUCCESS"/>
         <after process="registerReconHistAlarmDist" status="SUCCESS"/>
         <after process="registerSvacTuple" status="SUCCESS"/>
-<!-- We don't have TKR alarms yet        <after process="registerTkrAlarm" status="SUCCESS"/>     -->
+<!-- We don't have TKR alarms (yet?)
+        <after process="registerTkrAlarm" status="SUCCESS"/>
+-->
         <after process="registerTkrReport" status="SUCCESS"/>
         <after process="registerVerifyHisto" status="SUCCESS"/>
         <after process="tkrTrendLogger" status="SUCCESS"/>

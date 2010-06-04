@@ -37,7 +37,8 @@ stagedCrumbList = staged.stageOut(realCrumbList)
 
 chunkEvents = rootFiles.getFileEvents(stagedDigiFile)
 print >> sys.stderr, "Chunk has %d events." % chunkEvents
-
+if chunkEvents < 1: sys.exit(1)
+    
 crumbSizes = crumble.crumble(chunkEvents)
 nCrumbs = len(crumbSizes)
 crumbStarts = [0] * nCrumbs

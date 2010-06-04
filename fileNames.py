@@ -382,8 +382,10 @@ def subDirectory(fileType, dlId, runId=None, chunkId=None, crumbId=None):
 
     if runId is not None:
         level = 'run'
-        # dirs.extend([runId, config.L1Version])
-        dirs.extend([runId])
+        runTag = int(runId[1:])
+        runTag = '%d' % runTag
+        runTag = runTag[:3]
+        dirs.extend(['runs', runTag, runId])
         if chunkId is not None:
             level = 'chunk'
             dirs.append(chunkId)
@@ -409,6 +411,13 @@ def subDirectory(fileType, dlId, runId=None, chunkId=None, crumbId=None):
 def xrootSubDirectory(fileType, dlId, runId=None):
     subDir = fileType
     return subDir
+
+
+def dlDirectory(dlRawDir):
+    subDir = os.path.basename(dlRawDir)
+    midDir = subDir[:4]
+    directory = os.path.join(config.dlStorage, midDir, subDir)
+    return directory
 
 
 def baseDirectory(fileType, level, relativePath):

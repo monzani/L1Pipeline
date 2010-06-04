@@ -10,6 +10,7 @@ import GPLinit
 import fileNames
 import runner
 import stageFiles
+import rootFiles
 
 status = 0
 finishOption = config.finishOption
@@ -56,8 +57,12 @@ cd %(workDir)s
 ''' % locals()
 
 if not status: status |= runner.run(cmd)
-if status: finishOption = 'wipe'
 
+chunkEvents = rootFiles.getFileEvents(stagedDigiFile)
+print >> sys.stderr, "Chunk has %d events." % chunkEvents
+if chunkEvents < 1: status |= 1
+
+if status: finishOption = 'wipe'
 status |= staged.finish(finishOption)
 
 sys.exit(status)
