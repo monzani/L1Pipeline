@@ -5,6 +5,7 @@ Which is used by checkRun to suppress cleanup if there is any.
 Don't put thousands of run and delivery directories in the same subdirectory.
 digitization fails if it produces an empty file. setupCrumbs fails if given an
 empty file.
+Put prod dev and test logs in different places.
 
 
 1.83
