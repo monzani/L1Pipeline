@@ -1,3 +1,13 @@
+1.84
+-----------------
+Verify is setting a variable for missing data.
+Which is used by checkRun to suppress cleanup if there is any.
+Don't put thousands of run and delivery directories in the same subdirectory.
+digitization fails if it produces an empty file. setupCrumbs fails if given an
+empty file.
+Put prod dev and test logs in different places.
+
+
 1.83
 -----------------
 Switch logs back to u52.

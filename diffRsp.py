@@ -3,74 +3,47 @@
 import os
 import sys
 
+if __name__ == "__main__":
+    print >> sys.stderr, "This module is not supported as main script"
+    sys.exit(1)
+
 import config
 
-import GPLinit
-
-import fileNames
 import runner
-import stageFiles
-import registerPrep
 
-head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
-if not dlId: head, dlId = os.path.split(head)
-runId = os.environ['RUNID']
-chunkId = os.environ.get('CHUNK_ID') # might not be set
-crumbId = os.environ.get('CRUMB_ID') # might not be set
-idArgs = (dlId, runId, chunkId, crumbId)
 
-if chunkId is None:
-    level = 'run'
-    next = True
-else:
-    if crumbId is None:
-        level = 'chunk'
-    else:
-        level = 'crumb'
-        pass
-    next = False
-    pass
+def diffRsp(files, outFileTypes, workDir, **args):
+    status = 0
 
-inFileType = 'ft1NoDiffRsp'
-outFileType = 'ft1BadGti'
+    inFileType = 'ft1NoDiffRsp'
 
-staged = stageFiles.StageSet(excludeIn=config.excludeIn)
-finishOption = config.finishOption
+    assert len(outFileTypes) == 1
+    outFileType = outFileTypes[0]
 
-stSetup = config.stSetup
-app = os.path.join('$LIKELIHOODROOT', '$CMTCONFIG', 'gtdiffrsp.exe')
+    stSetup = config.stSetup
+    app = os.path.join('$LIKELIHOODROOT', '$CMTCONFIG', 'gtdiffrsp.exe')
 
-realInFile = fileNames.fileName(inFileType, *idArgs)
-stagedInFile = staged.stageIn(realInFile)
+    stagedInFile = files[inFileType]
 
-realFt2File = fileNames.fileName('ft2Fake', *idArgs)
-stagedFt2File = staged.stageIn(realFt2File)
+    stagedFt2File = files['ft2Fake']
 
-realOutFile = fileNames.fileName(outFileType, next=next, *idArgs)
-stagedOutFile = staged.stageOut(realOutFile)
+    stagedOutFile = files[outFileType]
 
-workDir = os.path.dirname(stagedOutFile)
+    model = config.diffRspModel
+    irf = config.diffRspIrf
 
-model = config.diffRspModel
-irf = config.diffRspIrf
+    diffRspMinClass = config.diffRspMinClass
 
-diffRspMinClass = config.diffRspMinClass
+    cmtPath = config.stCmtPath
 
-cmtPath = config.stCmtPath
+    cmd = '''
+    cd %(workDir)s
+    export CMTPATH=%(cmtPath)s
+    source %(stSetup)s
+    mv %(stagedInFile)s %(stagedOutFile)s
+    %(app)s scfile=%(stagedFt2File)s evfile=%(stagedOutFile)s srcmdl=%(model)s irfs=%(irf)s evclsmin=%(diffRspMinClass)r
+    ''' % locals()
+    
+    status |= runner.run(cmd)
 
-cmd = '''
-cd %(workDir)s
-export CMTPATH=%(cmtPath)s
-source %(stSetup)s
-mv %(stagedInFile)s %(stagedOutFile)s
-%(app)s scfile=%(stagedFt2File)s evfile=%(stagedOutFile)s srcmdl=%(model)s irfs=%(irf)s evclsmin=%(diffRspMinClass)r
-''' % locals()
-
-status = runner.run(cmd)
-if status: finishOption = 'wipe'
-
-status |= staged.finish(finishOption)
-
-if level == 'run' and not status: registerPrep.prep(fileType, realOutFile)
-
-sys.exit(status)
+    return status

@@ -5,59 +5,50 @@ import sys
 
 import config
 
-import GPLinit
-
-import fileNames
+import rootFiles
 import runner
-import stageFiles
 
-status = 0
-finishOption = config.finishOption
+def digitize(**args):
+    status = 0
 
-head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
-if not dlId: head, dlId = os.path.split(head)
-runId = os.environ['RUNID']
-chunkId = os.environ['CHUNK_ID']
+    staged = args['staged']
+    os.environ['EVTFILE'] = staged.stageIn(os.environ['EVTFILE'])
+    stagedDigiFile = args['files']['digi']
+    os.environ['digiChunkFile'] = stagedDigiFile
 
-staged = stageFiles.StageSet(excludeIn=config.excludeIn)
+    workDir = args['workDir']
 
-os.environ['EVTFILE'] = staged.stageIn(os.environ['EVTFILE'])
-realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId)
-stagedDigiFile = staged.stageOut(realDigiFile)
-os.environ['digiChunkFile'] = stagedDigiFile
+    app = config.apps['digi']
+    options =  config.digiOptions
 
-workDir = os.path.dirname(stagedDigiFile)
+    dataSource = os.environ['DATASOURCE']
+    if dataSource == 'LCI':
+        trigConfig = 'Default'
+    else:
+        trigConfig = 'Moot'
+        pass
+    # trigConfig = 'Default'
+    os.environ['trigConfig'] = trigConfig
+    if dataSource in ['LPA', 'LCI']:
+        geometry = 'latAssembly/latAssemblySegVols.xml'
+    elif dataSource in ['MC']:
+        geometry = 'flight/flightSegVols.xml'
+    else:
+        print >> sys.stderr, 'Bad DATASOURCE %s' % dataSource
+        status = 1
+        pass
+    os.environ['gleamGeometry'] = geometry
+    options = config.digiOptions[dataSource]
 
-app = config.apps['digi']
-options =  config.digiOptions
+    cmd = '''
+    cd %(workDir)s
+    %(app)s %(options)s
+    ''' % locals()
 
-dataSource = os.environ['DATASOURCE']
-if dataSource == 'LCI':
-    trigConfig = 'Default'
-else:
-    trigConfig = 'Moot'
-    pass
-#trigConfig = 'Default'
-os.environ['trigConfig'] = trigConfig
-if dataSource in ['LPA', 'LCI']:
-    geometry = 'latAssembly/latAssemblySegVols.xml'
-elif dataSource in ['MC']:
-    geometry = 'flight/flightSegVols.xml'
-else:
-    print >> sys.stderr, 'Bad DATASOURCE %s' % dataSource
-    status = 1
-    pass
-os.environ['gleamGeometry'] = geometry
-options = config.digiOptions[dataSource]
+    if not status: status |= runner.run(cmd)
 
-cmd = '''
-cd %(workDir)s
-%(app)s %(options)s
-''' % locals()
+    chunkEvents = rootFiles.getFileEvents(stagedDigiFile)
+    print >> sys.stderr, "Chunk has %d events." % chunkEvents
+    if chunkEvents < 1: status |= 1
 
-if not status: status |= runner.run(cmd)
-if status: finishOption = 'wipe'
-
-status |= staged.finish(finishOption)
-
-sys.exit(status)
+    return status

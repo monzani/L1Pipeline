@@ -8,48 +8,33 @@
 import os
 import sys
 
+if __name__ == "__main__":
+    print >> sys.stderr, "This module is not supported as main script"
+    sys.exit(1)
+
 import config
 
-import GPLinit
-
-import fileNames
 import runner
-import stageFiles
 
 
-head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
-if not dlId: head, dlId = os.path.split(head)
-runId = os.environ['RUNID']
-chunkId = os.environ.get('CHUNK_ID')
-crumbId = os.environ.get('CRUMB_ID')
+def tkrAnalysis(files, workDir, **args):
+    status = 0
 
-staged = stageFiles.StageSet(excludeIn=config.excludeIn)
-finishOption = config.finishOption
+    stagedDigiFile = files['digi']
+    stagedReconFile = files['recon']
 
-realDigiFile = fileNames.fileName('digi', dlId, runId, chunkId, crumbId)
-stagedDigiFile = staged.stageIn(realDigiFile)
-realReconFile = fileNames.fileName('recon', dlId, runId, chunkId, crumbId)
-stagedReconFile = staged.stageIn(realReconFile)
+    stagedOutFile = files['tkrAnalysis']
 
-realOutFile = fileNames.fileName('tkrAnalysis', dlId, runId, chunkId, crumbId)
-stagedOutFile = staged.stageOut(realOutFile)
+    # do the work
+    app = config.apps['tkrAnalysis']
+    cmtScript = config.packages['calibTkrUtil']['setup']
 
-workDir = os.path.dirname(stagedOutFile)
-
-
-# do the work
-app = config.apps['tkrAnalysis']
-cmtScript = config.packages['calibTkrUtil']['setup']
-
-cmd = """
+    cmd = """
 cd %(workDir)s
 source %(cmtScript)s
 %(app)s %(stagedDigiFile)s %(stagedReconFile)s %(stagedOutFile)s
 """ % locals()
 
-status = runner.run(cmd)
-if status: finishOption = 'wipe'
+    status |= runner.run(cmd)
 
-status |= staged.finish(finishOption)
-
-sys.exit(status)
+    return status

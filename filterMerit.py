@@ -21,22 +21,6 @@ def readCut(cutFile):
     return lines[0]
 
 
-# def filterMerit(idArgs, files):
-#     status = 0
-#     tCut = readCut(config.ft1Cuts)
-#     status |= rootFiles.filter(files['merit'],
-#                                'MeritTuple',
-#                                files['filteredMerit'],
-#                                tCut)
-#     metadata = {'sTCut': tCut}
-#     #status |= variables.setVar('filteredMerit', 'metadata', repr(metadata)) # this chokes on nested quotes
-#     summary = PipelineSummary.PipelineSummary("pipeline_summary")
-#     name = variables.mangleName('filteredMerit', 'metadata')
-#     summary.add(name, metadata)
-#     summary.write()
-#     return status
-
-
 def filterMerit(files, **extra):
     status = 0
     outFileType = 'filteredMerit'

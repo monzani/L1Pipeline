@@ -8,109 +8,81 @@
 import os
 import sys
 
+if __name__ == "__main__":
+    print >> sys.stderr, "This module is not supported as main script"
+    sys.exit(1)
+
 import config
 
-import GPLinit
-
-import fileNames
-import registerPrep
 import runner
-import stageFiles
 
-head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
-if not dlId: head, dlId = os.path.split(head)
-runId = os.environ['RUNID']
-chunkId = os.environ.get('CHUNK_ID') # might not be set
-crumbId = os.environ.get('CRUMB_ID') # might not be set
-idArgs = (dlId, runId, chunkId, crumbId)
 
-if chunkId is None:
-    level = 'run'
-    next = True
-else:
-    level = 'chunk'
-    next = False
-    pass
+def runStrip(files, idArgs, outFileTypes, workDir, **args):
+    status = 0
 
-staged = stageFiles.StageSet(excludeIn=config.excludeIn)
-finishOption = config.finishOption
+    assert len(outFileTypes) == 1
+    reportType = outFileTypes[0]
 
-reportType = os.environ['reportType']
+    options = config.monitorOptions[reportType]
 
-options = config.monitorOptions[reportType]
+    package = config.packages['Monitor']
+    setup = package['setup']
+    app = package['app']
 
-package = config.packages['Monitor']
-setup = package['setup']
-app = package['app']
+    outFile = files[reportType]
 
-realOutFile = fileNames.fileName(reportType, next=next, *idArgs)
-outFile = staged.stageOut(realOutFile)
-
-workDir = os.path.dirname(outFile)
-
-if 'fastMon' in reportType:
-    realFmt = fileNames.fileName('fastMonTuple', *idArgs)
-    stagedFmt = staged.stageIn(realFmt)
-    inFileOpts = '-f %s' % stagedFmt
-elif 'tkrTrend' in reportType:
-    realInFile = fileNames.fileName('tkrMonitor', *idArgs)
-    stagedInFile = staged.stageIn(realInFile)
-    inFileOpts = '-k %s' % stagedInFile
-else:
-    realDigiFile = fileNames.fileName('digi', *idArgs)
-    stagedDigiFile = staged.stageIn(realDigiFile)
-    inFileOpts = '-d %s' % stagedDigiFile
-    if 'recon' in reportType:
-        realReconFile = fileNames.fileName('recon', *idArgs)
-        stagedReconFile = staged.stageIn(realReconFile)
-        realCalFile = fileNames.fileName('cal', *idArgs)
-        stagedCalFile = staged.stageIn(realCalFile)
-        inFileOpts += ' -r %s -a %s' % (stagedReconFile, stagedCalFile)
-    elif 'merit' in reportType:
-        realMeritFile = fileNames.fileName('merit', *idArgs)
-        stagedMeritFile = staged.stageIn(realMeritFile)
-        inFileOpts += ' -m %s' % (stagedMeritFile,)
-        configFile = config.normalizedRateConfigs[reportType]
-        options += ' -e %s' % (configFile)
+    if 'fastMon' in reportType:
+        stagedFmt = files['fastMonTuple']
+        inFileOpts = '-f %s' % stagedFmt
+    elif 'tkrTrend' in reportType:
+        stagedInFile = files['tkrMonitor']
+        inFileOpts = '-k %s' % stagedInFile
+    else:
+        stagedDigiFile = files['digi']
+        inFileOpts = '-d %s' % stagedDigiFile
+        if 'recon' in reportType:
+            stagedReconFile = files['recon']
+            stagedCalFile = files['cal']
+            inFileOpts += ' -r %s -a %s' % (stagedReconFile, stagedCalFile)
+        elif 'merit' in reportType:
+            stagedMeritFile = files['merit']
+            inFileOpts += ' -m %s' % (stagedMeritFile,)
+            configFile = config.normalizedRateConfigs[reportType]
+            options += ' -e %s' % (configFile)
+            pass
         pass
-    pass
 
-tdBin = config.tdBin[reportType]
+    tdBin = config.tdBin[reportType]
 
-codeDir = config.packages['Monitor']['bin']
+    codeDir = config.packages['Monitor']['bin']
 
-# if reportType in ['calHist', 'calTrend']:
-#     zOpt = '' # keep transient data in a temp file
-# else:
-#     zOpt = '-z' # keep transient data in memory
-#     pass
-zOpt = ''
+    # if reportType in ['calHist', 'calTrend']:
+    #     zOpt = '' # keep transient data in a temp file
+    # else:
+    #     zOpt = '-z' # keep transient data in memory
+    #     pass
+    zOpt = ''
 
-datasource = os.environ['DATASOURCE']
-if datasource == 'MC':
-    mcOpt = '-t MC'
-else:
-    mcOpt = ''
-    pass
+    datasource = os.environ['DATASOURCE']
+    if datasource == 'MC':
+        mcOpt = '-t MC'
+    else:
+        mcOpt = ''
+        pass
 
-# CHANGE THIS!
-tmpHead = 'temp'
-tmpOut = tmpHead + '_time.root'
-htmlHead = 'html'
+    # CHANGE THIS!
+    tmpHead = 'temp'
+    tmpOut = tmpHead + '_time.root'
+    htmlHead = 'html'
 
-cmd = """cd %(workDir)s
-source %(setup)s
-%(app)s %(zOpt)s -b %(tdBin)s -c %(options)s %(inFileOpts)s -o %(tmpHead)s -g %(htmlHead)s -w %(codeDir)s -p %(mcOpt)s || exit 1
-mv %(tmpOut)s %(outFile)s
-""" % locals()
+    cmd = """cd %(workDir)s
+    source %(setup)s
+    %(app)s %(zOpt)s -b %(tdBin)s -c %(options)s %(inFileOpts)s -o %(tmpHead)s -g %(htmlHead)s -w %(codeDir)s -p %(mcOpt)s || exit 1
+    mv %(tmpOut)s %(outFile)s
+    """ % locals()
 
-status = runner.run(cmd)
-if status: finishOption = 'wipe'
+    status |= runner.run(cmd)
 
-status |= staged.finish(finishOption)
+    return status
 
-if level == 'run' and not status:
-    registerPrep.prep(reportType, realOutFile)
-    pass
-
-sys.exit(status)
+    

@@ -8,60 +8,48 @@ import sys
 
 import config
 
-import GPLinit
-
-import fileNames
 import runner
-import stageFiles
 import pipeline
-import registerPrep
 
-head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
-if not dlId: head, dlId = os.path.split(head)
+def fakeFT2(files, workDir, runDir, staged, idArgs, **args):
+    status = 0
 
-runId = os.environ.get('RUNID')
-chunkId = os.environ.get('CHUNK_ID')
+    dlId, runId, chunkId, crumbId = idArgs
 
-staged = stageFiles.StageSet(excludeIn=config.excludeIn)
-finishOption = config.finishOption
+    app = config.apps['makeFT2']
 
-app = config.apps['makeFT2']
+    # input file
+    # for fake FT2 M7
+    realM7File = os.path.join(os.environ['DOWNLINK_RAWDIR'], 'magic7_%s.txt' % dlId)
+    stagedM7File = staged.stageIn(realM7File)
 
-#input file
-#for fake FT2 M7
-realM7File = os.path.join(os.environ['DOWNLINK_RAWDIR'], 'magic7_%s.txt' % dlId)
-stagedM7File = staged.stageIn(realM7File)
+    # output
+    stagedFt2FitsFile = files['ft2Fake']
+    ft2FakeBase = os.path.basename(stagedFt2FitsFile )
+    permanentFt2File = os.path.join(runDir, ft2FakeBase)
+    for stagee in staged.stagedFiles:
+        if stagee.location == stagedFt2FitsFile: break
+        continue
+    stagee.destinations.append(permanentFt2File)
 
-#output
-fakeFt2File = fileNames.fileName('ft2Fake', dlId, runId, chunkId, next=True)
-runDir = fileNames.fileName(None, dlId, runId)
-ft2FakeBase = os.path.basename(fakeFt2File)
-permanentFt2File = os.path.join(runDir, ft2FakeBase)
-stagedFt2FitsFile = staged.stageOut(fakeFt2File, permanentFt2File)
+    setupScript = config.packages['ft2Util']['setup']
+    
+    tStart = float(os.environ['tStart']) - config.ft2Pad
+    tStop = float(os.environ['tStop']) + config.ft2Pad
 
-workDir = os.path.dirname(stagedFt2FitsFile)
+    template = config.ft2Template
+    templOpt = '-new_tpl %s' % template
 
-setupScript = config.packages['ft2Util']['setup']
+    cmtPath = config.ft2CmtPath
+    stLibDir = config.stLibDir
 
-tStart = float(os.environ['tStart']) - config.ft2Pad
-tStop = float(os.environ['tStop']) + config.ft2Pad
+    cmd = '''
+    cd %(workDir)s
+    export CMTPATH=%(cmtPath)s
+    source %(setupScript)s
+    %(app)s -M7File %(stagedM7File)s -FT2_fits_File %(stagedFt2FitsFile)s --Gleam --test-quaternion -DigiTstart %(tStart).17g -DigiTstop %(tStop).17g %(templOpt)s
+    ''' % locals()
 
-template = config.ft2Template
-templOpt = '-new_tpl %s' % template
+    status |= runner.run(cmd)
 
-cmtPath = config.ft2CmtPath
-stLibDir = config.stLibDir
-
-cmd = '''
-cd %(workDir)s
-export CMTPATH=%(cmtPath)s
-source %(setupScript)s
-%(app)s -M7File %(stagedM7File)s -FT2_fits_File %(stagedFt2FitsFile)s --Gleam --test-quaternion -DigiTstart %(tStart).17g -DigiTstop %(tStop).17g %(templOpt)s
-''' % locals()
-
-status = runner.run(cmd)
-if status: finishOption = 'wipe'
-
-status |= staged.finish(finishOption)
-
-sys.exit(status)
+    return status

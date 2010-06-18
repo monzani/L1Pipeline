@@ -65,6 +65,14 @@ def checkTokens(head, runId):
     return statusTokens
 
 
+def checkVerify():
+    vmdStr = os.environ['verifyMissingData']
+    print >> sys.stderr, "verifyMissingData = %s" % vmdStr
+    rv = {'true': False, 'false': True}[vmdStr]
+    print >> sys.stderr, "Data Complete = %s" % rv
+    return rv
+
+
 head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
@@ -82,17 +90,24 @@ rootDir = os.path.dirname(fileNames.fileName('chunkList', dlId, runId)) #bleh
 hpFinal, hpRunStatus = checkRunStatus(runNumber)
 tokenStatus = checkTokens(head, runId)
 mergeStatus = not fileNames.checkMergeLock(runId)
-readyToRetire = hpFinal and tokenStatus and mergeStatus
+completeData = checkVerify()
+readyToRetire = hpFinal and tokenStatus and mergeStatus and completeData
+
+print >> sys.stderr, "hpFinal=%(hpFinal)s, tokenStatus=%(tokenStatus)s, mergeStatus=%(mergeStatus)s, verifyStatus=%(completeData)s" % locals()
 
 if readyToRetire:
     print >> sys.stderr, "Run %s is as done as it's going to get, retiring." % runId
     subTask = config.cleanupSubTask[pipeline.getTask()][os.environ['DATASOURCE']]
     stream = runNumber
-    args = ''
+
+    goodReconPis = os.environ.get('goodReconPis')
+    
+    args = 'goodReconPis=%(goodReconPis)s' % goodReconPis
+
     pipeline.createSubStream(subTask, stream, args)
     l1RunStatus = hpRunStatus
 else:
-    print >> sys.stderr, "Not retiring run %s: hpFinal=%s, tokenStatus=%s, mergeStatus=%s" % (runId, hpFinal, tokenStatus, mergeStatus)
+    print >> sys.stderr, "Not retiring run %(runId)s" % locals()
     l1RunStatus = config.waitingStatus
     pass
 

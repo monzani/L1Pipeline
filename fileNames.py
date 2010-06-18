@@ -172,6 +172,7 @@ def getSite(fileName):
 
 def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None,
              next=False, version=None):
+
     if fileType is not None:
         try:
             fullName = variables.getVar(fileType, 'fileName')
@@ -211,33 +212,42 @@ def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None,
         return runDir
         
     # Assign a version. Maybe.
-    verStr = None
-    if version is not None:
-        verStr = 'v%s' % version
-    elif level == 'run':
-        if fileType in ['chunkList']:
-            verStr = dlId
-        else:
-            verNum = int(variables.getVar(fileType, 'ver'))
-            if next:
-                verNum += 1
-
-                # if we're reprocessing, we probably aren't starting from 0
-                baseVersion = int(os.environ.get('baseVersion', '0'))
-                verNum = max(verNum, baseVersion)
-                
-                pass
-            verStr = 'v%03d' % verNum
-            if fileType in ['magic7Hp']:
-                verStr = '_'.join([dlId, verStr])
+    if fileType in ['chunkList']:
+        verStr = dlId
+    else:
+        if version is None:
+            try:
+                version = int(variables.getVar(fileType, 'ver'))
+            except KeyError:
+                version = int(os.environ['PIPELINE_PROCESSINSTANCE'])
                 pass
             pass
-        pass # emacs is crazy
-    elif level == 'chunk':
-        verStr = 'v0'
+
+        # it's an error if next and version was the PI but we don't check ATM
+        if next:
+            version += 1
+            # if we're reprocessing, we probably aren't starting from 0
+            baseVersion = int(os.environ.get('baseVersion', '0'))
+            version = max(version, baseVersion)
+            pass
+        
+        if level in ['run']:
+            format = '%03d'
+        else:
+            format = '%s'
+            pass
+
+        verStr = 'v' + format % version
         pass
+
+    if fileType in ['magic7Hp']:
+        verStr = '_'.join([dlId, verStr])
+        pass
+    pass
+
     if verStr is not None: fields.append(verStr)
 
+    # handle different naming convention for files sent to FSSC
     if fileType in exportTags:
         tag = exportTags[fileType]
         pos = 0
@@ -295,23 +305,11 @@ def findPieces(fileType, dlId, runId=None, chunkId=None):
     if level == 'downlink':
         # We're not merging anything, just finding downlink dirs to delete.
         argSets = [(fileType, dlId)]
-    elif level == 'run':
-        if fileType is None:
-            # Just finding run buffers to delete
-            argSets = [(fileType, dlId, runId, chunkId)]
-        else:
-            # We are merging chunk files into a run file.
-            # We have to find a file listing chunks for each downlink.
-            #
-            allChunks = finders.findAndReadChunkLists(runId)
-            chunkIds = [chunkData[0] for chunkData in allChunks]
-            chunkIds.sort()
-            argSets = [(fileType, dlId, runId, chunkId)
-                       for chunkId in chunkIds]
-            pass
-        pass
+    elif level == 'run' and fileType is None:
+        # Just finding run buffers to delete
+        argSets = [(fileType, dlId, runId, chunkId)]
     else:
-        # We are either merging crumb files into chunk files or
+        # We are either
         # deleting crumb directories.
         if fileType is None:
             crumbVar = variables.getVar('crumb', 'list')
@@ -319,12 +317,20 @@ def findPieces(fileType, dlId, runId=None, chunkId=None):
             crumbIds.sort()
             argSets = [(fileType, dlId, runId, chunkId, crumbId)
                        for crumbId in crumbIds]
-        else:
+        # or merging crumbs into chunks or chunks into runs
+        else:            
             goodPis = os.environ['goodPis']
             tags = goodPis.split(',')
             versionTags = [tag.split(':') for tag in tags]
-            argSets = [(fileType, dlId, runId, chunkId, crumbId, None, ver)
-                       for (crumbId, ver) in versionTags]
+            if level == 'run':
+                head = (fileType, dlId, runId,)
+                tail = (None, None,)
+            elif level == 'chunk':
+                head = (fileType, dlId, runId, chunkId)
+                tail = (None,)
+                pass
+            argSets = [head + (pieceId,) + tail + (ver,)
+                       for (pieceId, ver) in versionTags]
             pass
         pass
     
@@ -382,8 +388,10 @@ def subDirectory(fileType, dlId, runId=None, chunkId=None, crumbId=None):
 
     if runId is not None:
         level = 'run'
-        # dirs.extend([runId, config.L1Version])
-        dirs.extend([runId])
+        runTag = int(runId[1:])
+        runTag = '%d' % runTag
+        runTag = runTag[:3]
+        dirs.extend(['runs', runTag, runId])
         if chunkId is not None:
             level = 'chunk'
             dirs.append(chunkId)
@@ -411,27 +419,31 @@ def xrootSubDirectory(fileType, dlId, runId=None):
     return subDir
 
 
+def dlDirectory(dlRawDir):
+    subDir = os.path.basename(dlRawDir)
+    midDir = subDir[:4]
+    directory = os.path.join(config.dlStorage, midDir, subDir)
+    return directory
+
+
 def baseDirectory(fileType, level, relativePath):
     if level == 'downlink':
         baseDir = config.L1Dir
     elif level == 'run':
         if fileTypes[fileType] in xrootFileTypes:
             baseDir = config.xrootBase
+        elif fileType is None:
+            baseDir = config.xrootStage
         else:
             baseDir = config.L1Dir
             pass
-    elif level == 'chunk':
-        if fileType is None:
-            # deleting crumb directories
-            baseDir = config.xrootStage
-        else:
-            # temporary staging; load balance
-            baseDir = stageBalance(relativePath)
-            pass
-        pass
-    elif level == 'crumb':
+    elif level == 'chunk' and fileType is None:
+        # deleting crumb directories
+        baseDir = config.xrootStage
+    elif level in ['crumb', 'chunk']:
         baseDir = config.xrootStage
         pass
+    # We will choke here if there is a hole in the logic. It's a feature.
     return baseDir
 
 

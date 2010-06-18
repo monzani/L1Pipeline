@@ -3,96 +3,57 @@
 import os
 import sys
 
+if __name__ == "__main__":
+    print >> sys.stderr, "This module is not supported as main script"
+    sys.exit(1)
+
 import config
 
-import GPLinit
-
-# import acqQuery
 import fileNames
 import meritFiles
 import runner
-import stageFiles
-import registerPrep
 import rounding
 
-head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
-if not dlId: head, dlId = os.path.split(head)
-runId = os.environ['RUNID']
-chunkId = os.environ.get('CHUNK_ID') # might not be set
-crumbId = os.environ.get('CRUMB_ID') # might not be set
-idArgs = (dlId, runId, chunkId, crumbId)
 
-if chunkId is None:
-    level = 'run'
-    next = True
-else:
-    if crumbId is None:
-        level = 'chunk'
-    else:
-        level = 'crumb'
-        pass
-    next = False
-    pass
+def makeFT1(files, level, outFileTypes, workDir, **args):
+    status = 0
 
-fileType = os.environ['fileType']
+    assert len(outFileTypes) == 1
+    fileType = outFileTypes[0]
 
-staged = stageFiles.StageSet(excludeIn=config.excludeIn)
-finishOption = config.finishOption
+    evtClassDefsPython = config.packages['evtClassDefs']['python']
 
-evtClassDefsPython = config.packages['evtClassDefs']['python']
+    stSetup = config.stSetup
+    app = os.path.join('$FITSGENROOT', '$CMTCONFIG', 'makeFT1.exe')
 
-stSetup = config.stSetup
-#stSetup = config.packages['fitsGen']['setup']
-app = os.path.join('$FITSGENROOT', '$CMTCONFIG', 'makeFT1.exe')
+    stagedMeritFile = files['merit']
 
-realMeritFile = fileNames.fileName('merit', *idArgs)
-stagedMeritFile = staged.stageIn(realMeritFile)
+    stagedFt1File = files[fileType]
 
-realFt1File = fileNames.fileName(fileType, next=next, *idArgs)
-stagedFt1File = staged.stageOut(realFt1File)
+    tCuts = config.cutFiles[fileType]
+    classifier = config.ft1Classifier
 
-workDir = os.path.dirname(stagedFt1File)
+    # run start and stop from merit file
+    mStart, mStop = meritFiles.startAndStop(stagedMeritFile)
+    print >> sys.stderr, 'merit:', mStart, mStop
 
-#tCuts = config.ft1Cuts
-tCuts = config.cutFiles[fileType]
-classifier = config.ft1Classifier
+    cutStart = rounding.roundDown(mStart, config.ft1Digits)
+    cutStop = rounding.roundUp(mStop, config.ft1Digits)
 
-runNumber = int(os.environ['runNumber'])
+    dictionary = config.ft1Dicts[fileType[:3]]
 
-# # run start and stop from ACQSUMMARY
-# tStart, tStop = acqQuery.runTimes(runNumber)
-# print >> sys.stderr, 'ACQSUMMARY:', tStart, tStop
+    version = fileNames.version(stagedFt1File)
 
-# run start and stop from merit file
-mStart, mStop = meritFiles.startAndStop(stagedMeritFile)
-print >> sys.stderr, 'merit:', mStart, mStop
+    cmtPath = config.stCmtPath
 
-cutStart = rounding.roundDown(mStart, config.ft1Digits)
-cutStop = rounding.roundUp(mStop, config.ft1Digits)
+    cmd = '''
+    cd %(workDir)s
+    export CMTPATH=%(cmtPath)s
+    source %(stSetup)s
+    PYTHONPATH=%(evtClassDefsPython)s:$PYTHONPATH ; export PYTHONPATH
+    %(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=%(tCuts)s event_classifier="%(classifier)s" tstart=%(cutStart).17g tstop=%(cutStop).17g dict_file=%(dictionary)s file_version=%(version)s
+    ''' % locals()
 
-dictionary = config.ft1Dicts[fileType[:3]]
+    status |= runner.run(cmd)
 
-if level == 'run':
-    version = fileNames.version(realFt1File)
-else:
-    version = 0
-    pass
-
-cmtPath = config.stCmtPath
-
-cmd = '''
-cd %(workDir)s
-export CMTPATH=%(cmtPath)s
-source %(stSetup)s
-PYTHONPATH=%(evtClassDefsPython)s:$PYTHONPATH ; export PYTHONPATH
-%(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=%(tCuts)s event_classifier="%(classifier)s" tstart=%(cutStart).17g tstop=%(cutStop).17g dict_file=%(dictionary)s file_version=%(version)s
-''' % locals()
-
-status = runner.run(cmd)
-if status: finishOption = 'wipe'
-
-status |= staged.finish(finishOption)
-
-if level == 'run' and not status: registerPrep.prep(fileType, realFt1File)
-
-sys.exit(status)
+    return status

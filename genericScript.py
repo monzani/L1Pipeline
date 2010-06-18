@@ -17,14 +17,52 @@ import fileNames
 import pipeline
 import registerPrep
 import stageFiles
+import variables
 
 
 moduleTable = {
     # 'processName': ('moduleName', 'functionName', ['cleanupName']),
     # no entry required if process, module, func are the same and no cleanup
+    'calHist': ('runStrip', 'runStrip'),
+    'calTrend': ('runStrip', 'runStrip'),
+    'diffRspFT1': ('diffRsp', 'diffRsp'),
+    'digitization': ('digitize', 'digitize'),
+    'digiHist': ('runStrip', 'runStrip'),
+    'digiTrend': ('runStrip', 'runStrip'),
     'electronMerit': ('filterMerit', 'electronMerit'),
+    'fastMonHist': ('fastMon', 'fastMon'),
+    'fastMonTrend': ('runStrip', 'runStrip'),
+    'fastMonTuple': ('fastMon', 'fastMon'),
     'findChunks': ('findChunks', 'findChunks', 'cleanup'),
     'findChunksLci': ('findChunks', 'findChunks', 'cleanup'),
+    'mergeCalCrumbs': ('mergeStuff', 'merge'),
+    'mergeCalChunks': ('mergeStuff', 'merge'),
+    'mergeCalTrend': ('mergeStuff', 'merge'),
+    'mergeFastMonError': ('mergeStuff', 'merge'),
+    'mergeFastMonHist': ('mergeStuff', 'merge'),
+    'mergeFastMonTrend': ('mergeStuff', 'merge'),
+    'mergeFastMonTuple': ('mergeStuff', 'merge'),
+    'mergeFT1': ('mergeStuff', 'merge'),
+    'mergeDigi': ('mergeStuff', 'merge'),
+    'mergeDigiHist': ('mergeStuff', 'merge'),
+    'mergeDigiTrend': ('mergeStuff', 'merge'),
+    'mergeGcrCrumbs': ('mergeStuff', 'merge'),
+    'mergeGcrChunks': ('mergeStuff', 'merge'),
+    'mergeMeritCrumbs': ('mergeStuff', 'merge'),
+    'mergeMeritChunks': ('mergeStuff', 'merge'),
+    'mergeReconCrumbs': ('mergeStuff', 'merge'),
+    'mergeReconChunks': ('mergeStuff', 'merge'),
+    'mergeReconHist': ('mergeStuff', 'merge'),
+    'mergeReconTrend': ('mergeStuff', 'merge'),
+    'mergeSvacChunks': ('mergeStuff', 'merge'),
+    'mergeTkrAnalysis': ('mergeStuff', 'merge'),
+    'meritHist': ('runStrip', 'runStrip'),
+    'meritTrend': ('runStrip', 'runStrip'),
+    'reconHist': ('runStrip', 'runStrip'),
+    'reconTrend': ('runStrip', 'runStrip'),
+    'svacTuple': ('makeSvac', 'svacTuple'),
+    'tkrAnalysis': ('tkrRootAnalysis', 'tkrAnalysis'),
+    'tkrTrend': ('runStrip', 'runStrip'),
     }
 
 def getFuncs(procName):
@@ -63,20 +101,24 @@ def main():
         level = 'crumb'
         pass
 
+    for idArg in idArgs[::-1]:
+        if idArg is not None:
+            piId = idArg
+            break
+        continue
+    pipeline.setVariable('L1_PI_ID', piId)
+    piVersion = int(os.environ['PIPELINE_PROCESSINSTANCE'])
+    pipeline.setVariable('L1_PI_version', piVersion)
+
     procName = pipeline.getProcess()
     function, cleanupFunc = getFuncs(procName)
 
     staged = stageFiles.StageSet(excludeIn=config.excludeIn)
+    workDir = staged.stageDir
+
+    runDir = fileNames.fileName(None, dlId, runId)
 
     files = {}
-
-    args = {
-        'files': files,
-        'idArgs': idArgs,
-        'idPath': idPath,
-        'level': level,
-        'procName': procName,
-        }
 
     inFileTList = os.environ.get('inFileTypes')
     if inFileTList is not None:
@@ -101,10 +143,32 @@ def main():
         outFileTypes = []
         pass
     for fileType in outFileTypes:
-        realFile = fileNames.fileName(fileType, next=True, *idArgs)
+        try:
+            version = int(variables.getVar(fileType, 'ver'))
+            next = True
+        except KeyError:
+            version = piVersion
+            next = False
+            pass
+        realFile = fileNames.fileName(fileType, next=next, version=version, *idArgs)
         files[fileType] = staged.stageOut(realFile)
         registerPrep.prep(fileType, realFile)
         continue
+
+    args = {
+        'files': files,
+        'idArgs': idArgs,
+        'idPath': idPath,
+        'inFileTypes': inFileTypes,
+        'level': level,
+        'outFileTypes': outFileTypes,
+        'piId': piId,
+        'piVersion': piVersion,
+        'procName': procName,
+        'runDir': runDir,
+        'staged': staged,
+        'workDir': workDir,
+        }
 
     try:
         print >> sys.stderr, 'About to run %s with args %s' % (function, args)

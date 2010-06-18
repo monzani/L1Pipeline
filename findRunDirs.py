@@ -42,8 +42,8 @@ chunkKeys = []
 chunkLists = {}
 for runId, runData in runDirs.items():
     print >> sys.stderr, runId
-    runDir = runData['runDir']
-    chunkListData = finders.findChunkFiles(runDir)
+    hpRunDir = runData['runDir']
+    chunkListData = finders.findChunkFiles(hpRunDir)
     print >> sys.stderr, chunkListData
     for chunk in chunkListData.values():
         print >> sys.stderr, chunk
@@ -149,6 +149,8 @@ for runId in dataRuns | oldRuns:
     runNumber = '%d' % int(nStr)
     stream = runNumber
 
+    l1RunDir = fileNames.fileName(None, None, runId)
+
     runStatus = runStatuses[runId]
     if runStatus == "INCOMPLETE" and runId in dataRuns:
         newStatus = "WAITING"
@@ -170,7 +172,7 @@ for runId in dataRuns | oldRuns:
     mootKey = mootKeys.get(runId, config.defaultMootKey)
     mootAlias = mootAliases.get(runId, config.defaultMootAlias)
     
-    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUNSTATUS=%(runStatus)s,hpTStart=%(tStart).17g,hpTStop=%(tStop).17g,DATASOURCE=%(source)s,mootKey=%(mootKey)s,mootAlias=%(mootAlias)s" % locals()
+    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUNSTATUS=%(runStatus)s,hpTStart=%(tStart).17g,hpTStop=%(tStop).17g,DATASOURCE=%(source)s,mootKey=%(mootKey)s,mootAlias=%(mootAlias)s,runDir=%(l1RunDir)s" % locals()
     print >> sys.stderr, \
           "Creating stream [%s] of subtask [%s] with args [%s]" % \
           (stream, subTask, args)

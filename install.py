@@ -20,7 +20,7 @@ scriptNames = {
     'registerBody': 'registerStuff.py',
     'retireScriptBody': 'retireRun.py',
     'runningScriptBody': 'setRunning.py',
-    'scanScriptBody': 'scanSubStreams.py',
+    'scanScriptBody': 'scanChunks.py',
     'statusScriptBody': 'setStatus.py',
     'successScriptBody': 'setSuccessful.py',
     }

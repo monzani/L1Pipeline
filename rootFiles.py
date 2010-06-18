@@ -101,6 +101,95 @@ def concatenate_prune(outputFileName, fileNames, treeName='Digi', expectedEntrie
     return retCode
 
 
+def concatenate(outputFileName, fileNames, treeName='Digi', expectedEntries=None, basketSize=None):
+
+    from ROOT import TChain, gSystem
+    
+    c = TChain(treeName)
+    c.SetMaxTreeSize(500000000000)
+
+    if expectedEntries is not None:
+        print >> sys.stderr, "Expect %d entries." % expectedEntries
+        pass
+
+    now = time.time()
+    print >> sys.stderr, 'Start scan at', time.ctime(now)
+    then = now
+
+    scanEntries = 0
+    for iFile, name in enumerate(fileNames):
+        print >> sys.stderr, "Adding %d [%s]" % (iFile, name),
+        fileEntries = getFileEvents(name, treeName)
+        print >> sys.stderr, "%d entries." % fileEntries
+        scanEntries += fileEntries
+        addCode = c.Add(name, 0)
+        if not addCode: # TChain.Add returns 1 for success, 0 for failure
+            return 1
+        pass
+
+    now = time.time()
+    print >> sys.stderr, 'End scan at', time.ctime(now), '(%f elapsed)' % (now - then)
+    then = now
+
+    print >> sys.stderr, 'scanEntries = ', scanEntries
+    if expectedEntries is not None:
+        if scanEntries != expectedEntries:
+            print >> sys.stderr, "Bad # entries after input scan."
+            return 1
+        pass
+    expectedEntries = scanEntries
+    
+    numChainEntries = c.GetEntries()
+    print >> sys.stderr, 'numChainEntries = ', numChainEntries
+    if numChainEntries != expectedEntries:
+        print >> sys.stderr, "Bad # entries after chain creation."
+        return 1
+    
+    print >> sys.stderr, 'Creating output file ...'
+    otf = ROOT.TFile.Open(outputFileName, "RECREATE")
+
+    mergeOptions = ['keep']
+    if basketSize is None:
+        mergeOptions.append('fast')
+        basketSize = 0
+        print >> sys.stderr, 'Using fast merge.'
+    else:
+        print >> sys.stderr, 'Changing basket size to %d.' % basketSize       
+        pass
+    option = ','.join(mergeOptions)
+    
+    print >> sys.stderr, "Merging ..."
+    nFiles = c.Merge(otf, basketSize, option)
+    retCode = nFiles != 1
+
+    now = time.time()
+    print >> sys.stderr, 'End merge at', time.ctime(now), '(%f elapsed)' % (now - then)
+    then = now
+
+    print >> sys.stderr, 'Copying header ...'
+    nBytes = copyHeader(fileNames[0], otf)
+    print >> sys.stderr, 'wrote %d bytes' % nBytes
+
+    print >> sys.stderr, 'Creating index ...'
+    indexEntries = buildIndex(otf, treeName, "m_runId", "m_eventId")
+    print >> sys.stderr, '%d entries' % indexEntries
+    if indexEntries and indexEntries != expectedEntries:
+        print >> sys.stderr, "Bad # entries after indexing."
+        return 1
+    
+    otf.Close()
+
+    print >> sys.stderr, outputFileName, ' created'
+
+    numChainEntries = getFileEvents(outputFileName, treeName)
+    print >> sys.stderr, 'numChainEntries = ', numChainEntries
+    if numChainEntries != expectedEntries:
+        print >> sys.stderr, "Bad # entries after merge."
+        return 1
+
+    return retCode
+
+
 def concatenate_cal(outputFileName, fileNames, treeName='Digi', expectedEntries=None):
 
     from ROOT import TChain, gSystem
@@ -140,8 +229,8 @@ def concatenate_cal(outputFileName, fileNames, treeName='Digi', expectedEntries=
 
     #basketSize = 32000 # default
     basketSize = 1000000 # recommended by Rene
-    option = ''
-    #option = 'fast'
+    #option = ''
+    option = 'fast'
     otf = ROOT.TFile.Open(outputFileName, "RECREATE")
     nFiles = c.Merge(otf, basketSize, option)
     retCode = nFiles != 1
@@ -161,9 +250,30 @@ def copyHeader(inFileName, outTFile):
     headerName = 'header'
     inTFile = ROOT.TFile.Open(inFileName)
     header = inTFile.Get(headerName)
+    if header is None:
+        print >> sys.stderr, 'Input file %s has no header.' % inFileName
+        inTFile.Close()
+        return 0
     outTFile.cd()
-    header.Write(headerName)
-    return
+    nBytes = header.Write(headerName)
+    inTFile.Close()
+    return nBytes
+
+
+def buildIndex(tFile, treeName, major, minor):
+    tree = tFile.Get(treeName)
+    if tree is None:
+        print >> sys.stderr, 'TFile %s has no tree %s' % (tFile, treeName)
+        return -1
+    for branchName in major, minor:
+        branch = tree.GetBranch(branchName)
+        if branch is None:
+            print >> sys.stderr, "Tree %s has no branch %s, can't build index" \
+                  % (treeName, branchName)
+            return 0 # this is not really an error
+        continue
+    indexEntries = tree.BuildIndex(major, minor)
+    return indexEntries
 
 
 def hSplit(inFile, treeName, crumbData):
