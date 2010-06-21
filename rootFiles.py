@@ -250,7 +250,7 @@ def copyHeader(inFileName, outTFile):
     headerName = 'header'
     inTFile = ROOT.TFile.Open(inFileName)
     header = inTFile.Get(headerName)
-    if header is None:
+    if not header:
         print >> sys.stderr, 'Input file %s has no header.' % inFileName
         inTFile.Close()
         return 0
@@ -262,12 +262,12 @@ def copyHeader(inFileName, outTFile):
 
 def buildIndex(tFile, treeName, major, minor):
     tree = tFile.Get(treeName)
-    if tree is None:
+    if not tree:
         print >> sys.stderr, 'TFile %s has no tree %s' % (tFile, treeName)
         return -1
     for branchName in major, minor:
         branch = tree.GetBranch(branchName)
-        if branch is None:
+        if not branch:
             print >> sys.stderr, "Tree %s has no branch %s, can't build index" \
                   % (treeName, branchName)
             return 0 # this is not really an error
