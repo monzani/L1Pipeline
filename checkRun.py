@@ -66,6 +66,11 @@ def checkTokens(head, runId):
 
 
 def checkVerify():
+    taskStr = pipeline.getTask()
+    if taskStr.lower().endswith('lci'):
+        print >> sys.stderr, 'Not checking verify for LCI.'
+        return True
+    
     vmdStr = os.environ['verifyMissingData']
     print >> sys.stderr, "verifyMissingData = %s" % vmdStr
     rv = {'true': False, 'false': True}[vmdStr]

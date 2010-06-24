@@ -2821,7 +2821,7 @@
       <variables>
         <var name="l1LockAction">LockDirOnly</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/findChunks.py" batchOptions=" %(lockOption)s -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" %(lockOption)s -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <createsSubtasks>
         <subtask>doChunkLci</subtask>
       </createsSubtasks>
