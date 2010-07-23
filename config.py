@@ -592,7 +592,7 @@ normalizedRateConfigs = {
     }
 
 tdBin = {
-    'calHist': 30000000,
+    'calHist': 1000000000,
     'calTrend': 300,
     'digiHist': 15,
     'digiTrend': 15,
@@ -601,7 +601,7 @@ tdBin = {
     'meritTrend': 15,
     'reconHist': 15,
     'reconTrend': 15,
-    'tkrTrend': 30000000,
+    'tkrTrend': 1000000000,
     }
 
 

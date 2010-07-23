@@ -2,6 +2,7 @@
 -----------------
 Using GR v15r47p12gr12 (GCR fix, SSC-258).
 TestReport v11r0 (using Tip instead of fitsGen).
+Changing the trending inteval to 1e9 for full runs.
 
 
 1.85
