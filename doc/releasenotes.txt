@@ -1,3 +1,15 @@
+1.86
+-----------------
+Using GR v15r47p12gr12 (GCR fix, SSC-258).
+TestReport v11r0 (using Tip instead of fitsGen).
+
+
+1.85
+-----------------
+Fix xml so findChunksLci uses genericScript.py instead of findChunks.py.
+Don't check verify status in checkRunLci.
+
+
 1.85
 -----------------
 Fix xml so findChunksLci uses genericScript.py instead of findChunks.py.

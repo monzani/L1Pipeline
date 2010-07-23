@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.85"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.86"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -219,7 +219,7 @@ installBin = os.path.join(installArea, 'bin')
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
 releaseDir = os.path.join(groundRoot, 'releases', 'volume07')
-glastVersion = 'v15r47p12gr11'
+glastVersion = 'v15r47p12gr12'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -355,7 +355,7 @@ cmtPackages = {
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'TestReport-10-07-00',
+        'version': 'TestReport-11-00-00',
         },
     }
 
