@@ -109,7 +109,7 @@ baseVersion = 0
 
 #throttle parameters
 throttleDir =  os.path.join(L1Dir, 'throttle')
-throttleLimit = 2
+throttleLimit = 4
 
 # staging buffers with smallish integer weights
 #

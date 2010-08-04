@@ -6,7 +6,6 @@
 """
 
 import os
-import shutil
 import sys
 import time
 
@@ -117,13 +116,13 @@ def merge(files, idArgs, level, outFileTypes, staged, workDir, **args):
         # load on the file server in that case.
         print >> sys.stderr, 'Single input file, copying %s to %s' % \
               (realInFiles[0], outFile)
-        shutil.copyfile(realInFiles[0], outFile)
+        fileOps.copy(realInFiles[0], outFile)
         if  fileType in ['merit'] and level == 'run':
             print >> sys.stderr, \
                   "Attempting to remove throttling lock for [%s,%s] at [%s]" % (dlId,runId,time.ctime())
             lockFile.unlockThrottle(dlId,runId)
-            return status
-        pass
+            pass
+        return status
     
     inFiles = [staged.stageIn(iFile) for iFile in realInFiles]
     

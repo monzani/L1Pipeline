@@ -179,6 +179,6 @@ for runId in dataRuns | oldRuns:
     pipeline.createSubStream(subTask, stream, args)
     continue
 
-fileNames.preMakeDirs(dataRuns, dlId)
+# fileNames.preMakeDirs(dataRuns, dlId)
 
 staged.finish()

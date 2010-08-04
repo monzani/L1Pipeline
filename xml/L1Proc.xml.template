@@ -1731,11 +1731,12 @@
 
     <process name="makeLS1" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">ls1BadGti</var>
+        <var name="inFileTypes">merit</var>        
+        <var name="outFileTypes">ls1BadGti</var>
         <var name="%(merit_versionName)s">%(merit_version)s</var>
         <var name="%(ls1BadGti_versionName)s">%(ls1BadGti_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerMerit" status="SUCCESS"/>
       </depends>
@@ -1880,7 +1881,7 @@
     <process name="scanMeritTrend" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="subTask">doChunk</var>
-        <var name="subProcess">meritTrend"</var>
+        <var name="subProcess">meritTrend</var>
       </variables>
       <script><![CDATA[
 %(scanScriptBody)s
@@ -1986,7 +1987,7 @@
         <var name="%(merit_versionName)s">%(merit_version)s</var>
         <var name="%(meritHist_versionName)s">%(meritHist_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/gernericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="doChunk.allRecon" status="SUCCESS"/>
         <after process="registerDigi" status="SUCCESS"/>
@@ -2078,7 +2079,7 @@
         <var name="outFileTypes">reconTrend</var>
         <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/generiecScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <!-- <after process="doChunk.mergeCalCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
         <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
@@ -2532,7 +2533,7 @@
 
     <process name="checkRun" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="goodReconPis">${pipeline.processInstance("scanReconChunks").getVariable("goodPis")}</var>  
+        <!-- <var name="goodReconPis">${pipeline.processInstance("scanReconChunks").getVariable("goodPis")}</var> -->
         <var name="verifyMissingData">${pipeline.processInstance("verify").getVariable("verifyMissingData")}</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
@@ -2635,7 +2636,8 @@
 
       <process name="mergeReconChunks" autoRetryMaxAttempts="%(retries)s">
         <variables>
-          <var name="goodPis">${goodReconPis}</var>  
+          <!-- <var name="goodPis">${goodReconPis}</var> -->
+          <var name="goodPis">${pipeline.currentStream().getParentStream().getProcessInstance('scanReconChunks').getVariable('goodPis')}</var>
           <var name="outFileTypes">recon</var>
           <var name="%(recon_versionName)s">%(recon_version)s</var>
           <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>

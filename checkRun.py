@@ -100,9 +100,9 @@ if readyToRetire:
     subTask = config.cleanupSubTask[pipeline.getTask()][os.environ['DATASOURCE']]
     stream = runNumber
 
-    goodReconPis = os.environ.get('goodReconPis')
-    
-    args = 'goodReconPis=%(goodReconPis)s' % goodReconPis
+    # goodReconPis = os.environ.get('goodReconPis')
+    # args = 'goodReconPis=%s' % goodReconPis
+    args = ''
 
     pipeline.createSubStream(subTask, stream, args)
     l1RunStatus = hpRunStatus

@@ -84,7 +84,7 @@ def findChunks(idArgs, **extra):
         pipeline.createSubStream(subTask, stream, args)
         continue
     
-    chunkIds = chunkListData.keys()
-    fileNames.preMakeDirs(chunkIds, dlId, runId)
+    # chunkIds = chunkListData.keys()
+    # fileNames.preMakeDirs(chunkIds, dlId, runId)
 
     return status
