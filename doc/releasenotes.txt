@@ -1,3 +1,9 @@
+1.87
+-----------------
+verify writes to dontCleanUp instead of setting a pipeline variable
+the logfiles and whatever goes on nfs is now being written on u41
+
+
 1.86
 -----------------
 Using GR v15r47p12gr12 (GCR fix, SSC-258).

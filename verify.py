@@ -5,6 +5,7 @@ import sys
 
 import config
 import GPLinit
+import time
 
 import fileNames
 import pipeline
@@ -48,9 +49,13 @@ source %(setupScript)s
 
 status = runner.run(cmd)
 if status == 153: 
-    pipeline.setVariable('verifyMissingData','true')
+    process = pipeline.getProcess()
+    streamPath = os.environ.get('PIPELINE_STREAMPATH')
+    processInstance = os.environ.get('PIPELINE_PROCESSINSTANCE')
+    timeStamp = time.ctime()
+    content = 'Locked by %s %s pipk = %s at %s\n' % (process, streamPath, processInstance, timeStamp)
+    fileNames.makeMergeLock(runId, content)
     status = 0
-else: pipeline.setVariable('verifyMissingData','false')  
 
 if status: finishOption = 'wipe'
 

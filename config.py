@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.86"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "1.87"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -71,7 +71,7 @@ calibFlavors = { # not using this now, have separate JO files for LPA & MC
     }
 
 
-L1Disk = '/nfs/farm/g/glast/u52/L1'
+L1Disk = '/nfs/farm/g/glast/u41/L1'
 if testMode: L1Disk += 'Test'
 # L1Dir = os.path.join(L1Disk, 'rootData')
 L1Dir = L1Disk
@@ -81,7 +81,7 @@ if testMode: dlStorage = os.path.join(dlStorage, 'test')
 saveDl = True
 
 #logRoot = os.path.join(L1Disk, 'logs')
-logRoot = '/nfs/farm/g/glast/u52/L1/logs'
+logRoot = '/nfs/farm/g/glast/u41/L1/logs'
 
 # normal
 dataCatBase = '/Data/Flight/Level1'
@@ -525,7 +525,7 @@ mergeConfigs = {
     }
 
 
-alarmRefBase = '/nfs/farm/g/glast/u52/Monitoring/ReferenceHistograms'
+alarmRefBase = '/nfs/farm/g/glast/u41/Monitoring/ReferenceHistograms'
 alarmRefDir = os.path.join(alarmRefBase, mode)
 alarmCfgBase = '/afs/slac/g/glast/ground/releases/volume01'
 alarmBase = os.path.join(alarmCfgBase, 'AlarmsCfg', mode)
