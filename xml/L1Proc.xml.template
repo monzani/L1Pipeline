@@ -2637,7 +2637,7 @@
       <process name="mergeReconChunks" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <!-- <var name="goodPis">${goodReconPis}</var> -->
-          <var name="goodPis">${pipeline.currentStream().getParentStream().getProcessInstance('scanReconChunks').getVariable('goodPis')}</var>
+          <var name="goodPis">${pipeline.getCurrentStream().getParentStream().getProcessInstance("scanReconChunks").getVariable("goodPis")}</var>
           <var name="outFileTypes">recon</var>
           <var name="%(recon_versionName)s">%(recon_version)s</var>
           <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
