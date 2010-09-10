@@ -6,7 +6,6 @@
 import bisect
 import cPickle
 import glob
-import hashlib
 import math
 import os
 import random
@@ -108,11 +107,6 @@ exportTags = { # files exported to FSSC use a different naming rule
 
 xrootFileTypes = ['fit', 'root'] # these will be stored in xroot instead of nfs
 
-
-stageDirs = [os.path.join(disk, config.stageBase)
-             for disk, weight in config.stageDisks
-             for ii in range(weight)]
-uniqueStageDirs = set(stageDirs)
 
 mergeLockBase = 'dontCleanUp' # lock file for merge errors
 def mergeLockName(runId):
@@ -267,18 +261,6 @@ def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None,
     return fullName
 
 
-def myHash(str):
-    hasher = hashlib.md5(str)
-    digest = hasher.hexdigest()
-    hash = int(digest, 16)
-    return hash
-
-def stageBalance(str):
-    index = myHash(str) % len(stageDirs)
-    baseDir = stageDirs[index]
-    return baseDir
-
-
 def findPieces(fileType, dlId, runId=None, chunkId=None):
     """@brief find chunks or crumbs to merge.
 
@@ -344,7 +326,7 @@ def findPieces(fileType, dlId, runId=None, chunkId=None):
 
     if fileType is None:
         if level in ['run', 'downlink']:
-            baseDirs = list(uniqueStageDirs) + [config.xrootStage]
+            baseDirs = [config.xrootStage]
         else:
             baseDirs = [baseDirectory(fileType, level, pieces[0])]
             pass
@@ -472,66 +454,3 @@ def mangleChunkList(realName):
     mangledName = realName + '.tmp'
     return mangledName
 
-
-def preMakeDirs(dirs, dlId, runId=None, chunkId=None, crumbId=None):
-    import stageFiles
-    buffers = [sd for sd in uniqueStageDirs if not sd.startswith('root:')]
-    random.shuffle(buffers)
-    mid = subDirectory(None, dlId, runId, chunkId, crumbId)
-    allDirs = [os.path.join(buf, mid, sub) for buf in buffers for sub in dirs]
-    print >> sys.stderr, 'Creating directories %s ... ' % allDirs,
-    start = time.time()
-    for dir in allDirs: fileOps.makedirs(dir)
-    stop = time.time()
-    print >> sys.stderr, '%g s.' % (stop - start)
-    return
-
-
-
-defaultMinMultiplicity = 1280
-defaultNameCopies = 320
-big = 2 ** (16*8) # specific to MD5
-
-class consistentHash(object):
-
-    def __init__(self, slots, minMultiplicity=None, nameCopies=None):
-        """
-        @arg slots A sequence of (item, name, weight)
-                   Item can be anything, it's what is returned on a lookup.
-                   Name is a string. They have to be all different.
-                   Weight is a number.
-        """
-        if minMultiplicity is None: minMultiplicity = defaultMinMultiplicity
-        if nameCopies is None: nameCopies = defaultNameCopies
-        
-        # allWeights = [float(weight) for item, name, weight in slots]
-        # minWeight = min(allWeights)
-
-        table = []
-        for item, name, weight in slots:
-            # multiplicity = int(math.ceil(weight / minWeight * minMultiplicity)) # bad idea
-            multiplicity = int(math.ceil(weight * minMultiplicity))
-            base = name * nameCopies
-            table.extend([(myHash(base + ':%d' % copy), item) for copy in range(multiplicity)])
-            continue
-        table.sort()
-        # put a copy of the first entry at the end to handle wraparound
-        firstKey, firstItem = table[0]
-        wrapKey = big + firstKey
-        table.append((wrapKey, firstItem))
-
-        self.keys, self.items = zip(*table)
-
-        return
-
-
-    def lookup(self, item):
-        key = myHash(item)
-        pos = bisect.bisect_left(self.keys, key)
-        try:
-            slot = self.items[pos]
-        except:
-            print pos, len(self.items), key, self.keys[-1]
-        return slot
-
-    pass

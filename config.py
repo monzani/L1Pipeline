@@ -111,40 +111,6 @@ baseVersion = 0
 throttleDir =  os.path.join(L1Dir, 'throttle')
 throttleLimit = 4
 
-# staging buffers with smallish integer weights
-#
-# Dev version for crumbs only on xroot
-# stageDisks = {
-#     'crumb': [ 
-#         (os.path.join(xrootGlast, 'Scratch'), 1),
-#     ],
-#     'chunk': [ 
-#         # ("root://sysdev4500//glast", 1),
-#         ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging", 1),
-#         ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging2", 1),
-#         ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging3", 1),
-#         ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging4", 1),
-#         ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging5", 1),
-#         ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging7", 1),
-#     ],
-#     }
-#
-# Dev version for everything on xroot
-# stageDisks = [ 
-#     (os.path.join(xrootGlast, 'scratch'), 1),
-#     ]
-#
-# AFS
-stageDisks = [ 
-    # ("root://sysdev4500//glast", 1),
-    ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging", 1),
-    ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging2", 1),
-    ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging3", 1),
-    ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging4", 1),
-    ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging5", 1),
-    ("/afs/slac.stanford.edu/g/glast/ground/PipelineStaging7", 1),
-    ]
-
 if testMode:
     stageBase = 'l1Test'
 else:

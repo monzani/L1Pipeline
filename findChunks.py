@@ -83,8 +83,5 @@ def findChunks(idArgs, **extra):
         args = 'EVTFILE=%(chunkFile)s,CHUNK_ID=%(chunkId)s,tStart=%(chunkStart).17g,tStop=%(chunkStop).17g' % locals()
         pipeline.createSubStream(subTask, stream, args)
         continue
-    
-    # chunkIds = chunkListData.keys()
-    # fileNames.preMakeDirs(chunkIds, dlId, runId)
 
     return status
