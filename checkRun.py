@@ -81,6 +81,8 @@ runNumber = int(os.environ['runNumber'])
 
 rootDir = os.path.dirname(fileNames.fileName('chunkList', dlId, runId)) #bleh
 
+dataSource = os.environ['DATASOURCE']
+
 # Here we need to check that all the chunk locks (created by the halfpipe,
 # removed by this script before now) are gone, AND that some database
 # somewhere (GLAST_ISOC.ACQSUMMARY) says that the run is as complete as it
@@ -90,14 +92,18 @@ rootDir = os.path.dirname(fileNames.fileName('chunkList', dlId, runId)) #bleh
 hpFinal, hpRunStatus = checkRunStatus(runNumber)
 tokenStatus = checkTokens(head, runId)
 mergeStatus = not fileNames.checkMergeLock(runId)
-completeData = checkVerify()
-readyToRetire = hpFinal and tokenStatus and mergeStatus and completeData
+readyToRetire = hpFinal and tokenStatus and mergeStatus
+print >> sys.stderr, "hpFinal=%(hpFinal)s, tokenStatus=%(tokenStatus)s, mergeStatus=%(mergeStatus)s" % locals()
+if dataSource == "LPA":
+    completeData = checkVerify()
+    readyToRetire &= completeData
+    print >> sys.stderr, "verifyStatus=%(completeData)s" % locals()
+    pass
 
-print >> sys.stderr, "hpFinal=%(hpFinal)s, tokenStatus=%(tokenStatus)s, mergeStatus=%(mergeStatus)s, verifyStatus=%(completeData)s" % locals()
 
 if readyToRetire:
     print >> sys.stderr, "Run %s is as done as it's going to get, retiring." % runId
-    subTask = config.cleanupSubTask[pipeline.getTask()][os.environ['DATASOURCE']]
+    subTask = config.cleanupSubTask[pipeline.getTask()][dataSource]
     stream = runNumber
 
     # goodReconPis = os.environ.get('goodReconPis')

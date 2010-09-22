@@ -47,7 +47,11 @@ def getCrumbPis():
     return pis
 
 
-getPis = {'doChunk': getChunkPis, 'doCrumb': getCrumbPis}[subTask]
+getPis = {
+    'doChunk': getChunkPis,
+    'doChunkLci': getChunkPis,
+    'doCrumb': getCrumbPis
+    }[subTask]
 
 pis = getPis()
 

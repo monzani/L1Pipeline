@@ -3132,7 +3132,7 @@
       <variables>
         <var name="l1LockAction">LockDirOnly</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/findChunks.py" batchOptions=" %(lockOption)s -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" %(lockOption)s -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <createsSubtasks>
         <subtask>doChunkLci</subtask>
       </createsSubtasks>
@@ -3176,15 +3176,30 @@
       </depends>
     </process>
  
+    <process name="scanDigiLci" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunkLci</var>
+        <var name="subProcess">digitizationLci</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunkLci.digitizationLci" status="DONE"/>
+      </depends>
+    </process>
+
     <process name="mergeDigiLci" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">digi</var>
+        <var name="goodPis">${pipeline.processInstance("scanDigiLci").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">digi</var>
         <var name="%(digi_versionName)s">%(digi_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=250]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=250]&quot; "/>
       <depends>
-        <after process="doChunkLci.digitizationLci" status="DONE"/>
+        <after process="scanDigiLci" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -3203,14 +3218,29 @@
       </depends>
     </process>
  
-     <process name="mergeDigiHistLci" autoRetryMaxAttempts="%(retries)s">
+    <process name="scanDigiHistLci" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">digiHist</var>
-        <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
+        <var name="subTask">doChunkLci</var>
+        <var name="subProcess">digiHistLci</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[scratch=10]&quot; "/>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
       <depends>
         <after process="doChunkLci.digiHistLci" status="DONE"/>
+      </depends>
+    </process>
+
+     <process name="mergeDigiHistLci" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.processInstance("scanDigiHistLci").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">digiHist</var>
+        <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[scratch=10]&quot; "/>
+      <depends>
+        <after process="scanDigiHistLci" status="SUCCESS"/>
       </depends>
     </process>
  
@@ -3229,14 +3259,29 @@
       </depends>
     </process>
 
-    <process name="mergeFastMonErrorLci" autoRetryMaxAttempts="%(retries)s">
+    <process name="scanFastMonTupleLci" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">fastMonError</var>
-        <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
+        <var name="subTask">doChunkLci</var>
+        <var name="subProcess">fastMonTupleLci</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
       <depends>
         <after process="doChunkLci.fastMonTupleLci" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeFastMonErrorLci" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.processInstance("scanFastMonTupleLci").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">fastMonError</var>
+        <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <depends>
+        <after process="scanFastMonTupleLci" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -3257,12 +3302,13 @@
 
     <process name="mergeFastMonTupleLci" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">fastMonTuple</var>
+        <var name="goodPis">${pipeline.processInstance("scanFastMonTupleLci").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">fastMonTuple</var>
         <var name="%(fastMonTuple_versionName)s">%(fastMonTuple_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[scratch=10]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[scratch=10]&quot; "/>
       <depends>
-        <after process="doChunkLci.fastMonTupleLci" status="DONE"/>
+        <after process="scanFastMonTupleLci" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -3281,14 +3327,29 @@
       </depends>
     </process>
  
-    <process name="mergeFastMonHistLci" autoRetryMaxAttempts="%(retries)s">
+    <process name="scanFastMonHistLci" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">fastMonHist</var>
-        <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
+        <var name="subTask">doChunkLci</var>
+        <var name="subProcess">fastMonHistLci</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[scratch=10]&quot; "/>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
       <depends>
         <after process="doChunkLci.fastMonHistLci" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeFastMonHistLci" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.processInstance("scanFastMonHistLci").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">fastMonHist</var>
+        <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[scratch=10]&quot; "/>
+      <depends>
+        <after process="scanFastMonHistLci" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -3353,21 +3414,29 @@
       </prerequisites>
 
       <process name="digitizationLci" autoRetryMaxAttempts="%(retries)s">
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/digitize.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <variables>
+<!--          <var name="inFileTypes"></var>  evt file name is not currently handled by fileNames -->
+          <var name="outFileTypes">digi</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       </process>
  
       <process name="fastMonTupleLci" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="reportType">fastMonTuple</var>
+          <var name="outFileTypes">fastMonTuple/fastMonError</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       </process>
  
       <process name="fastMonHistLci" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="reportType">fastMonHist</var>
+          <var name="inFileTypes">fastMonTuple</var>
+          <var name="outFileTypes">fastMonHist</var>
+          <var name="%(fastMonTuple_versionName)s">${pipeline.processInstance("fastMonTupleLci").getVariable("L1_PI_version")}</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/fastMon.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="fastMonTupleLci" status="SUCCESS"/>
         </depends>
