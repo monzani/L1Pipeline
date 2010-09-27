@@ -64,15 +64,6 @@ def checkTokens(head, runId):
     statusTokens = not tokenFiles
     return statusTokens
 
-
-def checkVerify():
-    vmdStr = os.environ['verifyMissingData']
-    print >> sys.stderr, "verifyMissingData = %s" % vmdStr
-    rv = {'true': False, 'false': True}[vmdStr]
-    print >> sys.stderr, "Data Complete = %s" % rv
-    return rv
-
-
 head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
@@ -93,13 +84,8 @@ hpFinal, hpRunStatus = checkRunStatus(runNumber)
 tokenStatus = checkTokens(head, runId)
 mergeStatus = not fileNames.checkMergeLock(runId)
 readyToRetire = hpFinal and tokenStatus and mergeStatus
-print >> sys.stderr, "hpFinal=%(hpFinal)s, tokenStatus=%(tokenStatus)s, mergeStatus=%(mergeStatus)s" % locals()
-if dataSource == "LPA":
-    completeData = checkVerify()
-    readyToRetire &= completeData
-    print >> sys.stderr, "verifyStatus=%(completeData)s" % locals()
-    pass
 
+print >> sys.stderr, "hpFinal=%(hpFinal)s, tokenStatus=%(tokenStatus)s, mergeStatus=%(mergeStatus)s " % locals()
 
 if readyToRetire:
     print >> sys.stderr, "Run %s is as done as it's going to get, retiring." % runId

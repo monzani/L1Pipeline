@@ -71,7 +71,7 @@ calibFlavors = { # not using this now, have separate JO files for LPA & MC
     }
 
 
-L1Disk = '/nfs/farm/g/glast/u52/L1'
+L1Disk = '/nfs/farm/g/glast/u41/L1'
 if testMode: L1Disk += 'Test'
 # L1Dir = os.path.join(L1Disk, 'rootData')
 L1Dir = L1Disk
@@ -81,7 +81,7 @@ if testMode: dlStorage = os.path.join(dlStorage, 'test')
 saveDl = True
 
 #logRoot = os.path.join(L1Disk, 'logs')
-logRoot = '/nfs/farm/g/glast/u52/L1/logs'
+logRoot = '/nfs/farm/g/glast/u41/L1/logs'
 
 # normal
 dataCatBase = '/Data/Flight/Level1'
@@ -185,7 +185,7 @@ installBin = os.path.join(installArea, 'bin')
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
 releaseDir = os.path.join(groundRoot, 'releases', 'volume07')
-glastVersion = 'v15r47p12gr11'
+glastVersion = 'v15r47p12gr12'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -293,7 +293,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'FastMon-05-01-01',
+        'version': 'FastMon-05-02-00',
         },
 #     'fitsGen': {
 #         'repository': '',
@@ -321,7 +321,7 @@ cmtPackages = {
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'TestReport-10-07-00',
+        'version': 'TestReport-11-00-00',
         },
     }
 
@@ -491,7 +491,7 @@ mergeConfigs = {
     }
 
 
-alarmRefBase = '/nfs/farm/g/glast/u52/Monitoring/ReferenceHistograms'
+alarmRefBase = '/nfs/farm/g/glast/u41/Monitoring/ReferenceHistograms'
 alarmRefDir = os.path.join(alarmRefBase, mode)
 alarmCfgBase = '/afs/slac/g/glast/ground/releases/volume01'
 alarmBase = os.path.join(alarmCfgBase, 'AlarmsCfg', mode)
@@ -558,7 +558,7 @@ normalizedRateConfigs = {
     }
 
 tdBin = {
-    'calHist': 30000000,
+    'calHist': 1000000000,
     'calTrend': 300,
     'digiHist': 15,
     'digiTrend': 15,
@@ -567,7 +567,7 @@ tdBin = {
     'meritTrend': 15,
     'reconHist': 15,
     'reconTrend': 15,
-    'tkrTrend': 30000000,
+    'tkrTrend': 1000000000,
     }
 
 
