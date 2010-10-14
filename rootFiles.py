@@ -101,7 +101,7 @@ def concatenate_prune(outputFileName, fileNames, treeName='Digi', expectedEntrie
     return retCode
 
 
-def concatenate(outputFileName, fileNames, treeName='Digi', expectedEntries=None, basketSize=None):
+def concatenate_pure(outputFileName, fileNames, treeName='Digi', expectedEntries=None, basketSize=None):
 
     from ROOT import TChain, gSystem
     
@@ -245,6 +245,10 @@ def concatenate_cal(outputFileName, fileNames, treeName='Digi', expectedEntries=
 
     return retCode
 
+concatenate = concatenate_prune
+
+
+
 
 def copyHeader(inFileName, outTFile):
     headerName = 'header'
@@ -330,5 +334,5 @@ if __name__ == "__main__":
     outFile = sys.argv[2]
     inFiles = sys.argv[3:]
     
-    concatenate_prune(outFile, inFiles, treeName)
+    concatenate(outFile, inFiles, treeName)
     
