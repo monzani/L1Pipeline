@@ -109,7 +109,7 @@ baseVersion = 0
 
 #throttle parameters
 throttleDir =  os.path.join(L1Dir, 'throttle')
-throttleLimit = 4
+throttleLimit = 2
 
 if testMode:
     stageBase = 'l1Test'
