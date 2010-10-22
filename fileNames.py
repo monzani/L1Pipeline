@@ -49,6 +49,7 @@ fileTypes = {
     'electronFt1': 'fit',
     'electronFt1BadGti': 'fit',
     'electronMerit': 'root',
+    'event': 'evt',
     'fastMonError': 'xml',
     'fastMonErrorAlarm': 'xml',
     'fastMonHist': 'root',

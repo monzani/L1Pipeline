@@ -2793,7 +2793,8 @@
 
       <process name="digitization" autoRetryMaxAttempts="%(retries)s">
         <variables>
-<!--          <var name="inFileTypes"></var>  evt file name is not currently handled by fileNames -->
+          <var name="inFileTypes">event</var>
+          <var name="%(event_versionName)s">${pipeline.getCurrentStream().getParentStream().getParentStream().getProcessInstance("findRunDirs").getVariable("L1_PI_version")}</var>
           <var name="outFileTypes">digi</var>
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
@@ -2808,6 +2809,8 @@
  
       <process name="fastMonTuple" autoRetryMaxAttempts="%(retries)s">
         <variables>
+          <var name="inFileTypes">event</var>
+          <var name="%(event_versionName)s">${pipeline.getCurrentStream().getParentStream().getParentStream().getProcessInstance("findRunDirs").getVariable("L1_PI_version")}</var>
           <var name="reportType">fastMonTuple</var>
           <var name="outFileTypes">fastMonTuple/fastMonError</var>
         </variables>
@@ -3411,7 +3414,8 @@
 
       <process name="digitizationLci" autoRetryMaxAttempts="%(retries)s">
         <variables>
-<!--          <var name="inFileTypes"></var>  evt file name is not currently handled by fileNames -->
+          <var name="inFileTypes">event</var>
+          <var name="%(event_versionName)s">${pipeline.getCurrentStream().getParentStream().getParentStream().getProcessInstance("findRunDirs").getVariable("L1_PI_version")}</var>
           <var name="outFileTypes">digi</var>
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
@@ -3419,6 +3423,8 @@
  
       <process name="fastMonTupleLci" autoRetryMaxAttempts="%(retries)s">
         <variables>
+          <var name="inFileTypes">event</var>
+          <var name="%(event_versionName)s">${pipeline.getCurrentStream().getParentStream().getParentStream().getProcessInstance("findRunDirs").getVariable("L1_PI_version")}</var>
           <var name="reportType">fastMonTuple</var>
           <var name="outFileTypes">fastMonTuple/fastMonError</var>
         </variables>
