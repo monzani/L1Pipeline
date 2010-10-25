@@ -295,10 +295,6 @@ cmtPackages = {
         'repository': 'dataMonitoring',
         'version': 'FastMon-05-02-00',
         },
-#     'fitsGen': {
-#         'repository': '',
-#         'version': 'v4r5',
-#         },
     'findGaps': {
         'repository': 'svac',
         'version': 'v1r2',
@@ -634,16 +630,6 @@ libraryPath = ':'.join(
         rootPath,
         ])
 
-# #GPL2 = '/nfs/slac/g/svac/focke/builds/GPLtools/dev'
-# gplBase = '/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/GPLtools'
-# if testMode:
-#     gplType = 'L1test'
-# else:
-#     gplType = 'L1prod'
-#     pass
-# # gplType = 'L1prod'
-# GPL2 = os.path.join(gplBase, gplType)
-# gplPath = os.path.join(GPL2, 'python')
 GPL2 = packages['GPLtools']['root']
 
 ppComponents = [
@@ -671,16 +657,8 @@ except ImportError:
     pass
 
 # LSF stuff
-# allocationGroup = 'glastdata' # don't use this anymore, policies have changed
-# allocationGroup="%(allocationGroup)s" # ripped from XML template
-#
-# expressQ = 'express'
-# mediumQ = 'medium'
-# shortQ = 'short'
-# longQ = 'long'
 #
 theQ = 'glastdataq'
-# theQ = 'rhel5testq'
 expressQ = theQ
 mediumQ = theQ
 shortQ = theQ
@@ -722,7 +700,6 @@ os.environ['GPL2'] = GPL2
 os.environ['LATCalibRoot'] = LATCalibRoot
 os.environ['LATMonRoot'] = LATMonRoot
 os.environ['MALLOC_CHECK_'] = '0'
-#os.environ['MOOT_ARCHIVE'] = mootArchive # Joanne says we shouldn't need this.
 os.environ['PFILES'] = PFILES
 os.environ['PYTHONPATH'] = pythonPath
 os.environ['ROOTSYS'] = rootSys
