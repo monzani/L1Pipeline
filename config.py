@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "2.0"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "2.1"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -185,7 +185,7 @@ installBin = os.path.join(installArea, 'bin')
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
 releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
-glastVersion = 'v15r47p12gr13'
+glastVersion = 'v15r47p12gr15'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -249,7 +249,7 @@ l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
 lockOption = " -E &quot;${isocRun} ${L1ProcROOT}/lockFile.py&quot; "
 
 stDir = os.path.join(groundRoot, 'releases', 'volume02')
-stVersion = 'v9r16p1'
+stVersion = 'v9r18p5'
 stName = 'ScienceTools'
 
 ST = os.path.join(stDir, "ScienceTools-%s" % stVersion)
@@ -264,6 +264,8 @@ else:
     aspLauncher = '/afs/slac/g/glast/ground/links/data/ASP/aspLauncher.sh'
     pass
 aspAlreadyLaunched = 160
+
+procVer = 116
 
 cmtPath = ':'.join([L1Cmt, glastLocation, glastExt])
 stCmtPath = ':'.join([L1Cmt, ST, glastExt])
@@ -289,7 +291,7 @@ cmtPackages = {
         },
     'evtClassDefs': {
         'repository': '',
-        'version': 'v0r14p0',
+        'version': 'v0r18p0',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
@@ -585,7 +587,7 @@ cutFiles = {
     'ls1': ft1Cuts,
     'ls1BadGti': ft1Cuts,
     }
-ft1Classifier = 'Pass6_Reprocessing_Classifier'
+ft1Classifier = 'dataclean_classifier'
 ft1Vars = os.path.join(evclData, 'FT1variables')
 ls1Vars = os.path.join(evclData, 'LS1variables')
 ft1Dicts = {
@@ -597,8 +599,10 @@ ft1Dicts = {
 #diffRspModel = os.path.join(L1Volume, 'diffRsp', 'v0r0p0', 'data', 'source_model_v01.xml')
 #diffRspModel = os.path.join(L1ProcROOT, 'data', 'diffuseModel.xml')
 diffRspModel = '/afs/slac.stanford.edu/g/glast/ground/releases/analysisFiles/diffuse/v2/source_model_v02.xml'
-diffRspIrf = 'P6_V3_DIFFUSE'
-diffRspMinClass = 3
+diffRspIrfs = {
+    3: 'P6_V3_DIFFUSE',
+    4: 'P6_V3_DATACLEAN',
+    }
 
 verifyOptions = {
     'InProgress': '',

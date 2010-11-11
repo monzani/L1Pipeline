@@ -24,7 +24,7 @@ def makeFT1(files, level, outFileTypes, workDir, **args):
     evtClassDefsPython = config.packages['evtClassDefs']['python']
 
     stSetup = config.stSetup
-    app = os.path.join('$FITSGENROOT', '$CMTCONFIG', 'makeFT1.exe')
+    app = os.path.join('$FITSGENAPPSROOT', '$CMTCONFIG', 'makeFT1.exe')
 
     stagedMeritFile = files['merit']
 
@@ -44,6 +44,8 @@ def makeFT1(files, level, outFileTypes, workDir, **args):
 
     version = fileNames.version(stagedFt1File)
 
+    procVer = config.procVer
+    
     cmtPath = config.stCmtPath
 
     cmd = '''
@@ -51,7 +53,7 @@ def makeFT1(files, level, outFileTypes, workDir, **args):
     export CMTPATH=%(cmtPath)s
     source %(stSetup)s
     PYTHONPATH=%(evtClassDefsPython)s:$PYTHONPATH ; export PYTHONPATH
-    %(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=%(tCuts)s event_classifier="%(classifier)s" tstart=%(cutStart).17g tstop=%(cutStop).17g dict_file=%(dictionary)s file_version=%(version)s
+    %(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=%(tCuts)s event_classifier="%(classifier)s" xml_classifier=none tstart=%(cutStart).17g tstop=%(cutStop).17g dict_file=%(dictionary)s file_version=%(version)s proc_ver=%(procVer)s
     ''' % locals()
 
     status |= runner.run(cmd)

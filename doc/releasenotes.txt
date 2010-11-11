@@ -1,3 +1,10 @@
+2.1
+-----------------
+Add PROC_VER to ft1 & ls1 file names and headers.
+Run gtDiffRsp twice (any number of times, actually, but currently there are 2
+class/irf combos).
+
+
 2.0
 -----------------
 Buffer chunks on xroot.
