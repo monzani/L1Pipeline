@@ -1,3 +1,8 @@
+2.2
+-----------------
+Now using GR v15r47p12gr16
+
+
 2.1
 -----------------
 Add PROC_VER to ft1 & ls1 file names and headers.

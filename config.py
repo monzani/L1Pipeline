@@ -9,14 +9,14 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "2.1"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "2.2"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
 creator = '-'.join([L1Name, L1Version])
     
 #L1Cmt = os.path.join(installRoot, 'builds')
-L1Volume = '/afs/slac/g/glast/ground/releases/volume01'
+L1Volume = '/afs/slac/g/glast/ground/releases/volume13'
 L1CmtBase = os.environ.get('L1_BUILD_DIR') or os.path.join(L1Volume, 'L1Proc')
 L1Cmt = os.path.join(L1CmtBase, L1Version)
 
@@ -184,8 +184,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
-glastVersion = 'v15r47p12gr15'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
+glastVersion = 'v15r47p12gr16'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -495,7 +495,7 @@ mergeConfigs = {
 
 alarmRefBase = '/nfs/farm/g/glast/u41/Monitoring/ReferenceHistograms'
 alarmRefDir = os.path.join(alarmRefBase, mode)
-alarmCfgBase = '/afs/slac/g/glast/ground/releases/volume01'
+alarmCfgBase = '/afs/slac/g/glast/ground/releases/volume13'
 alarmBase = os.path.join(alarmCfgBase, 'AlarmsCfg', mode)
 alarmConfigs = {
     'acdPedsAnalyzer': os.path.join(alarmBase, 'xml', 'acdpeds_eor_alarms.xml'),
