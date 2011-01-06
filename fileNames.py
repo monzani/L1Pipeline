@@ -99,10 +99,11 @@ fileTypes = {
     'verifyFt2ErrorAlarm': 'xml',
     }
 
+pTag = '_p%03d' % config.procVer
 exportTags = { # files exported to FSSC use a different naming rule
-    'ft1': 'gll_ph',
+    'ft1': 'gll_ph' + pTag,
     'ft2': 'gll_pt',
-    'ls1': 'gll_ev',
+    'ls1': 'gll_ev' + pTag,
     'ls3': 'gll_lt',
     }
 

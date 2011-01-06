@@ -12,15 +12,12 @@ import config
 import rootFiles
 import runner
 
-def digitize(**args):
+def digitize(files, idArgs, workDir, staged, **args):
     status = 0
 
-    staged = args['staged']
-    os.environ['EVTFILE'] = staged.stageIn(os.environ['EVTFILE'])
-    stagedDigiFile = args['files']['digi']
+    os.environ['EVTFILE'] = files['event']
+    stagedDigiFile = files['digi']
     os.environ['digiChunkFile'] = stagedDigiFile
-
-    workDir = args['workDir']
 
     app = config.apps['digi']
     options =  config.digiOptions

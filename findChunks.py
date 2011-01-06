@@ -5,6 +5,8 @@
 @author W. Focke <focke@slac.stanford.edu>
 """
 
+# If this module crashes on import, locks will not be cleand up!
+
 import os
 import sys
 
@@ -18,6 +20,7 @@ import GPLinit
 
 import acqQuery
 import chunkTester
+import ingestChunks
 import fileNames
 import finders
 import lockFile
@@ -34,11 +37,6 @@ def cleanup(status, idArgs, **extra):
     lockFile.unlockDir(runDir, runId, dlId)
     lockFile.unlockThrottle(dlId, runId)
 
-    realChunkList = fileNames.fileName('chunkList', *idArgs)
-    mangledChunkList = fileNames.mangleChunkList(realChunkList)
-    cmd = 'mv %s %s' % (realChunkList, mangledChunkList)
-    myStatus |= runner.run(cmd)
-    
     return myStatus
 
 
@@ -48,28 +46,25 @@ def findChunks(idArgs, **extra):
     dlId, runId = idArgs[:2]
 
     realChunkList = fileNames.fileName('chunkList', *idArgs)
-    # unmangle chunk list name to get around JIRA LONE-67
-    mangledChunkList = fileNames.mangleChunkList(realChunkList)
-    cmd = 'mv %s %s' % (mangledChunkList, realChunkList)
-    status |= runner.run(cmd)
 
     # check that the chunks aren't crazy
     chunks = finders.findAndReadChunkLists(runId)
     chunkHeaders = [chunkData['headerData'] for chunkId, chunkData in chunks]
-    if not chunkTester.verifyList(chunkHeaders):
+    testResult = chunkTester.verifyList(chunkHeaders)
+    if not testResult:
         print >> sys.stderr, 'Run %s has bad crazy chunks.' % runId
         status |= 1
         cleanup(status, idArgs)
         sys.exit(status)
         pass
+    tStart, tStop = testResult
 
     subTask = config.chunkSubTask[os.environ['DATASOURCE']]
 
     chunkListData = fileNames.readList(realChunkList)
 
-    # get current tStart, tStop to override the bogus values set by findRunDirs
     runNumber = int(os.environ['runNumber'])
-    tStart, tStop = acqQuery.runTimes(runNumber)
+
     pipeline.setVariable('tStart', '%.17g' % tStart)
     pipeline.setVariable('tStop', '%.17g' % tStop)
 
@@ -83,9 +78,14 @@ def findChunks(idArgs, **extra):
         stream = chunkId[1:]
         header = chunkData['headerData']
         chunkStart = header['begSec']
-        chunkStop = header['endSec']
+        chunkStop = header['endSec'] + 1 # values in header are truncated
         args = 'EVTFILE=%(chunkFile)s,CHUNK_ID=%(chunkId)s,tStart=%(chunkStart).17g,tStop=%(chunkStop).17g' % locals()
         pipeline.createSubStream(subTask, stream, args)
         continue
+
+    # ingest event files
+    dlRawDir = os.environ.get('DOWNLINK_RAWDIR')
+    hpRunDir = '%s/%s' % (dlRawDir, runId)
+    ingestChunks.ingestChunks(hpRunDir, idArgs)
 
     return status

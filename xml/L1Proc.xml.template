@@ -121,8 +121,8 @@
     <process name="makeM7L1" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="%(magic7L1_versionName)s">%(magic7L1_version)s</var>
-        <var name="tStart">${pipeline.processInstance("findChunks").getVariable("tStart")}</var>      
-        <var name="tStop">${pipeline.processInstance("findChunks").getVariable("tStop")}</var>      
+        <var name="tStart">${pipeline.getCurrentStream().getProcessInstance("findChunks").getVariable("tStart")}</var>      
+        <var name="tStop">${pipeline.getCurrentStream().getProcessInstance("findChunks").getVariable("tStop")}</var>      
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeM7.py" batchOptions=" -q %(shortQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
@@ -1426,6 +1426,8 @@
         <var name="%(magic7L1_versionName)s">%(magic7L1_version)s</var>
         <var name="%(merit_versionName)s">%(merit_version)s</var>
         <var name="runQuality">${pipeline.processInstance("setRunning").getVariable("runQuality")}</var>
+        <var name="mootAlias">${pipeline.getCurrentStream().getProcessInstance("findChunks").getVariable("mootAlias")}</var>
+
 <!--        <var name="L1_magic7L1_filename">${datacatalog.getDataset(RUNID, "/Data/Flight/Level1/"+DATASOURCE, "MAGIC7L1").getLocation("SLAC_XROOT").getPath()}</var>   -->
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ft2Entries.py" batchOptions=" -q %(longQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[scratch=15]&quot; " />
@@ -2624,6 +2626,10 @@
       <process name="getTimes" autoRetryMaxAttempts="0"> <!-- Should use genericScript.py with a cleanup routine here -->
         <variables>
 	      <var name="l1LockAction">LockDirOnly</var>
+          <var name="tStart">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunks").getVariable("tStart")}</var>
+          <var name="tStop">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunks").getVariable("tStop")}</var>
+          <var name="mootKey">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunks").getVariable("mootKey")}</var>
+          <var name="mootAlias">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunks").getVariable("mootAlias")}</var>
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimes.py" batchOptions=" %(lockOption)s -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       </process>
@@ -2794,7 +2800,7 @@
       <process name="digitization" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="inFileTypes">event</var>
-          <var name="%(event_versionName)s">${pipeline.getCurrentStream().getParentStream().getParentStream().getProcessInstance("findRunDirs").getVariable("L1_PI_version")}</var>
+          <var name="%(event_versionName)s">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunks").getVariable("L1_PI_version")}</var>
           <var name="outFileTypes">digi</var>
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
@@ -2810,7 +2816,7 @@
       <process name="fastMonTuple" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="inFileTypes">event</var>
-          <var name="%(event_versionName)s">${pipeline.getCurrentStream().getParentStream().getParentStream().getProcessInstance("findRunDirs").getVariable("L1_PI_version")}</var>
+          <var name="%(event_versionName)s">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunks").getVariable("L1_PI_version")}</var>
           <var name="reportType">fastMonTuple</var>
           <var name="outFileTypes">fastMonTuple/fastMonError</var>
         </variables>

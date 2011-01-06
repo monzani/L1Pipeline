@@ -59,8 +59,9 @@ print >> sys.stderr, '%s s' % delta
 for runId, chunkListData in chunkLists.items():
     realChunkList = fileNames.fileName('chunkList', dlId, runId)
     # temporarily mangle chunk list name to get around JIRA LONE-67    
-    mangledChunkList = fileNames.mangleChunkList(realChunkList)
-    stagedChunkList = staged.stageOut(mangledChunkList)
+    # mangledChunkList = fileNames.mangleChunkList(realChunkList)
+    # stagedChunkList = staged.stageOut(mangledChunkList)
+    stagedChunkList = staged.stageOut(realChunkList)
     fileNames.writeList(chunkListData, stagedChunkList)
     continue
 
@@ -84,27 +85,6 @@ oldRuns = retirees - dataRuns
 
 print >> sys.stderr, "Old runs:[%s]" % oldRuns
 
-# bogus placeholder start and stop times
-# Should get from acqsummary DB table
-# findChunks does so, and overrides these values for chunks and registration
-# makeFT1 looks in ACQSUMMARY
-tStartDef = 100000001.0
-tStopDef = 300000001.0
-start = {}
-stop = {}
-boundaryFile = os.path.join(dlRawDir, 'event_times_%s.txt' % dlId)
-try:
-    lines = open(boundaryFile)
-except IOError:
-    print >> sys.stderr, "Couldn't open run boundary file %s" % boundaryFile
-    lines = []
-    pass
-for line in lines:
-    runId, tStart, tStop = line.strip().split()
-    start[runId] = glastTime.met(float(tStart))
-    stop[runId] = glastTime.met(float(tStop))
-    continue
-
 # parse run type
 deliveredEvents = {}
 heldBackEvents = {}
@@ -123,16 +103,6 @@ try:
 except IOError:
     print >> sys.stderr, "Couldn't open delivered event file %s, all runs will have default dataSource %s" % (deliveredFile, config.defaultDataSource)
     pass
-
-# get MOOT keys
-mootFile = os.path.join(dlRawDir, 'moot_keys_%s.txt' % dlId)
-try:
-    mootLines = [line.split() for line in open(mootFile)]
-except IOError:
-    print >> sys.stderr, "Couldn't open moot mey file %s, all runs will have default key %s, alias %s" % (deliveredFile, config.defaultMootKey, config.defaultMootAlias)
-    pass
-mootKeys = dict((line[0], line[1]) for line in mootLines)
-mootAliases = dict((line[0], line[2]) for line in mootLines)
 
 runNumRe = re.compile('([0-9]+)')
 # create up a subStream for each run
@@ -160,19 +130,7 @@ for runId in dataRuns | oldRuns:
     
     subTask = config.runSubTask[runStatus][source]
 
-    try:
-        tStart = start[runId]
-        tStop = stop[runId]
-    except KeyError:
-        tStart = tStartDef
-        tStop = tStopDef
-        print >> sys.stderr, "Couldn't get tStart, tStop for run %s, using bogus values" % runId
-        pass
-
-    mootKey = mootKeys.get(runId, config.defaultMootKey)
-    mootAlias = mootAliases.get(runId, config.defaultMootAlias)
-    
-    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUNSTATUS=%(runStatus)s,hpTStart=%(tStart).17g,hpTStop=%(tStop).17g,DATASOURCE=%(source)s,mootKey=%(mootKey)s,mootAlias=%(mootAlias)s,runDir=%(l1RunDir)s" % locals()
+    args = "RUNID=%(runId)s,runNumber=%(runNumber)s,RUNSTATUS=%(runStatus)s,DATASOURCE=%(source)s,runDir=%(l1RunDir)s" % locals()
     print >> sys.stderr, \
           "Creating stream [%s] of subtask [%s] with args [%s]" % \
           (stream, subTask, args)

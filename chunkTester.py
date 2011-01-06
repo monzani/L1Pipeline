@@ -53,9 +53,14 @@ def verifyChunk(headerData):
 
 
 def verifyList(chunks):
+    """Return something false if any trouble, otherwise run start and stop."""
+    
     print >> sys.stderr, 'Testing chunks...'
 
     nChunks = len(chunks)
+    if nChunks < 1:
+        print >> sys.stderr, 'No chunks to process, failing.'
+        return False
     if nChunks > config.maxChunks:
         print >> sys.stderr, '%d chunks is too many (%d max), failing.' % \
               (nChunks, config.maxChunks)
@@ -106,6 +111,10 @@ def verifyList(chunks):
         continue
 
     print >> sys.stderr, 'OK'
-    return True
+
+    tStart = bySec[0]['begSec']
+    tStop = bySec[-1]['endSec'] + 1 # the value from the header is truncated
+
+    return tStart, tStop
 
 

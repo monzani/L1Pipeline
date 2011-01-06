@@ -23,8 +23,7 @@ def fastMon(files, idArgs, workDir, staged, **args):
 
     reportType = os.environ['reportType']
     if reportType == 'fastMonTuple':
-        realInFile = os.environ['EVTFILE']
-        inFile = staged.stageIn(realInFile)
+        inFile = files['event']
         errorFile = files['fastMonError']
         realM7File = os.path.join(os.environ['DOWNLINK_RAWDIR'], 'magic7_%s.txt' % dlId) 
         m7File = staged.stageIn(realM7File)

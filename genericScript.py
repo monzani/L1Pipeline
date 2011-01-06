@@ -90,8 +90,74 @@ def getFuncs(procName):
     return function, cleanupFunc
 
 
+class ErrorFlag(object):
+    def __init__(self, value=0):
+        self.value = value
+        return
+    def __nonzero__(self):
+        return bool(self.value)
+    def __int__(self):
+        return int(self.value)
+    def __and__(self, other):
+        newVal = self.value & other
+        return ErrorFlag(newVal)
+    __rand__ = __and__
+    def __iand__(self, other):
+        self.value &= other
+        return self
+    def __or__(self, other):
+        newVal = self.value | other
+        return ErrorFlag(newVal)
+    __ror__ = __or__
+    def __ior__(self, other):
+        self.value |= other
+        return self
+    def __xor__(self, other):
+        newVal = self.value ^ other
+        return ErrorFlag(newVal)
+    __rxor__ = __xor__
+    def __ixor__(self, other):
+        self.value ^= other
+        return self
+    def __repr__(self):
+        return 'ErrorFlag(%s)' % self.value
+    __str__ = __repr__
+    pass
+
+
+def tryToCall(func, *args, **kwargs):
+    print >> sys.stderr, 'About to run %s with args %s, %s' % (func, args, kwargs)
+    try:
+        status = func(*args, **kwargs)
+    except:
+        print >> sys.stderr, 'Failed!'
+        traceback.print_exc()
+        status = ErrorFlag(1)
+        pass
+    return status
+
+
+def finalize(status, args, staged, cleanupFunc=None):
+    args['status'] = status
+    if cleanupFunc is not None: status |= cleanupFunc(**args)
+    
+    if status:
+        finishOption = 'wipe'
+    else:
+        finishOption = config.finishOption
+        pass
+    status |= staged.finish(finishOption)
+    
+    sys.exit(status)
+    return
+
+
 def main():
     status = 0
+
+    procName = pipeline.getProcess()
+    # this crashes without cleanup if the module won't compile
+    function, cleanupFunc = getFuncs(procName)
 
     head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
     if not dlId: head, dlId = os.path.split(head)
@@ -120,9 +186,6 @@ def main():
     pipeline.setVariable('L1_PI_ID', piId)
     piVersion = int(os.environ['PIPELINE_PROCESSINSTANCE'])
     pipeline.setVariable('L1_PI_version', piVersion)
-
-    procName = pipeline.getProcess()
-    function, cleanupFunc = getFuncs(procName)
 
     staged = stageFiles.StageSet(excludeIn=config.excludeIn)
     workDir = staged.stageDir
@@ -181,35 +244,20 @@ def main():
         'workDir': workDir,
         }
 
-    try:
-        print >> sys.stderr, 'About to run %s with args %s' % (function, args)
-        status |= function(**args)
-    except:
-        print >> sys.stderr, 'Failed!'
-        traceback.print_exc()
-        status |= 1
-        pass
+    #     try:
+    #         print >> sys.stderr, 'About to run %s with args %s' % (function, args)
+    #         status |= function(**args)
+    #     except:
+    #         print >> sys.stderr, 'Failed!'
+    #         traceback.print_exc()
+    #         status |= 1
+    #         pass
+    status |= tryToCall(function, **args)
     print >> sys.stderr, 'Status = %s' % status
     
     finalize(status, args, staged, cleanupFunc)
 
     return status
-
-
-def finalize(status, args, staged, cleanupFunc=None):
-    args['status'] = status
-    if cleanupFunc is not None: status |= cleanupFunc(**args)
-    
-    if status:
-        finishOption = 'wipe'
-    else:
-        finishOption = config.finishOption
-        pass
-    status |= staged.finish(finishOption)
-    
-    sys.exit(status)
-    return
-
 
 if __name__ == '__main__':
     main()
