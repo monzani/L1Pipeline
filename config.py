@@ -283,7 +283,7 @@ cmtPackages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'Common-06-08-00',
+        'version': 'Common-06-08-03',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -295,7 +295,7 @@ cmtPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'FastMon-05-02-00',
+        'version': 'FastMon-05-02-01',
         },
     'findGaps': {
         'repository': 'svac',
