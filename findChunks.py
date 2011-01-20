@@ -35,7 +35,9 @@ def cleanup(status, idArgs, **extra):
     dlId, runId = idArgs[:2]
     runDir = fileNames.fileName(None, *idArgs)
     lockFile.unlockDir(runDir, runId, dlId)
-    lockFile.unlockThrottle(dlId, runId)
+
+    action = os.environ.get('l1LockAction', 'LockDirOnly')    
+    if "Throttle" in action: lockFile.unlockThrottle(dlId, runId)
 
     return myStatus
 
@@ -54,9 +56,7 @@ def findChunks(idArgs, **extra):
     if not testResult:
         print >> sys.stderr, 'Run %s has bad crazy chunks.' % runId
         status |= 1
-        cleanup(status, idArgs)
-        sys.exit(status)
-        pass
+        return status
     tStart, tStop = testResult
 
     subTask = config.chunkSubTask[os.environ['DATASOURCE']]
@@ -74,12 +74,11 @@ def findChunks(idArgs, **extra):
 
     # set up a subStream for each chunk
     for chunkId, chunkData in chunkListData.items():
-        chunkFile = chunkData['chunkFile']
         stream = chunkId[1:]
         header = chunkData['headerData']
         chunkStart = header['begSec']
         chunkStop = header['endSec'] + 1 # values in header are truncated
-        args = 'EVTFILE=%(chunkFile)s,CHUNK_ID=%(chunkId)s,tStart=%(chunkStart).17g,tStop=%(chunkStop).17g' % locals()
+        args = 'CHUNK_ID=%(chunkId)s,tStart=%(chunkStart).17g,tStop=%(chunkStop).17g' % locals()
         pipeline.createSubStream(subTask, stream, args)
         continue
 

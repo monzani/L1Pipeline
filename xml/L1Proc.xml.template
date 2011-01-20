@@ -2794,7 +2794,6 @@
 
       <prerequisites>
          <prerequisite name="CHUNK_ID" type="string"/>
-         <prerequisite name="EVTFILE" type="string"/>
       </prerequisites>
 
       <process name="digitization" autoRetryMaxAttempts="%(retries)s">
@@ -3415,13 +3414,12 @@
 
       <prerequisites>
          <prerequisite name="CHUNK_ID" type="string"/>
-         <prerequisite name="EVTFILE" type="string"/>
       </prerequisites>
 
       <process name="digitizationLci" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="inFileTypes">event</var>
-          <var name="%(event_versionName)s">${pipeline.getCurrentStream().getParentStream().getParentStream().getProcessInstance("findRunDirs").getVariable("L1_PI_version")}</var>
+          <var name="%(event_versionName)s">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunksLci").getVariable("L1_PI_version")}</var>
           <var name="outFileTypes">digi</var>
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
@@ -3430,7 +3428,7 @@
       <process name="fastMonTupleLci" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="inFileTypes">event</var>
-          <var name="%(event_versionName)s">${pipeline.getCurrentStream().getParentStream().getParentStream().getProcessInstance("findRunDirs").getVariable("L1_PI_version")}</var>
+          <var name="%(event_versionName)s">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunksLci").getVariable("L1_PI_version")}</var>
           <var name="reportType">fastMonTuple</var>
           <var name="outFileTypes">fastMonTuple/fastMonError</var>
         </variables>

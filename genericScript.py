@@ -132,7 +132,7 @@ def tryToCall(func, *args, **kwargs):
     except:
         print >> sys.stderr, 'Failed!'
         traceback.print_exc()
-        status = ErrorFlag(1)
+        status = 1
         pass
     return status
 
