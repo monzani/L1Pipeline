@@ -90,41 +90,6 @@ def getFuncs(procName):
     return function, cleanupFunc
 
 
-class ErrorFlag(object):
-    def __init__(self, value=0):
-        self.value = value
-        return
-    def __nonzero__(self):
-        return bool(self.value)
-    def __int__(self):
-        return int(self.value)
-    def __and__(self, other):
-        newVal = self.value & other
-        return ErrorFlag(newVal)
-    __rand__ = __and__
-    def __iand__(self, other):
-        self.value &= other
-        return self
-    def __or__(self, other):
-        newVal = self.value | other
-        return ErrorFlag(newVal)
-    __ror__ = __or__
-    def __ior__(self, other):
-        self.value |= other
-        return self
-    def __xor__(self, other):
-        newVal = self.value ^ other
-        return ErrorFlag(newVal)
-    __rxor__ = __xor__
-    def __ixor__(self, other):
-        self.value ^= other
-        return self
-    def __repr__(self):
-        return 'ErrorFlag(%s)' % self.value
-    __str__ = __repr__
-    pass
-
-
 def tryToCall(func, *args, **kwargs):
     print >> sys.stderr, 'About to run %s with args %s, %s' % (func, args, kwargs)
     try:
@@ -244,14 +209,6 @@ def main():
         'workDir': workDir,
         }
 
-    #     try:
-    #         print >> sys.stderr, 'About to run %s with args %s' % (function, args)
-    #         status |= function(**args)
-    #     except:
-    #         print >> sys.stderr, 'Failed!'
-    #         traceback.print_exc()
-    #         status |= 1
-    #         pass
     status |= tryToCall(function, **args)
     print >> sys.stderr, 'Status = %s' % status
     
