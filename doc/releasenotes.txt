@@ -1,3 +1,9 @@
+2.4
+-----------------
+Modify the behavior of verify to write a separate lockfile,
+which is checked only when 'ready to retire'.
+
+
 2.3
 -----------------
 Move evt files from DOWNLINK_RAWDIR into xroot before using them.

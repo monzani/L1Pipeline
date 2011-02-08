@@ -139,6 +139,35 @@ def checkMergeLock(runId):
     return
 
 
+verifyLockBase = 'verifyLock' # lock file for missing data
+def verifyLockName(runId):
+    runDir = fileName(None, None, runId)
+    verifyLockName = os.path.join(runDir, verifyLockBase)
+    return verifyLockName
+def makeVerifyLock(runId, content=''):
+    verifyLock = verifyLockName(runId)
+    print >> sys.stderr, 'Trying to append to %s ... ' % verifyLock,
+    fp = open(verifyLock, 'a')
+    fp.write(content)
+    fp.close()
+    print >> sys.stderr, 'OK'
+    return
+def checkVerifyLock(runId):
+    verifyLock = verifyLockName(runId)
+    print >> sys.stderr, 'Checking for %s ... ' % verifyLock,
+    if os.path.exists(verifyLock):
+        print >> sys.stderr, 'yep.'
+        fp = open(verifyLock)
+        print >> sys.stderr, 'Contents:'
+        print >> sys.stderr, fp.read()
+        fp.close()
+        return verifyLock
+    else:
+        print >> sys.stderr, 'nope.'
+        return False
+    return
+
+
 def dataCatGroup(fileType):
     dsType = fileType.upper()
     return dsType

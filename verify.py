@@ -54,7 +54,7 @@ if status == 153:
     processInstance = os.environ.get('PIPELINE_PROCESSINSTANCE')
     timeStamp = time.ctime()
     content = 'Locked by %s %s pipk = %s at %s\n' % (process, streamPath, processInstance, timeStamp)
-    fileNames.makeMergeLock(runId, content)
+    fileNames.makeVerifyLock(runId, content)
     status = 0
 
 if status: finishOption = 'wipe'

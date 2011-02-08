@@ -83,9 +83,10 @@ dataSource = os.environ['DATASOURCE']
 hpFinal, hpRunStatus = checkRunStatus(runNumber)
 tokenStatus = checkTokens(head, runId)
 mergeStatus = not fileNames.checkMergeLock(runId)
-readyToRetire = hpFinal and tokenStatus and mergeStatus
+verifyStatus = not fileNames.checkVerifyLock(runId)
+readyToRetire = hpFinal and tokenStatus and mergeStatus and verifyStatus
 
-print >> sys.stderr, "hpFinal=%(hpFinal)s, tokenStatus=%(tokenStatus)s, mergeStatus=%(mergeStatus)s " % locals()
+print >> sys.stderr, "hpFinal=%(hpFinal)s, tokenStatus=%(tokenStatus)s, mergeStatus=%(mergeStatus)s, verifyStatus=%(verifyStatus)s" % locals()
 
 if readyToRetire:
     print >> sys.stderr, "Run %s is as done as it's going to get, retiring." % runId
@@ -105,12 +106,19 @@ else:
 
 pipeline.setVariable('l1RunStatus', l1RunStatus)
 
-if mergeStatus:
-    print >> sys.stderr, \
-          "Attempting to remove lock from [%s] at [%s]" % (rootDir, time.ctime())
-    lockFile.unlockDir(rootDir, runId, dlId)
-else:
+if not mergeStatus:
     print >> sys.stderr, 'Not removing run lock due to merging problems.'
     print >> sys.stderr, 'Failing due to presence of %s' % fileNames.mergeLockName(runId)
     sys.exit(1)
     pass
+
+if not verifyStatus:
+    print >> sys.stderr, 'Not removing run lock due to missing data.'
+    print >> sys.stderr, 'Failing due to presence of %s' % fileNames.verifyLockName(runId)
+    sys.exit(2)
+    pass
+
+print >> sys.stderr, \
+    "Attempting to remove lock from [%s] at [%s]" % (rootDir, time.ctime())
+lockFile.unlockDir(rootDir, runId, dlId)
+    
