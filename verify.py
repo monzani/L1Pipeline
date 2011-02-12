@@ -40,6 +40,11 @@ app = config.apps['runVerify']
 jobOption = config.verifyOptions[completeness] 
 truncation = config.verifyOptions['Truncation']
 
+verifyLock = fileNames.checkVerifyLock(runId)
+if (verifyLock): 
+    print >> sys.stderr, 'Unlinking %s ... ' % verifyLock
+    os.unlink(verifyLock)
+
 cmd = '''
 cd %(workDir)s
 export CMTPATH=%(cmtPath)s
