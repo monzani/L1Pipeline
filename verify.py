@@ -53,7 +53,7 @@ source %(setupScript)s
 ''' % locals()
 
 status = runner.run(cmd)
-if status == 153: 
+if (status == 153 or status == 154): 
     process = pipeline.getProcess()
     streamPath = os.environ.get('PIPELINE_STREAMPATH')
     processInstance = os.environ.get('PIPELINE_PROCESSINSTANCE')

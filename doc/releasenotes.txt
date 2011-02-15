@@ -1,7 +1,7 @@
 2.4
 -----------------
 Modify the behavior of verify to write a separate lockfile,
-which is checked only when 'ready to retire'.
+which is checked only when the run is 'ready to retire'.
 
 
 2.3
