@@ -84,11 +84,11 @@ hpFinal, hpRunStatus = checkRunStatus(runNumber)
 tokenStatus = checkTokens(head, runId)
 mergeStatus = not fileNames.checkMergeLock(runId)
 verifyStatus = not fileNames.checkVerifyLock(runId)
-readyToRetire = hpFinal and tokenStatus and mergeStatus and verifyStatus
+readyToRetire = hpFinal and tokenStatus and mergeStatus
 
 print >> sys.stderr, "hpFinal=%(hpFinal)s, tokenStatus=%(tokenStatus)s, mergeStatus=%(mergeStatus)s, verifyStatus=%(verifyStatus)s" % locals()
 
-if readyToRetire:
+if readyToRetire and verifyStatus:
     print >> sys.stderr, "Run %s is as done as it's going to get, retiring." % runId
     subTask = config.cleanupSubTask[pipeline.getTask()][dataSource]
     stream = runNumber
@@ -112,7 +112,7 @@ if not mergeStatus:
     sys.exit(1)
     pass
 
-if not verifyStatus:
+if readyToRetire and not verifyStatus :
     print >> sys.stderr, 'Not removing run lock due to missing data.'
     print >> sys.stderr, 'Failing due to presence of %s' % fileNames.verifyLockName(runId)
     sys.exit(2)
