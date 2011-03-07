@@ -412,10 +412,12 @@
 
     <process name="acdPlots" autoRetryMaxAttempts="%(retries)s">
       <variables>
+        <var name="inFileTypes">digiHist</var>
+        <var name="outFileTypes">acdPlots</var>
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
         <var name="%(acdPlots_versionName)s">%(acdPlots_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/acdPlots.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerDigiHist" status="SUCCESS"/>
       </depends>
@@ -1435,6 +1437,7 @@
         <after process="registerGaps" status="SUCCESS"/>
         <after process="registerM7L1" status="SUCCESS"/>
         <after process="registerMerit" status="SUCCESS"/>
+        <after process="setRunning" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -3089,16 +3092,6 @@
           <after process="reconTrend" status="SUCCESS"/>
           <after process="svacTuple" status="SUCCESS"/>
           <after process="tkrAnalysis" status="SUCCESS"/>
-        </depends>
-      </process>
-
-      <process name="cleanupCrumbs" autoRetryMaxAttempts="1"> <!-- Retrying usually doesn't work here, but once in a while it does, and when it doesn't, it's pretty cheap. -->
-        <variables>
-          <var name="L1_crumb_list">${pipeline.processInstance("setupCrumbs").getVariable("L1_crumb_list")}</var>      
-        </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(shortQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
-        <depends>
-          <after process="checkChunk" status="SUCCESS"/>
         </depends>
       </process>
 

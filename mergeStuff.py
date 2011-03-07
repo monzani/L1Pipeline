@@ -24,6 +24,11 @@ import pipeline
 import runner
 
 
+def slowFilesAlert(inFiles):
+    """Notify log watcher or L1 mailing list or something"""
+    return
+
+
 def merge(files, idArgs, level, outFileTypes, staged, workDir, **args):
     status = 0
 
@@ -60,9 +65,13 @@ def merge(files, idArgs, level, outFileTypes, staged, workDir, **args):
     expectedInFiles = fileNames.findPieces(fileType, dlId, runId, chunkId)
     realInFiles = []
     missingInFiles = []
+    slowFiles = []
     for inFile in expectedInFiles:
-        if fileOps.exists(inFile):
+        fileStatus = fileOps.exists(inFile)
+        if fileStatus:
             realInFiles.append(inFile)
+            if fileStatus > 1:
+                slowFiles.append(inFile)
         else:
             print >> sys.stderr, "Couldn't find input file %s" % inFile
             missingInFiles.append(inFile)
@@ -73,6 +82,9 @@ def merge(files, idArgs, level, outFileTypes, staged, workDir, **args):
         print >> sys.stderr, "No input files, cannot continue."
         return 1
         pass
+
+    if slowFiles:
+        slowFilesAlert(slowFiles)
 
     # Here we should send a message to the log watcher if we didn't find all of
     # the expected input files.

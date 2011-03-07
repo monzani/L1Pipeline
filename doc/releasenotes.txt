@@ -1,3 +1,10 @@
+2.5
+-----------------
+Make ft2Entries depend on setRunning.
+Eliminate cleanupCrumbs.
+Convert acdPlots to use genericScript.
+
+
 2.4
 -----------------
 Modify the behavior of verify to write a separate lockfile,
