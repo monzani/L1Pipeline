@@ -2,7 +2,7 @@
 -----------------
 Make ft2Entries depend on setRunning.
 Eliminate cleanupCrumbs.
-Convert acdPlots to use genericScript.
+Convert acdPlots alarmHandler alarmLogger to use genericScript.
 
 
 2.4

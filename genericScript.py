@@ -23,18 +23,36 @@ import variables
 moduleTable = {
     # 'processName': ('moduleName', 'functionName', ['cleanupName']),
     # no entry required if process, module, func are the same and no cleanup
+    'acdPedsAlarm': ('alarmHandler', 'alarmHandler'),
+    'acdPedsLogger': ('alarmLogger', 'alarmLogger'),
+    'calGainsAlarm': ('alarmHandler', 'alarmHandler'),
+    'calGainsLogger': ('alarmLogger', 'alarmLogger'),
+    'calPedsAlarm': ('alarmHandler', 'alarmHandler'),
+    'calPedsLogger': ('alarmLogger', 'alarmLogger'),
     'calHist': ('runStrip', 'runStrip'),
+    'calHistAlarm': ('alarmHandler', 'alarmHandler'),
+    'calHistLogger': ('alarmLogger', 'alarmLogger'),
     'calTrend': ('runStrip', 'runStrip'),
     'diffRspFT1': ('diffRsp', 'diffRsp'),
     'digitization': ('digitize', 'digitize'),
     'digitizationLci': ('digitize', 'digitize'),
     'digiHist': ('runStrip', 'runStrip'),
+    'digiHistAlarm': ('alarmHandler', 'alarmHandler'),
     'digiHistLci': ('runStrip', 'runStrip'),
+    'digiHistLogger': ('alarmLogger', 'alarmLogger'),
     'digiTrend': ('runStrip', 'runStrip'),
+    'digiTrendAlarm': ('alarmHandler', 'alarmHandler'),
+    'digiTrendLogger': ('alarmLogger', 'alarmLogger'),
     'electronMerit': ('filterMerit', 'electronMerit'),
+    'fastMonErrorAlarm': ('alarmHandler', 'alarmHandler'),
+    'fastMonErrorLogger': ('alarmLogger', 'alarmLogger'),
     'fastMonHist': ('fastMon', 'fastMon'),
+    'fastMonHistAlarm': ('alarmHandler', 'alarmHandler'),
+    'fastMonHistLogger': ('alarmLogger', 'alarmLogger'),
     'fastMonHistLci': ('fastMon', 'fastMon'),
     'fastMonTrend': ('runStrip', 'runStrip'),
+    'fastMonTrendAlarm': ('alarmHandler', 'alarmHandler'),
+    'fastMonTrendLogger': ('alarmLogger', 'alarmLogger'),
     'fastMonTuple': ('fastMon', 'fastMon'),
     'fastMonTupleLci': ('fastMon', 'fastMon'),
     'findChunks': ('findChunks', 'findChunks', 'cleanup'),
@@ -68,12 +86,28 @@ moduleTable = {
     'mergeSvacChunks': ('mergeStuff', 'merge'),
     'mergeTkrAnalysis': ('mergeStuff', 'merge'),
     'meritHist': ('runStrip', 'runStrip'),
+    'meritHistAlarm': ('alarmHandler', 'alarmHandler'),
+    'meritHistLogger': ('alarmLogger', 'alarmLogger'),
     'meritTrend': ('runStrip', 'runStrip'),
+    'meritTrendAlarm': ('alarmHandler', 'alarmHandler'),
+    'meritTrendLogger': ('alarmLogger', 'alarmLogger'),
     'reconHist': ('runStrip', 'runStrip'),
+    'reconHistAlarm': ('alarmHandler', 'alarmHandler'),
+    'reconHistLogger': ('alarmLogger', 'alarmLogger'),
     'reconTrend': ('runStrip', 'runStrip'),
+    'reconTrendAlarm': ('alarmHandler', 'alarmHandler'),
+    'reconTrendLogger': ('alarmLogger', 'alarmLogger'),
     'svacTuple': ('makeSvac', 'svacTuple'),
     'tkrAnalysis': ('tkrRootAnalysis', 'tkrAnalysis'),
     'tkrTrend': ('runStrip', 'runStrip'),
+    'tkrTrendAlarm': ('alarmHandler', 'alarmHandler'),
+    'tkrTrendLogger': ('alarmLogger', 'alarmLogger'),
+    'verifyErrorAlarm': ('alarmHandler', 'alarmHandler'),
+    'verifyErrorLogger': ('alarmLogger', 'alarmLogger'),
+    'verifyErrorAlarmComp': ('alarmHandler', 'alarmHandler'),
+    'verifyErrorLoggerComp': ('alarmLogger', 'alarmLogger'),
+    'verifyFt2ErrorAlarm': ('alarmHandler', 'alarmHandler'),
+    'verifyFt2ErrorLogger': ('alarmLogger', 'alarmLogger'),
     }
 
 def getFuncs(procName):
@@ -217,6 +251,6 @@ def main():
     return status
 
 if __name__ == '__main__':
-    main()
-    pass
+    status = main()
+    sys.exit(status)
 

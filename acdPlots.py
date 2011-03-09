@@ -14,7 +14,7 @@ import GPLinit
 import runner
 
 
-def acdPlots(idArgs, files, **args):
+def acdPlots(files, idArgs, **args):
     fileType = 'acdPlots'
 
     status = 0

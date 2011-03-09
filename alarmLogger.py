@@ -3,32 +3,26 @@
 import os
 import sys
 
+if __name__ == "__main__":
+    print >> sys.stderr, "This module is not supported as main script"
+    sys.exit(1)
+
 import config
 
 import GPLinit
 
 import alarmParser
-import fileNames
-import registerPrep
 import runner
-import stageFiles
 
-head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
-if not dlId: head, dlId = os.path.split(head)
-runId = os.environ['RUNID']
+def alarmLogger(files, idArgs, inFileTypes, workDir, **args):
+    status = 0
 
-staged = stageFiles.StageSet(excludeIn=config.excludeIn)
-finishOption = config.finishOption
+    dlId, runId, chunkId, crumbId = idArgs
 
-fileType = os.environ['fileType']
+    fileType, = inFileTypes
 
-realInFile = fileNames.fileName(fileType, dlId, runId)
-stagedInFile = staged.stageIn(realInFile)
+    stagedInFile = files[fileType]
 
-workDir = os.path.dirname(stagedInFile)
+    alarmParser.doAlarms(stagedInFile, fileType, dlId, runId)
 
-alarmParser.doAlarms(stagedInFile, fileType, dlId, runId)
-
-status = staged.finish(finishOption)
-
-sys.exit(status)
+    return status

@@ -259,11 +259,12 @@
  
     <process name="digiHistAlarm" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">digiHist</var>
+        <var name="inFileTypes">digiHist</var>
+        <var name="outFileTypes">digiHistAlarm</var>
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
         <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerDigiHist" status="SUCCESS"/>
       </depends>
@@ -297,10 +298,10 @@
 
     <process name="digiHistLogger" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">digiHistAlarm</var>
+        <var name="inFileTypes">digiHistAlarm</var>
         <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerDigiHistAlarm" status="SUCCESS"/>
       </depends>
@@ -362,12 +363,12 @@
 
     <process name="verifyErrorAlarm" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">verifyLog</var>
-        <var name="alarmFileType">verifyErrorAlarm</var>
+        <var name="inFileTypes">verifyLog</var>
+        <var name="outFileTypes">verifyErrorAlarm</var>
         <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
         <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerVerifyLog" status="SUCCESS"/>
       </depends>
@@ -390,10 +391,10 @@
 
     <process name="verifyErrorLogger" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">verifyErrorAlarm</var>
+        <var name="inFileTypes">verifyErrorAlarm</var>
         <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerVerifyErrorAlarm" status="SUCCESS"/>
       </depends>
@@ -492,11 +493,12 @@
 
     <process name="digiTrendAlarm" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">digiTrend</var>
+        <var name="inFileTypes">digiTrend</var>
+        <var name="outFileTypes">digiTrendAlarm</var>
         <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
         <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerDigiTrend" status="SUCCESS"/>
       </depends>
@@ -519,10 +521,10 @@
 
     <process name="digiTrendLogger" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">digiTrendAlarm</var>
+        <var name="inFileTypes">digiTrendAlarm</var>
         <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerDigiTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -569,11 +571,12 @@
 
     <process name="calHistAlarm" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">calHist</var>
+        <var name="inFileTypes">calHist</var>
+        <var name="outFileTypes">calHistAlarm</var>
         <var name="%(calHist_versionName)s">%(calHist_version)s</var>
         <var name="%(calHistAlarm_versionName)s">%(calHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerCalHist" status="SUCCESS"/>
       </depends>
@@ -596,10 +599,10 @@
 
     <process name="calHistLogger" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">calHistAlarm</var>
+        <var name="inFileTypes">calHistAlarm</var>
         <var name="%(calHistAlarm_versionName)s">%(calHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerCalHistAlarm" status="SUCCESS"/>
       </depends>
@@ -698,12 +701,12 @@
 
     <process name="acdPedsAlarm" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="alarmFileType">acdPedsAlarm</var>
-        <var name="fileType">acdPedsAnalyzer</var>
+        <var name="inFileTypes">acdPedsAnalyzer</var>
+        <var name="outFileTypes">acdPedsAlarm</var>
         <var name="%(acdPedsAnalyzer_versionName)s">%(acdPedsAnalyzer_version)s</var>
         <var name="%(acdPedsAlarm_versionName)s">%(acdPedsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerAcdPedsAnalyzer" status="SUCCESS"/>
       </depends>
@@ -726,10 +729,10 @@
 
     <process name="acdPedsLogger" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">acdPedsAlarm</var>
+        <var name="inFileTypes">acdPedsAlarm</var>
         <var name="%(acdPedsAlarm_versionName)s">%(acdPedsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerAcdPedsAlarm" status="SUCCESS"/>
       </depends>
@@ -776,12 +779,12 @@
 
     <process name="calGainsAlarm" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="alarmFileType">calGainsAlarm</var>
-        <var name="fileType">calGainsAnalyzer</var>
+        <var name="inFileTypes">calGainsAnalyzer</var>
+        <var name="outFileTypes">calGainsAlarm</var>
         <var name="%(calGainsAnalyzer_versionName)s">%(calGainsAnalyzer_version)s</var>
         <var name="%(calGainsAlarm_versionName)s">%(calGainsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerCalGainsAnalyzer" status="SUCCESS"/>
       </depends>
@@ -804,10 +807,10 @@
 
     <process name="calGainsLogger" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">calGainsAlarm</var>
+        <var name="inFileTypes">calGainsAlarm</var>
         <var name="%(calGainsAlarm_versionName)s">%(calGainsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerCalGainsAlarm" status="SUCCESS"/>
       </depends>
@@ -854,12 +857,12 @@
 
     <process name="calPedsAlarm" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="alarmFileType">calPedsAlarm</var>
-        <var name="fileType">calPedsAnalyzer</var>
+        <var name="inFileTypes">calPedsAnalyzer</var>
+        <var name="outFileTypes">calPedsAlarm</var>
         <var name="%(calPedsAnalyzer_versionName)s">%(calPedsAnalyzer_version)s</var>
         <var name="%(calPedsAlarm_versionName)s">%(calPedsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerCalPedsAnalyzer" status="SUCCESS"/>
       </depends>
@@ -882,10 +885,10 @@
 
     <process name="calPedsLogger" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">calPedsAlarm</var>
+        <var name="inFileTypes">calPedsAlarm</var>
         <var name="%(calPedsAlarm_versionName)s">%(calPedsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerCalPedsAlarm" status="SUCCESS"/>
       </depends>
@@ -983,11 +986,12 @@
 
     <process name="fastMonErrorAlarm" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">fastMonError</var>
+        <var name="inFileTypes">fastMonError</var>
+        <var name="outFileTypes">fastMonErrorAlarm</var>
         <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
         <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerFastMonError" status="SUCCESS"/>
       </depends>
@@ -1010,10 +1014,10 @@
 
     <process name="fastMonErrorLogger" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">fastMonErrorAlarm</var>
+        <var name="inFileTypes">fastMonErrorAlarm</var>
         <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerFastMonErrorAlarm" status="SUCCESS"/>
       </depends>
@@ -1102,11 +1106,12 @@
  
     <process name="fastMonHistAlarm" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">fastMonHist</var>
+        <var name="inFileTypes">fastMonHist</var>
+        <var name="outFileTypes">fastMonHistAlarm</var>
         <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
         <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerFastMonHist" status="SUCCESS"/>
       </depends>
@@ -1129,10 +1134,10 @@
 
     <process name="fastMonHistLogger" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">fastMonHistAlarm</var>
+        <var name="inFileTypes">fastMonHistAlarm</var>
         <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerFastMonHistAlarm" status="SUCCESS"/>
       </depends>
@@ -1203,11 +1208,12 @@
 
     <process name="fastMonTrendAlarm" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">fastMonTrend</var>
+        <var name="inFileTypes">fastMonTrend</var>
+        <var name="outFileTypes">fastMonTrendAlarm</var>
         <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
         <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerFastMonTrend" status="SUCCESS"/>
       </depends>
@@ -1241,10 +1247,10 @@
 
     <process name="fastMonTrendLogger" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">fastMonTrendAlarm</var>
+        <var name="inFileTypes">fastMonTrendAlarm</var>
         <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerFastMonTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -1545,12 +1551,13 @@
 
     <process name="verifyFt2ErrorAlarm" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">verifyFt2Error</var>
+        <var name="inFileTypes">verifyFt2Error</var>
+        <var name="outFileTypes">verifyFt2ErrorAlarm</var>
         <var name="alarmFileType">verifyFt2ErrorAlarm</var>
         <var name="%(verifyFt2Error_versionName)s">%(verifyFt2Error_version)s</var>
         <var name="%(verifyFt2ErrorAlarm_versionName)s">%(verifyFt2ErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerVerifyFt2Error" status="SUCCESS"/>
       </depends>
@@ -1573,10 +1580,10 @@
 
     <process name="verifyFt2ErrorLogger" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">verifyFt2ErrorAlarm</var>
+        <var name="inFileTypes">verifyFt2ErrorAlarm</var>
         <var name="%(verifyFt2ErrorAlarm_versionName)s">%(verifyFt2ErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerVerifyFt2ErrorAlarm" status="SUCCESS"/>
       </depends>
@@ -1935,11 +1942,12 @@
  
     <process name="meritTrendAlarm" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">meritTrend</var>
+        <var name="inFileTypes">meritTrend</var>
+        <var name="outFileTypes">meritTrendAlarm</var>
         <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
         <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerMeritTrend" status="SUCCESS"/>
       </depends>
@@ -1962,10 +1970,10 @@
 
     <process name="meritTrendLogger" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">meritTrendAlarm</var>
+        <var name="inFileTypes">meritTrendAlarm</var>
         <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerMeritTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -2015,11 +2023,12 @@
  
     <process name="meritHistAlarm" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">meritHist</var>
+        <var name="inFileTypes">meritHist</var>
+        <var name="outFileTypes">meritHistAlarm</var>
         <var name="%(meritHist_versionName)s">%(meritHist_version)s</var>
         <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerMeritHist" status="SUCCESS"/>
       </depends>
@@ -2053,10 +2062,10 @@
 
     <process name="meritHistLogger" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">meritHistAlarm</var>
+        <var name="inFileTypes">meritHistAlarm</var>
         <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerMeritHistAlarm" status="SUCCESS"/>
       </depends>
@@ -2118,11 +2127,12 @@
  
     <process name="reconTrendAlarm" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">reconTrend</var>
+        <var name="inFileTypes">reconTrend</var>
+        <var name="outFileTypes">reconTrendAlarm</var>
         <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
         <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerReconTrend" status="SUCCESS"/>
       </depends>
@@ -2156,10 +2166,10 @@
 
     <process name="reconTrendLogger" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">reconTrendAlarm</var>
+        <var name="inFileTypes">reconTrendAlarm</var>
         <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerReconTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -2210,11 +2220,12 @@
  
     <process name="reconHistAlarm" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">reconHist</var>
+        <var name="inFileTypes">reconHist</var>
+        <var name="outFileTypes">reconHistAlarm</var>
         <var name="%(reconHist_versionName)s">%(reconHist_version)s</var>
         <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerReconHist" status="SUCCESS"/>
       </depends>
@@ -2237,10 +2248,10 @@
 
     <process name="reconHistLogger" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">reconHistAlarm</var>
+        <var name="inFileTypes">reconHistAlarm</var>
         <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerReconHistAlarm" status="SUCCESS"/>
       </depends>
@@ -2431,11 +2442,12 @@
  
     <process name="tkrTrendAlarm" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">tkrTrend</var>
+        <var name="inFileTypes">tkrTrend</var>
+        <var name="outFileTypes">tkrTrendAlarm</var>
         <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
         <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerTkrTrend" status="SUCCESS"/>
       </depends>
@@ -2469,10 +2481,10 @@
 
     <process name="tkrTrendLogger" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">tkrTrendAlarm</var>
+        <var name="inFileTypes">tkrTrendAlarm</var>
         <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerTkrTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -2722,12 +2734,12 @@
 
       <process name="verifyErrorAlarmComp" autoRetryMaxAttempts="%(retries)s">
         <variables>
-          <var name="fileType">verifyLog</var>
-          <var name="alarmFileType">verifyErrorAlarm</var>
+          <var name="inFileTypes">verifyLog</var>
+          <var name="outFileTypes">verifyErrorAlarm</var>
           <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
           <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmHandler.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="registerVerifyLogComp" status="SUCCESS"/>
         </depends>
@@ -2750,10 +2762,10 @@
 
       <process name="verifyErrorLoggerComp" autoRetryMaxAttempts="%(retries)s">
         <variables>
-          <var name="fileType">verifyErrorAlarm</var>
+          <var name="inFileTypes">verifyErrorAlarm</var>
           <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmLogger.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="registerVerifyErrorAlarmComp" status="SUCCESS"/>
         </depends>
