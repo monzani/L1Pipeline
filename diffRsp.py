@@ -33,20 +33,23 @@ def diffRsp(files, outFileTypes, workDir, **args):
 
     cmtPath = config.stCmtPath
 
-    cmdParts = ['''
+    tmpFt1File = stagedInFile + '.tmp'
+    os.rename(stagedInFile, tmpFt1File)
+
+    cmdHead = '''
     cd %(workDir)s
     export CMTPATH=%(cmtPath)s
     source %(stSetup)s
-    mv %(stagedInFile)s %(stagedOutFile)s
-    date''' % locals()]
+    ''' % locals()
 
     for diffRspMinClass, irf in config.diffRspIrfs.items():
-        cmdParts.append('''    %(app)s scfile=%(stagedFt2File)s evfile=%(stagedOutFile)s srcmdl=%(model)s irfs=%(irf)s evclsmin=%(diffRspMinClass)r
-        date
-        ''' % locals())
+        cmdTail = '''%(app)s scfile=%(stagedFt2File)s evfile=%(tmpFt1File)s srcmdl=%(model)s irfs=%(irf)s evclsmin=%(diffRspMinClass)r
+        ''' % locals()
+        cmd = cmdHead + cmdTail
+        status |= runner.run(cmd)
+        if status: return status
         continue
-    cmd = '\n'.join(cmdParts)
-    
-    status |= runner.run(cmd)
+
+    os.rename(tmpFt1File, stagedOutFile)
 
     return status

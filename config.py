@@ -184,8 +184,8 @@ installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
-glastVersion = 'v15r47p12gr16'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume10')
+glastVersion = 'v15r47p12gr18'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -307,7 +307,7 @@ cmtPackages = {
         },
     'GPLtools': {
         'repository': '',
-        'version': 'GPLtools-01-15-01-fo06',
+        'version': 'GPLtools-02-00-00',
         },
     'Monitor': {
         'repository': 'svac',

@@ -90,11 +90,14 @@ print >> sys.stderr, 'MOOT alias:', mootAlias
 latConfig = ft2Columns.configFlag(mootAlias)
 configOpt = '-LatConfig %d' % latConfig
 
+version = fileNames.version(ft2Seconds)
+versOpt = '-Version %d' % version
+
 cmd = '''
 cd %(workDir)s
 export CMTPATH=%(cmtPath)s
 source %(setupScript)s
-%(app)s -DigiFile %(stagedDigiFile)s -MeritFile %(stagedMeritFile)s -M7File %(stagedM7File)s -FT2_fits_File %(stagedFt2FitsFile)s %(gapOpts)s %(mcOpt)s -DigiTstart %(tStart).17g -DigiTstop %(tStop).17g %(templOpt)s %(qualOpt)s %(configOpt)s %(lTTolOpt)s
+%(app)s -DigiFile %(stagedDigiFile)s -MeritFile %(stagedMeritFile)s -M7File %(stagedM7File)s -FT2_fits_File %(stagedFt2FitsFile)s %(gapOpts)s %(mcOpt)s -DigiTstart %(tStart).17g -DigiTstop %(tStop).17g %(templOpt)s %(qualOpt)s %(configOpt)s %(lTTolOpt)s %(versOpt)s
 ''' % locals()
 
 status = runner.run(cmd)

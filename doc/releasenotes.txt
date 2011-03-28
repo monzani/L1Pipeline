@@ -1,8 +1,13 @@
 2.5
 -----------------
+Catch errors in diffRspFt1 [LONE-168@JIRA].
+Eliminate cleanupCrumbs [LONE-164@JIRA].
 Make ft2Entries depend on setRunning.
-Eliminate cleanupCrumbs.
 Convert acdPlots alarmHandler alarmLogger to use genericScript.
+Add options for skipping events when digitizing
+Set ft2 quality to 1 unless run is bad.
+Start adding support for retries of file existence checks when merging [LONE-165@JIRA].
+Set file version in ft2 header [LONE-167@JIRA].
 
 
 2.4
