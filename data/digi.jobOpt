@@ -2,3 +2,4 @@
 EventSelector.FileName = "$EVTFILE";
 digiRootWriterAlg.digiRootFile = "$digiChunkFile"; 
 EventSelector.EventsToSkip="$(EVENTSTOSKIP)";
+// EventSelector.PrintEventIndex=true;
