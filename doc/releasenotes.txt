@@ -1,3 +1,8 @@
+2.6
+-----------------
+New monitoring tags [SSC-285]
+
+
 2.5
 -----------------
 Catch errors in diffRspFt1 [LONE-168@JIRA].
