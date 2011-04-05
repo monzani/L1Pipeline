@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "2.6"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "2.7"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -183,6 +183,7 @@ installArea = os.path.join(L1Cmt, 'InstallArea', cmtConfig)
 installBin = os.path.join(installArea, 'bin')
 #
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
+glastExtSCons = os.path.join(groundRoot, 'GLAST_EXT', 'redhat4-i686-32bit-gcc34') 
 #
 releaseDir = os.path.join(groundRoot, 'releases', 'volume10')
 glastVersion = 'v15r47p12gr21'
@@ -248,15 +249,17 @@ l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
 # LSF pre-exec option for run & throttle locking
 lockOption = " -E &quot;${isocRun} ${L1ProcROOT}/lockFile.py&quot; "
 
-stDir = os.path.join(groundRoot, 'releases', 'volume02')
-stVersion = 'v9r18p5'
+stDir = os.path.join(groundRoot, 'releases', 'volume10')
+stVersion = '09-23-00'
 stName = 'ScienceTools'
 
 ST = os.path.join(stDir, "ScienceTools-%s" % stVersion)
-stSetup = os.path.join(ST, 'ScienceTools', stVersion, 'cmt', 'setup.sh')
 PFILES = ".;/dev/null"
-stBinDir = os.path.join(ST, 'bin')
-stLibDir = os.path.join(ST, 'lib')
+stConfig = "redhat4-i686-32bit-gcc34-Optimized"
+stBinDir = os.path.join(ST, 'bin', stConfig)
+stExeDir = os.path.join(ST, 'exe', stConfig)
+stSetup = os.path.join(stBinDir, '_setup.sh')
+
 if testMode:
     # aspLauncher = '/afs/slac/g/glast/ground/links/data/ASP/aspLauncher_dev.sh'
     aspLauncher = '/bin/true'
@@ -265,11 +268,10 @@ else:
     pass
 aspAlreadyLaunched = 160
 
-procVer = 116
+procVer = 118
 
 cmtPath = ':'.join([L1Cmt, glastLocation, glastExt])
-stCmtPath = ':'.join([L1Cmt, ST, glastExt])
-ft2CmtPath = ':'.join([L1Cmt, glastLocation, ST, glastExt])
+ft2CmtPath = ':'.join([L1Cmt, glastLocation, glastExt])
 
 cmtPackages = {
     'calibGenTKR': {
@@ -592,13 +594,12 @@ ft1Dicts = {
     'ls1': ls1Vars,
     }
 
-#diffRspModel = os.path.join(L1Volume, 'diffRsp', 'v0r0p0', 'data', 'source_model_v01.xml')
-#diffRspModel = os.path.join(L1ProcROOT, 'data', 'diffuseModel.xml')
-diffRspModel = '/afs/slac.stanford.edu/g/glast/ground/releases/analysisFiles/diffuse/v2/source_model_v02.xml'
-diffRspIrfs = {
-    3: 'P6_V3_DIFFUSE',
-    4: 'P6_V3_DATACLEAN',
+diffRspModels = {
+    'P6_V3_DIFFUSE' : '/afs/slac.stanford.edu/g/glast/ground/releases/analysisFiles/diffuse/v2/source_model_v02.xml',
+    'P6_V11_DIFFUSE' : '/afs/slac/g/glast/groups/diffuse/mapcubes/source_model_v02_P6_V11_DIFFUSE.xml',
     }
+
+evtClassMin = 3
 
 verifyOptions = {
     'InProgress': '',

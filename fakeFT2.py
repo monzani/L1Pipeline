@@ -41,7 +41,6 @@ def fakeFT2(files, workDir, runDir, staged, idArgs, **args):
     templOpt = '-new_tpl %s' % template
 
     cmtPath = config.ft2CmtPath
-    stLibDir = config.stLibDir
 
     cmd = '''
     cd %(workDir)s

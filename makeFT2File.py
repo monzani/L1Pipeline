@@ -38,7 +38,6 @@ setupScript = config.packages['ft2Util']['setup']
 version = fileNames.version(fitsFt2File)
 
 cmtPath = config.ft2CmtPath
-stLibDir = config.stLibDir
 
 template = config.ft2Template
 templOpt = '-new_tpl %s' % template

@@ -65,7 +65,6 @@ else:
     pass
 
 cmtPath = config.ft2CmtPath
-stLibDir = config.stLibDir
 
 # run start and stop from merit file
 mStart, mStop = meritFiles.startAndStop(stagedMeritFile)

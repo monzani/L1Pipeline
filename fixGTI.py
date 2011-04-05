@@ -38,7 +38,7 @@ staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption
 
 stSetup = config.stSetup
-app = os.path.join('$DATASUBSELECTORROOT', '$CMTCONFIG', 'gtmktime.exe')
+app = os.path.join(config.stExeDir, 'gtmktime')
 
 realInFile = fileNames.fileName(inFileType, *idArgs)
 stagedInFile = staged.stageIn(realInFile)
@@ -55,11 +55,13 @@ version = fileNames.version(realOutFile)
 
 filter = 'LIVETIME>0'
 
-cmtPath = config.stCmtPath
+instDir = config.ST
+glastExt = config.glastExtSCons
 
 cmd = '''
 cd %(workDir)s
-export CMTPATH=%(cmtPath)s
+export INST_DIR=%(instDir)s
+export GLAST_EXT=%(glastExt)s
 source %(stSetup)s
 %(app)s overwrite=yes roicut=no scfile=%(stagedFt2File)s filter="%(filter)s" evfile=%(stagedInFile)s outFile=%(stagedOutFile)s
 ''' % locals()

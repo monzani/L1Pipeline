@@ -24,7 +24,7 @@ def makeFT1(files, level, outFileTypes, workDir, **args):
     evtClassDefsPython = config.packages['evtClassDefs']['python']
 
     stSetup = config.stSetup
-    app = os.path.join('$FITSGENAPPSROOT', '$CMTCONFIG', 'makeFT1.exe')
+    app = os.path.join(config.stExeDir, 'makeFT1')
 
     stagedMeritFile = files['merit']
 
@@ -46,11 +46,13 @@ def makeFT1(files, level, outFileTypes, workDir, **args):
 
     procVer = config.procVer
 
-    cmtPath = config.stCmtPath
+    instDir = config.ST
+    glastExt = config.glastExtSCons
 
     cmd = '''
     cd %(workDir)s
-    export CMTPATH=%(cmtPath)s
+    export INST_DIR=%(instDir)s 
+    export GLAST_EXT=%(glastExt)s 
     source %(stSetup)s
     PYTHONPATH=%(evtClassDefsPython)s:$PYTHONPATH ; export PYTHONPATH
     %(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=%(tCuts)s event_classifier="%(classifier)s" xml_classifier=none tstart=%(cutStart).17g tstop=%(cutStop).17g dict_file=%(dictionary)s file_version=%(version)s proc_ver=%(procVer)s
