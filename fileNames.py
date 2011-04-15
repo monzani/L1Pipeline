@@ -83,6 +83,9 @@ fileTypes = {
     'reconHistAlarmDist': 'root',
     'reconTrend': 'root',
     'reconTrendAlarm': 'xml',
+    'solarFlareHist': 'root',
+    'solarFlareLog': 'xml',
+    'solarFlarePlot': 'png',
     'svac': 'root',
     'svacHist': 'root',
     'timeSpan': 'txt',
@@ -95,8 +98,12 @@ fileTypes = {
     'verifyLog': 'xml',
     'verifyHisto': 'root',
     'verifyErrorAlarm': 'xml',
+    'verifyFt1Error': 'xml',
+    'verifyFt1ErrorAlarm': 'xml',
     'verifyFt2Error': 'xml',
     'verifyFt2ErrorAlarm': 'xml',
+    'verifyMeritError': 'xml',
+    'verifyMeritErrorAlarm': 'xml',
     }
 
 pTag = '_p%03d' % config.procVer

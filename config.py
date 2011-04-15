@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "2.6"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "2.7"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -269,7 +269,6 @@ procVer = 116
 
 cmtPath = ':'.join([L1Cmt, glastLocation, glastExt])
 stCmtPath = ':'.join([L1Cmt, ST, glastExt])
-ft2CmtPath = ':'.join([L1Cmt, glastLocation, ST, glastExt])
 
 cmtPackages = {
     'calibGenTKR': {
@@ -283,7 +282,7 @@ cmtPackages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'Common-06-09-00',
+        'version': 'Common-06-10-01',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -319,7 +318,7 @@ cmtPackages = {
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'TestReport-11-03-00',
+        'version': 'TestReport-11-04-00',
         },
     }
 
@@ -413,14 +412,24 @@ apps = {
     'fastMon': packages['FastMon']['app'],
     'findGaps': os.path.join(
         packages['findGaps']['bin'], 'findGaps.exe'),
+    'ft1Verify': os.path.join(
+        packages['TestReport']['bin'], 'ft1Verify.exe'),
+    'ft2Verify': os.path.join(
+        packages['TestReport']['bin'], 'ft2Verify.exe'),
     'makeFT1': os.path.join(stBinDir, 'makeFT1'),
     # 'makeFT1': os.path.join(stBinDir, 'makeFT1_kluge'),
     'makeFT2': packages['ft2Util']['app'],
     'makeLS3': os.path.join(stBinDir, 'gtltcube'),
     'mergeFT2': os.path.join(
         packages['ft2Util']['bin'], 'mergeFT2Entries.exe'),
+    'meritVerify': os.path.join(
+        packages['TestReport']['bin'], 'meritVerify.exe'),
     'recon': gleam,
     'reportMerge': packages['Monitor']['mergeApp'],
+    'runVerify': os.path.join(
+        packages['TestReport']['bin'], 'RunVerify.exe'),
+    'solarFlares': os.path.join(
+        packages['Common']['python'], 'pBadTimeIntervalLogger.py'),
     'svacTuple': packages['EngineeringModelRoot']['app'],
     'tkrAnalysis': os.path.join(
         packages['calibTkrUtil']['bin'], 'tkrRootAnalysis.exe'),
@@ -429,10 +438,6 @@ apps = {
     'tkrMonitor': os.path.join(
         packages['calibTkrUtil']['python'], 'tkrMonitor.py'),
     'trendMerge': packages['Monitor']['trendMerge'],
-    'runVerify': os.path.join(
-        packages['TestReport']['bin'], 'RunVerify.exe'),
-    'ft2Verify': os.path.join(
-        packages['TestReport']['bin'], 'ft2Verify.exe'),
     }
 
 
@@ -511,6 +516,8 @@ alarmConfigs = {
     'tkrTrend': os.path.join(alarmBase, 'xml', 'trackermon_trend_alarms.xml'),
     'verifyLog': os.path.join(alarmBase, 'xml', 'verify_errors_alarms.xml'),
     'verifyFt2Error': os.path.join(alarmBase, 'xml', 'verify_ft2_errors_alarms.xml'),
+    'verifyFt1Error': os.path.join(alarmBase, 'xml', 'verify_ft1_errors_alarms.xml'),
+    'verifyMeritError': os.path.join(alarmBase, 'xml', 'verify_merit_errors_alarms.xml'),
     }
 
 alarmExceptions = {

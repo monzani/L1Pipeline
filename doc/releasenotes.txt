@@ -1,6 +1,13 @@
+2.7
+-----------------
+Removing ft2Util dependency on ScienceTools
+New verify functionalities [GDQMQ-322@JIRA]
+Bad time intervals from solar flares [SSC-287@JIRA]
+
+
 2.6
 -----------------
-New monitoring tags [SSC-285]
+New monitoring tags [SSC-285@JIRA]
 
 
 2.5

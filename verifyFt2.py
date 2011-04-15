@@ -27,7 +27,7 @@ verifyFt2File = staged.stageOut(realVerifyFt2File)
 
 workDir = os.path.dirname(verifyFt2File)
 
-cmtPath = config.ft2CmtPath
+cmtPath = config.cmtPath
 
 package = config.packages['TestReport']
 setupScript = package['setup']

@@ -106,8 +106,12 @@ moduleTable = {
     'verifyErrorLogger': ('alarmLogger', 'alarmLogger'),
     'verifyErrorAlarmComp': ('alarmHandler', 'alarmHandler'),
     'verifyErrorLoggerComp': ('alarmLogger', 'alarmLogger'),
+    'verifyFt1ErrorAlarm': ('alarmHandler', 'alarmHandler'),
+    'verifyFt1ErrorLogger': ('alarmLogger', 'alarmLogger'),
     'verifyFt2ErrorAlarm': ('alarmHandler', 'alarmHandler'),
     'verifyFt2ErrorLogger': ('alarmLogger', 'alarmLogger'),
+    'verifyMeritErrorAlarm': ('alarmHandler', 'alarmHandler'),
+    'verifyMeritErrorLogger': ('alarmLogger', 'alarmLogger'),
     }
 
 def getFuncs(procName):

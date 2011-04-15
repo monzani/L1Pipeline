@@ -64,7 +64,7 @@ else:
     mcOpt = ''
     pass
 
-cmtPath = config.ft2CmtPath
+cmtPath = config.cmtPath
 stLibDir = config.stLibDir
 
 # run start and stop from merit file
