@@ -19,26 +19,26 @@ runId = os.environ['RUNID']
 staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption
 
-realFt2File = fileNames.fileName('ft2', dlId, runId, next=False)
-stagedFt2File = staged.stageIn(realFt2File)
+realMeritFile = fileNames.fileName('merit', dlId, runId, next=False)
+stagedMeritFile = staged.stageIn(realMeritFile)
 
-realVerifyFt2File = fileNames.fileName('verifyFt2Error', dlId, runId, next=True)
-verifyFt2File = staged.stageOut(realVerifyFt2File)
+realVerifyMeritFile = fileNames.fileName('verifyMeritError', dlId, runId, next=True)
+verifyMeritFile = staged.stageOut(realVerifyMeritFile)
 
-workDir = os.path.dirname(verifyFt2File)
+workDir = os.path.dirname(verifyMeritFile)
 
 cmtPath = config.cmtPath
 
 package = config.packages['TestReport']
 setupScript = package['setup']
-app = config.apps['ft2Verify']
+app = config.apps['meritVerify']
 truncation = config.verifyOptions['Truncation']
 
 cmd = '''
 cd %(workDir)s
 export CMTPATH=%(cmtPath)s
 source %(setupScript)s
-%(app)s -f %(stagedFt2File)s -x %(verifyFt2File)s -t %(truncation)s
+%(app)s -f %(stagedMeritFile)s -x %(verifyMeritFile)s -t %(truncation)s
 ''' % locals()
 
 status = runner.run(cmd)
@@ -47,7 +47,7 @@ if status: finishOption = 'wipe'
 status |= staged.finish(finishOption)
 
 if not status:
-    registerPrep.prep('verifyFt2Error', realVerifyFt2File)
+    registerPrep.prep('verifyMeritError', realVerifyMeritFile)
     pass
 
 sys.exit(status)

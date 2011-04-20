@@ -33,7 +33,7 @@ def alarmHandler(files, idArgs, inFileTypes, level, outFileTypes, workDir, **arg
     package = config.packages['Common']
     setup = package['setup']
 
-    if fileType in ['fastMonError','verifyLog','verifyFt2Error']:
+    if fileType in ['fastMonError','verifyLog','verifyFt1Error','verifyFt2Error','verifyMeritError']:
         app = config.apps['errorHandler']
         exceptionArgs = ''
         refArgs = ''

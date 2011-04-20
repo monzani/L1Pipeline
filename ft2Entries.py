@@ -64,7 +64,7 @@ else:
     mcOpt = ''
     pass
 
-cmtPath = config.ft2CmtPath
+cmtPath = config.cmtPath
 
 # run start and stop from merit file
 mStart, mStop = meritFiles.startAndStop(stagedMeritFile)

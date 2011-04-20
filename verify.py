@@ -32,7 +32,7 @@ verifyHistoFile = staged.stageOut(realVerifyHistoFile)
 
 workDir = os.path.dirname(verifyLogFile)
 
-cmtPath = config.ft2CmtPath
+cmtPath = config.cmtPath
 
 package = config.packages['TestReport']
 setupScript = package['setup']

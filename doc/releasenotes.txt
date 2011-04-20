@@ -1,15 +1,21 @@
-2.7
+2.8
 -----------------
 Getting ready for P6_V11
 ScienceTools are now SCons only (GR is still cmt)
-Removing all dependences on ST from ft2Utils
 Implementing new directory structure for ST in SCons
 Updated path/code for diffuse response columns
 
 
+2.7
+-----------------
+Removing ft2Util dependency on ScienceTools
+New verify functionalities [GDQMQ-322@JIRA]
+Bad time intervals from solar flares [SSC-287@JIRA]
+
+
 2.6
 -----------------
-New monitoring tags [SSC-285]
+New monitoring tags [SSC-285@JIRA]
 
 
 2.5

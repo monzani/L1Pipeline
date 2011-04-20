@@ -19,26 +19,26 @@ runId = os.environ['RUNID']
 staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption
 
-realFt2File = fileNames.fileName('ft2', dlId, runId, next=False)
-stagedFt2File = staged.stageIn(realFt2File)
+realFt1File = fileNames.fileName('ft1', dlId, runId, next=False)
+stagedFt1File = staged.stageIn(realFt1File)
 
-realVerifyFt2File = fileNames.fileName('verifyFt2Error', dlId, runId, next=True)
-verifyFt2File = staged.stageOut(realVerifyFt2File)
+realVerifyFt1File = fileNames.fileName('verifyFt1Error', dlId, runId, next=True)
+verifyFt1File = staged.stageOut(realVerifyFt1File)
 
-workDir = os.path.dirname(verifyFt2File)
+workDir = os.path.dirname(verifyFt1File)
 
 cmtPath = config.cmtPath
 
 package = config.packages['TestReport']
 setupScript = package['setup']
-app = config.apps['ft2Verify']
+app = config.apps['ft1Verify']
 truncation = config.verifyOptions['Truncation']
 
 cmd = '''
 cd %(workDir)s
 export CMTPATH=%(cmtPath)s
 source %(setupScript)s
-%(app)s -f %(stagedFt2File)s -x %(verifyFt2File)s -t %(truncation)s
+%(app)s -f %(stagedFt1File)s -x %(verifyFt1File)s -t %(truncation)s
 ''' % locals()
 
 status = runner.run(cmd)
@@ -47,7 +47,7 @@ if status: finishOption = 'wipe'
 status |= staged.finish(finishOption)
 
 if not status:
-    registerPrep.prep('verifyFt2Error', realVerifyFt2File)
+    registerPrep.prep('verifyFt1Error', realVerifyFt1File)
     pass
 
 sys.exit(status)
