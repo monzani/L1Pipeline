@@ -250,7 +250,7 @@ l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
 lockOption = " -E &quot;${isocRun} ${L1ProcROOT}/lockFile.py&quot; "
 
 stDir = os.path.join(groundRoot, 'releases', 'volume10')
-stVersion = '09-23-00'
+stVersion = '09-23-01'
 stName = 'ScienceTools'
 
 ST = os.path.join(stDir, "ScienceTools-%s" % stVersion)
