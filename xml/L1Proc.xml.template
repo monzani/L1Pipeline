@@ -2259,6 +2259,8 @@
       <depends>
         <after process="registerDigiTrend" status="SUCCESS"/>
         <after process="registerMeritTrend" status="SUCCESS"/>
+	<after process="doChunk.digiTrend" status="SUCCESS"/>
+	<after process="doChunk.meritTrend" status="SUCCESS"/>
       </depends>
     </process>
  
