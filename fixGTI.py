@@ -11,6 +11,7 @@ import fileNames
 import runner
 import stageFiles
 import registerPrep
+import pyfits
 
 head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
@@ -52,6 +53,12 @@ stagedOutFile = staged.stageOut(realOutFile)
 workDir = os.path.dirname(stagedOutFile)
 
 version = fileNames.version(realOutFile)
+
+print >> sys.stderr, "Updating the header version in %s to %d" % (stagedInFile, version)
+
+fixVer = pyfits.open(stagedInFile,mode='update')
+fixVer[0].header.update('VERSION',version)
+fixVer.close()
 
 filter = 'LIVETIME>0'
 
