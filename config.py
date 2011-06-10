@@ -109,7 +109,7 @@ baseVersion = 0
 
 #throttle parameters
 throttleDir =  os.path.join(L1Dir, 'throttle')
-throttleLimit = 4
+throttleLimit = 6
 
 if testMode:
     stageBase = 'l1Test'
@@ -285,7 +285,7 @@ cmtPackages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'Common-06-10-01',
+        'version': 'Common-06-10-02',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
