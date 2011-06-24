@@ -1,0 +1,112 @@
+From turri@slac.stanford.edu Wed Mar 30 18:51:40 2011
+Date: Wed, 30 Mar 2011 17:35:23 -0700
+From: "Turri, Max" <turri@slac.stanford.edu>
+To: "Borgland, Anders W." <borgland@slac.stanford.edu>, "Monzani, Maria Elena" <monzani@slac.stanford.edu>, "Focke, Warren B." <focke@slac.stanford.edu>
+Subject: Run Bad Time Intervals update
+
+	Hi,
+Sorry for the long silence, but many things had to happen. This is a long e-mail. Please look at the bottom for how to proceed in the future.
+There is a tentative working copy on the dev server that provides some functionality (you have to be within the SLAC network):
+
+http://glast-tomcat03.slac.stanford.edu:8080/DataQualityMonitoring/
+
+By accident a partial version has been committed to Prod. If people go there it might be a little confusing, but nothing more.
+
+After selecting a run you can follow the "Bad Intervals" link.
+There you will be able to:
+
+- View the Current Bad Time Intervals (BTIs)
+- View the Processed BTIs
+- Create new BTIs for the given run
+- Delete BTIs
+- Edit BTIs
+- View the BTIs color coded on a plot (The plot can be changed, more can be added)
+
+What you cannot do at the moment is to submit the pipeline task.
+I have asked Karen to add a new column: submitted. There will be a button to submit the pipeline task (it will appear only if the current BTIs are a consistent set: i.e. have either the suggested time interval and/or the user requested time interval, the intervals should not overlap and be 30 seconds apart etc etc). When the button is pressed the intervals will show as "Submitted" and the button will disappear.
+
+When the "Suggested time intervals" (from Luca's work) are present the user does not have to necessarily enter a time interval. If the user's time interval is not there, the suggested will suffice. What do you think?
+
+This is all at the moment for the web front-end.
+
+The pipeline server has been updated in dev with the new "runQuality" code.
+
+Warren, from your task you should be to access the following methods:
+
+- these are the ones you requested:
+
+    public List<BadTimeInterval> getBadTimeIntervalsForRun(int runId)
+    public void updateBadTimeInterval(BadTimeInterval badTimeInterval)
+
+- these I needed and are there if you need them
+    public List<BadTimeInterval> getOldBadTimeIntervalsForRun(int runId)
+    public void clearBadTimeIntervalsForRun(int runId) 
+    public BadTimeInterval createBadTimeIntervalForRun(int runId, String userName) 
+    public void deleteBadTimeInterval(int id)
+    public BadTimeInterval getBadTimeInterval(int id) 
+
+- This last one might be needed by Luca
+    public void createBadTimeIntervalForRun(int runId, String username, int suggestedStartPeriod, int suggestedEndPeriod) 
+
+Once you have a BadTimeInterval object in your hand you can access the following methods:
+
+- Getters:
+
+    // MET requested by the user
+    public int getRequestedStartPeriod()
+    public int getRequestedEndPeriod()
+
+    // MET suggested by automated process
+    public int getSuggestedStartPeriod()
+    public int getSuggestedEndPeriod()
+
+    //Data Qual
+    public int getDataQual()
+
+    // FT2 Export
+    public void setFt2Export(Timestamp time)
+
+- Setters:
+
+    //MET FT2 period
+    public void setFt2StartPeriod(int start)
+    public void setFt2EndPeriod(int end)
+
+    //DataQual
+    public void setDataQual(int flag)
+
+-  Miscellaneous that you might not need 
+
+    public boolean getIsvalid() 
+    public void setIsvalid(boolean isValid) 
+    public boolean getHasBeenSubmitted() 
+    public void setHasBeenSubmitted(boolean hasBeenSubmitted)
+
+    public int getId()
+    public int getRunId()
+    public String getUsername() 
+    public void setUsername(String username )
+    public Timestamp getRequestDate()
+    public void setRequestDate(Timestamp date) 
+    public void setRequestedStartPeriod(int start) 
+    public void setRequestedEndPeriod(int end) 
+    public void setSuggestedStartPeriod(int start) 
+    public void setSuggestedEndPeriod(int end) 
+    public Timestamp getFt2Export() 
+    public int getFt2StartPeriod() 
+    public int getFt2EndPeriod() 
+
+
+What I need from you:
+
+- Feedback and comments.
+- Let me know if the pipeline part works
+- How do I launch Warren task?
+- What do you want me to do in the next two days? I will be unavailable all next week.
+
+Ciao
+Max
+
+PS: unfortunately the "Dev" database is not set up quite right, so what described above for the plots does not work quite right on the dev database side (which is where the dev pipeline is running). Nonetheless we should be able to see that the bad intervals tables are modified.
+
+
