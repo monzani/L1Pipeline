@@ -15,23 +15,26 @@ import runner
 import rounding
 
 
-def makeFT1(files, level, outFileTypes, workDir, **args):
+def makeFT1(files, inFileTypes, outFileTypes, workDir, **args):
     status = 0
 
+    inFileType = inFileTypes[0]
+
     assert len(outFileTypes) == 1
-    fileType = outFileTypes[0]
+    outFileType = outFileTypes[0]
 
     evtClassDefsPython = config.packages['evtClassDefs']['python']
 
     stSetup = config.stSetup
     app = os.path.join(config.stExeDir, 'makeFT1')
 
-    stagedMeritFile = files['merit']
+    stagedMeritFile = files[inFileType]
+    stagedFt1File = files[outFileType]
 
-    stagedFt1File = files[fileType]
-
-    tCuts = config.cutFiles[fileType]
-    classifier = config.ft1Classifier
+    xmlClassifier = config.xmlClassifier
+    tCuts = config.filterClassifyMap[outFileType]['cutFile']
+    classifier = config.filterClassifyMap[outFileType]['classifier']
+    dictionary = config.filterClassifyMap[outFileType]['ft1Dict']
 
     # run start and stop from merit file
     mStart, mStop = meritFiles.startAndStop(stagedMeritFile)
@@ -40,10 +43,7 @@ def makeFT1(files, level, outFileTypes, workDir, **args):
     cutStart = rounding.roundDown(mStart, config.ft1Digits)
     cutStop = rounding.roundUp(mStop, config.ft1Digits)
 
-    dictionary = config.ft1Dicts[fileType[:3]]
-
     version = fileNames.version(stagedFt1File)
-
     procVer = config.procVer
 
     instDir = config.ST
@@ -55,7 +55,7 @@ def makeFT1(files, level, outFileTypes, workDir, **args):
     export GLAST_EXT=%(glastExt)s 
     source %(stSetup)s
     PYTHONPATH=%(evtClassDefsPython)s:$PYTHONPATH ; export PYTHONPATH
-    %(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=%(tCuts)s event_classifier="%(classifier)s" xml_classifier=none tstart=%(cutStart).17g tstop=%(cutStop).17g dict_file=%(dictionary)s file_version=%(version)s proc_ver=%(procVer)s
+    %(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=%(tCuts)s xml_classifier="%(xmlClassifier)s" evtclsmap=%(classifier)s tstart=%(cutStart).17g tstop=%(cutStop).17g dict_file=%(dictionary)s file_version=%(version)s proc_ver=%(procVer)s
     ''' % locals()
 
     status |= runner.run(cmd)

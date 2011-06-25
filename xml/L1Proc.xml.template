@@ -45,7 +45,7 @@
   <process name="kludgeAsp" autoRetryMaxAttempts="%(retries)s">
     <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/kludgeAsp.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
     <depends>
-      <after process="doRun.registerFT1" status="SUCCESS"/>
+      <after process="doRun.registerExtendedFT1" status="SUCCESS"/>
       <after process="doRun.registerFT2" status="SUCCESS"/>
     </depends>
   </process>
@@ -1369,7 +1369,7 @@
       </depends>
     </process>
 
- <!-- no electrons in pass 6
+ 
     <process name="electronMerit" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="inFileTypes">merit</var>
@@ -1398,7 +1398,7 @@
         <after process="electronMerit" status="SUCCESS"/>
       </depends>
     </process>
- -->
+
 
     <process name="verifyMerit" autoRetryMaxAttempts="%(retries)s">
       <variables>
@@ -1731,22 +1731,22 @@
 
     <process name="gtiFT1" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">ft1</var>
-        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
+        <var name="inFileTypes">>ft1BadGti/ft1Seconds</var>
+        <var name="outFileTypes">extendedFT1</var>
         <var name="%(ft1BadGti_versionName)s">%(ft1BadGti_version)s</var>
-        <var name="%(ft1_versionName)s">%(ft1_version)s</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/fixGTI.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerFT1BadGti" status="SUCCESS"/>
         <after process="registerFt2Seconds" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="registerFT1" autoRetryMaxAttempts="%(retries)s">
+    <process name="registerExtendedFT1" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="parentProcess">gtiFT1</var>
-        <var name="fileType">ft1</var>
+        <var name="fileType">extendedFT1</var>
         <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
@@ -1755,6 +1755,34 @@
       </script>
       <depends>
         <after process="gtiFT1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="filterFT1" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">extendedFT1</var>        
+        <var name="outFileTypes">ft1</var>
+        <var name="%(extendedFT1_versionName)s">%(extendedFT1_version)s</var>
+        <var name="%(ft1_versionName)s">%(ft1_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/gtselect.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <depends>
+        <after process="registerExtendedFT1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFT1" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">filterFT1</var>
+        <var name="fileType">ft1</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="filterFT1" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -1771,12 +1799,12 @@
 
     <process name="verifyFt1" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="%(ft1_versionName)s">%(ft1_version)s</var>
+        <var name="%(extendedFT1_versionName)s">%(extendedFT1_version)s</var>
         <var name="%(verifyFt1Error_versionName)s">%(verifyFt1Error_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/verifyFt1.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
-        <after process="registerFT1" status="SUCCESS"/>
+        <after process="registerExtendedFT1" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -1857,23 +1885,23 @@
       </depends>
     </process>
 
-<!-- No electrons in pass 6 --> <!--
-    <process name="electronFt1BadGti" autoRetryMaxAttempts="%(retries)s">
+    <process name="electronFT1" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">electronFt1BadGti</var>
+        <var name="inFileTypes">merit</var>
+        <var name="outFileTypes">electronFT1BadGti</var>
         <var name="%(merit_versionName)s">%(merit_version)s</var>
-        <var name="%(electronFt1BadGti_versionName)s">%(electronFt1BadGti_version)s</var>
+        <var name="%(electronFT1BadGti_versionName)s">%(electronFT1BadGti_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeFT1.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
-        <after process="registerMerit" status="SUCCESS"/>
+        <after process="registerElectronMerit" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="registerElectronFt1BadGti" autoRetryMaxAttempts="1">
+    <process name="registerElectronFT1BadGti" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="parentProcess">electronFt1BadGti</var>
-        <var name="fileType">electronFt1BadGti</var>
+        <var name="parentProcess">electronFT1</var>
+        <var name="fileType">electronFT1BadGti</var>
         <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
@@ -1881,28 +1909,28 @@
 ]]>
       </script>
       <depends>
-        <after process="electronFt1BadGti" status="SUCCESS"/>
+        <after process="electronFT1" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="gtiElectronFt1" autoRetryMaxAttempts="1">
+    <process name="gtiElectronFT1" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">electronFt1</var>
+        <var name="inFileTypes">electronFT1BadGti/ft2Seconds</var>
+        <var name="outFileTypes">electronFT1</var>
         <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
-        <var name="%(electronFt1BadGti_versionName)s">%(electronFt1BadGti_version)s</var>
-        <var name="%(electronFt1_versionName)s">%(electronFt1_version)s</var>
+        <var name="%(electronFT1BadGti_versionName)s">%(electronFT1BadGti_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/fixGTI.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
-        <after process="registerElectronFt1BadGti" status="SUCCESS"/>
+        <after process="registerElectronFT1BadGti" status="SUCCESS"/>
         <after process="registerFt2Seconds" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="registerElectronFt1" autoRetryMaxAttempts="%(retries)s">
+    <process name="registerElectronFT1" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="parentProcess">gtiElectronFt1</var>
-        <var name="fileType">electronFt1</var>
+        <var name="parentProcess">gtiElectronFT1</var>
+        <var name="fileType">electronFT1</var>
         <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
@@ -1910,10 +1938,10 @@
 ]]>
       </script>
       <depends>
-        <after process="gtiElectronFt1" status="SUCCESS"/>
+        <after process="gtiElectronFT1" status="SUCCESS"/>
       </depends>
     </process>
---> <!-- No electrons in pass 6 -->
+
 
     <process name="makeLS1" autoRetryMaxAttempts="%(retries)s">
       <variables>
@@ -1928,7 +1956,7 @@
       </depends>
     </process>
 
-    <process name="registerLS1BadGti" autoRetryMaxAttempts="1">
+    <process name="registerLS1BadGti" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="parentProcess">makeLS1</var>
         <var name="fileType">ls1BadGti</var>
@@ -1943,24 +1971,24 @@
       </depends>
     </process>
 
-    <process name="gtiLS1" autoRetryMaxAttempts="1">
+    <process name="gtiLS1" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">ls1</var>
+        <var name="inFileTypes">ls1BadGti/ft2Seconds</var>        
+        <var name="outFileTypes">extendedLS1</var>
         <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
         <var name="%(ls1BadGti_versionName)s">%(ls1BadGti_version)s</var>
-        <var name="%(ls1_versionName)s">%(ls1_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/fixGTI.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerLS1BadGti" status="SUCCESS"/>
         <after process="registerFt2Seconds" status="SUCCESS"/>
       </depends>
     </process>
 
-    <process name="registerLS1" autoRetryMaxAttempts="%(retries)s">
+    <process name="registerExtendedLS1" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="parentProcess">gtiLS1</var>
-        <var name="fileType">ls1</var>
+        <var name="fileType">extendedLS1</var>
         <var name="timeProcess">findChunks</var>
       </variables>
       <script><![CDATA[
@@ -1969,6 +1997,34 @@
       </script>
       <depends>
         <after process="gtiLS1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="filterLS1" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">extendedLS1</var>        
+        <var name="outFileTypes">ls1</var>
+        <var name="%(extendedLS1_versionName)s">%(extendedLS1_version)s</var>
+        <var name="%(ls1_versionName)s">%(ls1_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/gtselect.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <depends>
+        <after process="registerExtendedLS1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerLS1" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">filterLS1</var>
+        <var name="fileType">ls1</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="filterLS1" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -1985,13 +2041,13 @@
 
     <process name="makeLS3" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="%(ft1_versionName)s">%(ft1_version)s</var>
+        <var name="%(extendedFT1_versionName)s">%(extendedFT1_version)s</var>
         <var name="%(ft2_versionName)s">%(ft2_version)s</var>
         <var name="%(ls3_versionName)s">%(ls3_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeLS3.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
-        <after process="registerFT1" status="SUCCESS"/>
+        <after process="registerExtendedFT1" status="SUCCESS"/>
         <after process="registerFT2" status="SUCCESS"/>
       </depends>
     </process>
@@ -2011,16 +2067,18 @@
       </depends>
     </process>
 
+<!-- Nobody cares about LS3
     <process name="exportLS3" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="fileType">ls3</var>
         <var name="%(ls3_versionName)s">%(ls3_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} \-\-add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerLS3" status="SUCCESS"/>
       </depends>
     </process>
+-->
 
     <process name="scanCalChunks" autoRetryMaxAttempts="%(retries)s">
       <variables>
@@ -2797,7 +2855,7 @@
         <after process="exportFT1" status="SUCCESS"/>
         <after process="exportFT2" status="SUCCESS"/>
         <after process="exportLS1" status="SUCCESS"/>
-        <after process="exportLS3" status="SUCCESS"/>
+        <after process="registerLS3" status="SUCCESS"/>
         <after process="fastMonErrorLogger" status="SUCCESS"/>
         <after process="fastMonHistLogger" status="SUCCESS"/>
         <after process="fastMonTrendLogger" status="SUCCESS"/>
@@ -2837,10 +2895,7 @@
         <after process="registerAcdPlots" status="SUCCESS"/>
         <after process="registerCal" status="SUCCESS"/>
         <after process="registerCmpDFm" status="SUCCESS"/>
-<!-- No electrons in pass 6
-        <after process="registerElectronFt1" status="SUCCESS"/>
-        <after process="registerElectronMerit" status="SUCCESS"/>
--->
+        <after process="registerElectronFT1" status="SUCCESS"/>
         <after process="registerFastMonTuple" status="SUCCESS"/>
         <after process="registerFilteredMerit" status="SUCCESS"/>
         <after process="registerGcr" status="SUCCESS"/>

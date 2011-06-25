@@ -12,10 +12,11 @@ import config
 import runner
 
 
-def diffRsp(files, outFileTypes, workDir, **args):
+def diffRsp(files, inFileTypes, outFileTypes, workDir, **args):
     status = 0
 
-    inFileType = 'ft1NoDiffRsp'
+    inFileType = inFileTypes[0]
+    ft2FileType = inFileTypes[1]
 
     assert len(outFileTypes) == 1
     outFileType = outFileTypes[0]
@@ -24,12 +25,8 @@ def diffRsp(files, outFileTypes, workDir, **args):
     app = os.path.join(config.stExeDir, 'gtdiffrsp')
 
     stagedInFile = files[inFileType]
-
-    stagedFt2File = files['ft2Fake']
-
+    stagedFt2File = files[ft2FileType]
     stagedOutFile = files[outFileType]
-
-    evtClassMin = config.evtClassMin 
 
     instDir = config.ST
     glastExt = config.glastExtSCons
@@ -44,8 +41,10 @@ def diffRsp(files, outFileTypes, workDir, **args):
     source %(stSetup)s
     ''' % locals()
 
-    for irf, model in config.diffRspModels.items():
-        cmdTail = '''%(app)s scfile=%(stagedFt2File)s evfile=%(tmpFt1File)s srcmdl=%(model)s irfs=%(irf)s evclsmin=%(evtClassMin)r
+    for evcls in config.diffRspMap.keys():
+        irf = config.diffRspMap[evcls]['irf']
+        model = config.diffRspMap[evcls]['model']
+        cmdTail = '''%(app)s scfile=%(stagedFt2File)s evfile=%(tmpFt1File)s srcmdl=%(model)s irfs=%(irf)s evclass=%(evcls)s
         ''' % locals()
         cmd = cmdHead + cmdTail
         status |= runner.run(cmd)

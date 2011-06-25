@@ -3,81 +3,51 @@
 import os
 import sys
 
+if __name__ == "__main__":
+    print >> sys.stderr, "This module is not supported as main script"
+    sys.exit(1)
+
 import config
 
-import GPLinit
-
 import fileNames
+import meritFiles
 import runner
-import stageFiles
-import registerPrep
 import pyfits
 
-head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
-if not dlId: head, dlId = os.path.split(head)
-runId = os.environ['RUNID']
-chunkId = os.environ.get('CHUNK_ID') # might not be set
-crumbId = os.environ.get('CRUMB_ID') # might not be set
-idArgs = (dlId, runId, chunkId, crumbId)
+def fixGTI(files, inFileTypes, outFileTypes, workDir, **args):
+    status = 0
 
-if chunkId is None:
-    level = 'run'
-    next = True
-else:
-    if crumbId is None:
-        level = 'chunk'
-    else:
-        level = 'crumb'
-        pass
-    next = False
-    pass
+    inFileType = inFileTypes[0]
+    ft2FileType = inFileTypes[1]
 
-fileType = os.environ['fileType']
-inFileType = fileType + 'BadGti'
+    assert len(outFileTypes) == 1
+    outFileType = outFileTypes[0]
 
-staged = stageFiles.StageSet(excludeIn=config.excludeIn)
-finishOption = config.finishOption
+    stSetup = config.stSetup
+    app = os.path.join(config.stExeDir, 'gtmktime')
 
-stSetup = config.stSetup
-app = os.path.join(config.stExeDir, 'gtmktime')
+    stagedInFile = files[inFileType]
+    stagedFt2File = files[ft2FileType]
+    stagedOutFile = files[outFileType]
 
-realInFile = fileNames.fileName(inFileType, *idArgs)
-stagedInFile = staged.stageIn(realInFile)
+    version = fileNames.version(stagedOutFile)
+    print >> sys.stderr, "Updating the header version in %s to %d" % (stagedInFile, version)
+    fixVer = pyfits.open(stagedInFile,mode='update')
+    fixVer[0].header.update('VERSION',version)
+    fixVer.close()
 
-realFt2File = fileNames.fileName('ft2Seconds', *idArgs)
-stagedFt2File = staged.stageIn(realFt2File)
+    filter = 'LIVETIME>0'
 
-realOutFile = fileNames.fileName(fileType, next=next, *idArgs)
-stagedOutFile = staged.stageOut(realOutFile)
+    instDir = config.ST
+    glastExt = config.glastExtSCons
 
-workDir = os.path.dirname(stagedOutFile)
+    cmd = '''
+    cd %(workDir)s
+    export INST_DIR=%(instDir)s
+    export GLAST_EXT=%(glastExt)s
+    source %(stSetup)s
+    %(app)s overwrite=yes roicut=no scfile=%(stagedFt2File)s filter="%(filter)s" evfile=%(stagedInFile)s outFile=%(stagedOutFile)s
+    ''' % locals()
 
-version = fileNames.version(realOutFile)
-
-print >> sys.stderr, "Updating the header version in %s to %d" % (stagedInFile, version)
-
-fixVer = pyfits.open(stagedInFile,mode='update')
-fixVer[0].header.update('VERSION',version)
-fixVer.close()
-
-filter = 'LIVETIME>0'
-
-instDir = config.ST
-glastExt = config.glastExtSCons
-
-cmd = '''
-cd %(workDir)s
-export INST_DIR=%(instDir)s
-export GLAST_EXT=%(glastExt)s
-source %(stSetup)s
-%(app)s overwrite=yes roicut=no scfile=%(stagedFt2File)s filter="%(filter)s" evfile=%(stagedInFile)s outFile=%(stagedOutFile)s
-''' % locals()
-
-status = runner.run(cmd)
-if status: finishOption = 'wipe'
-
-status |= staged.finish(finishOption)
-
-if level == 'run' and not status: registerPrep.prep(fileType, realOutFile)
-
-sys.exit(status)
+    status = runner.run(cmd)
+    return status

@@ -1,3 +1,9 @@
+2.9
+-----------------
+Version for PASS7_V6
+adding electronMerit, electronFT1, extendedFT1, extendedLS1
+new GR, new monitoring tags, new cuts, new diffRsp
+
 2.8
 -----------------
 Getting ready for P6_V11

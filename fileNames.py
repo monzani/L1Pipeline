@@ -46,10 +46,12 @@ fileTypes = {
     'digiHistAlarm': 'xml',
     'digiTrend': 'root',
     'digiTrendAlarm': 'xml',
-    'electronFt1': 'fit',
-    'electronFt1BadGti': 'fit',
+    'electronFT1': 'fit',
+    'electronFT1BadGti': 'fit',
     'electronMerit': 'root',
     'event': 'evt',
+    'extendedFT1': 'fit',
+    'extendedLS1': 'fit',
     'fastMonError': 'xml',
     'fastMonErrorAlarm': 'xml',
     'fastMonHist': 'root',
@@ -108,6 +110,9 @@ fileTypes = {
 
 pTag = '_p%03d' % config.procVer
 exportTags = { # files exported to FSSC use a different naming rule
+    'electronFT1': 'gll_el' + pTag,
+    'extendedFT1': 'gll_xp' + pTag,
+    'extendedLS1': 'gll_xe' + pTag,
     'ft1': 'gll_ph' + pTag,
     'ft2': 'gll_pt',
     'ls1': 'gll_ev' + pTag,

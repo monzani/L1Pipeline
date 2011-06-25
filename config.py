@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "2.8"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "2.9"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -185,8 +185,8 @@ installBin = os.path.join(installArea, 'bin')
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 glastExtSCons = os.path.join(groundRoot, 'GLAST_EXT', 'redhat4-i686-32bit-gcc34') 
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume10')
-glastVersion = 'v15r47p12gr21'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume11')
+glastVersion = 'v17r35p20'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -268,7 +268,7 @@ else:
     pass
 aspAlreadyLaunched = 160
 
-procVer = 118
+procVer = 120
 
 cmtPath = ':'.join([L1Cmt, glastLocation, glastExt])
 stCmtPath = ':'.join([L1Cmt, ST, glastExt])
@@ -293,7 +293,7 @@ cmtPackages = {
         },
     'evtClassDefs': {
         'repository': '',
-        'version': 'v0r18p0',
+        'version': 'evtClassDefs-00-19-04',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
@@ -313,7 +313,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'Monitor-01-07-00',
+        'version': 'Monitor-01-09-00',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -328,7 +328,7 @@ cmtPackages = {
 cvsPackages = {
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'DigiReconCalMeritCfg-01-04-07',
+        'version': 'DigiReconCalMeritCfg-01-12-00',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
@@ -362,6 +362,9 @@ packages['EngineeringModelRoot']['app'] = os.path.join(
 
 packages['evtClassDefs']['data'] = os.path.join(
     packages['evtClassDefs']['root'], 'data')
+
+packages['evtClassDefs']['xml'] = os.path.join(
+    packages['evtClassDefs']['root'], 'xml')
 
 packages['ft2Util']['app'] = os.path.join(
     packages['ft2Util']['bin'], 'makeFT2Entries.exe')
@@ -579,35 +582,55 @@ tdBin = {
     }
 
 
-#ft1Cuts = 'DEFAULT'
 evclData = packages['evtClassDefs']['data']
-#ft1Cuts = os.path.join(evclData, 'pass7_FSW_cuts') 
-ft1Cuts = os.path.join(evclData, 'pass6_FSW_cuts')
-electronCuts = os.path.join(evclData, 'pass7_Electrons_FSW_cuts')
-cutFiles = {
-    'electronFt1BadGti': electronCuts,
-    'electronMerit': electronCuts,
-    'filteredMerit': ft1Cuts,
-    'ft1': ft1Cuts,
-    'ft1NoDiffRsp': ft1Cuts,
-    'ls1': ft1Cuts,
-    'ls1BadGti': ft1Cuts,
-    }
-ft1Classifier = 'dataclean_classifier'
+evclXml = packages['evtClassDefs']['xml']
+electronCuts = os.path.join(evclData, 'pass7.6_Electrons_cuts_L1')
+extendedCuts = os.path.join(evclData, 'pass7.6_Extended_cuts_L1')
 ft1Vars = os.path.join(evclData, 'FT1variables')
 ls1Vars = os.path.join(evclData, 'LS1variables')
-ft1Dicts = {
-    'ele': ft1Vars, # fragile
-    'ft1': ft1Vars,
-    'ls1': ls1Vars,
+electronClass = 'EvtCREventClass'
+photonClass = 'FT1EventClass'
+#transientCuts = os.path.join(evclData, 'pass7.6_Transient_cuts_L1')
+#sourceCuts = os.path.join(evclData, 'pass7.6_Source_cuts_L1')
+xmlClassifier =  os.path.join(evclXml, 'EvtClassDefs_P7V6.xml')
+filterClassifyMap = {
+    'electronMerit': {
+        'cutFile': electronCuts,
+        },
+    'filteredMerit': {
+        'cutFile': extendedCuts,
+        },
+    'electronFT1BadGti': {
+        'cutFile': electronCuts,
+        'classifier': electronClass,
+        'ft1Dict': ft1Vars,
+        },
+    'ft1NoDiffRsp': {
+        'cutFile': extendedCuts,
+        'classifier': photonClass,
+        'ft1Dict': ft1Vars,
+        },
+    'ls1BadGti': {
+        'cutFile': extendedCuts,
+        'classifier': photonClass,
+        'ft1Dict': ls1Vars,
+        },
     }
+gtSelectClass = {
+    'ft1': 2,
+    'ls1': 0,
+}
 
-diffRspModels = {
-    'P6_V3_DIFFUSE' : '/afs/slac.stanford.edu/g/glast/ground/releases/analysisFiles/diffuse/v2/source_model_v02.xml',
-    'P6_V11_DIFFUSE' : '/afs/slac/g/glast/groups/diffuse/mapcubes/source_model_v02_P6_V11_DIFFUSE.xml',
+diffRspMap = {
+    2: {
+        'irf': 'P7SOURCE_V6',
+        'model': os.path.join(groundRoot, 'GLAST_EXT', 'diffuseModels/v2r0/diffuse_model_P7SOURCE_V6.xml'),
+        },
+    3: {
+        'irf': 'P7CLEAN_V6',
+        'model': os.path.join(groundRoot, 'GLAST_EXT', 'diffuseModels/v2r0/diffuse_model_P7CLEAN_V6.xml'),
+        },
     }
-
-evtClassMin = 3
 
 verifyOptions = {
     'InProgress': '',
