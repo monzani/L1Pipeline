@@ -24,7 +24,7 @@ fileType = 'ls3'
 stSetup = config.stSetup
 app = config.apps['makeLS3']
 
-realFt1File = fileNames.fileName('ft1', dlId, runId)
+realFt1File = fileNames.fileName('extendedFT1', dlId, runId)
 stagedFt1File = staged.stageIn(realFt1File)
 realFt2File = fileNames.fileName('ft2', dlId, runId)
 stagedFt2File = staged.stageIn(realFt2File)

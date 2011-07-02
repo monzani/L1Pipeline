@@ -1731,10 +1731,11 @@
 
     <process name="gtiFT1" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="inFileTypes">>ft1BadGti/ft1Seconds</var>
+        <var name="inFileTypes">ft1BadGti/ft2Seconds</var>
         <var name="outFileTypes">extendedFT1</var>
         <var name="%(ft1BadGti_versionName)s">%(ft1BadGti_version)s</var>
         <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
+        <var name="%(extendedFT1_versionName)s">%(extendedFT1_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
@@ -1760,12 +1761,13 @@
 
     <process name="filterFT1" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="inFileTypes">extendedFT1</var>        
+        <var name="inFileTypes">extendedFT1/ft2Seconds</var>        
         <var name="outFileTypes">ft1</var>
         <var name="%(extendedFT1_versionName)s">%(extendedFT1_version)s</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
         <var name="%(ft1_versionName)s">%(ft1_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/gtselect.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerExtendedFT1" status="SUCCESS"/>
       </depends>
@@ -1919,6 +1921,7 @@
         <var name="outFileTypes">electronFT1</var>
         <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
         <var name="%(electronFT1BadGti_versionName)s">%(electronFT1BadGti_version)s</var>
+        <var name="%(electronFT1_versionName)s">%(electronFT1_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
@@ -1977,6 +1980,7 @@
         <var name="outFileTypes">extendedLS1</var>
         <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
         <var name="%(ls1BadGti_versionName)s">%(ls1BadGti_version)s</var>
+        <var name="%(extendedLS1_versionName)s">%(extendedLS1_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
@@ -2002,12 +2006,13 @@
 
     <process name="filterLS1" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="inFileTypes">extendedLS1</var>        
+        <var name="inFileTypes">extendedLS1/ft2Seconds</var>        
         <var name="outFileTypes">ls1</var>
         <var name="%(extendedLS1_versionName)s">%(extendedLS1_version)s</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
         <var name="%(ls1_versionName)s">%(ls1_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/gtselect.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerExtendedLS1" status="SUCCESS"/>
       </depends>

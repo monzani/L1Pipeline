@@ -19,7 +19,7 @@ runId = os.environ['RUNID']
 staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption
 
-realFt1File = fileNames.fileName('ft1', dlId, runId, next=False)
+realFt1File = fileNames.fileName('extendedFT1', dlId, runId, next=False)
 stagedFt1File = staged.stageIn(realFt1File)
 
 realVerifyFt1File = fileNames.fileName('verifyFt1Error', dlId, runId, next=True)
