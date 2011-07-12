@@ -2044,47 +2044,6 @@
       </depends>
     </process>
 
-    <process name="makeLS3" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="%(extendedFT1_versionName)s">%(extendedFT1_version)s</var>
-        <var name="%(ft2_versionName)s">%(ft2_version)s</var>
-        <var name="%(ls3_versionName)s">%(ls3_version)s</var>
-      </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeLS3.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
-      <depends>
-        <after process="registerExtendedFT1" status="SUCCESS"/>
-        <after process="registerFT2" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="registerLS3" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="parentProcess">makeLS3</var>
-        <var name="fileType">ls3</var>
-        <var name="timeProcess">findChunks</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="makeLS3" status="SUCCESS"/>
-      </depends>
-    </process>
-
-<!-- Nobody cares about LS3
-    <process name="exportLS3" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="fileType">ls3</var>
-        <var name="%(ls3_versionName)s">%(ls3_version)s</var>
-      </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} \-\-add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
-      <depends>
-        <after process="registerLS3" status="SUCCESS"/>
-      </depends>
-    </process>
--->
-
     <process name="scanCalChunks" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="subTask">doChunk</var>
@@ -2860,7 +2819,6 @@
         <after process="exportFT1" status="SUCCESS"/>
         <after process="exportFT2" status="SUCCESS"/>
         <after process="exportLS1" status="SUCCESS"/>
-        <after process="registerLS3" status="SUCCESS"/>
         <after process="fastMonErrorLogger" status="SUCCESS"/>
         <after process="fastMonHistLogger" status="SUCCESS"/>
         <after process="fastMonTrendLogger" status="SUCCESS"/>
