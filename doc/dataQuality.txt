@@ -110,3 +110,77 @@ Max
 PS: unfortunately the "Dev" database is not set up quite right, so what described above for the plots does not work quite right on the dev database side (which is where the dev pipeline is running). Nonetheless we should be able to see that the bad intervals tables are modified.
 
 
+
+
+
+
+
+
+
+        Hi Warren,
+Tony uploaded the RunQuality plugin in the Dev pipeline. It is now ready for testing on your end.
+The methods that we talked about are the following:
+
+    public BadTimeIntervalSet getMostRecentSubmittedTimeIntervalSet(int runId,String userName);
+    public void updateBadTimeIntervalSet(BadTimeIntervalSet set);
+
+Had to add a "username" to the first method for when it is cloned, to put the username as the creator of the cloned set.
+Hope that's ok.
+
+Below are the methods on the two classes that you need.
+Please let me know if I left anything out.
+
+Max
+
+class BadTimeIntervalSet
+
+    (these you are interested in)
+    public List<BadTimeInterval> getActiveIntervals() {
+    public List<BadTimeInterval> getInactiveIntervals() {
+    public void setExportTime(Date exportTime) {
+
+    (these are available also but might not be needed by you)
+    public int getId() {
+    public int getRunId() {
+    public String getCreatedBy() {
+    public void setCreatedBy(String createdby) {
+    public String getSubmittedBy() {
+    public void setSubmittedBy(String submittedby) {
+    public String getVersion() {
+    public void setVersion(String version) {
+    public boolean getIsActive() {
+    public void setIsActive(boolean isActive) {
+    public Timestamp getCreationTime() {
+    public void setCreationTime(Timestamp creationTime) {
+    public Timestamp getSubmissionTime() {
+    public void setSubmissionTime(Timestamp submissionTime) {
+    public void setSubmissionTime(Date submissionTime) {
+    public Timestamp getExportTime() {
+    public void setExportTime(Timestamp exportTime) {
+
+
+class BadTimeInterval 
+
+    public int getId() {
+    public String getUsername() {
+    public void setUsername(String userName) {
+    public Timestamp getCreationTime() {
+    public void setCreationTime(Timestamp creationTime) {
+    public int getRequestedStartPeriod() {
+    public void setRequestedStartPeriod(int start) {
+    public int getRequestedEndPeriod() {
+    public void setRequestedEndPeriod(int end) {
+    public int getSuggestedStartPeriod() {
+    public void setSuggestedStartPeriod(int start) {
+    public int getSuggestedEndPeriod() {
+    public void setSuggestedEndPeriod(int end) {
+    public int getFt2StartPeriod() {
+    public void setFt2StartPeriod(int start) {
+    public int getFt2EndPeriod() {
+    public void setFt2EndPeriod(int end) {
+    public int getDataQual() {
+    public void setDataQual(int flag) {
+    public boolean getIsActive() {
+    public void setIsActive(boolean isActive) {
+
+

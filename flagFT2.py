@@ -16,6 +16,7 @@ import pyfits as pf
 import fileOps
 
 import fileNames
+import parseBTI
 import pipeline
 import registerPrep
 import runner
@@ -27,12 +28,29 @@ chunkId = None
 crumbId = None
 
 
+getRanges = parseBTI.getRangesVar
+setRanges = parseBTI.setRangesVar
+
+
 def flagFT2(files, idArgs, outFileTypes, runDir, staged, **args):
     status = 0
 
     # figure out the output files
     # we have to do this here because genricScript (which handled the inputs)
     # is not set up to handle input and output files of the same type
+    #
+    #
+    # Actually, no. They don't have the same type anymore.
+    #
+    # But usually, there will be no interval to flag, and we'd rather not
+    # stage in inputs that we don't need.
+    #
+    # But since we're now comitted to 2 different file types, we've got to
+    # copy the input to the output even if there are no BTIs.
+    #
+    # So I think that means just use the normal mechanism?
+    # But then how do we match up the names?
+    #
     outFiles = {}
     tmpFiles = {}
     hduLists = {}
@@ -122,45 +140,3 @@ def badRange(tab, ((iStart, iStop), newQual)):
     return (fStart, fStop), newQual
 
 
-def getRangesVar():
-    rangeStr = os.environ['badRanges']
-    lines = rangeStr.split(',')
-    ranges = []
-    for line in lines:
-        fields = line.split(':')
-        start = float(fields[0])
-        stop = float(fields[1])
-        qual = int(fields[2])
-        range = ((start, stop), qual)
-        ranges.append(range)
-        continue
-    return ranges
-
-def getRangesFile():
-    timeFile = os.path.join(runDir , 'timeFile')
-
-    lines = open(timeFile)
-    ranges = []
-    for line in lines:
-        fields = line.split()
-        start = float(fields[0])
-        stop = float(fields[1])
-        qual = int(fields[2])
-        range = ((start, stop), qual)
-        ranges.append(range)
-    return ranges
-
-getRanges = getRangesVar
-
-
-def setRangesVar(ranges):
-    lines = []
-    for ((start, stop), qual) in ranges:
-        line = "%s:%s:%s" % (start, stop, qual)
-        lines.append(line)
-        continue
-    rangeStr = ','.join(lines)
-    pipeline.setVariable("badRanges", rangeStr)
-    return
-
-setRanges = setRangesVar
