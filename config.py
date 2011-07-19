@@ -186,7 +186,7 @@ glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
 glastExtSCons = os.path.join(groundRoot, 'GLAST_EXT', 'redhat4-i686-32bit-gcc34') 
 #
 releaseDir = os.path.join(groundRoot, 'releases', 'volume11')
-glastVersion = 'v17r35p20'
+glastVersion = 'v17r35p23'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -249,8 +249,8 @@ l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
 # LSF pre-exec option for run & throttle locking
 lockOption = " -E &quot;${isocRun} ${L1ProcROOT}/lockFile.py&quot; "
 
-stDir = os.path.join(groundRoot, 'releases', 'volume10')
-stVersion = '09-23-01'
+stDir = os.path.join(groundRoot, 'releases', 'volume11')
+stVersion = '09-24-00'
 stName = 'ScienceTools'
 
 ST = os.path.join(stDir, "ScienceTools-%s" % stVersion)
@@ -313,7 +313,7 @@ cmtPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'Monitor-01-09-00',
+        'version': 'Monitor-01-09-01',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -328,7 +328,7 @@ cmtPackages = {
 cvsPackages = {
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'DigiReconCalMeritCfg-01-13-00',
+        'version': 'DigiReconCalMeritCfg-01-14-00',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
@@ -624,11 +624,11 @@ gtSelectClass = {
 diffRspMap = {
     2: {
         'irf': 'P7SOURCE_V6',
-        'model': os.path.join(groundRoot, 'GLAST_EXT', 'diffuseModels/v2r0/diffuse_model_P7SOURCE_V6.xml'),
+        'model': os.path.join(groundRoot, 'diffuseModels/v2r0/diffuse_model_P7SOURCE_V6.xml'),
         },
     3: {
         'irf': 'P7CLEAN_V6',
-        'model': os.path.join(groundRoot, 'GLAST_EXT', 'diffuseModels/v2r0/diffuse_model_P7CLEAN_V6.xml'),
+        'model': os.path.join(groundRoot, 'diffuseModels/v2r0/diffuse_model_P7CLEAN_V6.xml'),
         },
     }
 
