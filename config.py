@@ -328,7 +328,7 @@ cmtPackages = {
 cvsPackages = {
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'DigiReconCalMeritCfg-01-14-00',
+        'version': 'DigiReconCalMeritCfg-01-16-00',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
