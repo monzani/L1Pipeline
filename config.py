@@ -604,7 +604,8 @@ ft1Dicts = {
 
 diffRspModels = {
     'P6_V3_DIFFUSE' : '/afs/slac.stanford.edu/g/glast/ground/releases/analysisFiles/diffuse/v2/source_model_v02.xml',
-    'P6_V11_DIFFUSE' : '/afs/slac/g/glast/groups/diffuse/mapcubes/source_model_v02_P6_V11_DIFFUSE.xml',
+   #'P6_V11_DIFFUSE' : '/afs/slac/g/glast/groups/diffuse/mapcubes/source_model_v02_P6_V11_DIFFUSE.xml',
+    'P6_V11_DIFFUSE' : '/afs/slac.stanford.edu/g/glast/ground/diffuseModels/v1r0/source_model_v02_P6_V11_DIFFUSE.xml',
     }
 
 evtClassMin = 3
