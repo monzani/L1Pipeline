@@ -40,7 +40,7 @@ def verifyChunk(headerData):
         print >> sys.stderr, 'events go backwards!'
         return False
 
-    if nEvt > nMax:
+    if nEvt > nMax + 2: # there could be 2 duplicated sweep events
         print >> sys.stderr, 'chunk has too many events: %d > %d' % (nEvt, nMax)
         return False
     
