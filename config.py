@@ -285,7 +285,7 @@ cmtPackages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'Common-06-10-03',
+        'version': 'Common-06-10-04',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -328,7 +328,7 @@ cmtPackages = {
 cvsPackages = {
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'DigiReconCalMeritCfg-01-17-00',
+        'version': 'DigiReconCalMeritCfg-01-20-00',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
