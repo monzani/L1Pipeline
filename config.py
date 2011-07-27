@@ -285,7 +285,7 @@ cmtPackages = {
         },
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'Common-06-10-02',
+        'version': 'Common-06-10-04',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
