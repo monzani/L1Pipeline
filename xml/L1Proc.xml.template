@@ -1074,36 +1074,7 @@
         <after process="mergeFastMonHist" status="SUCCESS"/>
       </depends>
     </process>
- 
-    <process name="compDigiFastMon" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="fileType">compareDFm</var>
-        <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
-        <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
-        <var name="%(compareDFm_versionName)s">%(compareDFm_version)s</var>
-      </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/compDigiFastMon.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
-      <depends>
-        <after process="registerDigiHist" status="SUCCESS"/>
-        <after process="registerFastMonHist" status="SUCCESS"/>
-      </depends>
-    </process>
 
-    <process name="registerCmpDFm" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="parentProcess">compDigiFastMon</var>
-        <var name="fileType">compareDFm</var>
-        <var name="timeProcess">findChunks</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="compDigiFastMon" status="SUCCESS"/>
-      </depends>
-    </process>
- 
     <process name="fastMonHistAlarm" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="inFileTypes">fastMonHist</var>
@@ -2857,7 +2828,6 @@
         <after process="reconTrendLogger" status="SUCCESS"/>
         <after process="registerAcdPlots" status="SUCCESS"/>
         <after process="registerCal" status="SUCCESS"/>
-        <after process="registerCmpDFm" status="SUCCESS"/>
         <after process="registerElectronFT1" status="SUCCESS"/>
         <after process="registerFastMonTuple" status="SUCCESS"/>
         <after process="registerFilteredMerit" status="SUCCESS"/>
