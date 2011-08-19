@@ -1,3 +1,4 @@
+creator = pipeline.getTaskVersionPath()
 theSet = runQuality.getMostRecentSubmittedTimeIntervalSet(runNumber, creator)
 
 if theSet:

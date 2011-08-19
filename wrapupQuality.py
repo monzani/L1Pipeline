@@ -1,7 +1,6 @@
-import sys
-
 from java.sql import Timestamp
 
+creator = pipeline.getTaskVersionPath()
 theSet = runQuality.getMostRecentSubmittedTimeIntervalSet(runNumber, creator)
 ivs = []
 
@@ -15,8 +14,8 @@ if theSet:
     pass
 print 'ivs:', ivs
 
-flagProcess = pipeline.getProcessInstance("flagFT2")
-badRanges = flagProcess.getVariable("badRanges")
+btiProcess = pipeline.getProcessInstance(btiProcess)
+badRanges = btiProcess.getVariable("badRanges")
 ranges = []
 if badRanges == 'x':
     pass
@@ -38,13 +37,15 @@ if len(ivs) != len(ranges):
     raise SystemExit
 
 stuff = zip(ranges, ivs)
-for (range, iv) in stuff:
-    ((ft2Start, ft2Stop), ft2Qual) = range
-    ((reqStart, reqStop), reqQual) = iv[0]
-    if not ((ft2Start <= reqStart) and (ft2Stop >= reqStop) and (ft2Qual == reqQual)):
-        print "Interval mismatch!"
-        raise SystemExit
-    continue
+# # This fails if the interval overlaps the start or end of a run
+# # or a gap, probably
+# for (range, iv) in stuff:
+#     ((ft2Start, ft2Stop), ft2Qual) = range
+#     ((reqStart, reqStop), reqQual) = iv[0]
+#     if not ((ft2Start <= reqStart) and (ft2Stop >= reqStop) and (ft2Qual == reqQual)):
+#         print "Interval mismatch!"
+#         raise SystemExit
+#     continue
 
 for (range, iv) in stuff:
     ((start, stop), qual) = range
@@ -62,5 +63,7 @@ exportTime = Timestamp(millis)
 
 if theSet:
     theSet.setExportTime(exportTime)
+    theSet.setStreamId(pipeline.getStream())
+    theSet.setTaskName(creator)
     runQuality.updateBadTimeIntervalSet(theSet)
     pass

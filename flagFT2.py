@@ -13,6 +13,8 @@ import time
 
 import pyfits as pf
 
+import config
+
 import fileOps
 
 import fileNames
@@ -21,7 +23,7 @@ import pipeline
 import registerPrep
 import runner
 
-os.environ['PFILES'] = '/afs/slac.stanford.edu/u/ek/focke/pfiles;/afs/slac/g/glast/applications/astroTools/headas/i686-pc-linux-gnu-libc2.2.4/syspfiles'
+#os.environ['PFILES'] = '/afs/slac.stanford.edu/u/ek/focke/pfiles;/afs/slac/g/glast/applications/astroTools/headas/i686-pc-linux-gnu-libc2.2.4/syspfiles'
 
 dlId = 'dl'
 chunkId = None
@@ -32,7 +34,7 @@ getRanges = parseBTI.getRangesVar
 setRanges = parseBTI.setRangesVar
 
 
-def flagFT2(files, idArgs, outFileTypes, runDir, staged, **args):
+def flagFT2(files, idArgs, outFileTypes, runDir, staged, workDir, **args):
     status = 0
 
     # figure out the output files
@@ -95,8 +97,11 @@ def flagFT2(files, idArgs, outFileTypes, runDir, staged, **args):
         hduList.writeto(tmpFile)
         hduList.close()
 
-        sumCmd = 'fchecksum infile=%s update=yes datasum=yes' % tmpFile
-        #status |= runner.run(sumCmd)
+        sumCmd = """HOME=%s
+        source %s
+        fchecksum infile=%s update=yes datasum=yes""" % \
+                 (workDir, config.astroTools, tmpFile)
+        status |= runner.run(sumCmd)
 
         os.rename(tmpFile, outFile)
         continue

@@ -184,3 +184,23 @@ class BadTimeInterval
     public void setIsActive(boolean isActive) {
 
 
+
+    public BadTimeIntervalSet createBadTimeIntervalSetForRun(int runId, String userName)
+    public BadTimeInterval createBadTimeIntervalForSet(int setId, String userName, int dataQual, double lowerEdge, double
+upperEdge)   UTC values
+    public BadTimeInterval createBadTimeIntervalForSet(int setId, String userName) 
+
+If you modify the objects by invoking the setter methods you have to update the objects:
+
+    public void updateBadTimeIntervalSet(BadTimeIntervalSet set)
+    public void updateBadTimeInterval(BadTimeInterval badTimeInterval)
+
+
+
+    public void setStreamId(int streamId) { 
+    public String getTaskName() { 
+
+    public void setTaskName(String taskName) { 
+    public String getParentVersion() { 
+    public void setParentVersion(String parentVersion) { 
+
