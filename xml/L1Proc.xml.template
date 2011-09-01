@@ -2540,187 +2540,6 @@
       </depends>
     </process>
 
-    <process name="mergeTkrAnalysis" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="goodPis">${pipeline.processInstance("scanTkrAnalysis").getVariable("goodPis")}</var>  
-        <var name="outFileTypes">tkrAnalysis</var>
-        <var name="%(tkrAnalysis_versionName)s">%(tkrAnalysis_version)s</var>
-      </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
-      <depends>
-        <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
-        <after process="scanTkrAnalysis" status="SUCCESS"/>
-      </depends>
-    </process>
- 
-    <process name="registerTkrAnalysis" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="parentProcess">mergeTkrAnalysis</var>
-        <var name="fileType">tkrAnalysis</var>
-        <var name="timeProcess">findChunks</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="mergeTkrAnalysis" status="SUCCESS"/>
-      </depends>
-    </process>
- 
-    <process name="tkrMonitor" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="%(tkrAnalysis_versionName)s">%(tkrAnalysis_version)s</var>
-        <var name="%(tkrMonitor_versionName)s">%(tkrMonitor_version)s</var>
-        <var name="%(tkrReport_versionName)s">%(tkrReport_version)s</var>
-        <!-- <var name="%(tkrAlarm_versionName)s">%(tkrAlarm_version)s</var> -->
-      </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/tkrMonitor.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
-      <depends>
-        <after process="registerTkrAnalysis" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="registerTkrMonitor" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="parentProcess">tkrMonitor</var>
-        <var name="fileType">tkrMonitor</var>
-        <var name="timeProcess">findChunks</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="tkrMonitor" status="SUCCESS"/>
-      </depends>
-    </process>
- 
-    <process name="registerTkrReport" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="parentProcess">tkrMonitor</var>
-        <var name="fileType">tkrReport</var>
-        <var name="timeProcess">findChunks</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="tkrMonitor" status="SUCCESS"/>
-      </depends>
-    </process>
-
-
-
-<!-- We don't have TKR alarms yet
-    <process name="registerTkrAlarm" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="parentProcess">tkrMonitor</var>
-        <var name="fileType">tkrAlarm</var>
-        <var name="timeProcess">findChunks</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="tkrMonitor" status="SUCCESS"/>
-      </depends>
-    </process>
- -->
-
-
-
-    <process name="tkrTrend" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="inFileTypes">tkrMonitor</var>
-        <var name="outFileTypes">tkrTrend</var>
-        <var name="%(tkrMonitor_versionName)s">%(tkrMonitor_version)s</var>
-        <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
-      </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
-      <depends>
-        <after process="registerTkrMonitor" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="registerTkrTrend" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="parentProcess">tkrTrend</var>
-        <var name="fileType">tkrTrend</var>
-        <var name="timeProcess">findChunks</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="tkrTrend" status="SUCCESS"/>
-      </depends>
-    </process>
- 
-    <process name="ingestTkrTrend" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="reportType">tkrTrend</var>
-        <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
-      </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
-      <depends>
-        <after process="registerTkrTrend" status="SUCCESS"/>
-      </depends>
-    </process>
- 
-    <process name="tkrTrendAlarm" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="inFileTypes">tkrTrend</var>
-        <var name="outFileTypes">tkrTrendAlarm</var>
-        <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
-        <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
-      </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
-      <depends>
-        <after process="registerTkrTrend" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="registerTkrTrendAlarm" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="parentProcess">tkrTrendAlarm</var>
-        <var name="fileType">tkrTrendAlarm</var>
-        <var name="timeProcess">findChunks</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="tkrTrendAlarm" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="ingestTkrTrendRun" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="reportType">tkrTrendAlarm</var>
-        <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
-      </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
-      <depends>
-        <after process="registerTkrTrendAlarm" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="tkrTrendLogger" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="inFileTypes">tkrTrendAlarm</var>
-        <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
-      </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
-      <depends>
-        <after process="registerTkrTrendAlarm" status="SUCCESS"/>
-      </depends>
-    </process>
- 
     <process name="scanSvacChunks" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="subTask">doChunk</var>
@@ -2732,34 +2551,6 @@
       </script>
       <depends>
         <after process="doChunk.svacTuple" status="DONE"/>
-      </depends>
-    </process>
-
-    <process name="mergeSvacChunks" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="goodPis">${pipeline.processInstance("scanSvacChunks").getVariable("goodPis")}</var>  
-        <var name="outFileTypes">svac</var>
-        <var name="%(svac_versionName)s">%(svac_version)s</var>
-        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
-      </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=250]&quot; "/>
-      <depends>
-        <after process="scanSvacChunks" status="SUCCESS"/>
-      </depends>
-    </process>
-
-    <process name="registerSvacTuple" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="parentProcess">mergeSvacChunks</var>
-        <var name="fileType">svac</var>
-        <var name="timeProcess">findChunks</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="mergeSvacChunks" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -2812,8 +2603,6 @@
         <after process="ingestMeritHistRun" status="SUCCESS"/>
         <after process="ingestReconTrendRun" status="SUCCESS"/>
         <after process="ingestReconHistRun" status="SUCCESS"/>
-        <after process="ingestTkrTrend" status="SUCCESS"/>
-        <after process="ingestTkrTrendRun" status="SUCCESS"/>
         <after process="ingestVerifyErrorRun" status="SUCCESS"/>
         <after process="ingestVerifyErrorAlarmRun" status="SUCCESS"/>
         <after process="ingestVerifyFt1ErrorRun" status="SUCCESS"/>
@@ -2839,14 +2628,10 @@
         <after process="registerSolarFlareHist" status="SUCCESS"/>
         <after process="registerSolarFlareLog" status="SUCCESS"/>
         <after process="registerSolarFlarePlot" status="SUCCESS"/>
-        <after process="registerSvacTuple" status="SUCCESS"/>
-<!-- We don't have TKR alarms (yet?)
-        <after process="registerTkrAlarm" status="SUCCESS"/>
--->
-        <after process="registerTkrReport" status="SUCCESS"/>
         <after process="registerVerifyHisto" status="SUCCESS"/>
         <after process="scanReconChunks" status="SUCCESS"/>
-        <after process="tkrTrendLogger" status="SUCCESS"/>
+        <after process="scanSvacChunks" status="SUCCESS"/>
+        <after process="scanTkrAnalysis" status="SUCCESS"/>
         <after process="verifyErrorLogger" status="SUCCESS"/>
         <after process="verifyFt1ErrorLogger" status="SUCCESS"/>
         <after process="verifyFt2ErrorLogger" status="SUCCESS"/>
@@ -2910,6 +2695,34 @@
         </script>
         <depends>
           <after process="mergeReconChunks" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="mergeSvacChunks" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="goodPis">${pipeline.getCurrentStream().getParentStream().getProcessInstance("scanSvacChunks").getVariable("goodPis")}</var>  
+          <var name="outFileTypes">svac</var>
+          <var name="%(svac_versionName)s">%(svac_version)s</var>
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=250]&quot; "/>
+        <depends>
+          <after process="getTimes" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="registerSvacTuple" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="parentProcess">mergeSvacChunks</var>
+          <var name="fileType">svac</var>
+          <var name="timeProcess">getTimes</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="mergeSvacChunks" status="SUCCESS"/>
         </depends>
       </process>
 
@@ -3017,10 +2830,189 @@
         </depends>
       </process>
 
+      <process name="mergeTkrAnalysis" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="goodPis">${pipeline.getCurrentStream().getParentStream().getProcessInstance("scanTkrAnalysis").getVariable("goodPis")}</var>  
+          <var name="outFileTypes">tkrAnalysis</var>
+          <var name="%(tkrAnalysis_versionName)s">%(tkrAnalysis_version)s</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <depends>
+          <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
+          <after process="getTimes" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="registerTkrAnalysis" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="parentProcess">mergeTkrAnalysis</var>
+          <var name="fileType">tkrAnalysis</var>
+          <var name="timeProcess">getTimes</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="mergeTkrAnalysis" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="tkrMonitor" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="%(tkrAnalysis_versionName)s">%(tkrAnalysis_version)s</var>
+          <var name="%(tkrMonitor_versionName)s">%(tkrMonitor_version)s</var>
+          <var name="%(tkrReport_versionName)s">%(tkrReport_version)s</var>
+          <!-- <var name="%(tkrAlarm_versionName)s">%(tkrAlarm_version)s</var> -->
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/tkrMonitor.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <depends>
+          <after process="registerTkrAnalysis" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="registerTkrMonitor" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="parentProcess">tkrMonitor</var>
+          <var name="fileType">tkrMonitor</var>
+          <var name="timeProcess">getTimes</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="tkrMonitor" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="registerTkrReport" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="parentProcess">tkrMonitor</var>
+          <var name="fileType">tkrReport</var>
+          <var name="timeProcess">getTimes</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="tkrMonitor" status="SUCCESS"/>
+        </depends>
+      </process>
+
+<!-- We don't have TKR alarms yet
+      <process name="registerTkrAlarm" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="parentProcess">tkrMonitor</var>
+          <var name="fileType">tkrAlarm</var>
+          <var name="timeProcess">getTimes</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="tkrMonitor" status="SUCCESS"/>
+        </depends>
+      </process>
+ -->
+
+      <process name="tkrTrend" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">tkrMonitor</var>
+          <var name="outFileTypes">tkrTrend</var>
+          <var name="%(tkrMonitor_versionName)s">%(tkrMonitor_version)s</var>
+          <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <depends>
+          <after process="registerTkrMonitor" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="registerTkrTrend" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="parentProcess">tkrTrend</var>
+          <var name="fileType">tkrTrend</var>
+          <var name="timeProcess">getTimes</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="tkrTrend" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="ingestTkrTrend" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="reportType">tkrTrend</var>
+          <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <depends>
+          <after process="registerTkrTrend" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="tkrTrendAlarm" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">tkrTrend</var>
+          <var name="outFileTypes">tkrTrendAlarm</var>
+          <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
+          <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <depends>
+          <after process="registerTkrTrend" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="registerTkrTrendAlarm" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="parentProcess">tkrTrendAlarm</var>
+          <var name="fileType">tkrTrendAlarm</var>
+          <var name="timeProcess">getTimes</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="tkrTrendAlarm" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="ingestTkrTrendRun" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="reportType">tkrTrendAlarm</var>
+          <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <depends>
+          <after process="registerTkrTrendAlarm" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="tkrTrendLogger" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">tkrTrendAlarm</var>
+          <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <depends>
+          <after process="registerTkrTrendAlarm" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
       <process name="cleanupChunks" autoRetryMaxAttempts="%(retries)s">
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
-          <after process="mergeReconChunks" status="SUCCESS"/>
+          <after process="registerRecon" status="SUCCESS"/>
+          <after process="registerSvacTuple" status="SUCCESS"/>
+          <after process="registerTkrReport" status="SUCCESS"/>
         </depends>
       </process>
 
@@ -3030,12 +3022,17 @@
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/lockFile.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
-          <after process="registerRecon" status="SUCCESS"/>
-          <after process="cleanupChunks" status="SUCCESS"/>
-          <after process="registerVerifyHistoComp" status="SUCCESS"/>
+          <after process="ingestTkrTrend" status="SUCCESS"/>
+          <after process="ingestTkrTrendRun" status="SUCCESS"/>
           <after process="ingestVerifyErrorRunComp" status="SUCCESS"/>
-          <after process="verifyErrorLoggerComp" status="SUCCESS"/>
           <after process="ingestVerifyErrorAlarmRunComp" status="SUCCESS"/>
+<!-- We don't have TKR alarms (yet?)
+          <after process="registerTkrAlarm" status="SUCCESS"/>
+-->
+          <after process="registerVerifyHistoComp" status="SUCCESS"/>
+          <after process="tkrTrendLogger" status="SUCCESS"/>
+          <after process="verifyErrorLoggerComp" status="SUCCESS"/>
+          <after process="cleanupChunks" status="SUCCESS"/>
         </depends>
       </process>
 

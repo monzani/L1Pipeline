@@ -1,3 +1,9 @@
+2.11
+-----------------
+Moving mergeSvacChunks to cleanupCompleteRun
+Moving the tkr monitoring modules to cleanupCompleteRun
+
+
 2.10
 -----------------
 First step at putting back normalized rates
