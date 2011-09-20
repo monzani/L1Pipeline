@@ -14,7 +14,9 @@ if theSet:
     pass
 print 'ivs:', ivs
 
-btiProcess = pipeline.getProcessInstance(btiProcess)
+currentStream = pipeline.getCurrentStream()
+
+btiProcess = currentStream.getProcessInstance(btiProcess)
 badRanges = btiProcess.getVariable("badRanges")
 ranges = []
 if badRanges == 'x':
@@ -55,7 +57,7 @@ for (range, iv) in stuff:
     interval.setFt2EndPeriod(stop)
     continue
 
-exportProcess = pipeline.getProcessInstance("exportFT2")
+exportProcess = currentStream.getProcessInstance("exportFT2")
 exportTime = exportProcess.getVariable("exportTime")
 millis = long(float(exportTime) * 1000)
 print millis
