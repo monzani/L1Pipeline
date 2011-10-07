@@ -273,14 +273,6 @@ procVer = 120
 cmtPath = ':'.join([L1Build, glastLocation, glastExt])
 
 cmtPackages = {
-    'EngineeringModelRoot': {
-        'repository': 'svac',
-        'version': 'v4r4',
-        },
-    'ft2Util': {
-        'repository': '',
-        'version': 'v1r2p31',
-        },
     'Monitor': {
         'repository': 'svac',
         'version': 'Monitor-01-09-02',
@@ -300,9 +292,17 @@ sConsPackages = {
         'repository': '',
         'version': 'calibTkrUtil-02-09-06',
         },
+    'EngineeringModelRoot': {
+        'repository': 'svac',
+        'version': 'EngineeringModelRoot-05-00-00',
+        },
     'findGaps': {
         'repository': 'svac',
         'version': 'findGaps-02-02-00',
+        },
+    'ft2Util': {
+        'repository': '',
+        'version': 'ft2Util-01-02-32',
         },
     'TestReport': {
         'repository': 'svac',
