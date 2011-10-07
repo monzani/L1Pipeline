@@ -40,7 +40,7 @@ def fastMon(files, idArgs, workDir, staged, **args):
 
     os.environ.update(package['env'])
 
-    dmRoot = config.L1Build
+    dmRoot = config.L1Cmt
 
     extra = package['extraSetup']
     setup = package['setup']
