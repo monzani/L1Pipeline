@@ -277,10 +277,6 @@ cmtPackages = {
         'repository': 'svac',
         'version': 'v4r4',
         },
-    'findGaps': {
-        'repository': 'svac',
-        'version': 'v1r2',
-        },
     'ft2Util': {
         'repository': '',
         'version': 'v1r2p31',
@@ -293,10 +289,6 @@ cmtPackages = {
         'repository': 'users/richard',
         'version': 'v0r6',
         },
-    'TestReport': {
-        'repository': 'svac',
-        'version': 'TestReport-11-04-00',
-        },
     }
 
 sConsPackages = {
@@ -307,6 +299,14 @@ sConsPackages = {
     'calibTkrUtil': {
         'repository': '',
         'version': 'calibTkrUtil-02-09-06',
+        },
+    'findGaps': {
+        'repository': 'svac',
+        'version': 'findGaps-02-02-00',
+        },
+    'TestReport': {
+        'repository': 'svac',
+        'version': 'TestReport-12-00-00',
         },
     }
 
