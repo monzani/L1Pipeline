@@ -9,16 +9,17 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "2.12"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "3.0"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
 creator = '-'.join([L1Name, L1Version])
     
-#L1Cmt = os.path.join(installRoot, 'builds')
-L1Volume = '/afs/slac/g/glast/ground/releases/volume13'
-L1CmtBase = os.environ.get('L1_BUILD_DIR') or os.path.join(L1Volume, 'L1Proc')
-L1Cmt = os.path.join(L1CmtBase, L1Version)
+#L1Build = os.path.join(installRoot, 'builds')
+#L1Volume = '/afs/slac/g/glast/ground/releases/volume13'
+L1Volume = '/afs/slac/g/glast/ground/releases/volume14/tempME'
+L1BuildBase = os.environ.get('L1_BUILD_DIR') or os.path.join(L1Volume, 'L1Proc')
+L1Build = os.path.join(L1BuildBase, L1Version)
 
 doCleanup = True
 
@@ -177,30 +178,30 @@ glastRoot = '/afs/slac.stanford.edu/g/glast'
 groundRoot = os.path.join(glastRoot, 'ground')
 glastSetup = os.path.join(groundRoot, 'scripts', 'group.sh')
 glastSetupCsh = os.path.join(groundRoot, 'scripts', 'group.cshrc')
+scons = '/afs/slac.stanford.edu/g/glast/applications/install/@sys/usr/bin/scons'
 #
 cmtConfig = 'rhel4_gcc34opt'
-installArea = os.path.join(L1Cmt, 'InstallArea', cmtConfig)
+installArea = os.path.join(L1Build, 'InstallArea', cmtConfig)
 installBin = os.path.join(installArea, 'bin')
 #
-glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
-glastExtSCons = os.path.join(groundRoot, 'GLAST_EXT', 'redhat4-i686-32bit-gcc34') 
+glastExt = os.path.join(groundRoot, 'GLAST_EXT', 'redhat4-i686-32bit-gcc34')
+glastExtSCons = glastExt
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume11')
-glastVersion = 'v17r35p23'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
+glastVersion = '17-35-24-gr07'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
 glastName = '-'.join((releaseName, glastVersion))
-glastLocation = os.path.join(releaseDir, glastName)
+glastLocation = os.path.join(releaseDir, glastName) 
 gleam = os.path.join(glastLocation, 'bin', gleamPackage)
-cmtScript = os.path.join(
-    glastLocation,
-    releaseName,
-    glastVersion,
-    'cmt',
-    'setup.sh',
-    ) # do we need this?
-#
+
+GR = glastLocation
+grConfig = "redhat4-i686-32bit-gcc34-Optimized"
+grBinDir = os.path.join(GR, 'bin', grConfig)
+grExeDir = os.path.join(GR, 'exe', grConfig)
+grSetup = os.path.join(grBinDir, '_setup.sh')
+
 digiOptions = {
     'LCI': os.path.join(L1Data, 'digi.jobOpt'),
     'LPA': os.path.join(L1Data, 'digi.jobOpt'),
@@ -215,6 +216,16 @@ rootSys = os.path.join(glastExt, 'ROOT/v5.26.00a-gl1/gcc34')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
+stDir = os.path.join(groundRoot, 'releases', 'volume11')
+stVersion = '09-24-00'
+stName = 'ScienceTools'
+
+ST = os.path.join(stDir, "ScienceTools-%s" % stVersion)
+PFILES = ".;/dev/null"
+stConfig = "redhat4-i686-32bit-gcc34-Optimized"
+stBinDir = os.path.join(ST, 'bin', stConfig)
+stExeDir = os.path.join(ST, 'exe', stConfig)
+stSetup = os.path.join(stBinDir, '_setup.sh')
 
 isoc = '/afs/slac/g/glast/isoc/flightOps'
 #isocPlatform = os.popen(os.path.join(isoc, 'isoc-platform')).readline().strip()
@@ -249,17 +260,6 @@ l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
 # LSF pre-exec option for run & throttle locking
 lockOption = " -E &quot;${isocRun} ${L1ProcROOT}/lockFile.py&quot; "
 
-stDir = os.path.join(groundRoot, 'releases', 'volume11')
-stVersion = '09-24-00'
-stName = 'ScienceTools'
-
-ST = os.path.join(stDir, "ScienceTools-%s" % stVersion)
-PFILES = ".;/dev/null"
-stConfig = "redhat4-i686-32bit-gcc34-Optimized"
-stBinDir = os.path.join(ST, 'bin', stConfig)
-stExeDir = os.path.join(ST, 'exe', stConfig)
-stSetup = os.path.join(stBinDir, '_setup.sh')
-
 if testMode:
     # aspLauncher = '/afs/slac/g/glast/ground/links/data/ASP/aspLauncher_dev.sh'
     aspLauncher = '/bin/true'
@@ -270,34 +270,12 @@ aspAlreadyLaunched = 160
 
 procVer = 120
 
-cmtPath = ':'.join([L1Cmt, glastLocation, glastExt])
-stCmtPath = ':'.join([L1Cmt, ST, glastExt])
+cmtPath = ':'.join([L1Build, glastLocation, glastExt])
 
 cmtPackages = {
-    'calibGenTKR': {
-        'repository': '',
-        'version': 'v4r5',
-        },
-    'calibTkrUtil': {
-        'repository': '',
-        'version': 'v2r9p1',
-        #'version': 'v2r7p3',
-        },
-    'Common': {
-        'repository': 'dataMonitoring',
-        'version': 'Common-06-11-02',
-        },
     'EngineeringModelRoot': {
         'repository': 'svac',
         'version': 'v4r4',
-        },
-    'evtClassDefs': {
-        'repository': '',
-        'version': 'evtClassDefs-00-19-04',
-        },
-    'FastMon': {
-        'repository': 'dataMonitoring',
-        'version': 'FastMon-05-02-01',
         },
     'findGaps': {
         'repository': 'svac',
@@ -306,10 +284,6 @@ cmtPackages = {
     'ft2Util': {
         'repository': '',
         'version': 'v1r2p31',
-        },
-    'GPLtools': {
-        'repository': '',
-        'version': 'GPLtools-02-00-00',
         },
     'Monitor': {
         'repository': 'svac',
@@ -325,14 +299,41 @@ cmtPackages = {
         },
     }
 
+sConsPackages = {
+    'calibGenTKR': {
+        'repository': '',
+        'version': 'calibGenTKR-04-08-01',
+        },
+    'calibTkrUtil': {
+        'repository': '',
+        'version': 'calibTkrUtil-02-09-06',
+        },
+    }
+
 cvsPackages = {
+    'Common': {
+        'repository': 'dataMonitoring',
+        'version': 'Common-06-11-02',
+        },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
         'version': 'DigiReconCalMeritCfg-01-20-02',
         },
+    'evtClassDefs': {
+        'repository': '',
+        'version': 'evtClassDefs-00-19-04',
+        },
+    'FastMon': {
+        'repository': 'dataMonitoring',
+        'version': 'FastMon-05-02-01',
+        },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
         'version': 'FastMonCfg-02-02-01',
+        },
+    'GPLtools': {
+        'repository': '',
+        'version': 'GPLtools-02-00-00',
         },
     'IGRF': {
         'repository': 'dataMonitoring',
@@ -340,14 +341,14 @@ cvsPackages = {
         },
     }
 
-packages = dict(cmtPackages)
-packages.update(cvsPackages)
+packages = dict(cvsPackages)
+packages.update(sConsPackages)
+packages.update(cmtPackages)
 
 # fill in standard values for standard packages
 for packName in packages:
     package = packages[packName]
-    package['root'] = os.path.join(
-        L1Cmt, package['repository'], packName, package['version'])
+    package['root'] = os.path.join(L1Build, packName)
     package['bin'] = os.path.join(package['root'], cmtConfig)
     package['cmtDir'] = os.path.join(package['root'], 'cmt')
     package['setup'] = os.path.join(package['cmtDir'], 'setup.sh')
@@ -662,7 +663,7 @@ rootPath = os.path.join(rootSys, 'lib')
 
 libraryPath = ':'.join(
     [
-        os.path.join(L1Cmt, 'lib'), 
+        os.path.join(L1Build, 'lib'), 
         rootPath,
         ])
 
