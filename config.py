@@ -188,7 +188,7 @@ glastExt = os.path.join(groundRoot, 'GLAST_EXT', 'redhat4-i686-32bit-gcc34')
 glastExtSCons = glastExt
 #
 releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
-glastVersion = '17-35-24-gr07'
+glastVersion = '17-35-24-gr08'
 releaseName = 'GlastRelease'
 gleamPackage = 'Gleam'
 #
@@ -302,7 +302,7 @@ sConsPackages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'ft2Util-01-02-32',
+        'version': 'ft2Util-01-02-33',
         },
     'TestReport': {
         'repository': 'svac',
