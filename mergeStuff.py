@@ -26,6 +26,7 @@ import runner
 
 def slowFilesAlert(inFiles):
     """Notify log watcher or L1 mailing list or something"""
+    lines = ''.join('%s %d\n' % items for items in inFiles)
     return
 
 
@@ -65,13 +66,13 @@ def merge(files, idArgs, level, outFileTypes, staged, workDir, **args):
     expectedInFiles = fileNames.findPieces(fileType, dlId, runId, chunkId)
     realInFiles = []
     missingInFiles = []
-    slowFiles = []
+    slowInFiles = []
     for inFile in expectedInFiles:
         fileStatus = fileOps.exists(inFile)
         if fileStatus:
             realInFiles.append(inFile)
             if fileStatus > 1:
-                slowFiles.append(inFile)
+                slowInFiles.append((inFile, fileStatus))
         else:
             print >> sys.stderr, "Couldn't find input file %s" % inFile
             missingInFiles.append(inFile)
@@ -83,27 +84,24 @@ def merge(files, idArgs, level, outFileTypes, staged, workDir, **args):
         return 1
         pass
 
-    if slowFiles:
-        slowFilesAlert(slowFiles)
-
     # Here we should send a message to the log watcher if we didn't find all of
-    # the expected input files.
-    if numInFiles != len(expectedInFiles):
-        idStr = 'run %s' % runId
-        target = '%s' %runId
-        if level == 'chunk':
-            idStr += ' chunk %s' % chunkId
-            target += '.%s'  % chunkId
-            pass
+    # the expected input files or any were slow.
+    
+    idStr = 'run %s' % runId
+    target = '%s' %runId
+    if level == 'chunk':
+        idStr += ' chunk %s' % chunkId
+        target += '.%s'  % chunkId
+        pass
+    kwargs = {'tgt': target}
+
+    if missingInFiles:
         msg = """Merging %(fileType)s file for %(idStr)s could not find all expected input files.""" % locals()
         print >> sys.stderr, msg
-
-        kwargs = {'tgt': target}
-    
+        print >> sys.stderr, missingInFiles
         l1Logger.error(msg, **kwargs)
 
         print >> sys.stderr, 'Supressing cleanup.'
-
         process = pipeline.getProcess()
         streamPath = os.environ.get('PIPELINE_STREAMPATH')
         processInstance = os.environ.get('PIPELINE_PROCESSINSTANCE')
@@ -113,7 +111,14 @@ def merge(files, idArgs, level, outFileTypes, staged, workDir, **args):
             content += '%s\n' % inFile
             continue
         fileNames.makeMergeLock(runId, content)
-        
+
+        pass
+
+    if slowInFiles:
+        msg = """Merging %(fileType)s file for %(idStr)s had slow input files.""" % locals()
+        print >> sys.stderr, msg
+        print >> sys.stderr, slowInFiles
+        l1Logger.warn(msg, **kwargs)
         pass
 
     outFile = files[fileType]

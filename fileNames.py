@@ -64,7 +64,9 @@ fileTypes = {
     'ft1BadGti': 'fit',
     'ft1NoDiffRsp': 'fit',
     'ft2': 'fit',
+    'ft2NoQual': 'fit',
     'ft2Seconds': 'fit',
+    'ft2SecondsNoQual': 'fit',
     'ft2Fake': 'fit',
     'ft2Txt': 'txt',
     'gcr': 'root',
@@ -208,9 +210,9 @@ def getSite(fileName):
     return site
 
 def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None,
-             next=False, version=None):
+             next=False, version=None, ignoreName=False):
 
-    if fileType is not None:
+    if fileType is not None and not ignoreName:
         try:
             fullName = variables.getVar(fileType, 'fileName')
         except KeyError:

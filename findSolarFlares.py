@@ -8,6 +8,7 @@ import config
 import GPLinit
 
 import fileNames
+import parseBTI
 import runner
 import stageFiles
 import registerPrep
@@ -43,6 +44,11 @@ cd %(workDir)s
 
 status = runner.run(cmd)
 if status: finishOption = 'wipe'
+
+if not status:
+    ranges = parseBTI.getRangesXml(solarFlareLog)
+    parseBTI.setRangesVar(ranges)
+    pass
 
 status |= staged.finish(finishOption)
 

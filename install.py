@@ -12,7 +12,7 @@ import variables
 
 #os.chdir(config.L1ProcROOT) # ?
 
-taskNames = ['forceL1Merge', 'L1Proc', 'noReconMerge', 'setL1Status', 'P100-FT2']
+taskNames = ['forceL1Merge', 'L1Proc', 'noReconMerge', 'setL1Status', 'P100-FT2', 'flagFT2']
 
 scriptNames = {
     'placeHolderBody': 'placeHolder.py',
@@ -21,8 +21,11 @@ scriptNames = {
     'retireScriptBody': 'retireRun.py',
     'runningScriptBody': 'setRunning.py',
     'scanScriptBody': 'scanChunks.py',
+    'setupQScriptBody': 'setupQuality.py',
     'statusScriptBody': 'setStatus.py',
     'successScriptBody': 'setSuccessful.py',
+    'suggestBody': 'suggestQuality.py',
+    'wrapupQScriptBody': 'wrapupQuality.py',
     }
 
 def qualify(name):

@@ -13,7 +13,8 @@ def bad():
     runQuality.setL1RunStatus(runNumber, l1RunStatus)
     return
 
-parentPi = pipeline.getProcessInstance(parentProcess)
+currentStream = pipeline.getCurrentStream()
+parentPi = currentStream.getProcessInstance(parentProcess)
 parentStatus = parentPi.getStatus()
 if parentStatus in ['SUCCESS']:
     good()

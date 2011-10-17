@@ -4,13 +4,11 @@ import sys
 
 import config
 
+import datacatalog
 import fileNames
 import variables
 
-dlId = os.environ.get('DOWNLINK_ID')
-runId = os.environ.get('RUNID')
-  
-def prep(fileType, fileName):
+def oldAndBroken(fileType, fileName):
     """
     Deal with batch-side prep to register a file with the data catalog.
     Actual registration is done by a scriptlet (in registerStuff.py).
@@ -33,3 +31,40 @@ def prep(fileType, fileName):
     # variables.setVar(fileType, 'creator', creator) # remove me!
 
     return
+
+
+def theNewHotness(fileType, fileName):
+    """
+    This is not complete, don't try to use it yet.
+    
+    Deal with batch-side prep to register a file with the data catalog.
+    Actual registration is done during stageOut finalization.
+    This sets up some data structures so stageOut knows what to do.
+    """
+
+    taskName = os.environ['L1_TASK_NAME']
+    taskVersion =  os.environ['PIPELINE_TASKVERSION']
+    creator = '-'.join([taskName, taskVersion])
+
+    ds = datacatalog.NewDataset(os.environ['RUNID'],
+                                fileNames.fileTypes[fileType],
+                                fileNames.dataCatType(fileType),
+                                os.environ['dataCatDir'],
+                                fileNames.dataCatGroup(fileType),
+                                fileNames.getSite(fileName),
+                                fileName)
+    ds.setVersionId(fileNames.version(fileName))
+
+    attr = {'sCreator': creator,
+            'sDataSource': os.environ['DATASOURCE'],
+            'nDownlink': os.environ['DOWNLINK_ID'],
+            'sIntent': os.environ[''],
+            'nMetStart': os.environ[''],
+            'nMetStop': os.environ[''],
+            'nMootKey': os.environ[''],
+            'nRun': os.environ['runNumber']}
+
+    return ds, attr
+
+
+prep = oldAndBroken

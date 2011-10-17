@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "2.12"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "2.13"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -19,6 +19,7 @@ creator = '-'.join([L1Name, L1Version])
 L1Volume = '/afs/slac/g/glast/ground/releases/volume13'
 L1CmtBase = os.environ.get('L1_BUILD_DIR') or os.path.join(L1Volume, 'L1Proc')
 L1Cmt = os.path.join(L1CmtBase, L1Version)
+L1Bin = os.path.join(L1Cmt, 'bin')
 
 doCleanup = True
 
@@ -309,7 +310,7 @@ cmtPackages = {
         },
     'GPLtools': {
         'repository': '',
-        'version': 'GPLtools-02-00-00',
+        'version': 'GPLtools-02-00-00-wf02',
         },
     'Monitor': {
         'repository': 'svac',
@@ -728,6 +729,10 @@ crashedStatus = 'Failed'
 doneStatus = 'Complete'
 incompleteStatus = 'Incomplete'
 waitingStatus = 'InProgress'
+
+solarFlareFlag = -1
+
+astroTools = "/afs/slac/g/glast/applications/astroTools/astrotools_setup.sh"
 
 os.environ['CMTCONFIG'] = cmtConfig
 os.environ['CMTPATH'] = cmtPath

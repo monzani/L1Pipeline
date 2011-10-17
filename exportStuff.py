@@ -27,6 +27,7 @@ import glob
 import os
 import re
 import sys
+import time
 
 import config
 
@@ -34,6 +35,7 @@ import GPLinit
 
 import fileNames
 import runner
+import pipeline
 import stageFiles
 
 
@@ -66,6 +68,9 @@ FASTCopy.py %(send)s %(args)s
 
 status = runner.run(cmd)
 if status: finishOption = 'wipe'
+
+exportTime = time.time()
+pipeline.setVariable("exportTime", exportTime)
 
 status |= staged.finish(finishOption)
 

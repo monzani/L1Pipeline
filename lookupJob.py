@@ -3,9 +3,16 @@ import sys
 import time
 
 import config
+
+import acqQuery
+import chunkTester
+import fileNames
+import finders
+import pipeline
 import variables
 
 runId = os.environ['RUNID']
+runNumber = int(os.environ['runNumber'])
 
 #location = 'SLAC_XROOT'
 #locOpt = ' --site %s ' % location
@@ -20,7 +27,9 @@ folders = {
     'MAGIC7L1': oldFolder,
     }
 
-datacat = '''/afs/slac.stanford.edu/u/gl/glast/datacat/prod/datacat find --group %s --filter 'Name=="%s"'  --show-unscanned-locations   --show-non-ok-locations  %s '''
+mode = config.mode
+
+datacat = '''/afs/slac.stanford.edu/u/gl/glast/datacat/%s/datacat find --group %s --filter 'Name=="%s"'  --show-unscanned-locations   --show-non-ok-locations  %s '''
 
 then = time.time()
 print >> sys.stderr, then
@@ -30,7 +39,7 @@ for fileType in typeList:
 
     folder = folders.get(uType, newFolder)
 
-    cmd = datacat % (uType, runId, folder)
+    cmd = datacat % (mode, uType, runId, folder)
     print >> sys.stderr, cmd
     fileName = os.popen(cmd).read().strip()
 
@@ -38,10 +47,31 @@ for fileType in typeList:
         print >> sys.stderr, "Couldn't get file name for %s" % fileType
         sys.exit(1)
         pass
+
+    version = fileNames.version(fileName)
     
-    variables.setVar(fileType, 'fileName', fileName)
+    variables.setVar(fileType, 'ver', version)
 
     now = time.time()
     print >> sys.stderr, now - then
     then = now
     continue
+
+
+mootKey, mootAlias = acqQuery.query([runNumber], ['moot_key', 'moot_alias'])[runNumber]
+pipeline.setVariable('mootKey', mootKey)
+pipeline.setVariable('mootAlias', mootAlias)
+
+
+# check that the chunks aren't crazy
+chunks = finders.findAndReadChunkLists(runId)
+chunkHeaders = [chunkData['headerData'] for chunkId, chunkData in chunks]
+testResult = chunkTester.verifyList(chunkHeaders)
+if not testResult:
+    print >> sys.stderr, 'Run %s has bad crazy chunks.' % runId
+    status |= 1
+    sys.exit(status)
+    pass
+tStart, tStop = testResult
+pipeline.setVariable('tStart', '%.17g' % tStart)
+pipeline.setVariable('tStop', '%.17g' % tStop)

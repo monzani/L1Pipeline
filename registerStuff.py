@@ -5,13 +5,16 @@
 
 from java.util import HashMap
 from org.glast.datacat.client.sql import NewDataset
+# from org.srs.datacat.client.sql import NewDataset # for test server
 
 def getVar(fileType, name):
     mangledName = '_'.join([nameManglingPrefix, fileType, name])
     value = parentPI.getVariable(mangledName)
     return value
 
-parentPI = pipeline.getProcessInstance(parentProcess)
+currentStream = pipeline.getCurrentStream()
+
+parentPI = currentStream.getProcessInstance(parentProcess)
 
 runNumber = int(RUNID[1:])
 
@@ -23,7 +26,7 @@ site = getVar(fileType, 'site')
 fileName = getVar(fileType, 'fileName')
 version = getVar(fileType, 'ver')
 
-fcPi = pipeline.getProcessInstance(timeProcess)
+fcPi = currentStream.getProcessInstance(timeProcess)
 lessBrokenTStart = fcPi.getVariable('tStart')
 lessBrokenTStop = fcPi.getVariable('tStop')
 mootAlias = fcPi.getVariable('mootAlias')

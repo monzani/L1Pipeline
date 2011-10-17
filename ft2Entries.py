@@ -22,7 +22,7 @@ runId = os.environ['RUNID']
 staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption
 
-fileType = 'ft2Txt'
+fileType = 'ft2SecondsNoQual'
 
 app = config.apps['makeFT2']
 
@@ -38,9 +38,7 @@ realM7File = fileNames.fileName('magic7L1', dlId, runId)
 stagedM7File=  staged.stageIn(realM7File)
 
 #output
-#txtFt2File = fileNames.fileName(fileType, dlId, runId, next=True)
-#stagedFt2TxtFile = staged.stageOut(txtFt2File)
-ft2Seconds = fileNames.fileName('ft2Seconds', dlId, runId, next=True)
+ft2Seconds = fileNames.fileName(fileType, dlId, runId, next=True)
 stagedFt2FitsFile = staged.stageOut(ft2Seconds)
 
 workDir = os.path.dirname(stagedFt2FitsFile)
@@ -103,8 +101,7 @@ status = runner.run(cmd)
 if status: finishOption = 'wipe'
 
 if not status:
-    #registerPrep.prep(fileType, txtFt2File)
-    registerPrep.prep('ft2Seconds', ft2Seconds)
+    registerPrep.prep(fileType, ft2Seconds)
     pass
 
 status |= staged.finish(finishOption)

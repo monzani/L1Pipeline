@@ -1,3 +1,10 @@
+2.13
+-----------------
+Add BTI stuff.
+Retry when testing file existence (needs a new GPLTools) and notify log
+wathcer if it takes more than 1 try.
+
+
 2.12
 -----------------
 New monitoring tags for normalized rates and fastMonHist

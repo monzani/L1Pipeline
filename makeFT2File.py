@@ -19,12 +19,12 @@ runId = os.environ['RUNID']
 staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption
 
-fileType = 'ft2'
+fileType = 'ft2NoQual'
 
 app = config.apps['mergeFT2']
 
 # input
-ft2SecondsFile = fileNames.fileName('ft2Seconds', dlId, runId)
+ft2SecondsFile = fileNames.fileName('ft2SecondsNoQual', dlId, runId)
 stagedFt2SecondsFile = staged.stageIn(ft2SecondsFile)
 
 # output
