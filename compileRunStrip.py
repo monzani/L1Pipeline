@@ -18,7 +18,7 @@ import runner
 workDir = os.path.join('/tmp', `os.getpid()`)
 os.mkdir(workDir)
 
-codeDir = config.packages['Monitor']['bin']
+codeDir = config.l1ExeDir
 
 # You have to supply file names, but you don't actually need a file.
 # This seems unlikely to exist.
@@ -47,7 +47,7 @@ for reportType in reportTypes:
     options = config.monitorOptions[reportType]
 
     package = config.packages['Monitor']
-    setup = package['setup']
+    l1Setup = config.l1Setup
     app = package['app']
 
 
@@ -71,10 +71,16 @@ for reportType in reportTypes:
     tmpOut = tmpHead + '_time.root'
     htmlHead = 'html'
 
-    cmd = """cd %(workDir)s
-source %(setup)s
-%(app)s -b %(tdBin)s -c %(options)s %(inFileOpts)s -o %(tmpHead)s -g %(htmlHead)s -w %(codeDir)s -q || exit 1
-""" % locals()
+    instDir = config.L1Build
+    glastExt = config.glastExt
+
+    cmd = '''
+    cd %(workDir)s
+    export INST_DIR=%(instDir)s 
+    export GLAST_EXT=%(glastExt)s
+    source %(l1Setup)s
+    %(app)s -b %(tdBin)s -c %(options)s %(inFileOpts)s -o %(tmpHead)s -g %(htmlHead)s -w %(codeDir)s -q || exit 1
+    ''' % locals()
 
     status = runner.run(cmd)
 

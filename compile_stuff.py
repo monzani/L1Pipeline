@@ -14,14 +14,12 @@ import runner
 if len(sys.argv) > 1:
     names = sys.argv[1:]
 else:
-    names = config.cvsPackages.keys() + config.sConsPackages.keys() + config.cmtPackages.keys()
+    names = config.cvsPackages.keys() + config.sConsPackages.keys() 
     pass
 
 def doPackage(packName):
     if packName in config.sConsPackages:
         doSConsPackage(packName)
-    #elif packName in config.cmtPackages:
-    #    doCmtPackage(packName)
     elif packName in config.cvsPackages:
         doCvsPackage(packName)
         pass
@@ -56,34 +54,6 @@ def doSConsPackage(packName):
         runner.run(cmd)
         pass
     return
-
-
-
-def doCmtPackage(packName):
-    package = config.packages[packName]
-
-    args = {
-        'L1Build': config.L1Build,
-        }
-    args.update(package)
-
-    cmd = '''
-    root=%(root)s
-    rm -rf $root
-    mkdir -p $(dirname $root)
-    cd %(L1Build)s
-    cvs co -r %(version)s -d %(root)s %(checkOutName)s
-    ''' % args
-
-    runner.run(cmd)
-
-    if packName == "Monitor":
-        #cmd = os.path.join(config.L1ProcROOT, 'compileRunStrip.py')
-        #runner.run(cmd)
-        pass
-    return
-
-
 
 
 def doCvsPackage(packName):

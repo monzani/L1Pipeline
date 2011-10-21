@@ -66,12 +66,15 @@ dataSource = os.environ['DATASOURCE']
 geometry = 'flight/flightSegVols.xml'
 os.environ['gleamGeometry'] = geometry
 
-#setupScript = config.cmtScript
 app = config.apps['recon']
 options = config.reconOptions[dataSource]
+instDir = config.glastLocation
+glastExt = config.glastExt
 
 cmd = '''
 cd %(workDir)s
+export INST_DIR=%(instDir)s 
+export GLAST_EXT=%(glastExt)s 
 %(app)s %(options)s
 ''' % locals()
 

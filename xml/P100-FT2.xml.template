@@ -10,7 +10,6 @@
     <var name="DATASOURCE">LPA</var>
     <var name="DOWNLINK_ID">0</var>
     <var name="DOWNLINK_RAWDIR">/nowhere/0</var>
-    <var name="CMTPATH">%(cmtPath)s</var>
     <var name="creator">${L1_TASK_NAME}-${L1_TASK_VERSION}</var>
     <var name="isocMode">%(isocMode)s</var>
     <var name="isocRun">%(isocRun)s</var>

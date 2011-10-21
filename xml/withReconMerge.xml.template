@@ -7,7 +7,6 @@
 <task name="%(L1Name)s" version="%(L1Version)s" type="Data">
 
   <variables>
-    <var name="CMTPATH">%(cmtPath)s</var>
     <var name="creator">%(creator)s</var>
     <var name="dataCatDir">%(dataCatDir)s</var>
     <var name="isocMode">%(isocMode)s</var>

@@ -50,11 +50,15 @@ logFile = os.path.join(workDir, logBase)
 
 python = config.python
 app = config.apps['tkrMonitor']
-cmtScript = config.packages['calibTkrUtil']['setup']
+l1Setup = config.l1Setup
+instDir = config.L1Build
+glastExt = config.glastExt
 
 cmd = """
 cd %(workDir)s
-source %(cmtScript)s
+export INST_DIR=%(instDir)s 
+export GLAST_EXT=%(glastExt)s
+source %(l1Setup)s
 /afs/slac.stanford.edu/g/glast/ground/GLAST_EXT/rh9_gcc32opt/python/2.5.1/bin/python2.5 %(app)s %(stagedInFile)s %(stagedMonFile)s %(htmlDir)s %(stagedAlarmFile)s %(logFile)s
 """ % locals()
 

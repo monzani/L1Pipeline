@@ -8,7 +8,6 @@
 
   <variables>
     <var name="baseVersion">%(baseVersion)s</var>
-    <var name="CMTPATH">%(cmtPath)s</var>
     <var name="creator">%(creator)s</var>
     <var name="isocMode">%(isocMode)s</var>
     <var name="isocRun">%(isocRun)s</var>

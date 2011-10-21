@@ -31,7 +31,7 @@ def alarmHandler(files, idArgs, inFileTypes, level, outFileTypes, workDir, **arg
     python = config.python
 
     package = config.packages['Common']
-    setup = package['setup']
+    l1Setup = config.l1Setup
 
     if fileType in ['fastMonError','verifyLog','verifyFt1Error','verifyFt2Error','verifyMeritError']:
         app = config.apps['errorHandler']
@@ -46,9 +46,14 @@ def alarmHandler(files, idArgs, inFileTypes, level, outFileTypes, workDir, **arg
 
     configFile = config.alarmConfigs[fileType]
 
+    instDir = config.L1Build
+    glastExt = config.glastExt
+         
     cmd = '''
+    export INST_DIR=%(instDir)s 
+    export GLAST_EXT=%(glastExt)s 
+    source %(l1Setup)s
     cd %(workDir)s
-    source %(setup)s
     %(python)s %(app)s -c %(configFile)s %(exceptionArgs)s %(refArgs)s -o %(stagedAlarmFile)s %(stagedInFile)s
     ''' % locals()
 

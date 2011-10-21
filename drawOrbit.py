@@ -10,7 +10,6 @@ import runner
 def drawOrbit(files, **extra):
     status = 0
     package = config.packages['FastMon']
-    setup = package['setup']
     python = config.python
     app = config.apps['drawOrbit']
     saaDef = package['saaDefinition']
@@ -21,7 +20,6 @@ def drawOrbit(files, **extra):
     workDir = os.path.dirname(outFile)
     cmd = '''
     cd %(workDir)s
-    source %(setup)s
     %(python)s %(app)s -s %(saaDef)s -o %(outFile)s %(inFile)s
     ''' % locals()
     status |= runner.run(cmd)

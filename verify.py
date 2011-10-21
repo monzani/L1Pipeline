@@ -31,11 +31,11 @@ realVerifyHistoFile = fileNames.fileName('verifyHisto', dlId, runId, next=True)
 verifyHistoFile = staged.stageOut(realVerifyHistoFile)
 
 workDir = os.path.dirname(verifyLogFile)
-
-cmtPath = config.cmtPath
+l1Setup = config.l1Setup
+instDir = config.L1Build
+glastExt = config.glastExt
 
 package = config.packages['TestReport']
-setupScript = package['setup']
 app = config.apps['runVerify']
 jobOption = config.verifyOptions[completeness] 
 truncation = config.verifyOptions['Truncation']
@@ -47,8 +47,9 @@ if (verifyLock):
 
 cmd = '''
 cd %(workDir)s
-export CMTPATH=%(cmtPath)s
-source %(setupScript)s
+export INST_DIR=%(instDir)s 
+export GLAST_EXT=%(glastExt)s
+source %(l1Setup)s
 %(app)s -d %(stagedDigiFile)s -x %(verifyLogFile)s -r %(verifyHistoFile)s -t %(truncation)s %(jobOption)s
 ''' % locals()
 

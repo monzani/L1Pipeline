@@ -32,20 +32,20 @@ fitsFt2File = fileNames.fileName(fileType, dlId, runId, next=True)
 stagedFt2FitsFile = staged.stageOut(fitsFt2File)
 
 workDir = os.path.dirname(stagedFt2FitsFile)
-
-setupScript = config.packages['ft2Util']['setup']
-
+l1Setup = config.l1Setup
+instDir = config.L1Build
+glastExt = config.glastExt
+            
 version = fileNames.version(fitsFt2File)
-
-cmtPath = config.cmtPath
 
 template = config.ft2Template
 templOpt = '-new_tpl %s' % template
 
 cmd = '''
 cd %(workDir)s
-export CMTPATH=%(cmtPath)s
-source %(setupScript)s
+export INST_DIR=%(instDir)s 
+export GLAST_EXT=%(glastExt)s
+source %(l1Setup)s
 %(app)s -FT2_fits_File %(stagedFt2SecondsFile)s -FT2_fits_merged_File %(stagedFt2FitsFile)s -Version %(version)s %(templOpt)s
 ''' % locals()
 

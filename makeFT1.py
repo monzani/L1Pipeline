@@ -26,7 +26,7 @@ def makeFT1(files, inFileTypes, outFileTypes, workDir, **args):
     evtClassDefsPython = config.packages['evtClassDefs']['python']
 
     stSetup = config.stSetup
-    app = os.path.join(config.stExeDir, 'makeFT1')
+    app = config.apps['makeFT1']
 
     stagedMeritFile = files[inFileType]
     stagedFt1File = files[outFileType]
@@ -47,7 +47,7 @@ def makeFT1(files, inFileTypes, outFileTypes, workDir, **args):
     procVer = config.procVer
 
     instDir = config.ST
-    glastExt = config.glastExtSCons
+    glastExt = config.glastExt
 
     cmd = '''
     cd %(workDir)s

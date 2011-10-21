@@ -24,7 +24,7 @@ def fixGTI(files, inFileTypes, outFileTypes, workDir, **args):
     outFileType = outFileTypes[0]
 
     stSetup = config.stSetup
-    app = os.path.join(config.stExeDir, 'gtmktime')
+    app = config.apps['fixGTI']
 
     stagedInFile = files[inFileType]
     stagedFt2File = files[ft2FileType]
@@ -39,7 +39,7 @@ def fixGTI(files, inFileTypes, outFileTypes, workDir, **args):
     filter = 'LIVETIME>0'
 
     instDir = config.ST
-    glastExt = config.glastExtSCons
+    glastExt = config.glastExt
 
     cmd = '''
     cd %(workDir)s
