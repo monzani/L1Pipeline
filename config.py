@@ -612,7 +612,7 @@ verifyOptions = {
     }
 
 ft2Pad = 1.0 # pad time range with this on either end whan making fakeFT2
-ft2Template = os.path.join('$FITSGENROOT', 'data', 'ft2.tpl')
+ft2Template = os.path.join(glastLocation, 'fitsGen', 'data', 'ft2.tpl')
 ft2liveTimeTolerance = '1e-12'
 
 m7Pad = 10 # pad time range with this on either end whan making m7
