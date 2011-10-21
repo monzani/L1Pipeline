@@ -632,7 +632,7 @@ runIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/%s/bi
 rootPath = os.path.join(rootSys, 'lib')
 libraryPath = ':'.join(
     [
-        os.path.join(L1Build, 'lib'), 
+        os.path.join(L1Build, 'lib', optConfig), 
         rootPath,
         ])
 

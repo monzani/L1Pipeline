@@ -234,6 +234,7 @@
         <var name="goodPis">${pipeline.processInstance("scanDigiHist").getVariable("goodPis")}</var>  
         <var name="outFileTypes">digiHist</var>
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
@@ -457,6 +458,7 @@
         <var name="goodPis">${pipeline.processInstance("scanDigiTrend").getVariable("goodPis")}</var>  
         <var name="outFileTypes">digiTrend</var>
         <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
@@ -637,6 +639,7 @@
         <var name="goodPis">${pipeline.processInstance("scanCalTrend").getVariable("goodPis")}</var>  
         <var name="outFileTypes">calTrend</var>
         <var name="%(calTrend_versionName)s">%(calTrend_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
@@ -923,6 +926,7 @@
         <var name="goodPis">${pipeline.processInstance("scanFastMonTuple").getVariable("goodPis")}</var>  
         <var name="outFileTypes">fastMonTuple</var>
         <var name="%(fastMonTuple_versionName)s">%(fastMonTuple_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
@@ -950,6 +954,7 @@
         <var name="goodPis">${pipeline.processInstance("scanFastMonTuple").getVariable("goodPis")}</var>  
         <var name="outFileTypes">fastMonError</var>
         <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
@@ -1052,6 +1057,7 @@
         <var name="goodPis">${pipeline.processInstance("scanFastMonHist").getVariable("goodPis")}</var>  
         <var name="outFileTypes">fastMonHist</var>
         <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
@@ -1143,6 +1149,7 @@
         <var name="goodPis">${pipeline.processInstance("scanFastMonTrend").getVariable("goodPis")}</var>  
         <var name="outFileTypes">fastMonTrend</var>
         <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
@@ -1674,6 +1681,7 @@
 
     <process name="mergeFT1" autoRetryMaxAttempts="%(retries)s">
       <variables>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
         <var name="goodPis">${pipeline.processInstance("scanFT1").getVariable("goodPis")}</var>  
         <var name="outFileTypes">ft1BadGti</var>
         <var name="%(ft1BadGti_versionName)s">%(ft1BadGti_version)s</var>
@@ -2075,6 +2083,7 @@
         <var name="goodPis">${pipeline.processInstance("scanMeritTrend").getVariable("goodPis")}</var>  
         <var name="outFileTypes">meritTrend</var>
         <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
@@ -2320,6 +2329,7 @@
         <var name="goodPis">${pipeline.processInstance("scanReconTrend").getVariable("goodPis")}</var>  
         <var name="outFileTypes">reconTrend</var>
         <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
@@ -2424,6 +2434,7 @@
         <var name="goodPis">${pipeline.processInstance("scanReconHist").getVariable("goodPis")}</var>  
         <var name="outFileTypes">reconHist</var>
         <var name="%(reconHist_versionName)s">%(reconHist_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
@@ -2834,6 +2845,7 @@
           <var name="goodPis">${pipeline.getCurrentStream().getParentStream().getProcessInstance("scanTkrAnalysis").getVariable("goodPis")}</var>  
           <var name="outFileTypes">tkrAnalysis</var>
           <var name="%(tkrAnalysis_versionName)s">%(tkrAnalysis_version)s</var>
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
         </variables>
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
@@ -3049,6 +3061,7 @@
 
       <process name="digitization" autoRetryMaxAttempts="%(retries)s">
         <variables>
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
           <var name="inFileTypes">event</var>
           <var name="%(event_versionName)s">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunks").getVariable("L1_PI_version")}</var>
           <var name="outFileTypes">digi</var>
@@ -3482,6 +3495,7 @@
         <var name="goodPis">${pipeline.processInstance("scanDigiHistLci").getVariable("goodPis")}</var>  
         <var name="outFileTypes">digiHist</var>
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[scratch=10]&quot; "/>
       <depends>
@@ -3523,6 +3537,7 @@
         <var name="goodPis">${pipeline.processInstance("scanFastMonTupleLci").getVariable("goodPis")}</var>  
         <var name="outFileTypes">fastMonError</var>
         <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
@@ -3550,6 +3565,7 @@
         <var name="goodPis">${pipeline.processInstance("scanFastMonTupleLci").getVariable("goodPis")}</var>  
         <var name="outFileTypes">fastMonTuple</var>
         <var name="%(fastMonTuple_versionName)s">%(fastMonTuple_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[scratch=10]&quot; "/>
       <depends>
@@ -3591,6 +3607,7 @@
         <var name="goodPis">${pipeline.processInstance("scanFastMonHistLci").getVariable("goodPis")}</var>  
         <var name="outFileTypes">fastMonHist</var>
         <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[scratch=10]&quot; "/>
       <depends>
@@ -3663,6 +3680,7 @@
 
       <process name="digitizationLci" autoRetryMaxAttempts="%(retries)s">
         <variables>
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
           <var name="inFileTypes">event</var>
           <var name="%(event_versionName)s">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunksLci").getVariable("L1_PI_version")}</var>
           <var name="outFileTypes">digi</var>
