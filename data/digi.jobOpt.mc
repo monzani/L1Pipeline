@@ -2,7 +2,7 @@
 EventSelector.StorageType = "CCSDSFILE";
 EventSelector.FileName = "$EVTFILE";
 digiRootWriterAlg.digiRootFile = "$digiChunkFile";
-GlastDetSvc.xmlfile = "$(XMLGEODBSROOT)/xml/$(gleamGeometry)";
+GlastDetSvc.xmlfile = "$(XMLGEODBSXMLPATH)/$(gleamGeometry)";
 
 CalibMySQLCnvSvc.DbName           = "calib";
 CalibMySQLCnvSvc.QualityList      = {"PROD"};
