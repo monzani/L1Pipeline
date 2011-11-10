@@ -182,7 +182,7 @@ optConfig = 'redhat4-i686-32bit-gcc34-Optimized'
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', 'redhat4-i686-32bit-gcc34')
 #
 releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
-glastVersion = '17-35-24-gr09'
+glastVersion = '17-35-24-gr12'
 releaseName = 'GlastRelease'
 #
 glastName = '-'.join((releaseName, glastVersion))
@@ -270,7 +270,7 @@ sConsPackages = {
         },
     'calibTkrUtil': {
         'repository': '',
-        'version': 'calibTkrUtil-02-09-06',
+        'version': 'calibTkrUtil-02-09-06-gr01',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
