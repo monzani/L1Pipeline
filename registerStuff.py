@@ -4,7 +4,7 @@
 # This script is automagically pasted into the XML at install time
 
 from java.util import HashMap
-from org.glast.datacat.client.sql import NewDataset
+from org.srs.glast.datacat.client.sql import NewDataset
 
 def getVar(fileType, name):
     mangledName = '_'.join([nameManglingPrefix, fileType, name])
@@ -46,6 +46,6 @@ if mdRepr:
 
 print attributes
 
-dsNew = NewDataset(dsName, fileFormat, dcType, dataCatDir, dcGroup, site, fileName)
+dsNew = datacatalog.NewDataset(dsName, fileFormat, dcType, dataCatDir, dcGroup, site, fileName)
 dsNew.setVersionID(version)
 ds = datacatalog.registerDataset(dsNew, attributes);
