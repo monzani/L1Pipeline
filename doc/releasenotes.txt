@@ -1,3 +1,10 @@
+3.0
+-----------------
+Using the SCons-based GR
+Compiling the datamon stuff with SCons
+Getting rid of cmt everywhere
+
+
 2.12
 -----------------
 New monitoring tags for normalized rates and fastMonHist
