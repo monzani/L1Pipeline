@@ -3,7 +3,6 @@
 Using the SCons-based GR
 Compiling the datamon stuff with SCons
 Getting rid of cmt everywhere
-Using the new datacatalog.newDataset method
 
 
 2.12
