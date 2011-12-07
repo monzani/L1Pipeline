@@ -319,6 +319,10 @@ cvsPackages = {
         'repository': 'dataMonitoring',
         'version': 'FastMonCfg-02-02-01',
         },
+    'fitsGen': {
+        'repository': '',
+        'version': 'fitsGen-06-02-04',
+        },
     'GPLtools': {
         'repository': '',
         'version': 'GPLtools-02-00-00',
@@ -612,7 +616,7 @@ verifyOptions = {
     }
 
 ft2Pad = 1.0 # pad time range with this on either end whan making fakeFT2
-ft2Template = os.path.join(glastLocation, 'fitsGen', 'data', 'ft2.tpl')
+ft2Template = os.path.join(L1Build, 'fitsGen', 'data', 'ft2.tpl')
 ft2liveTimeTolerance = '1e-12'
 
 m7Pad = 10 # pad time range with this on either end whan making m7
