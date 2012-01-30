@@ -1,8 +1,9 @@
 2.13
 -----------------
 Add BTI stuff.
-Retry when testing file existence (needs a new GPLTools) and notify log
-wathcer if it takes more than 1 try.
+Retry when testing file existence (needs a new GPLTools) and notify log wathcer if it takes more than 1 try.
+Make scripts and expressions in XML use the new API.
+Optionally ignore some deliveries when merging.
 
 
 2.12

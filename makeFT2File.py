@@ -19,34 +19,35 @@ runId = os.environ['RUNID']
 staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption
 
-fileType = 'ft2NoQual'
+# fileType = 'ft2NoQual'
+inFileType = os.environ['inFileType']
+outFileType = os.environ['outFileType']
 
 app = config.apps['mergeFT2']
 
 # input
-ft2SecondsFile = fileNames.fileName('ft2SecondsNoQual', dlId, runId)
+ft2SecondsFile = fileNames.fileName(inFileType, dlId, runId)
 stagedFt2SecondsFile = staged.stageIn(ft2SecondsFile)
 
 # output
-fitsFt2File = fileNames.fileName(fileType, dlId, runId, next=True)
+fitsFt2File = fileNames.fileName(outFileType, dlId, runId, next=True)
 stagedFt2FitsFile = staged.stageOut(fitsFt2File)
 
 workDir = os.path.dirname(stagedFt2FitsFile)
 
-setupScript = config.packages['ft2Util']['setup']
+setupScript = config.packages['ft2Util_2']['setup']
 
 version = fileNames.version(fitsFt2File)
 
-cmtPath = config.cmtPath
+procVer = config.procVer
 
-template = config.ft2Template
-templOpt = '-new_tpl %s' % template
+cmtPath = config.cmtPath
 
 cmd = '''
 cd %(workDir)s
 export CMTPATH=%(cmtPath)s
 source %(setupScript)s
-%(app)s -FT2_fits_File %(stagedFt2SecondsFile)s -FT2_fits_merged_File %(stagedFt2FitsFile)s -Version %(version)s %(templOpt)s
+%(app)s -inputFT2 %(stagedFt2SecondsFile)s -outputFT2 %(stagedFt2FitsFile)s -version %(version)s -procVer %(procVer)s
 ''' % locals()
 
 status = runner.run(cmd)
@@ -54,6 +55,6 @@ if status: finishOption = 'wipe'
 
 status |= staged.finish(finishOption)
 
-if not status: registerPrep.prep(fileType, fitsFt2File)
+if not status: registerPrep.prep(outFileType, fitsFt2File)
 
 sys.exit(status)

@@ -1487,6 +1487,7 @@
  
     <process name="ft2Runs" autoRetryMaxAttempts="%(retries)s">
       <variables>
+        <var name="outFileType">ft2SecondsNoQual</var>
         <var name="%(digi_versionName)s">%(digi_version)s</var>
         <var name="%(ft2SecondsNoQual_versionName)s">%(ft2SecondsNoQual_version)s</var>
         <var name="%(digiGap_versionName)s">%(digiGap_version)s</var>
@@ -1535,6 +1536,8 @@
 
     <process name="makeFT2" autoRetryMaxAttempts="%(retries)s">
       <variables>
+        <var name="inFileType">ft2SecondsNoQual</var>
+        <var name="outFileType">ft2NoQual</var>
         <var name="%(ft2SecondsNoQual_versionName)s">%(ft2SecondsNoQual_version)s</var>
         <var name="%(ft2NoQual_versionName)s">%(ft2NoQual_version)s</var>
       </variables>

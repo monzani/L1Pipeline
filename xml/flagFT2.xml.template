@@ -37,7 +37,7 @@
   </prerequisites>
 
 
-  <process name="lockRun">
+  <process name="lockRun" autoRetryMaxAttempts="%(retries)s">
     <variables>
       <var name="l1LockAction">LockDirOnly</var>
     </variables>
@@ -72,9 +72,9 @@
       <var name="btiProcess">setupQuality</var>
       <var name="badRanges">${pipeline.processInstance(btiProcess).getVariable("badRanges")}</var>
       <var name="%(ft2_versionName)s">${pipeline.processInstance("lookupFiles").getVariable("L1_ft2_ver")}</var>
-      <var name="%(ft2NoQual_versionName)s">${pipeline.processInstance("lookupFiles").getVariable("L1_ft2NoQual_ver")}</var>
+      <var name="L1_ft2NoQual_fileName">${pipeline.processInstance("lookupFiles").getVariable("L1_ft2NoQual_fileName")}</var>
       <var name="%(ft2Seconds_versionName)s">${pipeline.processInstance("lookupFiles").getVariable("L1_ft2Seconds_ver")}</var>
-      <var name="%(ft2SecondsNoQual_versionName)s">${pipeline.processInstance("lookupFiles").getVariable("L1_ft2SecondsNoQual_ver")}</var>
+      <var name="L1_ft2SecondsNoQual_fileName">${pipeline.processInstance("lookupFiles").getVariable("L1_ft2SecondsNoQual_fileName")}</var>
       <var name="inFileTypes">ft2NoQual/ft2SecondsNoQual</var>
       <var name="outFileTypes">ft2/ft2Seconds</var>
     </variables>

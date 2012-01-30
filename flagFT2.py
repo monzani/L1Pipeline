@@ -77,6 +77,7 @@ def flagFT2(files, idArgs, outFileTypes, runDir, staged, workDir, **args):
         continue
 
     ranges = getRanges()
+    ranges.sort(key=rangeKey)
     newRanges = []
     for range in ranges:
         newRange = baddify(data, range)
@@ -109,6 +110,32 @@ def flagFT2(files, idArgs, outFileTypes, runDir, staged, workDir, **args):
     setRanges(newRanges)
  
     return status
+
+
+def rangeKey(range):
+    """Provide a key for sorting ranges
+
+    We want to provide these with the least important first, so if they
+    overlap, more important states overwrite less important ones.
+
+    So, positive ones first, in order
+    then nonpositive ones, in reverse order
+
+    e.g. (1, 3, 0, -1, -7)"""
+
+    (start, stop), qual = range
+
+    if qual > 0:
+        sign = -1
+    else:
+        sign = 1
+        pass
+        
+    mag = abs(qual)
+
+    key = (sign, mag, start)
+    
+    return key
    
 
 def baddify(data, initialRange):

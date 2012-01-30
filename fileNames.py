@@ -111,12 +111,13 @@ fileTypes = {
     }
 
 pTag = '_p%03d' % config.procVer
+ft2PTag = '_p%03d' % config.ft2ProcVer
 exportTags = { # files exported to FSSC use a different naming rule
     'electronFT1': 'gll_el' + pTag,
     'extendedFT1': 'gll_xp' + pTag,
     'extendedLS1': 'gll_xe' + pTag,
     'ft1': 'gll_ph' + pTag,
-    'ft2': 'gll_pt',
+    'ft2': 'gll_pt' + ft2PTag,
     'ls1': 'gll_ev' + pTag,
     'ls3': 'gll_lt',
     }

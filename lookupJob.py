@@ -12,7 +12,7 @@ import pipeline
 import variables
 
 runId = os.environ['RUNID']
-runNumber = int(os.environ['runNumber'])
+runNumber = int(runId[1:])
 
 #location = 'SLAC_XROOT'
 #locOpt = ' --site %s ' % location
@@ -25,6 +25,7 @@ oldFolder = '/Data/Flight/Level1/LPA'
 folders = {
     'DIGI': oldFolder,
     'MAGIC7L1': oldFolder,
+    'MERIT': oldFolder,
     }
 
 mode = config.mode
@@ -47,10 +48,11 @@ for fileType in typeList:
         print >> sys.stderr, "Couldn't get file name for %s" % fileType
         sys.exit(1)
         pass
+    print >> sys.stderr, fileName
 
     version = fileNames.version(fileName)
-    
     variables.setVar(fileType, 'ver', version)
+    variables.setVar(fileType, 'fileName', fileName)
 
     now = time.time()
     print >> sys.stderr, now - then

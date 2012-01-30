@@ -22,7 +22,7 @@
     <var name="L1TrendVersion">Prompt</var> <!-- override if reprocessing -->
     <var name="LD_LIBRARY_PATH">%(libraryPath)s</var>
     <var name="nameManglingPrefix">%(nameManglingPrefix)s</var>
-    <var name="dataCatDir">/Data/Flight/Reprocess/P100</var>
+    <var name="dataCatDir">/Data/Flight/Reprocess/P130</var>
     <var name="baseVersion">130</var>
   </variables>
 
@@ -34,12 +34,8 @@
       <variables>
         <var name="fileTypes">digi,merit,magic7L1</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/lookupJob.py" batchOptions=" -q %(shortQ)s " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/lookupJob.py" batchOptions=" -q %(shortQ)s " />
     </process>
-
-      <process name="getTimes" autoRetryMaxAttempts="%(retries)s">
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimes.py" batchOptions=" -q %(expressQ)s "/>
-      </process>
 
 
     <process name="makeGaps" autoRetryMaxAttempts="%(retries)s">
@@ -49,7 +45,6 @@
      </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeGaps.py" batchOptions=" -q %(shortQ)s " />
       <depends>
-        <after process="getTimes" status="SUCCESS"/>
         <after process="lookupFiles" status="SUCCESS"/>
       </depends>
     </process>
@@ -59,7 +54,7 @@
       <variables>
         <var name="parentProcess">makeGaps</var>
         <var name="fileType">digiGap</var>
-        <var name="timeProcess">getTimes</var>
+        <var name="timeProcess">lookupFiles</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -79,13 +74,14 @@
 
     <process name="ft2Runs" autoRetryMaxAttempts="%(retries)s">
       <variables>
+        <var name="outFileType">ft2Seconds</var>
         <var name="L1_digi_fileName">${pipeline.processInstance("lookupFiles").getVariable("L1_digi_fileName")}</var>
         <var name="L1_digiGap_fileName">${pipeline.processInstance("makeGaps").getVariable("L1_digiGap_fileName")}</var>
         <var name="%(ft2Seconds_versionName)s">${datacatalog.getDatasetLatestVersion(RUNID, dataCatDir, "FT2SECONDS")}</var>
         <var name="L1_magic7L1_fileName">${pipeline.processInstance("lookupFiles").getVariable("L1_magic7L1_fileName")}</var>
         <var name="L1_merit_fileName">${pipeline.processInstance("lookupFiles").getVariable("L1_merit_fileName")}</var>
         <var name="runQuality">${pipeline.processInstance("getQuality").getVariable("runQuality")}</var>
-        <var name="mootAlias">${pipeline.processInstance("getTimes").getVariable("mootAlias")}</var>
+        <var name="mootAlias">${pipeline.processInstance("lookupFiles").getVariable("mootAlias")}</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ft2Entries.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -R &quot;rusage[scratch=15]&quot; " />
       <depends>
@@ -98,7 +94,7 @@
       <variables>
         <var name="parentProcess">ft2Runs</var>
         <var name="fileType">ft2Seconds</var>
-        <var name="timeProcess">getTimes</var>
+        <var name="timeProcess">lookupFiles</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -111,6 +107,8 @@
 
     <process name="makeFT2" autoRetryMaxAttempts="%(retries)s">
       <variables>
+        <var name="inFileType">ft2Seconds</var>
+        <var name="outFileType">ft2</var>
         <var name="%(ft2Seconds_versionName)s">${datacatalog.getDatasetLatestVersion(RUNID, dataCatDir, "FT2SECONDS")}</var>
         <var name="%(ft2_versionName)s">${datacatalog.getDatasetLatestVersion(RUNID, dataCatDir, "FT2")}</var>
       </variables>
@@ -124,7 +122,7 @@
       <variables>
         <var name="parentProcess">makeFT2</var>
         <var name="fileType">ft2</var>
-        <var name="timeProcess">getTimes</var>
+        <var name="timeProcess">lookupFiles</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s

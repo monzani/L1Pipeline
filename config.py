@@ -270,6 +270,7 @@ else:
 aspAlreadyLaunched = 160
 
 procVer = 120
+ft2ProcVer = 130
 
 cmtPath = ':'.join([L1Cmt, glastLocation, glastExt])
 stCmtPath = ':'.join([L1Cmt, ST, glastExt])
@@ -304,9 +305,9 @@ cmtPackages = {
         'repository': 'svac',
         'version': 'v1r2',
         },
-    'ft2Util': {
-        'repository': '',
-        'version': 'v1r2p31',
+    'ft2Util_2': {
+        'repository': 'users/giacomov',
+        'version': 'ft2Util_2-01-00-01',
         },
     'GPLtools': {
         'repository': '',
@@ -345,8 +346,7 @@ packages = dict(cmtPackages)
 packages.update(cvsPackages)
 
 # fill in standard values for standard packages
-for packName in packages:
-    package = packages[packName]
+for packName, package in packages.items():
     package['root'] = os.path.join(
         L1Cmt, package['repository'], packName, package['version'])
     package['bin'] = os.path.join(package['root'], cmtConfig)
@@ -367,8 +367,8 @@ packages['evtClassDefs']['data'] = os.path.join(
 packages['evtClassDefs']['xml'] = os.path.join(
     packages['evtClassDefs']['root'], 'xml')
 
-packages['ft2Util']['app'] = os.path.join(
-    packages['ft2Util']['bin'], 'makeFT2Entries.exe')
+packages['ft2Util_2']['app'] = os.path.join(
+    packages['ft2Util_2']['bin'], 'makeFT2.exe')
 
 packages['FastMon']['app'] = os.path.join(
     packages['FastMon']['python'], 'pDataProcessor.py')
@@ -425,10 +425,10 @@ apps = {
         packages['TestReport']['bin'], 'ft2Verify.exe'),
     'makeFT1': os.path.join(stBinDir, 'makeFT1'),
     # 'makeFT1': os.path.join(stBinDir, 'makeFT1_kluge'),
-    'makeFT2': packages['ft2Util']['app'],
+    'makeFT2': packages['ft2Util_2']['app'],
     'makeLS3': os.path.join(stBinDir, 'gtltcube'),
     'mergeFT2': os.path.join(
-        packages['ft2Util']['bin'], 'mergeFT2Entries.exe'),
+        packages['ft2Util_2']['bin'], 'mergeFT2.exe'),
     'meritVerify': os.path.join(
         packages['TestReport']['bin'], 'meritVerify.exe'),
     'recon': gleam,
@@ -640,8 +640,8 @@ verifyOptions = {
     'Truncation': '100',
     }
 
-ft2Pad = 1.0 # pad time range with this on either end whan making fakeFT2
-ft2Template = os.path.join('$FITSGENROOT', 'data', 'ft2.tpl')
+ft2Pad = 0.0 # pad time range with this on either end whan making fakeFT2
+ft2Template = os.path.join(ST, 'fitsGen', 'data', 'ft2.tpl')
 ft2liveTimeTolerance = '1e-12'
 
 m7Pad = 10 # pad time range with this on either end whan making m7

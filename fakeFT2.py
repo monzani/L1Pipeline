@@ -32,13 +32,10 @@ def fakeFT2(files, workDir, runDir, staged, idArgs, **args):
         continue
     stagee.destinations.append(permanentFt2File)
 
-    setupScript = config.packages['ft2Util']['setup']
+    setupScript = config.packages['ft2Util_2']['setup']
     
     tStart = float(os.environ['tStart']) - config.ft2Pad
     tStop = float(os.environ['tStop']) + config.ft2Pad
-
-    template = config.ft2Template
-    templOpt = '-new_tpl %s' % template
 
     cmtPath = config.cmtPath
 
@@ -46,7 +43,7 @@ def fakeFT2(files, workDir, runDir, staged, idArgs, **args):
     cd %(workDir)s
     export CMTPATH=%(cmtPath)s
     source %(setupScript)s
-    %(app)s -M7File %(stagedM7File)s -FT2_fits_File %(stagedFt2FitsFile)s --Gleam --test-quaternion -DigiTstart %(tStart).17g -DigiTstop %(tStop).17g %(templOpt)s
+    %(app)s -m7file %(stagedM7File)s -ft2file %(stagedFt2FitsFile)s -ft2start %(tStart).17g -ft2stop %(tStop).17g
     ''' % locals()
 
     status |= runner.run(cmd)

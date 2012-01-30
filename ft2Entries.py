@@ -22,7 +22,8 @@ runId = os.environ['RUNID']
 staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption
 
-fileType = 'ft2SecondsNoQual'
+# fileType = 'ft2SecondsNoQual'
+fileType = os.environ['outFileType']
 
 app = config.apps['makeFT2']
 
@@ -43,23 +44,16 @@ stagedFt2FitsFile = staged.stageOut(ft2Seconds)
 
 workDir = os.path.dirname(stagedFt2FitsFile)
 
-setupScript = config.packages['ft2Util']['setup']
+setupScript = config.packages['ft2Util_2']['setup']
 
 #realGapFile = os.path.join(
 #    os.environ['DOWNLINK_RAWDIR'], 'event_gaps_%s.txt' % dlId)
 realGapFile = fileNames.fileName('digiGap', dlId, runId)
 if os.path.exists(realGapFile):
     stagedGapFile =  staged.stageIn(realGapFile)
-    gapOpts = ' -Gaps_File %s ' % stagedGapFile
+    gapOpts = ' -gapfile %s ' % stagedGapFile
 else:
     gapOpts = ''
-    pass
-
-datasource = os.environ['DATASOURCE']
-if datasource == 'MC':
-    mcOpt = '--MC'
-else:
-    mcOpt = ''
     pass
 
 cmtPath = config.cmtPath
@@ -70,31 +64,27 @@ print >> sys.stderr, 'merit:', mStart, mStop
 tStart = mStart - config.ft2Pad
 tStop = mStop + config.ft2Pad
 
-liveTimeTolerance = config.ft2liveTimeTolerance
-#lTTolOpt = '-LiveTimeTolerance %s' % liveTimeTolerance
-lTTolOpt = ''
-
 template = config.ft2Template
-templOpt = '-new_tpl %s' % template
+templOpt = '-templateFT2 %s' % template
 
 qualStr = os.environ['runQuality']
 print >> sys.stderr, 'Run quality:', qualStr
 dataQuality = ft2Columns.qualityFlag(qualStr)
-qualOpt = '-DataQual %d' % dataQuality
+qualOpt = '-dataquality %d' % dataQuality
 
 mootAlias = os.environ['mootAlias']
 print >> sys.stderr, 'MOOT alias:', mootAlias
 latConfig = ft2Columns.configFlag(mootAlias)
-configOpt = '-LatConfig %d' % latConfig
+configOpt = '-latconfig %d' % latConfig
 
 version = fileNames.version(ft2Seconds)
-versOpt = '-Version %d' % version
+versOpt = '-version %d' % version
 
 cmd = '''
 cd %(workDir)s
 export CMTPATH=%(cmtPath)s
 source %(setupScript)s
-%(app)s -DigiFile %(stagedDigiFile)s -MeritFile %(stagedMeritFile)s -M7File %(stagedM7File)s -FT2_fits_File %(stagedFt2FitsFile)s %(gapOpts)s %(mcOpt)s -DigiTstart %(tStart).17g -DigiTstop %(tStop).17g %(templOpt)s %(qualOpt)s %(configOpt)s %(lTTolOpt)s %(versOpt)s
+%(app)s -digifile %(stagedDigiFile)s -meritfile %(stagedMeritFile)s -m7file %(stagedM7File)s -ft2file %(stagedFt2FitsFile)s %(gapOpts)s -ft2start %(tStart).17g -ft2stop %(tStop).17g %(templOpt)s %(qualOpt)s %(configOpt)s %(versOpt)s
 ''' % locals()
 
 status = runner.run(cmd)
