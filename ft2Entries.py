@@ -44,7 +44,7 @@ stagedFt2FitsFile = staged.stageOut(ft2Seconds)
 
 workDir = os.path.dirname(stagedFt2FitsFile)
 
-setupScript = config.packages['ft2Util_2']['setup']
+setupScript = config.packages['ft2Util']['setup']
 
 #realGapFile = os.path.join(
 #    os.environ['DOWNLINK_RAWDIR'], 'event_gaps_%s.txt' % dlId)

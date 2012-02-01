@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "2.13"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "3.1"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -305,9 +305,9 @@ cmtPackages = {
         'repository': 'svac',
         'version': 'v1r2',
         },
-    'ft2Util_2': {
-        'repository': 'users/giacomov',
-        'version': 'ft2Util_2-01-00-01',
+    'ft2Util': {
+        'repository': '',
+        'version': 'ft2Util-02-00-00',
         },
     'GPLtools': {
         'repository': '',
@@ -367,8 +367,8 @@ packages['evtClassDefs']['data'] = os.path.join(
 packages['evtClassDefs']['xml'] = os.path.join(
     packages['evtClassDefs']['root'], 'xml')
 
-packages['ft2Util_2']['app'] = os.path.join(
-    packages['ft2Util_2']['bin'], 'makeFT2.exe')
+packages['ft2Util']['app'] = os.path.join(
+    packages['ft2Util']['bin'], 'makeFT2.exe')
 
 packages['FastMon']['app'] = os.path.join(
     packages['FastMon']['python'], 'pDataProcessor.py')
@@ -425,10 +425,10 @@ apps = {
         packages['TestReport']['bin'], 'ft2Verify.exe'),
     'makeFT1': os.path.join(stBinDir, 'makeFT1'),
     # 'makeFT1': os.path.join(stBinDir, 'makeFT1_kluge'),
-    'makeFT2': packages['ft2Util_2']['app'],
+    'makeFT2': packages['ft2Util']['app'],
     'makeLS3': os.path.join(stBinDir, 'gtltcube'),
     'mergeFT2': os.path.join(
-        packages['ft2Util_2']['bin'], 'mergeFT2.exe'),
+        packages['ft2Util']['bin'], 'mergeFT2.exe'),
     'meritVerify': os.path.join(
         packages['TestReport']['bin'], 'meritVerify.exe'),
     'recon': gleam,

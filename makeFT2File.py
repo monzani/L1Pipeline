@@ -35,7 +35,7 @@ stagedFt2FitsFile = staged.stageOut(fitsFt2File)
 
 workDir = os.path.dirname(stagedFt2FitsFile)
 
-setupScript = config.packages['ft2Util_2']['setup']
+setupScript = config.packages['ft2Util']['setup']
 
 version = fileNames.version(fitsFt2File)
 

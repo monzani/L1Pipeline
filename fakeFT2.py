@@ -32,7 +32,7 @@ def fakeFT2(files, workDir, runDir, staged, idArgs, **args):
         continue
     stagee.destinations.append(permanentFt2File)
 
-    setupScript = config.packages['ft2Util_2']['setup']
+    setupScript = config.packages['ft2Util']['setup']
     
     tStart = float(os.environ['tStart']) - config.ft2Pad
     tStop = float(os.environ['tStop']) + config.ft2Pad
