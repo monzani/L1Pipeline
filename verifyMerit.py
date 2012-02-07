@@ -26,18 +26,19 @@ realVerifyMeritFile = fileNames.fileName('verifyMeritError', dlId, runId, next=T
 verifyMeritFile = staged.stageOut(realVerifyMeritFile)
 
 workDir = os.path.dirname(verifyMeritFile)
-
-cmtPath = config.cmtPath
+l1Setup = config.l1Setup
+instDir = config.L1Build
+glastExt = config.glastExt
 
 package = config.packages['TestReport']
-setupScript = package['setup']
 app = config.apps['meritVerify']
 truncation = config.verifyOptions['Truncation']
 
 cmd = '''
 cd %(workDir)s
-export CMTPATH=%(cmtPath)s
-source %(setupScript)s
+export INST_DIR=%(instDir)s 
+export GLAST_EXT=%(glastExt)s
+source %(l1Setup)s
 %(app)s -f %(stagedMeritFile)s -x %(verifyMeritFile)s -t %(truncation)s
 ''' % locals()
 

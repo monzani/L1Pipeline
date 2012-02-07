@@ -49,11 +49,15 @@ def svacTuple(files, idArgs, workDir, **args):
 
     # do the work
     svacTupleApp = config.apps['svacTuple']
-    svacTupleCmt = config.packages['EngineeringModelRoot']['setup']
+    l1Setup = config.l1Setup
+    instDir = config.L1Build
+    glastExt = config.glastExt
 
     cmd = """
     cd %(workDir)s
-    source %(svacTupleCmt)s
+    export INST_DIR=%(instDir)s 
+    export GLAST_EXT=%(glastExt)s
+    source %(l1Setup)s
     %(svacTupleApp)s %(optionFile)s
     """ % locals()
 

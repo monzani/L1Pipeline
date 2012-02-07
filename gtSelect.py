@@ -26,8 +26,8 @@ def gtSelect(files, inFileTypes, outFileTypes, workDir, **args):
     stagedOutFile = files[outFileType]
 
     stSetup = config.stSetup
-    selectapp = os.path.join(config.stExeDir, 'gtselect')
-    timeapp = os.path.join(config.stExeDir, 'gtmktime')
+    selectapp = config.apps['gtSelect']
+    timeapp = config.apps['fixGTI']
 
     eventClass = config.gtSelectClass[outFileType]
 
@@ -35,7 +35,7 @@ def gtSelect(files, inFileTypes, outFileTypes, workDir, **args):
     evtFilter = 'evclass=%(eventClass)s' % locals() 
 
     instDir = config.ST
-    glastExt = config.glastExtSCons
+    glastExt = config.glastExt
 
     cmd = '''
     cd %(workDir)s

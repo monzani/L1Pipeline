@@ -37,7 +37,7 @@ workDir = os.path.dirname(stagedLs3File)
 version = fileNames.version(realLs3File)
 
 instDir = config.ST
-glastExt = config.glastExtSCons
+glastExt = config.glastExt
 
 cmd = '''
 cd %(workDir)s

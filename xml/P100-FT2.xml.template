@@ -10,7 +10,6 @@
     <var name="DATASOURCE">LPA</var>
     <var name="DOWNLINK_ID">0</var>
     <var name="DOWNLINK_RAWDIR">/nowhere/0</var>
-    <var name="CMTPATH">%(cmtPath)s</var>
     <var name="creator">${L1_TASK_NAME}-${L1_TASK_VERSION}</var>
     <var name="isocMode">%(isocMode)s</var>
     <var name="isocRun">%(isocRun)s</var>
@@ -18,7 +17,7 @@
     <var name="L1_TASK_NAME">P130-FT2</var>
     <var name="L1_TASK_VERSION">%(L1Version)s</var>
     <var name="L1_INSTALL_DIR">%(installRoot)s</var>
-    <var name="L1_BUILD_DIR">%(L1CmtBase)s</var>
+    <var name="L1_BUILD_DIR">%(L1BuildBase)s</var>
     <var name="L1TrendVersion">Prompt</var> <!-- override if reprocessing -->
     <var name="LD_LIBRARY_PATH">%(libraryPath)s</var>
     <var name="nameManglingPrefix">%(nameManglingPrefix)s</var>

@@ -37,6 +37,9 @@ def merge(files, idArgs, level, outFileTypes, staged, workDir, **args):
 
     assert len(outFileTypes) == 1
     fileType = outFileTypes[0]
+    l1Setup = config.l1Setup
+    instDir = config.L1Build
+    glastExt = config.glastExt
 
     # This is backwards. Should be a map from fileType to merge function.
     # Which requires putting the per-type merge code into functions.
@@ -162,24 +165,26 @@ def merge(files, idArgs, level, outFileTypes, staged, workDir, **args):
     print >> sys.stderr, '------------------- start merge ------------------'
 
     if fileType in mergeTypes['report']:
-        setup = config.packages['Monitor']['setup']
         mergeConfig = config.mergeConfigs[fileType]
         app = config.apps['reportMerge']
         cmd = """
         cd %(workDir)s
-        source %(setup)s
+        export INST_DIR=%(instDir)s 
+        export GLAST_EXT=%(glastExt)s
+        source %(l1Setup)s
         %(app)s -c %(mergeConfig)s -o %(outFile)s %(inFileString)s
         """ % locals()
         status |= runner.run(cmd)
 
 
     elif fileType in mergeTypes['trend']:
-        setup = config.packages['Monitor']['setup']
         app = config.apps['trendMerge']
         treeName = 'Time'
         cmd = '''
         cd %(workDir)s
-        source %(setup)s
+        export INST_DIR=%(instDir)s 
+        export GLAST_EXT=%(glastExt)s
+        source %(l1Setup)s
         %(app)s %(inFileString)s -o %(outFile)s -t %(treeName)s
         ''' % locals()
         status |= runner.run(cmd)

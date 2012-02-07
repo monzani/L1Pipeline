@@ -25,14 +25,17 @@ def acdPlots(files, idArgs, **args):
     stagedOutFile = files[fileType]
 
     package = config.packages['Monitor']
-    setup = package['setup']
+    l1Setup = config.l1Setup
     app = config.apps[fileType]
 
     libraryPath = config.libraryPath
+    instDir = config.L1Build
+    glastExt = config.glastExt
 
     cmd = '''
-    source %(setup)s
-    #export LD_LIBRARY_PATH=%(libraryPath)s
+    export INST_DIR=%(instDir)s 
+    export GLAST_EXT=%(glastExt)s 
+    source %(l1Setup)s
     %(app)s -i %(stagedInFile)s -t %(stagedOutFile)s
     ''' % locals()
 

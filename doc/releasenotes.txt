@@ -1,9 +1,17 @@
-2.13
+3.1
 -----------------
 Add BTI stuff.
-Retry when testing file existence (needs a new GPLTools) and notify log wathcer if it takes more than 1 try.
+Retry when testing file existence (needs a new GPLTools) and notify log wathcher if it takes more than 1 try.
 Make scripts and expressions in XML use the new API.
 Optionally ignore some deliveries when merging.
+
+
+3.0
+-----------------
+Using the SCons-based GR
+Compiling the datamon stuff with SCons
+Getting rid of cmt everywhere
+Checking out fitsGen to explicitly set ft2.tpl
 
 
 2.12

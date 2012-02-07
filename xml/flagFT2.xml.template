@@ -13,7 +13,7 @@
     <var name="isocRun">%(isocRun)s</var>
     <var name="L1ProcROOT">%(L1ProcROOT)s</var>
     <var name="L1_INSTALL_DIR">%(installRoot)s</var>
-    <var name="L1_BUILD_DIR">%(L1CmtBase)s</var>
+    <var name="L1_BUILD_DIR">%(L1BuildBase)s</var>
     <var name="L1_TASK_NAME">flagFT2</var>
     <var name="l1RunStatus">%(runningStatus)s</var>
     <var name="nameManglingPrefix">%(nameManglingPrefix)s</var>

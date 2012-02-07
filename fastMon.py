@@ -40,10 +40,9 @@ def fastMon(files, idArgs, workDir, staged, **args):
 
     os.environ.update(package['env'])
 
-    dmRoot = config.L1Cmt
+    dmRoot = config.L1Build
 
     extra = package['extraSetup']
-    setup = package['setup']
 
     dataSource = os.environ['DATASOURCE']
     if dataSource in ['LCI']:
@@ -63,7 +62,6 @@ def fastMon(files, idArgs, workDir, staged, **args):
     export DATAMONITORING_ROOT=%(dmRoot)s
     export FAST_MON_DIR=%(workDir)s
     %(extra)s
-    source %(setup)s
     export PYTHONPATH=${PYTHONPATH}:%(workDir)s
     %(python)s %(app)s -c %(configFile)s %(varArgs)s %(inFile)s
     ''' % locals()

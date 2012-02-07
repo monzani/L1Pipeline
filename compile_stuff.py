@@ -14,36 +14,37 @@ import runner
 if len(sys.argv) > 1:
     names = sys.argv[1:]
 else:
-    names = config.cvsPackages.keys() + config.cmtPackages.keys()
+    names = config.cvsPackages.keys() + config.sConsPackages.keys() 
     pass
 
 def doPackage(packName):
-    if packName in config.cmtPackages:
-        doCmtPackage(packName)
+    if packName in config.sConsPackages:
+        doSConsPackage(packName)
     elif packName in config.cvsPackages:
         doCvsPackage(packName)
         pass
     return
 
-
-def doCmtPackage(packName):
+def doSConsPackage(packName):
     package = config.packages[packName]
 
     args = {
-        'L1Cmt': config.L1Cmt,
-        'l1SetupScript': os.path.join(config.L1ProcROOT, 'setup.sh'),
+        'L1Build': config.L1Build,
+        'glastLocation': config.glastLocation,
+        'glastExt': config.glastExt,
+        'scons': config.scons,
+        'packName': packName,
         }
     args.update(package)
 
     cmd = '''
-    source %(l1SetupScript)s
-    cd %(L1Cmt)s
-    rm -rf %(root)s
-    cmt co -r %(version)s %(checkOutName)s
-    cd %(cmtDir)s
-    cmt config
-    make clean
-    make
+    root=%(root)s
+    rm -rf $root
+    mkdir -p $(dirname $root)
+    cd %(L1Build)s
+    cvs co -r %(version)s -d %(root)s %(checkOutName)s
+    cd %(glastLocation)s 
+    %(scons)s --with-GLAST-EXT=%(glastExt)s --supersede %(L1Build)s --compile-opt %(packName)s 
     ''' % args
 
     runner.run(cmd)
@@ -55,28 +56,20 @@ def doCmtPackage(packName):
     return
 
 
-
 def doCvsPackage(packName):
     package = config.packages[packName]
 
     args = {
-        'l1SetupScript': os.path.join(config.L1ProcROOT, 'setup.sh'),
-        'tmpDir': os.path.join('/tmp', config.fullTaskName),
+        'L1Build': config.L1Build,
         }
     args.update(package)
-    
+
     cmd = '''
-    source %(l1SetupScript)s
-    tmpDir=%(tmpDir)s
-    mkdir -p $tmpDir
-    cd $tmpDir
-    checkOutName=%(checkOutName)s
-    cvs co -r %(version)s $checkOutName
     root=%(root)s
     rm -rf $root
     mkdir -p $(dirname $root)
-    mv $checkOutName $root
-    rm -rf $tmpDir
+    cd %(L1Build)s
+    cvs co -r %(version)s -d %(root)s %(checkOutName)s
     ''' % args
 
     if packName == 'IGRF':

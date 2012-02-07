@@ -22,14 +22,14 @@ def diffRsp(files, inFileTypes, outFileTypes, workDir, **args):
     outFileType = outFileTypes[0]
 
     stSetup = config.stSetup
-    app = os.path.join(config.stExeDir, 'gtdiffrsp')
+    app = config.apps['diffRsp']
 
     stagedInFile = files[inFileType]
     stagedFt2File = files[ft2FileType]
     stagedOutFile = files[outFileType]
 
     instDir = config.ST
-    glastExt = config.glastExtSCons
+    glastExt = config.glastExt
 
     tmpFt1File = stagedInFile + '.tmp'
     os.rename(stagedInFile, tmpFt1File)

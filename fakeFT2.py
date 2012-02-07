@@ -32,17 +32,18 @@ def fakeFT2(files, workDir, runDir, staged, idArgs, **args):
         continue
     stagee.destinations.append(permanentFt2File)
 
-    setupScript = config.packages['ft2Util']['setup']
+    l1Setup = config.l1Setup
+    instDir = config.L1Build
+    glastExt = config.glastExt
     
     tStart = float(os.environ['tStart']) - config.ft2Pad
     tStop = float(os.environ['tStop']) + config.ft2Pad
 
-    cmtPath = config.cmtPath
-
     cmd = '''
     cd %(workDir)s
-    export CMTPATH=%(cmtPath)s
-    source %(setupScript)s
+    export INST_DIR=%(instDir)s 
+    export GLAST_EXT=%(glastExt)s
+    source %(l1Setup)s
     %(app)s -m7file %(stagedM7File)s -ft2file %(stagedFt2FitsFile)s -ft2start %(tStart).17g -ft2stop %(tStop).17g
     ''' % locals()
 

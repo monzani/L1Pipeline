@@ -43,8 +43,9 @@ ft2Seconds = fileNames.fileName(fileType, dlId, runId, next=True)
 stagedFt2FitsFile = staged.stageOut(ft2Seconds)
 
 workDir = os.path.dirname(stagedFt2FitsFile)
-
-setupScript = config.packages['ft2Util']['setup']
+l1Setup = config.l1Setup
+instDir = config.L1Build
+glastExt = config.glastExt
 
 #realGapFile = os.path.join(
 #    os.environ['DOWNLINK_RAWDIR'], 'event_gaps_%s.txt' % dlId)
@@ -55,8 +56,6 @@ if os.path.exists(realGapFile):
 else:
     gapOpts = ''
     pass
-
-cmtPath = config.cmtPath
 
 # run start and stop from merit file
 mStart, mStop = meritFiles.startAndStop(stagedMeritFile)
@@ -82,8 +81,9 @@ versOpt = '-version %d' % version
 
 cmd = '''
 cd %(workDir)s
-export CMTPATH=%(cmtPath)s
-source %(setupScript)s
+export INST_DIR=%(instDir)s 
+export GLAST_EXT=%(glastExt)s
+source %(l1Setup)s
 %(app)s -digifile %(stagedDigiFile)s -meritfile %(stagedMeritFile)s -m7file %(stagedM7File)s -ft2file %(stagedFt2FitsFile)s %(gapOpts)s -ft2start %(tStart).17g -ft2stop %(tStop).17g %(templOpt)s %(qualOpt)s %(configOpt)s %(versOpt)s
 ''' % locals()
 
@@ -96,4 +96,3 @@ if not status:
 
 status |= staged.finish(finishOption)
 
-sys.exit(status)

@@ -27,11 +27,15 @@ def tkrAnalysis(files, workDir, **args):
 
     # do the work
     app = config.apps['tkrAnalysis']
-    cmtScript = config.packages['calibTkrUtil']['setup']
+    l1Setup = config.l1Setup
+    instDir = config.L1Build
+    glastExt = config.glastExt
 
     cmd = """
 cd %(workDir)s
-source %(cmtScript)s
+export INST_DIR=%(instDir)s 
+export GLAST_EXT=%(glastExt)s
+source %(l1Setup)s
 %(app)s %(stagedDigiFile)s %(stagedReconFile)s %(stagedOutFile)s
 """ % locals()
 

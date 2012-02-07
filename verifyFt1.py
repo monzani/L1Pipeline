@@ -26,18 +26,19 @@ realVerifyFt1File = fileNames.fileName('verifyFt1Error', dlId, runId, next=True)
 verifyFt1File = staged.stageOut(realVerifyFt1File)
 
 workDir = os.path.dirname(verifyFt1File)
-
-cmtPath = config.cmtPath
+l1Setup = config.l1Setup
+instDir = config.L1Build
+glastExt = config.glastExt
 
 package = config.packages['TestReport']
-setupScript = package['setup']
 app = config.apps['ft1Verify']
 truncation = config.verifyOptions['Truncation']
 
 cmd = '''
 cd %(workDir)s
-export CMTPATH=%(cmtPath)s
-source %(setupScript)s
+export INST_DIR=%(instDir)s 
+export GLAST_EXT=%(glastExt)s
+source %(l1Setup)s
 %(app)s -f %(stagedFt1File)s -x %(verifyFt1File)s -t %(truncation)s
 ''' % locals()
 

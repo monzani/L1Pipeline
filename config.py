@@ -15,11 +15,9 @@ installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glas
 
 creator = '-'.join([L1Name, L1Version])
     
-#L1Cmt = os.path.join(installRoot, 'builds')
-L1Volume = '/afs/slac/g/glast/ground/releases/volume13'
-L1CmtBase = os.environ.get('L1_BUILD_DIR') or os.path.join(L1Volume, 'L1Proc')
-L1Cmt = os.path.join(L1CmtBase, L1Version)
-L1Bin = os.path.join(L1Cmt, 'bin')
+BuildVolume = '/afs/slac/g/glast/ground/releases/volume13'
+L1BuildBase = os.environ.get('L1_BUILD_DIR') or os.path.join(BuildVolume, 'L1Proc')
+L1Build = os.path.join(L1BuildBase, L1Version)
 
 doCleanup = True
 
@@ -176,32 +174,26 @@ cleanupSubTask = {
 
 glastRoot = '/afs/slac.stanford.edu/g/glast'
 groundRoot = os.path.join(glastRoot, 'ground')
-glastSetup = os.path.join(groundRoot, 'scripts', 'group.sh')
-glastSetupCsh = os.path.join(groundRoot, 'scripts', 'group.cshrc')
+#glastSetup = os.path.join(groundRoot, 'scripts', 'group.sh')
+#glastSetupCsh = os.path.join(groundRoot, 'scripts', 'group.cshrc')
+scons = '/afs/slac.stanford.edu/g/glast/applications/install/@sys/usr/bin/scons'
 #
-cmtConfig = 'rhel4_gcc34opt'
-installArea = os.path.join(L1Cmt, 'InstallArea', cmtConfig)
-installBin = os.path.join(installArea, 'bin')
+optConfig = 'redhat4-i686-32bit-gcc34-Optimized'
+glastExt = os.path.join(groundRoot, 'GLAST_EXT', 'redhat4-i686-32bit-gcc34')
 #
-glastExt = os.path.join(groundRoot, 'GLAST_EXT', cmtConfig)
-glastExtSCons = os.path.join(groundRoot, 'GLAST_EXT', 'redhat4-i686-32bit-gcc34') 
-#
-releaseDir = os.path.join(groundRoot, 'releases', 'volume11')
-glastVersion = 'v17r35p23'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
+glastVersion = '17-35-24-gr15'
 releaseName = 'GlastRelease'
-gleamPackage = 'Gleam'
 #
 glastName = '-'.join((releaseName, glastVersion))
-glastLocation = os.path.join(releaseDir, glastName)
-gleam = os.path.join(glastLocation, 'bin', gleamPackage)
-cmtScript = os.path.join(
-    glastLocation,
-    releaseName,
-    glastVersion,
-    'cmt',
-    'setup.sh',
-    ) # do we need this?
-#
+glastLocation = os.path.join(releaseDir, glastName) 
+
+grBinDir = os.path.join(glastLocation, 'bin', optConfig)
+grExeDir = os.path.join(glastLocation, 'exe', optConfig)
+grPath = os.path.join(glastLocation, 'lib', optConfig)
+grSetup = os.path.join(grBinDir, '_setup.sh')
+gleam = os.path.join(grBinDir,  'Gleam')  ### bin or exe???
+
 digiOptions = {
     'LCI': os.path.join(L1Data, 'digi.jobOpt'),
     'LPA': os.path.join(L1Data, 'digi.jobOpt'),
@@ -216,16 +208,27 @@ rootSys = os.path.join(glastExt, 'ROOT/v5.26.00a-gl1/gcc34')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
+stDir = os.path.join(groundRoot, 'releases', 'volume11')
+stVersion = '09-24-00'
+stName = 'ScienceTools'
+
+ST = os.path.join(stDir, "ScienceTools-%s" % stVersion)
+PFILES = ".;/dev/null"
+stBinDir = os.path.join(ST, 'bin', optConfig)
+stExeDir = os.path.join(ST, 'exe', optConfig)
+stSetup = os.path.join(stBinDir, '_setup.sh')
+
+l1BinDir = os.path.join(L1Build, 'bin', optConfig)
+l1ExeDir = os.path.join(L1Build, 'exe', optConfig)
+l1Setup = os.path.join(l1BinDir, '_setup.sh')
 
 isoc = '/afs/slac/g/glast/isoc/flightOps'
-#isocPlatform = os.popen(os.path.join(isoc, 'isoc-platform')).readline().strip()
 isocPlatform = 'rhel4_gcc34'
 isocMode = os.environ.get('isocMode', 'ISOC_PROD')
 isocBin = os.path.join(isoc, isocPlatform, isocMode, 'bin')
 isocRun = os.path.join(isoc, isocPlatform, '${isocMode}', 'bin', 'isoc run')
 
 isocScript = os.path.join(isocBin, 'isoc')
-#isocEnv = 'eval `%s isoc_env --add-env=flightops --add-env=root`' % isocScript
 isocEnv = 'eval `%s isoc_env --add-env=flightops`' % isocScript
 
 # DB for acqsummary
@@ -250,17 +253,6 @@ l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
 # LSF pre-exec option for run & throttle locking
 lockOption = " -E &quot;${isocRun} ${L1ProcROOT}/lockFile.py&quot; "
 
-stDir = os.path.join(groundRoot, 'releases', 'volume11')
-stVersion = '09-24-00'
-stName = 'ScienceTools'
-
-ST = os.path.join(stDir, "ScienceTools-%s" % stVersion)
-PFILES = ".;/dev/null"
-stConfig = "redhat4-i686-32bit-gcc34-Optimized"
-stBinDir = os.path.join(ST, 'bin', stConfig)
-stExeDir = os.path.join(ST, 'exe', stConfig)
-stSetup = os.path.join(stBinDir, '_setup.sh')
-
 if testMode:
     # aspLauncher = '/afs/slac/g/glast/ground/links/data/ASP/aspLauncher_dev.sh'
     aspLauncher = '/bin/true'
@@ -272,26 +264,49 @@ aspAlreadyLaunched = 160
 procVer = 120
 ft2ProcVer = 130
 
-cmtPath = ':'.join([L1Cmt, glastLocation, glastExt])
-stCmtPath = ':'.join([L1Cmt, ST, glastExt])
-
-cmtPackages = {
+sConsPackages = {
     'calibGenTKR': {
         'repository': '',
-        'version': 'v4r5',
+        'version': 'calibGenTKR-04-08-01',
         },
     'calibTkrUtil': {
         'repository': '',
-        'version': 'v2r9p1',
-        #'version': 'v2r7p3',
+        'version': 'calibTkrUtil-02-09-06-gr01',
         },
+    'EngineeringModelRoot': {
+        'repository': 'svac',
+        'version': 'EngineeringModelRoot-05-00-00',
+        },
+    'findGaps': {
+        'repository': 'svac',
+        'version': 'findGaps-02-02-00',
+        },
+    'ft2Util': {
+        'repository': '',
+        'version': 'ft2Util-02-00-00',
+        },
+    'Monitor': {
+        'repository': 'svac',
+        'version': 'Monitor-02-00-01',
+        },
+    'pipelineDatasets': {
+        'repository': 'users/richard',
+        'version': 'pipelineDatasets-01-00-00',
+        },
+    'TestReport': {
+        'repository': 'svac',
+        'version': 'TestReport-12-00-00',
+        },
+    }
+
+cvsPackages = {
     'Common': {
         'repository': 'dataMonitoring',
         'version': 'Common-06-11-02',
         },
-    'EngineeringModelRoot': {
-        'repository': 'svac',
-        'version': 'v4r4',
+    'DigiReconCalMeritCfg': {
+        'repository': 'dataMonitoring',
+        'version': 'DigiReconCalMeritCfg-01-20-02',
         },
     'evtClassDefs': {
         'repository': '',
@@ -301,40 +316,17 @@ cmtPackages = {
         'repository': 'dataMonitoring',
         'version': 'FastMon-05-02-01',
         },
-    'findGaps': {
-        'repository': 'svac',
-        'version': 'v1r2',
+    'FastMonCfg': {
+        'repository': 'dataMonitoring',
+        'version': 'FastMonCfg-02-02-01',
         },
-    'ft2Util': {
+    'fitsGen': {
         'repository': '',
-        'version': 'ft2Util-02-00-00',
+        'version': 'fitsGen-06-02-04',
         },
     'GPLtools': {
         'repository': '',
         'version': 'GPLtools-02-00-00-wf02',
-        },
-    'Monitor': {
-        'repository': 'svac',
-        'version': 'Monitor-01-09-02',
-        },
-    'pipelineDatasets': {
-        'repository': 'users/richard',
-        'version': 'v0r6',
-        },
-    'TestReport': {
-        'repository': 'svac',
-        'version': 'TestReport-11-04-00',
-        },
-    }
-
-cvsPackages = {
-    'DigiReconCalMeritCfg': {
-        'repository': 'dataMonitoring',
-        'version': 'DigiReconCalMeritCfg-01-20-02',
-        },
-    'FastMonCfg': {
-        'repository': 'dataMonitoring',
-        'version': 'FastMonCfg-02-02-01',
         },
     'IGRF': {
         'repository': 'dataMonitoring',
@@ -342,24 +334,20 @@ cvsPackages = {
         },
     }
 
-packages = dict(cmtPackages)
-packages.update(cvsPackages)
+packages = dict(cvsPackages)
+packages.update(sConsPackages)
 
 # fill in standard values for standard packages
-for packName, package in packages.items():
-    package['root'] = os.path.join(
-        L1Cmt, package['repository'], packName, package['version'])
-    package['bin'] = os.path.join(package['root'], cmtConfig)
-    package['cmtDir'] = os.path.join(package['root'], 'cmt')
-    package['setup'] = os.path.join(package['cmtDir'], 'setup.sh')
+for packName in packages:
+    package = packages[packName]
+    package['root'] = os.path.join(L1Build, packName)
     package['python'] = os.path.join(package['root'], 'python')
     package['checkOutName'] = os.path.join(package['repository'], packName)
     continue
 
 # add nonstandard package info
 
-packages['EngineeringModelRoot']['app'] = os.path.join(
-    packages['EngineeringModelRoot']['bin'], 'RunRootAnalyzer.exe')
+packages['EngineeringModelRoot']['app'] = os.path.join(l1ExeDir, 'RunRootAnalyzer')
 
 packages['evtClassDefs']['data'] = os.path.join(
     packages['evtClassDefs']['root'], 'data')
@@ -367,8 +355,7 @@ packages['evtClassDefs']['data'] = os.path.join(
 packages['evtClassDefs']['xml'] = os.path.join(
     packages['evtClassDefs']['root'], 'xml')
 
-packages['ft2Util']['app'] = os.path.join(
-    packages['ft2Util']['bin'], 'makeFT2.exe')
+packages['ft2Util']['app'] = os.path.join(l1ExeDir, 'makeFT2.exe')
 
 packages['FastMon']['app'] = os.path.join(
     packages['FastMon']['python'], 'pDataProcessor.py')
@@ -381,18 +368,14 @@ packages['FastMon']['extraSetup'] = isocEnv
 packages['FastMon']['saaDefinition'] = os.path.join(
     packages['FastMon']['configDir'], 'saaDefinition.xml')
 
-packages['Monitor']['app'] = os.path.join(
-    packages['Monitor']['bin'], 'runStrip_t.exe')
-packages['Monitor']['trendMerge'] = os.path.join(
-    packages['Monitor']['bin'], 'treemerge.exe')
-packages['Monitor']['mergeApp'] = os.path.join(
-    packages['Monitor']['bin'], 'MergeHistFiles.exe')
+packages['Monitor']['app'] = os.path.join(l1ExeDir, 'runStrip_t')
+packages['Monitor']['trendMerge'] = os.path.join(l1ExeDir, 'treemerge')
+packages['Monitor']['mergeApp'] = os.path.join(l1ExeDir, 'MergeHistFiles')
 
 apps = {
     'acdPedsAnalyzer': os.path.join(
         packages['Common']['python'], 'pAcdPedsAnalyzer.py'),
-    'acdPlots': os.path.join(
-        packages['Monitor']['bin'], 'MakeACDNicePlots.exe'),
+    'acdPlots': os.path.join(l1ExeDir, 'MakeACDNicePlots'),
     'alarmHandler': os.path.join(
         packages['Common']['python'], 'pAlarmHandler.py'),
     'alarmPostProcessor': os.path.join(
@@ -403,9 +386,9 @@ apps = {
         packages['Common']['python'], 'pCalPedsAnalyzer.py'),
     'compareDFm': os.path.join(
         packages['Common']['python'], 'pRootDiffer.py'),
+    'diffRsp': os.path.join(stExeDir, 'gtdiffrsp'),
     'digi': gleam,
     'digiHist': packages['Monitor']['app'],
-    # 'errorMerger': os.path.join(L1ProcROOT, 'errorParser.py'),
     'drawOrbit': os.path.join(
         packages['FastMon']['python'], 'drawOrbit2d.py'),
     'errorHandler': os.path.join(
@@ -417,29 +400,22 @@ apps = {
         packages['FastMon']['python'], 'pFastMonTreeProcessor.py'),
     'fastMonTuple': packages['FastMon']['app'],
     'fastMon': packages['FastMon']['app'],
-    'findGaps': os.path.join(
-        packages['findGaps']['bin'], 'findGaps.exe'),
-    'ft1Verify': os.path.join(
-        packages['TestReport']['bin'], 'ft1Verify.exe'),
-    'ft2Verify': os.path.join(
-        packages['TestReport']['bin'], 'ft2Verify.exe'),
-    'makeFT1': os.path.join(stBinDir, 'makeFT1'),
-    # 'makeFT1': os.path.join(stBinDir, 'makeFT1_kluge'),
+    'findGaps': os.path.join(l1ExeDir, 'findGaps'),
+    'fixGTI': os.path.join(stExeDir, 'gtmktime'),
+    'ft1Verify': os.path.join(l1ExeDir, 'ft1Verify'),
+    'ft2Verify': os.path.join(l1ExeDir, 'ft2Verify'),
+    'gtSelect': os.path.join(stExeDir, 'gtselect'),
+    'makeFT1': os.path.join(stExeDir, 'makeFT1'),
     'makeFT2': packages['ft2Util']['app'],
-    'makeLS3': os.path.join(stBinDir, 'gtltcube'),
-    'mergeFT2': os.path.join(
-        packages['ft2Util']['bin'], 'mergeFT2.exe'),
-    'meritVerify': os.path.join(
-        packages['TestReport']['bin'], 'meritVerify.exe'),
+    'mergeFT2': os.path.join(l1ExeDir, 'mergeFT2Entries'),
+    'meritVerify': os.path.join(l1ExeDir, 'meritVerify'),
     'recon': gleam,
     'reportMerge': packages['Monitor']['mergeApp'],
-    'runVerify': os.path.join(
-        packages['TestReport']['bin'], 'RunVerify.exe'),
+    'runVerify': os.path.join(l1ExeDir, 'RunVerify'),
     'solarFlares': os.path.join(
         packages['Common']['python'], 'pBadTimeIntervalLogger.py'),
     'svacTuple': packages['EngineeringModelRoot']['app'],
-    'tkrAnalysis': os.path.join(
-        packages['calibTkrUtil']['bin'], 'tkrRootAnalysis.exe'),
+    'tkrAnalysis': os.path.join(l1ExeDir, 'tkrRootAnalysis'),
     'tkrMerger': os.path.join(
         packages['calibTkrUtil']['python'], 'mergeTkrRootFiles.py'),
     'tkrMonitor': os.path.join(
@@ -641,7 +617,7 @@ verifyOptions = {
     }
 
 ft2Pad = 0.0 # pad time range with this on either end whan making fakeFT2
-ft2Template = os.path.join(ST, 'fitsGen', 'data', 'ft2.tpl')
+ft2Template = os.path.join(L1Build, 'fitsGen', 'data', 'ft2.tpl')
 ft2liveTimeTolerance = '1e-12'
 
 m7Pad = 10 # pad time range with this on either end whan making m7
@@ -658,12 +634,10 @@ else:
 trendIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/%s/bin/ingestTrendingFile' % trendMode
 runIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/%s/bin/ingestRunFile' % trendMode
 
-grPath = os.path.join(glastLocation, 'lib')
 rootPath = os.path.join(rootSys, 'lib')
-
 libraryPath = ':'.join(
     [
-        os.path.join(L1Cmt, 'lib'), 
+        os.path.join(L1Build, 'lib', optConfig), 
         rootPath,
         ])
 
@@ -734,8 +708,6 @@ solarFlareFlag = -1
 
 astroTools = "/afs/slac/g/glast/applications/astroTools/astrotools_setup.sh"
 
-os.environ['CMTCONFIG'] = cmtConfig
-os.environ['CMTPATH'] = cmtPath
 os.environ['GLAST_EXT'] = glastExt
 os.environ['GPL2'] = GPL2
 os.environ['LATCalibRoot'] = LATCalibRoot

@@ -1,8 +1,8 @@
-#include "$GLEAMROOT/src/jobOptions/pipeline/ldf2digi.txt"
+#include "$GLEAMJOBOPTIONSPATH/jobOptions/pipeline/ldf2digi.txt"
 EventSelector.StorageType = "CCSDSFILE";
 EventSelector.FileName = "$EVTFILE";
 digiRootWriterAlg.digiRootFile = "$digiChunkFile";
-GlastDetSvc.xmlfile = "$(XMLGEODBSROOT)/xml/$(gleamGeometry)";
+GlastDetSvc.xmlfile = "$(XMLGEODBSXMLPATH)/$(gleamGeometry)";
 
 CalibMySQLCnvSvc.DbName           = "calib";
 CalibMySQLCnvSvc.QualityList      = {"PROD"};

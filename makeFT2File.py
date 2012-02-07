@@ -34,19 +34,20 @@ fitsFt2File = fileNames.fileName(outFileType, dlId, runId, next=True)
 stagedFt2FitsFile = staged.stageOut(fitsFt2File)
 
 workDir = os.path.dirname(stagedFt2FitsFile)
-
-setupScript = config.packages['ft2Util']['setup']
-
+l1Setup = config.l1Setup
+instDir = config.L1Build
+glastExt = config.glastExt
+            
 version = fileNames.version(fitsFt2File)
 
 procVer = config.procVer
 
-cmtPath = config.cmtPath
-
 cmd = '''
 cd %(workDir)s
-export CMTPATH=%(cmtPath)s
 source %(setupScript)s
+export INST_DIR=%(instDir)s 
+export GLAST_EXT=%(glastExt)s
+source %(l1Setup)s
 %(app)s -inputFT2 %(stagedFt2SecondsFile)s -outputFT2 %(stagedFt2FitsFile)s -version %(version)s -procVer %(procVer)s
 ''' % locals()
 
