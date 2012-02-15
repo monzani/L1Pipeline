@@ -44,7 +44,6 @@ procVer = config.procVer
 
 cmd = '''
 cd %(workDir)s
-source %(setupScript)s
 export INST_DIR=%(instDir)s 
 export GLAST_EXT=%(glastExt)s
 source %(l1Setup)s

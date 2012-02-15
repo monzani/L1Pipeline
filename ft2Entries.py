@@ -83,6 +83,7 @@ cmd = '''
 cd %(workDir)s
 export INST_DIR=%(instDir)s 
 export GLAST_EXT=%(glastExt)s
+TIMING_DIR=$GLAST_EXT/extFiles/v0r9/jplephem ; export TIMING_DIR
 source %(l1Setup)s
 %(app)s -digifile %(stagedDigiFile)s -meritfile %(stagedMeritFile)s -m7file %(stagedM7File)s -ft2file %(stagedFt2FitsFile)s %(gapOpts)s -ft2start %(tStart).17g -ft2stop %(tStop).17g %(templOpt)s %(qualOpt)s %(configOpt)s %(versOpt)s
 ''' % locals()
@@ -90,9 +91,10 @@ source %(l1Setup)s
 status = runner.run(cmd)
 if status: finishOption = 'wipe'
 
+status |= staged.finish(finishOption)
+
 if not status:
     registerPrep.prep(fileType, ft2Seconds)
     pass
 
-status |= staged.finish(finishOption)
-
+sys.exit(status)

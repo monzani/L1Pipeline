@@ -283,11 +283,11 @@ sConsPackages = {
         },
     'fitsGen': {
         'repository': '',
-        'version': 'fitsGen-06-02-04',
+        'version': 'fitsGen-06-03-00',
         },
     'ft2Util': {
         'repository': '',
-        'version': 'ft2Util-02-00-01',
+        'version': 'ft2Util-02-00-03',
         },
     'Monitor': {
         'repository': 'svac',
@@ -355,7 +355,7 @@ packages['evtClassDefs']['data'] = os.path.join(
 packages['evtClassDefs']['xml'] = os.path.join(
     packages['evtClassDefs']['root'], 'xml')
 
-packages['ft2Util']['app'] = os.path.join(l1ExeDir, 'makeFT2.exe')
+packages['ft2Util']['app'] = os.path.join(l1ExeDir, 'makeFT2')
 
 packages['FastMon']['app'] = os.path.join(
     packages['FastMon']['python'], 'pDataProcessor.py')
@@ -407,7 +407,7 @@ apps = {
     'gtSelect': os.path.join(stExeDir, 'gtselect'),
     'makeFT1': os.path.join(stExeDir, 'makeFT1'),
     'makeFT2': packages['ft2Util']['app'],
-    'mergeFT2': os.path.join(l1ExeDir, 'mergeFT2Entries'),
+    'mergeFT2': os.path.join(l1ExeDir, 'mergeFT2'),
     'meritVerify': os.path.join(l1ExeDir, 'meritVerify'),
     'recon': gleam,
     'reportMerge': packages['Monitor']['mergeApp'],
@@ -716,7 +716,6 @@ os.environ['MALLOC_CHECK_'] = '0'
 os.environ['PFILES'] = PFILES
 os.environ['PYTHONPATH'] = pythonPath
 os.environ['ROOTSYS'] = rootSys
-
 
 # Used to distinguish our variable names from the hoi polloi
 nameManglingPrefix = 'L1'
