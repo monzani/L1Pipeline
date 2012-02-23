@@ -270,7 +270,7 @@ sConsPackages = {
         },
     'calibTkrUtil': {
         'repository': '',
-        'version': 'calibTkrUtil-02-09-06-gr01',
+        'version': 'calibTkrUtil-02-09-06-gr02',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
