@@ -28,7 +28,7 @@ folders = {
     'MERIT': oldFolder,
     }
 
-mode = config.mode
+mode = os.environ.get('dataCatMode') or config.mode
 
 datacat = '''/afs/slac.stanford.edu/u/gl/glast/datacat/%s/datacat find --group %s --filter 'Name=="%s"'  --show-unscanned-locations   --show-non-ok-locations  %s '''
 
@@ -65,15 +65,16 @@ pipeline.setVariable('mootKey', mootKey)
 pipeline.setVariable('mootAlias', mootAlias)
 
 
-# check that the chunks aren't crazy
-chunks = finders.findAndReadChunkLists(runId)
-chunkHeaders = [chunkData['headerData'] for chunkId, chunkData in chunks]
-testResult = chunkTester.verifyList(chunkHeaders)
-if not testResult:
-    print >> sys.stderr, 'Run %s has bad crazy chunks.' % runId
-    status |= 1
-    sys.exit(status)
-    pass
-tStart, tStop = testResult
-pipeline.setVariable('tStart', '%.17g' % tStart)
-pipeline.setVariable('tStop', '%.17g' % tStop)
+# Actually this is just to get the times. Use getTimesAcq instead for now.
+# # check that the chunks aren't crazy
+# chunks = finders.findAndReadChunkLists(runId)
+# chunkHeaders = [chunkData['headerData'] for chunkId, chunkData in chunks]
+# testResult = chunkTester.verifyList(chunkHeaders)
+# if not testResult:
+#     print >> sys.stderr, 'Run %s has bad crazy chunks.' % runId
+#     status |= 1
+#     sys.exit(status)
+#     pass
+# tStart, tStop = testResult
+# pipeline.setVariable('tStart', '%.17g' % tStart)
+# pipeline.setVariable('tStop', '%.17g' % tStop)

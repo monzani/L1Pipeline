@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline
+  xmlns="http://glast-ground.slac.stanford.edu/pipeline"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
+
+<task name="flagFT2-P130" version="%(L1Version)s" type="Data">
+
+  <variables>
+    <var name="baseVersion">130</var>
+    <var name="creator">%(creator)s</var>
+    <var name="isocMode">%(isocMode)s</var>
+    <var name="isocRun">%(isocRun)s</var>
+    <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+    <var name="L1_INSTALL_DIR">%(installRoot)s</var>
+    <var name="L1_BUILD_DIR">%(L1BuildBase)s</var>
+    <var name="L1_TASK_NAME">flagFT2</var>
+    <var name="l1RunStatus">%(runningStatus)s</var>
+    <var name="nameManglingPrefix">%(nameManglingPrefix)s</var>
+    <var name="logRoot">%(logRoot)s/${pipeline.mode}</var>
+    <var name="highPriority">%(highPriority)d</var>
+    <var name="standardPriority">%(standardPriority)d</var>
+    <var name="standardSelect">%(standardSelect)s</var>
+    <var name="standardRusage">%(standardRusage)s</var>
+
+    <var name="dataCatDir">/Data/Flight/Reprocess/P130</var>
+
+    <var name="DATASOURCE">LPA</var>
+    <var name="DOWNLINK_ID">0</var>
+    <var name="DOWNLINK_RAWDIR">/dev/null</var>
+  </variables>
+
+
+  <prerequisites>
+    <prerequisite name="RUNID" type="string"/>
+  </prerequisites>
+
+
+  <process name="lockRun" autoRetryMaxAttempts="%(retries)s">
+    <variables>
+      <var name="l1LockAction">LockDirOnly</var>
+    </variables>
+    <job executable="/bin/true" batchOptions=" %(lockOption)s -q express -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+  </process>
+
+
+  <process name="getTimes" autoRetryMaxAttempts="%(retries)s">
+    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimesAcq.py" batchOptions=" -q express "/>
+    <depends>
+    <after process="lockRun" status="SUCCESS"/>
+   </depends>
+  </process>
+
+
+  <process name="setupQuality">
+    <script><![CDATA[
+%(setupQScriptBody)s
+]]>
+    </script>
+    <depends>
+      <after process="lockRun" status="SUCCESS"/>
+    </depends>
+  </process>
+
+
+  <process name="copyFiles" autoRetryMaxAttempts="%(retries)s">
+    <variables>
+      <var name="inFileTypes">ft2/ft2Seconds</var>
+      <var name="outFileTypes">ft2NoQual/ft2SecondsNoQual</var>
+      <var name="L1_ft2_ver">${datacatalog.getDatasetLatestVersion(RUNID, dataCatDir, "FT2")}</var>
+      <var name="L1_ft2NoQual_ver">${datacatalog.getDatasetLatestVersion(RUNID, dataCatDir, "FT2NOQUAL")}</var>
+      <var name="L1_ft2Seconds_ver">${datacatalog.getDatasetLatestVersion(RUNID, dataCatDir, "FT2SECONDS")}</var>
+      <var name="L1_ft2SecondsNoQual_ver">${datacatalog.getDatasetLatestVersion(RUNID, dataCatDir, "FT2SECONDSNOQUAL")}</var>
+    </variables>
+    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q short -sp ${highPriority} " />
+    <depends>
+      <after process="lockRun" status="SUCCESS"/>
+    </depends>
+  </process>
+
+
+  <process name="registerFt2SecondsNoQual" autoRetryMaxAttempts="%(retries)s">
+    <variables>
+      <var name="parentProcess">copyFiles</var>
+      <var name="fileType">ft2SecondsNoQual</var>
+      <var name="timeProcess">getTimes</var>
+    </variables>
+    <script><![CDATA[
+%(registerBody)s
+]]>
+    </script>
+    <depends>
+      <after process="copyFiles" status="SUCCESS"/>
+      <after process="getTimes" status="SUCCESS"/>
+    </depends>
+  </process>
+
+
+  <process name="registerFT2NoQual" autoRetryMaxAttempts="%(retries)s">
+    <variables>
+      <var name="parentProcess">copyFiles</var>
+      <var name="fileType">ft2NoQual</var>
+      <var name="timeProcess">getTimes</var>
+    </variables>
+    <script><![CDATA[
+%(registerBody)s
+]]>
+    </script>
+    <depends>
+      <after process="copyFiles" status="SUCCESS"/>
+      <after process="getTimes" status="SUCCESS"/>
+    </depends>
+  </process>
+
+
+  <process name="flagFT2" autoRetryMaxAttempts="%(retries)s">
+    <variables>
+      <var name="btiProcess">setupQuality</var>
+      <var name="badRanges">${pipeline.processInstance(btiProcess).getVariable("badRanges")}</var>
+       <var name="L1_ft2_ver">${datacatalog.getDatasetLatestVersion(RUNID, dataCatDir, "FT2")}</var>
+      <var name="L1_ft2NoQual_ver">${datacatalog.getDatasetLatestVersion(RUNID, dataCatDir, "FT2NOQUAL")}</var>
+      <var name="L1_ft2Seconds_ver">${datacatalog.getDatasetLatestVersion(RUNID, dataCatDir, "FT2SECONDS")}</var>
+      <var name="L1_ft2SecondsNoQual_ver">${datacatalog.getDatasetLatestVersion(RUNID, dataCatDir, "FT2SECONDSNOQUAL")}</var>
+      <var name="inFileTypes">ft2NoQual/ft2SecondsNoQual</var>
+      <var name="outFileTypes">ft2/ft2Seconds</var>
+    </variables>
+    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q long -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+    <depends>
+      <after process="setupQuality" status="SUCCESS"/>
+      <after process="registerFt2SecondsNoQual" status="SUCCESS"/>
+      <after process="registerFT2NoQual" status="SUCCESS"/>
+    </depends>
+  </process>
+
+
+  <process name="registerFT2Seconds" autoRetryMaxAttempts="%(retries)s">
+    <variables>
+      <var name="parentProcess">flagFT2</var>
+      <var name="fileType">ft2Seconds</var>
+      <var name="timeProcess">getTimes</var>
+    </variables>
+    <script><![CDATA[
+%(registerBody)s
+]]>
+    </script>
+    <depends>
+      <after process="flagFT2" status="SUCCESS"/>
+    </depends>
+  </process>
+
+
+  <process name="registerFT2" autoRetryMaxAttempts="%(retries)s">
+    <variables>
+      <var name="parentProcess">flagFT2</var>
+      <var name="fileType">ft2</var>
+      <var name="timeProcess">getTimes</var>
+    </variables>
+    <script><![CDATA[
+%(registerBody)s
+]]>
+    </script>
+    <depends>
+      <after process="flagFT2" status="SUCCESS"/>
+    </depends>
+  </process>
+
+
+  <process name="exportFT2" autoRetryMaxAttempts="%(retries)s">
+    <variables>
+      <var name="fileType">ft2</var>
+      <var name="%(ft2_versionName)s">${pipeline.processInstance("flagFT2").getVariable("L1_ft2_ver")}</var>
+    </variables>
+    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/export-P130.py" batchOptions=" -q express -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+    <depends>
+      <after process="registerFT2" status="SUCCESS"/>
+    </depends>
+  </process>
+
+
+  <process name="wrapupQuality">
+    <variables>
+      <var name="btiProcess">flagFT2</var>
+    </variables>
+    <script><![CDATA[
+%(wrapupQScriptBody)s
+]]>
+    </script>
+    <depends>
+      <after process="registerFT2Seconds" status="SUCCESS"/>
+      <after process="exportFT2" status="SUCCESS"/>
+    </depends>
+  </process>
+
+
+  <process name="unLockRun" autoRetryMaxAttempts="1">
+    <variables>
+      <var name="l1LockAction">UnLock</var>
+    </variables>
+    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/lockFile.py" batchOptions=" -q express -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+    <depends>
+      <after process="wrapupQuality" status="SUCCESS"/>
+    </depends>
+  </process>
+
+
+</task>
+</pipeline>

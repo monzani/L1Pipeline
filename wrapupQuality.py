@@ -1,7 +1,13 @@
 from java.sql import Timestamp
 
+try:
+    theRun = runNumber
+except NameError:
+    theRun = int(RUNID[2:])
+    pass
+
 creator = pipeline.getTaskVersionPath()
-theSet = runQuality.getMostRecentSubmittedTimeIntervalSet(runNumber, creator)
+theSet = runQuality.getMostRecentSubmittedTimeIntervalSet(theRun, creator)
 ivs = []
 
 if theSet:

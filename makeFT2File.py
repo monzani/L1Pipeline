@@ -40,7 +40,7 @@ glastExt = config.glastExt
             
 version = fileNames.version(fitsFt2File)
 
-procVer = config.procVer
+procVer = config.ft2ProcVer
 
 cmd = '''
 cd %(workDir)s

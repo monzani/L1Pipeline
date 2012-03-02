@@ -23,9 +23,7 @@ This will require keeping track either of which runs have been sent or
 @author W. Focke <focke@slac.stanford.edu>
 """
 
-import glob
 import os
-import re
 import sys
 import time
 

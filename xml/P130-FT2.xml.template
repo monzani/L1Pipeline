@@ -32,17 +32,30 @@
     <process name="lookupFiles" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="fileTypes">digi,merit,magic7L1</var>
+        <var name="dataCatMode">prod</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/lookupJob.py" batchOptions=" -q %(shortQ)s " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/lookupJob.py" batchOptions=" -q express " />
     </process>
 
+
+  <process name="getTimes" autoRetryMaxAttempts="%(retries)s">
+    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimesAcq.py" batchOptions=" -q express "/>
+  </process>
+
+
+    <process name="getQuality" autoRetryMaxAttempts="%(retries)s">
+       <script><![CDATA[
+%(qualityScriptBody)s
+]]> 
+      </script>
+    </process>
 
     <process name="makeGaps" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="L1_digi_fileName">${pipeline.processInstance("lookupFiles").getVariable("L1_digi_fileName")}</var>
         <var name="%(digiGap_versionName)s">${datacatalog.getDatasetLatestVersion(RUNID, dataCatDir, "DIGIGAP")}</var>
      </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeGaps.py" batchOptions=" -q %(shortQ)s " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeGaps.py" batchOptions=" -q medium " />
       <depends>
         <after process="lookupFiles" status="SUCCESS"/>
       </depends>
@@ -53,7 +66,7 @@
       <variables>
         <var name="parentProcess">makeGaps</var>
         <var name="fileType">digiGap</var>
-        <var name="timeProcess">lookupFiles</var>
+        <var name="timeProcess">getTimes</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -61,14 +74,8 @@
       </script>
       <depends>
         <after process="makeGaps" status="SUCCESS"/>
+        <after process="getTimes" status="SUCCESS"/>
       </depends>
-    </process>
-
-    <process name="getQuality" autoRetryMaxAttempts="%(retries)s">
-       <script><![CDATA[
-%(qualityScriptBody)s
-]]> 
-      </script>
     </process>
 
     <process name="ft2Runs" autoRetryMaxAttempts="%(retries)s">
@@ -82,7 +89,7 @@
         <var name="runQuality">${pipeline.processInstance("getQuality").getVariable("runQuality")}</var>
         <var name="mootAlias">${pipeline.processInstance("lookupFiles").getVariable("mootAlias")}</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ft2Entries.py" batchOptions=" -q %(longQ)s -sp %(highPriority)d -R &quot;rusage[scratch=15]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ft2Entries.py" batchOptions=" -q long -R &quot;rusage[scratch=15]&quot; " />
       <depends>
         <after process="registerGaps" status="SUCCESS"/>
         <after process="getQuality" status="SUCCESS"/>
@@ -93,7 +100,7 @@
       <variables>
         <var name="parentProcess">ft2Runs</var>
         <var name="fileType">ft2Seconds</var>
-        <var name="timeProcess">lookupFiles</var>
+        <var name="timeProcess">getTimes</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s
@@ -111,7 +118,7 @@
         <var name="%(ft2Seconds_versionName)s">${datacatalog.getDatasetLatestVersion(RUNID, dataCatDir, "FT2SECONDS")}</var>
         <var name="%(ft2_versionName)s">${datacatalog.getDatasetLatestVersion(RUNID, dataCatDir, "FT2")}</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeFT2File.py" batchOptions=" -q %(shortQ)s -sp %(highPriority)d -R &quot;rusage[scratch=1]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeFT2File.py" batchOptions=" -q short -R &quot;rusage[scratch=1]&quot; " />
       <depends>
         <after process="registerFt2Seconds" status="SUCCESS"/>
       </depends>
@@ -121,7 +128,7 @@
       <variables>
         <var name="parentProcess">makeFT2</var>
         <var name="fileType">ft2</var>
-        <var name="timeProcess">lookupFiles</var>
+        <var name="timeProcess">getTimes</var>
       </variables>
       <script><![CDATA[
 %(registerBody)s

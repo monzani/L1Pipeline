@@ -1,5 +1,12 @@
 creator = pipeline.getTaskVersionPath()
-theSet = runQuality.getMostRecentSubmittedTimeIntervalSet(runNumber, creator)
+
+try:
+    theRun = runNumber
+except NameError:
+    theRun = int(RUNID[2:])
+    pass
+
+theSet = runQuality.getMostRecentSubmittedTimeIntervalSet(theRun, creator)
 
 if theSet:
     intervals = theSet.getActiveIntervals()
