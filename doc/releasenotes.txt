@@ -1,3 +1,13 @@
+3.2
+-----------------
+New GR with more detailed error handling
+
+
+3.1
+-----------------
+Skipped version for P130 reprocessing
+
+
 3.0
 -----------------
 Using the SCons-based GR
