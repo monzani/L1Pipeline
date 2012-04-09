@@ -1,6 +1,6 @@
 3.2
 -----------------
-New GR with more detailed error handling
+New GR, new ROOT version, new Common
 
 
 3.1
