@@ -204,7 +204,7 @@ reconOptions = {
     'MC': os.path.join(L1Data, 'recon.jobOpt.mc'),
 }
 
-rootSys = os.path.join(glastExt, 'ROOT/v5.26.00a-gl1/gcc34')
+rootSys = os.path.join(glastExt, 'ROOT/v5.26.00a-gl6/gcc34')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
