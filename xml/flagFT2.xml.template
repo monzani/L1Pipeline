@@ -45,6 +45,14 @@
   </process>
 
 
+  <process name="getTimes" autoRetryMaxAttempts="%(retries)s">
+    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimesAcq.py" batchOptions=" -q express "/>
+    <depends>
+    <after process="lockRun" status="SUCCESS"/>
+   </depends>
+  </process>
+
+
   <process name="setupQuality">
     <script><![CDATA[
 %(setupQScriptBody)s
@@ -90,13 +98,14 @@
     <variables>
       <var name="parentProcess">flagFT2</var>
       <var name="fileType">ft2Seconds</var>
-      <var name="timeProcess">lookupFiles</var>
+      <var name="timeProcess">getTimes</var>
     </variables>
     <script><![CDATA[
 %(registerBody)s
 ]]>
     </script>
     <depends>
+      <after process="getTimes" status="SUCCESS"/>
       <after process="flagFT2" status="SUCCESS"/>
     </depends>
   </process>
@@ -106,13 +115,14 @@
     <variables>
       <var name="parentProcess">flagFT2</var>
       <var name="fileType">ft2</var>
-      <var name="timeProcess">lookupFiles</var>
+      <var name="timeProcess">getTimes</var>
     </variables>
     <script><![CDATA[
 %(registerBody)s
 ]]>
     </script>
     <depends>
+      <after process="getTimes" status="SUCCESS"/>
       <after process="flagFT2" status="SUCCESS"/>
     </depends>
   </process>

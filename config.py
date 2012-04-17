@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "3.1"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "3.3"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -181,8 +181,8 @@ scons = '/afs/slac.stanford.edu/g/glast/applications/install/@sys/usr/bin/scons'
 optConfig = 'redhat4-i686-32bit-gcc34-Optimized'
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', 'redhat4-i686-32bit-gcc34')
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
-glastVersion = '17-35-24-gr15'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
+glastVersion = '17-35-24-lp22'
 releaseName = 'GlastRelease'
 #
 glastName = '-'.join((releaseName, glastVersion))
@@ -208,8 +208,8 @@ rootSys = os.path.join(glastExt, 'ROOT/v5.26.00a-gl1/gcc34')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
-stDir = os.path.join(groundRoot, 'releases', 'volume11')
-stVersion = '09-24-00'
+stDir = os.path.join(groundRoot, 'releases', 'volume12')
+stVersion = '09-27-01'
 stName = 'ScienceTools'
 
 ST = os.path.join(stDir, "ScienceTools-%s" % stVersion)
@@ -271,7 +271,7 @@ sConsPackages = {
         },
     'calibTkrUtil': {
         'repository': '',
-        'version': 'calibTkrUtil-02-09-06-gr01',
+        'version': 'calibTkrUtil-02-09-06-gr02',
         },
     'EngineeringModelRoot': {
         'repository': 'svac',
@@ -280,10 +280,6 @@ sConsPackages = {
     'findGaps': {
         'repository': 'svac',
         'version': 'findGaps-02-02-00',
-        },
-    'fitsGen': {
-        'repository': '',
-        'version': 'fitsGen-06-03-00',
         },
     'ft2Util': {
         'repository': '',
@@ -306,7 +302,7 @@ sConsPackages = {
 cvsPackages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'Common-06-11-02',
+        'version': 'Common-06-11-04',
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
@@ -323,6 +319,10 @@ cvsPackages = {
     'FastMonCfg': {
         'repository': 'dataMonitoring',
         'version': 'FastMonCfg-02-02-01',
+        },
+    'fitsGen': {
+        'repository': '',
+        'version': 'fitsGen-06-03-00',
         },
     'GPLtools': {
         'repository': '',

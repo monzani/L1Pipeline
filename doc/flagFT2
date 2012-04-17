@@ -1,0 +1,10 @@
+I have a script, launchFlagFT2.sh, which taks as arguments the 
+pipeline mode and the run id. We need to figure out where I should put a link so 
+you can always find it in the same place. Should probably have different links 
+for prod and dev. So it'd be something like
+
+/some/disk/somewhere/PROD/launchFlagFT2.sh PROD 321819587
+
+
+/nfs/slac/g/glast/ground/datamonitoring/badtimeintervals/DEV/launchFlagFT2.sh
+/nfs/slac/g/glast/ground/datamonitoring/badtimeintervals/PROD/launchFlagFT2.sh

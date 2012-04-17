@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline
+  xmlns="http://glast-ground.slac.stanford.edu/pipeline"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
+
+<task name="setL1Quality" version="0.0" type="Data">
+
+  <prerequisites>
+    <prerequisite name="runNumber" type="integer"/>
+    <prerequisite name="newQuality" type="string"/>
+  </prerequisites>
+
+  <process name="setQuality" autoRetryMaxAttempts="1">
+    <script><![CDATA[
+runQuality.setRunQuality(runNumber, newQuality)
+]]>
+    </script>
+  </process>
+</task>
+</pipeline>

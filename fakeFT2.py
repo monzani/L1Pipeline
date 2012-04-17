@@ -48,7 +48,7 @@ def fakeFT2(files, workDir, runDir, staged, idArgs, **args):
     export GLAST_EXT=%(glastExt)s
     TIMING_DIR=$GLAST_EXT/extFiles/v0r9/jplephem ; export TIMING_DIR
     source %(l1Setup)s
-    strace %(app)s -m7file %(stagedM7File)s -ft2file %(stagedFt2FitsFile)s -ft2start %(tStart).17g -ft2stop %(tStop).17g %(templOpt)s
+    %(app)s -m7file %(stagedM7File)s -ft2file %(stagedFt2FitsFile)s -ft2start %(tStart).17g -ft2stop %(tStop).17g %(templOpt)s
     ''' % locals()
 
     status |= runner.run(cmd)
