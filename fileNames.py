@@ -110,15 +110,19 @@ fileTypes = {
     'verifyMeritErrorAlarm': 'xml',
     }
 
-pTag = '_p%03d' % config.procVer
+elFt1PTag = '_p%03d' % config.elFt1ProcVer
+exFt1PTag = '_p%03d' % config.exFt1ProcVer
+exLs1PTag = '_p%03d' % config.exLs1ProcVer
+ft1PTag = '_p%03d' % config.ft1ProcVer
 ft2PTag = '_p%03d' % config.ft2ProcVer
+ls1PTag = '_p%03d' % config.ls1ProcVer
 exportTags = { # files exported to FSSC use a different naming rule
-    'electronFT1': 'gll_el' + pTag,
-    'extendedFT1': 'gll_xp' + pTag,
-    'extendedLS1': 'gll_xe' + pTag,
-    'ft1': 'gll_ph' + pTag,
+    'electronFT1': 'gll_el' + elFt1PTag,
+    'extendedFT1': 'gll_xp' + exFt1PTag,
+    'extendedLS1': 'gll_xe' + exLs1PTag,
+    'ft1': 'gll_ph' + ft1PTag,
     'ft2': 'gll_pt' + ft2PTag,
-    'ls1': 'gll_ev' + pTag,
+    'ls1': 'gll_ev' + ls1PTag,
     'ls3': 'gll_lt',
     }
 

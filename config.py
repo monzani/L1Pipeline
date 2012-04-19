@@ -261,8 +261,20 @@ else:
     pass
 aspAlreadyLaunched = 160
 
-procVer = 120
+# procVer = 130
+elFt1ProcVer = 130
+exFt1ProcVer = 130
+exLs1ProcVer = 120
+ft1ProcVer = 130
 ft2ProcVer = 130
+ls1ProcVer = 120
+
+procVer = {
+    'electronFT1BadGti': elFt1ProcVer,
+    'ft1NoDiffRsp': ft1ProcVer,
+    'ls1BadGti': ls1ProcVer,
+    }
+    
 
 sConsPackages = {
     'calibGenTKR': {

@@ -44,7 +44,7 @@ def makeFT1(files, inFileTypes, outFileTypes, workDir, **args):
     cutStop = rounding.roundUp(mStop, config.ft1Digits)
 
     version = fileNames.version(stagedFt1File)
-    procVer = config.procVer
+    procVer = config.procVer[outFileType]
 
     instDir = config.ST
     glastExt = config.glastExt
