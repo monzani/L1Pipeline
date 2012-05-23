@@ -293,6 +293,10 @@ sConsPackages = {
         'repository': 'svac',
         'version': 'findGaps-02-02-00',
         },
+    'fitsGen': {
+        'repository': '',
+        'version': 'fitsGen-06-03-00',
+        },
     'ft2Util': {
         'repository': '',
         'version': 'ft2Util-02-00-03',
@@ -331,10 +335,6 @@ cvsPackages = {
     'FastMonCfg': {
         'repository': 'dataMonitoring',
         'version': 'FastMonCfg-02-02-01',
-        },
-    'fitsGen': {
-        'repository': '',
-        'version': 'fitsGen-06-03-00',
         },
     'GPLtools': {
         'repository': '',
