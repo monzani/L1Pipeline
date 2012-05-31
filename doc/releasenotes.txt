@@ -1,3 +1,8 @@
+3.4
+-----------------
+GR-17-35-24-lp28, which was built against FSW B3-0-0-gl1.
+
+
 3.3
 -----------------
 Add BTI stuff.
