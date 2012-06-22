@@ -182,7 +182,7 @@ optConfig = 'redhat4-i686-32bit-gcc34-Optimized'
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', 'redhat4-i686-32bit-gcc34')
 #
 releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
-glastVersion = '17-35-24-lp28'
+glastVersion = '17-35-24-lp29'
 releaseName = 'GlastRelease'
 #
 glastName = '-'.join((releaseName, glastVersion))
@@ -209,7 +209,7 @@ haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
 stDir = os.path.join(groundRoot, 'releases', 'volume12')
-stVersion = '09-27-01'
+stVersion = '09-29-00'
 stName = 'ScienceTools'
 
 ST = os.path.join(stDir, "ScienceTools-%s" % stVersion)
