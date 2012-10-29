@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "4.0"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "4.1"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -182,7 +182,7 @@ optConfig = 'redhat5-i686-32bit-gcc41-Optimized'
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', 'redhat5-i686-32bit-gcc41')
 #
 releaseDir = os.path.join(groundRoot, 'releases', 'volume07')
-glastVersion = '17-35-24-gr35'
+glastVersion = '17-35-24-lp39'
 releaseName = 'GlastRelease'
 #
 glastName = '-'.join((releaseName, glastVersion))
@@ -318,7 +318,7 @@ sConsPackages = {
 cvsPackages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'Common-06-11-04',
+        'version': 'Common-06-11-05',
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
@@ -330,7 +330,7 @@ cvsPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'FastMon-05-02-01',
+        'version': 'FastMon-05-03-00',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',

@@ -7,4 +7,4 @@ gcrSelectRootWriterAlg.gcrSelectRootFile = "$gcrCrumbFile";
 PtValsAlg.PointingHistory = {"$fakeFT2File","", ""};
 GlastDetSvc.xmlfile = "$(XMLGEODBSXMLPATH)/$(gleamGeometry)";
 ApplicationMgr.EvtMax = 2147483647; 
-//EventIntegrityAlg.mask = 4294966999;
+EventIntegrityAlg.mask = 4294966999;
