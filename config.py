@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "4.1"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "4.2"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -181,8 +181,8 @@ scons = '/afs/slac.stanford.edu/g/glast/applications/install/@sys/usr/bin/scons'
 optConfig = 'redhat5-i686-32bit-gcc41-Optimized'
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', 'redhat5-i686-32bit-gcc41')
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume07')
-glastVersion = '17-35-24-lp39'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume06')
+glastVersion = '17-35-24-lp38'
 releaseName = 'GlastRelease'
 #
 glastName = '-'.join((releaseName, glastVersion))
@@ -266,7 +266,7 @@ elFt1ProcVer = 130
 exFt1ProcVer = 130
 exLs1ProcVer = 120
 ft1ProcVer = 130
-ft2ProcVer = 130
+ft2ProcVer = 202
 ls1ProcVer = 120
 
 procVer = {
@@ -295,11 +295,11 @@ sConsPackages = {
         },
     'fitsGen': {
         'repository': '',
-        'version': 'fitsGen-06-03-00',
+        'version': 'fitsGen-06-06-01',
         },
     'ft2Util': {
         'repository': '',
-        'version': 'ft2Util-02-00-06',
+        'version': 'ft2Util-02-01-01',
         },
     'Monitor': {
         'repository': 'svac',
