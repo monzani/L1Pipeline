@@ -181,7 +181,7 @@ scons = '/afs/slac.stanford.edu/g/glast/applications/install/@sys/usr/bin/scons'
 optConfig = 'redhat5-i686-32bit-gcc41-Optimized'
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', 'redhat5-i686-32bit-gcc41')
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume06')
+releaseDir = os.path.join(groundRoot, 'releases', 'volume07')
 glastVersion = '17-35-24-lp40'
 releaseName = 'GlastRelease'
 #
