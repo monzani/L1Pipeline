@@ -1,3 +1,8 @@
+4.4
+-----------------
+Implemented JIRA LONE-190
+
+
 4.3
 -----------------
 GR-17-35-24-lp40(?), which was built against B3-1-3

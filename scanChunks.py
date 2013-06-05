@@ -8,13 +8,16 @@ def getStreams():
     print 'stream path: %s' % thisPath
     thisTask = thisStream.getTask()
     print 'this task: %s' % thisTask
+    delivsToIgnore = str(deliveriesToIgnore)
+    badDelivs = [int(deliv) for deliv in delivsToIgnore.split(':') if deliveriesToIgnore]
+    print 'Skipping deliveries', badDelivs
     rdlStreams = []
     allStreams = thisTask.getStreams(thisId)
     for stream in allStreams:
         thatPath = stream.getIdPath()
         status = stream.getStatus()
         print stream, thatPath, status
-        if thatPath == thisPath or status in finalStates:
+        if (thatPath == thisPath or status in finalStates) and thatPath[0] not in badDelivs:
             rdlStreams.append(stream)
             pass
         continue
