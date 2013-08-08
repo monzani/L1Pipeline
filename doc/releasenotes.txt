@@ -1,6 +1,9 @@
 4.4
 -----------------
-Implemented JIRA LONE-190
+add ability to ignore some deliveries when merging [LONE-190@JIRA]
+Don't clean up chunks until we're really done [LONE-193@JIRA]
+Improve retry handling [LONE-194@JIRA]
+Change procver to 202 for all exported file types
 
 
 4.3

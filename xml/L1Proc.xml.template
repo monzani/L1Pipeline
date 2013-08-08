@@ -74,7 +74,7 @@
       <variables>
         <var name="l1LockAction">LockAndThrottle</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" %(lockOption)s -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" %(lockOption)s -q %(shortQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <createsSubtasks>
         <subtask>doChunk</subtask>
       </createsSubtasks>
@@ -3113,15 +3113,6 @@
           <after process="registerRecon" status="SUCCESS"/>
           <after process="registerSvacTuple" status="SUCCESS"/>
           <after process="registerTkrReport" status="SUCCESS"/>
-        </depends>
-      </process>
-
-      <process name="unLockRun" autoRetryMaxAttempts="%(retries)s">
-        <variables>
-          <var name="l1LockAction">UnLock</var>
-        </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/lockFile.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
-        <depends>
           <after process="ingestTkrTrend" status="SUCCESS"/>
           <after process="ingestTkrTrendRun" status="SUCCESS"/>
           <after process="ingestVerifyErrorRunComp" status="SUCCESS"/>
@@ -3132,6 +3123,15 @@
           <after process="registerVerifyHistoComp" status="SUCCESS"/>
           <after process="tkrTrendLogger" status="SUCCESS"/>
           <after process="verifyErrorLoggerComp" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="unLockRun" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="l1LockAction">UnLock</var>
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/lockFile.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <depends>
           <after process="cleanupChunks" status="SUCCESS"/>
         </depends>
       </process>

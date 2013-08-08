@@ -9,7 +9,7 @@ def getStreams():
     thisTask = thisStream.getTask()
     print 'this task: %s' % thisTask
     delivsToIgnore = str(deliveriesToIgnore)
-    badDelivs = [int(deliv) for deliv in delivsToIgnore.split(':') if deliveriesToIgnore]
+    badDelivs = [int(deliv) for deliv in delivsToIgnore.split(':') if deliv]
     print 'Skipping deliveries', badDelivs
     rdlStreams = []
     allStreams = thisTask.getStreams(thisId)

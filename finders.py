@@ -57,8 +57,15 @@ def findAndReadChunkLists(runId):
     print >> sys.stderr, 'Looking for files of form %s' % pattern
     chunkFiles = glob.glob(pattern)
     print >> sys.stderr, 'Found %s' % chunkFiles
+
+    badChunkFiles = [fileNames.fileName('chunkList', badDl, runId) for badDl in os.environ.get('deliveriesToIgnore', '').split(':') if badDl]
+    print >> sys.stderr, 'Ignoring %s' % badChunkFiles
+    
     chunks = []
     for chunkFile in chunkFiles:
+        if chunkFile in badChunkFiles:
+            print >> sys.stderr, 'Skipping %s' % chunkFile
+            continue
         these = fileNames.readList(chunkFile)
         # print >> sys.stderr, these
         chunks.extend(these.items())

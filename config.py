@@ -261,13 +261,12 @@ else:
     pass
 aspAlreadyLaunched = 160
 
-# procVer = 130
-elFt1ProcVer = 130
-exFt1ProcVer = 130
-exLs1ProcVer = 120
-ft1ProcVer = 130
-ft2ProcVer = 130
-ls1ProcVer = 120
+elFt1ProcVer = 202
+exFt1ProcVer = 202
+exLs1ProcVer = 202
+ft1ProcVer = 202
+ft2ProcVer = 202
+ls1ProcVer = 202
 
 procVer = {
     'electronFT1BadGti': elFt1ProcVer,
@@ -700,7 +699,8 @@ reconMergeScratch = " -R &quot;select[scratch&gt;70]&quot; "
 reconCrumbCpuf = " -R &quot;select[cpuf&gt;%s]&quot; " % minCrumbCpuf
 
 # number of autoretries for processes that do that
-retries = 1
+defaultRetries = 1
+retries = os.environ.get('L1Retries', defaultRetries)
 
 # default option for stageSet input exclusion filter
 excludeIn = None
