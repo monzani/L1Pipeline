@@ -15,7 +15,7 @@ installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glas
 
 creator = '-'.join([L1Name, L1Version])
     
-BuildVolume = '/afs/slac/g/glast/ground/releases/volume13'
+BuildVolume = '/afs/slac/g/glast/ground/releases/volume11'
 L1BuildBase = os.environ.get('L1_BUILD_DIR') or os.path.join(BuildVolume, 'L1Proc')
 L1Build = os.path.join(L1BuildBase, L1Version)
 
@@ -290,11 +290,11 @@ sConsPackages = {
         },
     'fitsGen': {
         'repository': '',
-        'version': 'fitsGen-06-03-00',
+        'version': 'fitsGen-06-06-04',
         },
     'ft2Util': {
         'repository': '',
-        'version': 'ft2Util-02-00-06',
+        'version': 'ft2Util-02-01-01',
         },
     'Monitor': {
         'repository': 'svac',
@@ -321,7 +321,7 @@ cvsPackages = {
         },
     'evtClassDefs': {
         'repository': '',
-        'version': 'evtClassDefs-00-19-04',
+        'version': 'evtClassDefs-00-19-05',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
@@ -483,7 +483,7 @@ mergeConfigs = {
 
 alarmRefBase = '/nfs/farm/g/glast/u41/Monitoring/ReferenceHistograms'
 alarmRefDir = os.path.join(alarmRefBase, mode)
-alarmCfgBase = '/afs/slac/g/glast/ground/releases/volume13'
+alarmCfgBase = '/afs/slac/g/glast/ground/releases/volume11'
 alarmBase = os.path.join(alarmCfgBase, 'AlarmsCfg', mode)
 alarmConfigs = {
     'acdPedsAnalyzer': os.path.join(alarmBase, 'xml', 'acdpeds_eor_alarms.xml'),
@@ -573,7 +573,7 @@ electronClass = 'EvtCREventClass'
 photonClass = 'FT1EventClass'
 #transientCuts = os.path.join(evclData, 'pass7.6_Transient_cuts_L1')
 #sourceCuts = os.path.join(evclData, 'pass7.6_Source_cuts_L1')
-xmlClassifier =  os.path.join(evclXml, 'EvtClassDefs_P7V6.xml')
+xmlClassifier =  os.path.join(evclXml, 'EvtClassDefs_P7REP.xml')
 filterClassifyMap = {
     'electronMerit': {
         'cutFile': electronCuts,
@@ -604,12 +604,12 @@ gtSelectClass = {
 
 diffRspMap = {
     2: {
-        'irf': 'P7SOURCE_V6',
-        'model': os.path.join(groundRoot, 'diffuseModels/v2r0/diffuse_model_P7SOURCE_V6.xml'),
+        'irf': 'P7REP_SOURCE_V15',
+        'model': os.path.join(glastExt, 'diffuseModels/v4r0/diffmodel_p7rep_source_v05.xml'),
         },
     3: {
-        'irf': 'P7CLEAN_V6',
-        'model': os.path.join(groundRoot, 'diffuseModels/v2r0/diffuse_model_P7CLEAN_V6.xml'),
+        'irf': 'P7REP_CLEAN_V15',
+        'model': os.path.join(glastExt, 'diffuseModels/v4r0/diffmodel_p7rep_clean_v05.xml'),
         },
     }
 
