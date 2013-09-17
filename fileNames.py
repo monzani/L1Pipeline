@@ -90,8 +90,6 @@ fileTypes = {
     'solarFlareHist': 'root',
     'solarFlareLog': 'xml',
     'solarFlarePlot': 'png',
-    'svac': 'root',
-    'svacHist': 'root',
     'timeSpan': 'txt',
     'tkrAlarm': 'xml',
     'tkrAnalysis': 'root',

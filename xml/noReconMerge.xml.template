@@ -1684,32 +1684,6 @@
       </depends>
     </process>
  
-    <process name="mergeSvacChunks" autoRetryMaxAttempts="1">
-      <variables>
-        <var name="fileType">svac</var>
-        <var name="%(svac_versionName)s">%(svac_version)s</var>
-      </variables>
-      <job executable="${isocRun} python2.5 ${L1ProcROOT}/mergeStuff.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;6]&quot; "/>
-      <depends>
-        <after process="doChunk.svacTuple" status="DONE"/>
-      </depends>
-    </process>
-
-    <process name="registerSvacTuple" autoRetryMaxAttempts="1">
-      <variables>
-        <var name="parentProcess">mergeSvacChunks</var>
-        <var name="fileType">svac</var>
-        <var name="timeProcess">findChunks</var>
-      </variables>
-      <script><![CDATA[
-%(registerBody)s
-]]>
-      </script>
-      <depends>
-        <after process="mergeSvacChunks" status="SUCCESS"/>
-      </depends>
-    </process>
-
     <process name="checkRun" autoRetryMaxAttempts="1">
       <job executable="${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s "/>
       <depends>
@@ -1758,8 +1732,6 @@
         <after process="registerM7Hp" status="SUCCESS"/>
         <after process="registerMeritHist" status="SUCCESS"/>
         <after process="registerReconHistAlarmDist" status="SUCCESS"/>
-        <after process="registerSvacTuple" status="SUCCESS"/>
-<!-- We don't have TKR alarms yet        <after process="registerTkrAlarm" status="SUCCESS"/>     -->
         <after process="registerTkrReport" status="SUCCESS"/>
         <after process="registerVerifyHisto" status="SUCCESS"/>
         <after process="tkrTrendLogger" status="SUCCESS"/>
@@ -2048,14 +2020,6 @@
         </depends>
       </process>
  
-        <process name="svacTuple" autoRetryMaxAttempts="1">
-          <job executable="${isocRun} python2.5 ${L1ProcROOT}/makeSvac.py" batchOptions=" -q %(longQ)s -R &quot;select[scratch&gt;1]&quot; "/>
-          <depends>
-            <after process="doCrumb.recon" status="SUCCESS"/>
-            <after process="mergeReconCrumbs" status="SUCCESS"/>
-          </depends>
-        </process>
-
       <process name="checkChunk" autoRetryMaxAttempts="1">
         <job executable="${isocRun} python2.5 ${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s "/>
         <depends>
@@ -2071,7 +2035,6 @@
           <after process="meritTrend" status="SUCCESS"/>
           <after process="reconHist" status="SUCCESS"/>
           <after process="reconTrend" status="SUCCESS"/>
-          <after process="svacTuple" status="SUCCESS"/>
           <after process="tkrAnalysis" status="SUCCESS"/>
         </depends>
       </process>

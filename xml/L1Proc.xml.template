@@ -2638,34 +2638,6 @@
       </depends>
     </process>
 
-    <process name="scanSvacChunks" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="subTask">doChunk</var>
-        <var name="subProcess">svacTuple</var>
-      </variables>
-      <script><![CDATA[
-%(scanScriptBody)s
-]]>
-      </script>
-      <depends>
-        <after process="doChunk.svacTuple" status="DONE"/>
-      </depends>
-    </process>
-
-    <process name="scanReconChunks" autoRetryMaxAttempts="%(retries)s">
-      <variables>
-        <var name="subTask">doChunk</var>
-        <var name="subProcess">mergeReconCrumbs</var>
-      </variables>
-      <script><![CDATA[
-%(scanScriptBody)s
-]]>
-      </script>
-      <depends>
-        <after process="doChunk.mergeReconCrumbs" status="DONE"/>
-      </depends>
-    </process>
-
     <process name="checkRun" autoRetryMaxAttempts="%(retries)s">
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
@@ -2728,7 +2700,6 @@
         <after process="registerVerifyHisto" status="SUCCESS"/>
         <after process="scanReconChunks" status="SUCCESS"/>
         <after process="suggestQuality" status="SUCCESS"/>
-        <after process="scanSvacChunks" status="SUCCESS"/>
         <after process="scanTkrAnalysis" status="SUCCESS"/>
         <after process="verifyErrorLogger" status="SUCCESS"/>
         <after process="verifyFt1ErrorLogger" status="SUCCESS"/>
@@ -2794,34 +2765,6 @@
         </script>
         <depends>
           <after process="mergeReconChunks" status="SUCCESS"/>
-        </depends>
-      </process>
-
-      <process name="mergeSvacChunks" autoRetryMaxAttempts="%(retries)s">
-        <variables>
-          <var name="goodPis">${pipeline.getCurrentStream().getParentStream().getProcessInstance("scanSvacChunks").getVariable("goodPis")}</var>  
-          <var name="outFileTypes">svac</var>
-          <var name="%(svac_versionName)s">%(svac_version)s</var>
-          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
-        </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=250]&quot; "/>
-        <depends>
-          <after process="getTimes" status="SUCCESS"/>
-        </depends>
-      </process>
-
-      <process name="registerSvacTuple" autoRetryMaxAttempts="%(retries)s">
-        <variables>
-          <var name="parentProcess">mergeSvacChunks</var>
-          <var name="fileType">svac</var>
-          <var name="timeProcess">getTimes</var>
-        </variables>
-        <script><![CDATA[
-%(registerBody)s
-]]>
-        </script>
-        <depends>
-          <after process="mergeSvacChunks" status="SUCCESS"/>
         </depends>
       </process>
 
@@ -3111,7 +3054,6 @@
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="registerRecon" status="SUCCESS"/>
-          <after process="registerSvacTuple" status="SUCCESS"/>
           <after process="registerTkrReport" status="SUCCESS"/>
           <after process="ingestTkrTrend" status="SUCCESS"/>
           <after process="ingestTkrTrendRun" status="SUCCESS"/>
@@ -3413,20 +3355,6 @@
         </depends>
       </process>
  
-      <process name="svacTuple" autoRetryMaxAttempts="%(retries)s">
-        <variables>
-          <var name="inFileTypes">digi/recon</var>
-          <var name="outFileTypes">svac</var>
-          <var name="%(digi_versionName)s">${pipeline.getCurrentStream.getProcessInstance("digitization").getVariable("L1_PI_version")}</var>
-          <var name="%(recon_versionName)s">${pipeline.getCurrentStream.getProcessInstance("mergeReconCrumbs").getVariable("L1_PI_version")}</var>
-        </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
-        <depends>
-          <after process="allRecon" status="SUCCESS"/>
-          <after process="mergeReconCrumbs" status="SUCCESS"/>
-        </depends>
-      </process>
-
       <process name="checkChunk" autoRetryMaxAttempts="%(retries)s">
         <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
@@ -3440,7 +3368,6 @@
           <after process="meritTrend" status="SUCCESS"/>
           <after process="reconHist" status="SUCCESS"/>
           <after process="reconTrend" status="SUCCESS"/>
-          <after process="svacTuple" status="SUCCESS"/>
           <after process="tkrAnalysis" status="SUCCESS"/>
         </depends>
       </process>

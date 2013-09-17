@@ -181,8 +181,8 @@ scons = '/afs/slac.stanford.edu/g/glast/applications/install/@sys/usr/bin/scons'
 optConfig = 'redhat5-i686-32bit-gcc41-Optimized'
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', 'redhat5-i686-32bit-gcc41')
 #
-releaseDir = os.path.join(groundRoot, 'releases', 'volume07')
-glastVersion = '17-35-24-lp40'
+releaseDir = os.path.join(groundRoot, 'releases', 'volume10')
+glastVersion = '17-35-24-lp53'
 releaseName = 'GlastRelease'
 #
 glastName = '-'.join((releaseName, glastVersion))
@@ -208,8 +208,8 @@ rootSys = os.path.join(glastExt, 'ROOT/v5.26.00a-gl6/gcc41')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
-stDir = os.path.join(groundRoot, 'releases', 'volume07')
-stVersion = '09-29-00'
+stDir = os.path.join(groundRoot, 'releases', 'volume10')
+stVersion = '09-32-05'
 stName = 'ScienceTools'
 
 ST = os.path.join(stDir, "ScienceTools-%s" % stVersion)
@@ -284,10 +284,6 @@ sConsPackages = {
         'repository': '',
         'version': 'calibTkrUtil-02-09-06-gr02',
         },
-    'EngineeringModelRoot': {
-        'repository': 'svac',
-        'version': 'EngineeringModelRoot-05-00-00',
-        },
     'findGaps': {
         'repository': 'svac',
         'version': 'findGaps-02-02-00',
@@ -358,8 +354,6 @@ for packName in packages:
 
 # add nonstandard package info
 
-packages['EngineeringModelRoot']['app'] = os.path.join(l1ExeDir, 'RunRootAnalyzer')
-
 packages['evtClassDefs']['data'] = os.path.join(
     packages['evtClassDefs']['root'], 'data')
 
@@ -425,7 +419,6 @@ apps = {
     'runVerify': os.path.join(l1ExeDir, 'RunVerify'),
     'solarFlares': os.path.join(
         packages['Common']['python'], 'pBadTimeIntervalLogger.py'),
-    'svacTuple': packages['EngineeringModelRoot']['app'],
     'tkrAnalysis': os.path.join(l1ExeDir, 'tkrRootAnalysis'),
     'tkrMerger': os.path.join(
         packages['calibTkrUtil']['python'], 'mergeTkrRootFiles.py'),
