@@ -2638,6 +2638,20 @@
       </depends>
     </process>
 
+    <process name="scanReconChunks" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunk</var>
+        <var name="subProcess">mergeReconCrumbs</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunk.mergeReconCrumbs" status="DONE"/>
+      </depends>
+    </process>
+
     <process name="checkRun" autoRetryMaxAttempts="%(retries)s">
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
