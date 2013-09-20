@@ -2,7 +2,7 @@
 -----------------
 Do not create SVAC tuples
 Change procver to 202 for all exported file types
-New GR GlastRelease-17-35-24-lp53
+New GR GlastRelease-17-35-24-lp54
 New ST ScienceTools-09-32-05 
 New DiffRsp, new ft2Utils, new fitsGen for P202
 add ability to ignore some deliveries when merging [LONE-190@JIRA]

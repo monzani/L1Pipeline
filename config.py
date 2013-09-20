@@ -182,7 +182,7 @@ optConfig = 'redhat5-i686-32bit-gcc41-Optimized'
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', 'redhat5-i686-32bit-gcc41')
 #
 releaseDir = os.path.join(groundRoot, 'releases', 'volume10')
-glastVersion = '17-35-24-lp53'
+glastVersion = '17-35-24-lp54'
 releaseName = 'GlastRelease'
 #
 glastName = '-'.join((releaseName, glastVersion))
@@ -294,7 +294,7 @@ sConsPackages = {
         },
     'ft2Util': {
         'repository': '',
-        'version': 'ft2Util-02-01-01',
+        'version': 'ft2Util-02-02-00',
         },
     'Monitor': {
         'repository': 'svac',
