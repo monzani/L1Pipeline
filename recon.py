@@ -58,14 +58,6 @@ workDir = os.path.dirname(stagedReconFile)
 
 dataSource = os.environ['DATASOURCE']
 
-# if dataSource == 'LPA':
-#     geometry = 'latAssembly/latAssemblySegVols.xml'
-# elif dataSource == 'MC':
-#     geometry = 'flight/flightSegVols.xml'
-#     pass
-geometry = 'flight/flightSegVols.xml'
-os.environ['gleamGeometry'] = geometry
-
 app = config.apps['recon']
 options = config.reconOptions[dataSource]
 instDir = config.glastLocation

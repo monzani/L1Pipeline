@@ -7,7 +7,6 @@ RootTupleSvc.filename = "$meritCrumbFile";
 CalTupleAlg.tupleFilename = "$calCrumbFile";
 gcrSelectRootWriterAlg.gcrSelectRootFile = "$gcrCrumbFile";
 PtValsAlg.PointingHistory = {"$fakeFT2File","", ""};
-GlastDetSvc.xmlfile = "$(XMLGEODBSXMLPATH)/$(gleamGeometry)";
 
 AcdCalibSvc.DefaultFlavor = "MC_OktoberFest07";
 
