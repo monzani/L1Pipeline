@@ -182,7 +182,7 @@ optConfig = 'redhat5-i686-32bit-gcc41-Optimized'
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', 'redhat5-i686-32bit-gcc41')
 #
 releaseDir = os.path.join(groundRoot, 'releases', 'volume10')
-glastVersion = '17-35-24-lp57'
+glastVersion = '17-35-24-lp61'
 releaseName = 'GlastRelease'
 #
 glastName = '-'.join((releaseName, glastVersion))
