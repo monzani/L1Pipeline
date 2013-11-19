@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "4.4"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "4.5"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -684,7 +684,7 @@ midPriority = 60      # monitoring & dependencies
 standardPriority = 50 # everything else (which isn't much, really)
 #
 minCrumbCpuf = 9
-standardSelect = 'rhel50'
+standardSelect = 'rhel60 || rhel50'
 standardRusage = 'scratch=1'
 bigRusage = 'scratch=250'
 #
