@@ -313,7 +313,7 @@ sConsPackages = {
 cvsPackages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'Common-06-11-05',
+        'version': 'Common-06-12-00',
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
