@@ -1,6 +1,7 @@
 4.5
 -----------------
 Accept rhel6 hosts.
+Tweak queues.
 
 
 4.4.1
