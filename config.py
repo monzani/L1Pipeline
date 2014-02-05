@@ -333,7 +333,7 @@ cvsPackages = {
         },
     'GPLtools': {
         'repository': '',
-        'version': 'GPLtools-02-00-00-wf02',
+        'version': 'GPLtools-02-00-00-wf03',
         },
     'IGRF': {
         'repository': 'dataMonitoring',

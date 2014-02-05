@@ -1,3 +1,13 @@
+4.7
+-----------------
+Update GPLtools to use new netlogging destinations.
+
+
+4.6
+-----------------
+Update DQM trending to use absolute value of rocking angle.
+
+
 4.5
 -----------------
 Accept rhel6 hosts.
