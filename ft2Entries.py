@@ -79,7 +79,7 @@ configOpt = '-latconfig %d' % latConfig
 version = fileNames.version(ft2Seconds)
 versOpt = '-version %d' % version
 
-procVer = config.ft2ProcVer
+procVer = config.ft2SecondsProcVer
 
 cmd = '''
 cd %(workDir)s

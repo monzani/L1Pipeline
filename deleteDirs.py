@@ -54,10 +54,11 @@ if level == 'downlink':
             goners.append(dlRawDir)
         elif os.path.isdir(dlRawDir):
             fileOps.mkdirFor(dest, fileOps.dirMode)
-            cmd = 'mv %(dlRawDir)s %(dest)s' % locals()
+            cmd = 'cp -R %(dlRawDir)s %(dest)s' % locals()
             status |= runner.run(cmd)
             pass
-    else:
+        pass
+    if not status:
         goners.append(dlRawDir)
         pass
     pass

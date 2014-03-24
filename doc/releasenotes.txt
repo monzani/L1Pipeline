@@ -1,5 +1,8 @@
 4.7
 -----------------
+Rename 1-second FT2s.
+Export 1-second FT2s in L1Proc and flagFT2.
+Fix permissions problem with cleanupDl.
 Update GPLtools to use new netlogging destinations.
 
 

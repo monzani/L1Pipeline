@@ -113,6 +113,7 @@ exFt1PTag = '_p%03d' % config.exFt1ProcVer
 exLs1PTag = '_p%03d' % config.exLs1ProcVer
 ft1PTag = '_p%03d' % config.ft1ProcVer
 ft2PTag = '_p%03d' % config.ft2ProcVer
+ft2SecondsPTag = '_p%03d' % config.ft2SecondsProcVer
 ls1PTag = '_p%03d' % config.ls1ProcVer
 exportTags = { # files exported to FSSC use a different naming rule
     'electronFT1': 'gll_el' + elFt1PTag,
@@ -120,6 +121,7 @@ exportTags = { # files exported to FSSC use a different naming rule
     'extendedLS1': 'gll_xe' + exLs1PTag,
     'ft1': 'gll_ph' + ft1PTag,
     'ft2': 'gll_pt' + ft2PTag,
+    'ft2Seconds': 'gll_pt1s' + ft2SecondsPTag,
     'ls1': 'gll_ev' + ls1PTag,
     'ls3': 'gll_lt',
     }

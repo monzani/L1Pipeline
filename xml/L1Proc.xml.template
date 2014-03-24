@@ -1613,6 +1613,17 @@
       </depends>
     </process>
 
+    <process name="exportFT2" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="fileType">ft2</var>
+        <var name="%(ft2_versionName)s">%(ft2_version)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <depends>
+        <after process="registerFT2" status="SUCCESS"/>
+      </depends>
+    </process>
+
     <process name="registerFt2Seconds" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="parentProcess">flagFT2</var>
@@ -1628,14 +1639,14 @@
       </depends>
     </process>
 
-    <process name="exportFT2" autoRetryMaxAttempts="%(retries)s">
+    <process name="exportFT2Seconds" autoRetryMaxAttempts="%(retries)s">
       <variables>
-        <var name="fileType">ft2</var>
-        <var name="%(ft2_versionName)s">%(ft2_version)s</var>
+        <var name="fileType">ft2Seconds</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
       </variables>
       <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
-        <after process="registerFT2" status="SUCCESS"/>
+        <after process="registerFt2Seconds" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -1648,7 +1659,7 @@
 ]]>
       </script>
       <depends>
-        <after process="registerFt2Seconds" status="SUCCESS"/>
+        <after process="exportFT2Seconds" status="SUCCESS"/>
         <after process="exportFT2" status="SUCCESS"/>
       </depends>
     </process>

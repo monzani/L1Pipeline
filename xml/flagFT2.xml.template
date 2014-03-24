@@ -110,6 +110,17 @@
     </depends>
   </process>
 
+  <process name="exportFT2Seconds" autoRetryMaxAttempts="%(retries)s">
+    <variables>
+      <var name="fileType">ft2Seconds</var>
+      <var name="%(ft2Seconds_versionName)s">${pipeline.processInstance("flagFT2").getVariable("L1_ft2Seconds_ver")}</var>
+    </variables>
+    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+    <depends>
+      <after process="registerFt2Seconds" status="SUCCESS"/>
+    </depends>
+  </process>
+
 
   <process name="registerFT2" autoRetryMaxAttempts="%(retries)s">
     <variables>
@@ -149,7 +160,7 @@
 ]]>
     </script>
     <depends>
-      <after process="registerFt2Seconds" status="SUCCESS"/>
+      <after process="exportFT2Seconds" status="SUCCESS"/>
       <after process="exportFT2" status="SUCCESS"/>
     </depends>
   </process>
