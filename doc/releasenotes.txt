@@ -1,5 +1,6 @@
 4.7
 -----------------
+This is being used for P203-FT2, prod L1 should skip to 4.8.
 Rename 1-second FT2s.
 Export 1-second FT2s in L1Proc and flagFT2.
 Fix permissions problem with cleanupDl.
