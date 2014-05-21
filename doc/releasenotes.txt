@@ -1,3 +1,10 @@
+4.8
+-----------------
+P203 data release.
+Updated ScienceTools and diffuse model.
+FastMon-05-03-02 (with a fix for GDQMQ-368).
+
+
 4.7
 -----------------
 This is being used for P203-FT2, prod L1 should skip to 4.8.

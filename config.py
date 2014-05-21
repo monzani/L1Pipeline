@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "4.7"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "4.8"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -208,8 +208,8 @@ rootSys = os.path.join(glastExt, 'ROOT/v5.26.00a-gl6/gcc41')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
-stDir = os.path.join(groundRoot, 'releases', 'volume10')
-stVersion = '09-32-05'
+stDir = os.path.join(groundRoot, 'releases', 'volume03')
+stVersion = '09-33-00'
 stName = 'ScienceTools'
 
 ST = os.path.join(stDir, "ScienceTools-%s" % stVersion)
@@ -262,9 +262,9 @@ else:
 aspAlreadyLaunched = 160
 
 elFt1ProcVer = 202
-exFt1ProcVer = 202
+exFt1ProcVer = 203
 exLs1ProcVer = 202
-ft1ProcVer = 202
+ft1ProcVer = 203
 ft2ProcVer = 202
 ft2SecondsProcVer = 203
 ls1ProcVer = 202
@@ -326,7 +326,7 @@ cvsPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'FastMon-05-03-00',
+        'version': 'FastMon-05-03-02',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
@@ -606,11 +606,11 @@ gtSelectClass = {
 diffRspMap = {
     2: {
         'irf': 'P7REP_SOURCE_V15',
-        'model': os.path.join(glastExt, 'diffuseModels/v4r0/diffmodel_p7rep_source_v05.xml'),
+        'model': os.path.join(glastExt, 'diffuseModels/v4r1/diffmodel_p7rep_source_v05_rev1.xml'),
         },
     3: {
         'irf': 'P7REP_CLEAN_V15',
-        'model': os.path.join(glastExt, 'diffuseModels/v4r0/diffmodel_p7rep_clean_v05.xml'),
+        'model': os.path.join(glastExt, 'diffuseModels/v4r1/diffmodel_p7rep_clean_v05_rev1.xml'),
         },
     }
 
