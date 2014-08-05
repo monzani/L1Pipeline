@@ -24,6 +24,7 @@
     <var name="highPriority">%(highPriority)d</var>
     <var name="midPriority">%(midPriority)d</var>
     <var name="standardPriority">%(standardPriority)d</var>
+    <var name="reconPriority">%(reconPriority)d</var>
     <var name="standardSelect">%(standardSelect)s</var>
     <var name="standardRusage">%(standardRusage)s</var>
     <var name="bigRusage">%(bigRusage)s</var>
@@ -3406,7 +3407,7 @@
         </prerequisites>
 
         <process name="recon" autoRetryMaxAttempts="%(retries)s">
-          <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/recon.py" batchOptions=" -q %(longQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+          <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/recon.py" batchOptions=" -q %(longQ)s -sp ${reconPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
         </process>
 
       </task> <!-- doCrumb -->
