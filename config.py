@@ -299,7 +299,7 @@ sConsPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'Monitor-02-01-04',
+        'version': 'Monitor-02-01-05',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
