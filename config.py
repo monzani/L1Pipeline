@@ -326,7 +326,7 @@ cvsPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'FastMon-05-03-02',
+        'version': 'FastMon-05-03-03',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
@@ -684,6 +684,7 @@ highPriority = 75     # for exports and their dependencies
 midPriority = 60      # monitoring & dependencies
 standardPriority = 50 # everything else (which isn't much, really)
 reconPriority = highPriority - 1 # to reduce self-throttling
+frdPriority = highPriority + 1
 #
 minCrumbCpuf = 9
 standardSelect = 'rhel60 || rhel50'
