@@ -2,7 +2,6 @@
 -----------------
 Drop recon priority by 1 to reduce self-throttling.
 Monitor 02-01-05: check output file is not zombie.
-GR xx-yy-zz to supporting FSW B3-2-0. 
 
 
 4.8
