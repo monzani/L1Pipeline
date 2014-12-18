@@ -48,11 +48,13 @@ def makeFT1(files, inFileTypes, outFileTypes, workDir, **args):
 
     instDir = config.ST
     glastExt = config.glastExt
+    igrfExport = config.igrfExport
 
     cmd = '''
     cd %(workDir)s
     export INST_DIR=%(instDir)s 
     export GLAST_EXT=%(glastExt)s 
+    %(igrfExport)s
     source %(stSetup)s
     PYTHONPATH=%(evtClassDefsPython)s:$PYTHONPATH ; export PYTHONPATH
     %(app)s rootFile=%(stagedMeritFile)s fitsFile=%(stagedFt1File)s TCuts=%(tCuts)s xml_classifier="%(xmlClassifier)s" evtclsmap=%(classifier)s tstart=%(cutStart).17g tstop=%(cutStop).17g dict_file=%(dictionary)s file_version=%(version)s proc_ver=%(procVer)s

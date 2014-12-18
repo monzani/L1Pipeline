@@ -338,7 +338,7 @@ cvsPackages = {
         },
     'IGRF': {
         'repository': 'dataMonitoring',
-        'version': 'IGRF-02-01-00',
+        'version': 'IGRF-02-01-01',
         },
     }
 
@@ -713,6 +713,12 @@ incompleteStatus = 'Incomplete'
 waitingStatus = 'InProgress'
 
 solarFlareFlag = -1
+
+ignoreIgrfBoundary = True
+igrfExport = {
+    True: 'IGNORE_IGRF_BOUNDARY=yesPlease ; export IGNORE_IGRF_BOUNDARY',
+    False: ''
+    }[ignoreIgrfBoundary]
 
 astroTools = "/afs/slac/g/glast/applications/astroTools/astrotools_setup.sh"
 

@@ -55,12 +55,14 @@ def fastMon(files, idArgs, workDir, staged, **args):
         pass
     configFile = config.monitorOptions[optionTag]
 
+    igrfExport = config.igrfExport
     python = config.python
 
     cmd = '''
     cd %(workDir)s
     export DATAMONITORING_ROOT=%(dmRoot)s
     export FAST_MON_DIR=%(workDir)s
+    %(igrfExport)s
     %(extra)s
     export PYTHONPATH=${PYTHONPATH}:%(workDir)s
     %(python)s %(app)s -c %(configFile)s %(varArgs)s %(inFile)s

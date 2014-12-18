@@ -36,11 +36,13 @@ def gtSelect(files, inFileTypes, outFileTypes, workDir, **args):
 
     instDir = config.ST
     glastExt = config.glastExt
+    igrfExport = config.igrfExport
 
     cmd = '''
     cd %(workDir)s
     export INST_DIR=%(instDir)s
     export GLAST_EXT=%(glastExt)s
+    %(igrfExport)s
     source %(stSetup)s
     %(selectapp)s infile=%(stagedInFile)s %(evtFilter)s emin=0 emax=0 zmax=180 outfile=FT1_tmp.fit
     echo gtselect done, now working on gtmktime

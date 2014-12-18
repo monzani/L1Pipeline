@@ -42,10 +42,13 @@ version = fileNames.version(fitsFt2File)
 
 procVer = config.ft2ProcVer
 
+igrfExport = config.igrfExport
+
 cmd = '''
 cd %(workDir)s
 export INST_DIR=%(instDir)s 
 export GLAST_EXT=%(glastExt)s
+%(igrfExport)s
 source %(l1Setup)s
 %(app)s -inputFT2 %(stagedFt2SecondsFile)s -outputFT2 %(stagedFt2FitsFile)s -version %(version)s -procVer %(procVer)s
 ''' % locals()

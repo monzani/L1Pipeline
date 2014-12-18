@@ -35,6 +35,7 @@ def fakeFT2(files, workDir, runDir, staged, idArgs, **args):
     l1Setup = config.l1Setup
     instDir = config.L1Build
     glastExt = config.glastExt
+    igrfExport = config.igrfExport
     
     tStart = float(os.environ['tStart']) - config.ft2Pad
     tStop = float(os.environ['tStop']) + config.ft2Pad
@@ -47,6 +48,7 @@ def fakeFT2(files, workDir, runDir, staged, idArgs, **args):
     export INST_DIR=%(instDir)s 
     export GLAST_EXT=%(glastExt)s
     TIMING_DIR=$GLAST_EXT/extFiles/v0r9/jplephem ; export TIMING_DIR
+    %(igrfExport)s
     source %(l1Setup)s
     %(app)s -m7file %(stagedM7File)s -ft2file %(stagedFt2FitsFile)s -ft2start %(tStart).17g -ft2stop %(tStop).17g %(templOpt)s
     ''' % locals()

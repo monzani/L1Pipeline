@@ -43,10 +43,12 @@ def digitize(files, idArgs, workDir, staged, **args):
 
     instDir = config.glastLocation
     glastExt = config.glastExt
-
+    igrfExport = config.igrfExport
+    
     cmd = '''
     export INST_DIR=%(instDir)s 
-    export GLAST_EXT=%(glastExt)s 
+    export GLAST_EXT=%(glastExt)s
+    %(igrfExport)s
     cd %(workDir)s
     %(app)s %(options)s
     ''' % locals()

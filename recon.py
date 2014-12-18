@@ -62,11 +62,13 @@ app = config.apps['recon']
 options = config.reconOptions[dataSource]
 instDir = config.glastLocation
 glastExt = config.glastExt
+igrfExport = config.igrfExport
 
 cmd = '''
 cd %(workDir)s
 export INST_DIR=%(instDir)s 
 export GLAST_EXT=%(glastExt)s 
+%(igrfExport)s
 %(app)s %(options)s
 ''' % locals()
 

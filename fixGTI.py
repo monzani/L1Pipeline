@@ -40,11 +40,13 @@ def fixGTI(files, inFileTypes, outFileTypes, workDir, **args):
 
     instDir = config.ST
     glastExt = config.glastExt
+    igrfExport = config.igrfExport
 
     cmd = '''
     cd %(workDir)s
     export INST_DIR=%(instDir)s
     export GLAST_EXT=%(glastExt)s
+    %(igrfExport)s
     source %(stSetup)s
     %(app)s overwrite=yes roicut=no scfile=%(stagedFt2File)s filter="%(filter)s" evfile=%(stagedInFile)s outFile=%(stagedOutFile)s
     ''' % locals()

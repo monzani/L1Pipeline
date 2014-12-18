@@ -30,6 +30,7 @@ def diffRsp(files, inFileTypes, outFileTypes, workDir, **args):
 
     instDir = config.ST
     glastExt = config.glastExt
+    igrfExport = config.igrfExport
 
     tmpFt1File = stagedInFile + '.tmp'
     os.rename(stagedInFile, tmpFt1File)
@@ -38,6 +39,7 @@ def diffRsp(files, inFileTypes, outFileTypes, workDir, **args):
     cd %(workDir)s
     export INST_DIR=%(instDir)s
     export GLAST_EXT=%(glastExt)s
+    %(igrfExport)s
     source %(stSetup)s
     ''' % locals()
 
