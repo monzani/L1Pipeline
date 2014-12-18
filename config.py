@@ -714,7 +714,7 @@ waitingStatus = 'InProgress'
 
 solarFlareFlag = -1
 
-ignoreIgrfBoundary = True
+ignoreIgrfBoundary = False
 igrfExport = {
     True: 'IGNORE_IGRF_BOUNDARY=yesPlease ; export IGNORE_IGRF_BOUNDARY',
     False: ''
