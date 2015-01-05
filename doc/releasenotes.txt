@@ -1,3 +1,8 @@
+4.10
+-----------------
+Add leap second at 2015-06-30 (=457401602 per xTime).
+
+
 4.9
 -----------------
 Put a switch (ignoreIgrfBoundary = True) to propagate ignoring 
