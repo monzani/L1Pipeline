@@ -1,4 +1,4 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
+#!/afs/slac/g/glast/isoc/flightOps/rhel5_gcc41/ISOC_PROD/bin/shisoc python2.6
 
 """@brief Reconstruct a crumb.
 
@@ -44,6 +44,10 @@ realReconFile = fileNames.fileName('recon', dlId, runId, chunkId, crumbId,
                                    version=version)
 stagedReconFile = staged.stageOut(realReconFile)
 os.environ['reconCrumbFile'] = stagedReconFile
+realRelationFile = fileNames.fileName('relation', dlId, runId, chunkId, crumbId,
+                                   version=version)
+stagedRelationFile = staged.stageOut(realRelationFile)
+os.environ['relationCrumbFile'] = stagedRelationFile
 realMeritFile = fileNames.fileName('merit', dlId, runId, chunkId, crumbId,
                                    version=version)
 os.environ['meritCrumbFile'] = staged.stageOut(realMeritFile)

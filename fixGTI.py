@@ -1,5 +1,3 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc --add-env=oracle11 python2.5
-
 import os
 import sys
 

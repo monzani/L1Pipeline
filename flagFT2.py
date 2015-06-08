@@ -1,5 +1,3 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel4_gcc34/ISOC_PROD/bin/shisoc python2.5
-
 import sys
 
 if __name__ == "__main__":

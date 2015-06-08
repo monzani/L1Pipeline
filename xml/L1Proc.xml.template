@@ -37,7 +37,7 @@
   </prerequisites>
 
   <process name="findRunDirs" autoRetryMaxAttempts="%(retries)s">
-    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/findRunDirs.py" batchOptions=" -q %(expressQ)s -sp ${frdPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/findRunDirs.py" batchOptions=" -q %(expressQ)s -sp ${frdPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
     <createsSubtasks>
       <subtask>doRun</subtask>
       <subtask>doLci</subtask>
@@ -45,7 +45,7 @@
   </process>
 
   <process name="kludgeAsp" autoRetryMaxAttempts="%(retries)s">
-    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/kludgeAsp.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/kludgeAsp.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
     <depends>
       <after process="doRun.registerExtendedFT1" status="SUCCESS"/>
       <after process="doRun.registerFT2" status="SUCCESS"/>
@@ -53,7 +53,7 @@
   </process>
 
   <process name="cleanupDl" autoRetryMaxAttempts="%(retries)s">
-    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
     <depends>
       <after process="doLci.checkRunLci" status="SUCCESS"/>
       <after process="doRun.checkRun" status="SUCCESS"/>
@@ -76,7 +76,7 @@
       <variables>
         <var name="l1LockAction">LockAndThrottle</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" %(lockOption)s -q %(shortQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" %(lockOption)s -q %(shortQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <createsSubtasks>
         <subtask>doChunk</subtask>
       </createsSubtasks>
@@ -99,7 +99,7 @@
       <variables>
         <var name="%(magic7Hp_versionName)s">%(magic7Hp_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="findChunks" status="SUCCESS"/>
       </depends>
@@ -126,7 +126,7 @@
         <var name="tStart">${pipeline.getCurrentStream().getProcessInstance("findChunks").getVariable("tStart")}</var>      
         <var name="tStop">${pipeline.getCurrentStream().getProcessInstance("findChunks").getVariable("tStop")}</var>      
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeM7.py" batchOptions=" -q %(shortQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/makeM7.py" batchOptions=" -q %(shortQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="findChunks" status="SUCCESS"/>
       </depends>
@@ -155,7 +155,7 @@
         <var name="%(orbitPlot_versionName)s">%(orbitPlot_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerM7L1" status="SUCCESS"/>
       </depends>
@@ -197,7 +197,7 @@
         <var name="%(digi_versionName)s">%(digi_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${bigRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${bigRusage}]&quot; " />
       <depends>
         <after process="scanDigi" status="SUCCESS"/>
       </depends>
@@ -239,7 +239,7 @@
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="scanDigiHist" status="SUCCESS"/>
       </depends>
@@ -267,7 +267,7 @@
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
         <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerDigiHist" status="SUCCESS"/>
       </depends>
@@ -293,7 +293,7 @@
         <var name="reportType">digiHistAlarm</var>
         <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerDigiHistAlarm" status="SUCCESS"/>
       </depends>
@@ -304,7 +304,7 @@
         <var name="inFileTypes">digiHistAlarm</var>
         <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerDigiHistAlarm" status="SUCCESS"/>
       </depends>
@@ -317,7 +317,7 @@
         <var name="%(verifyHisto_versionName)s">%(verifyHisto_version)s</var>
 	<var name="completeness">InProgress</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerDigi" status="SUCCESS"/>
       </depends>
@@ -358,7 +358,7 @@
         <var name="reportType">verifyLog</var>
         <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerVerifyLog" status="SUCCESS"/>
       </depends>
@@ -371,7 +371,7 @@
         <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
         <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerVerifyLog" status="SUCCESS"/>
       </depends>
@@ -397,7 +397,7 @@
         <var name="inFileTypes">verifyErrorAlarm</var>
         <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerVerifyErrorAlarm" status="SUCCESS"/>
       </depends>
@@ -408,7 +408,7 @@
         <var name="reportType">verifyErrorAlarm</var>
         <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerVerifyErrorAlarm" status="SUCCESS"/>
       </depends>
@@ -421,7 +421,7 @@
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
         <var name="%(acdPlots_versionName)s">%(acdPlots_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerDigiHist" status="SUCCESS"/>
       </depends>
@@ -463,7 +463,7 @@
         <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="scanDigiTrend" status="SUCCESS"/>
       </depends>
@@ -489,7 +489,7 @@
         <var name="reportType">digiTrend</var>
         <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerDigiTrend" status="SUCCESS"/>
       </depends>
@@ -502,7 +502,7 @@
         <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
         <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerDigiTrend" status="SUCCESS"/>
       </depends>
@@ -528,7 +528,7 @@
         <var name="inFileTypes">digiTrendAlarm</var>
         <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerDigiTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -539,7 +539,7 @@
         <var name="reportType">digiTrendAlarm</var>
         <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerDigiTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -552,7 +552,7 @@
         <var name="%(calHist_versionName)s">%(calHist_version)s</var>
         <var name="%(digi_versionName)s">%(digi_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${bigRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${bigRusage}]&quot; "/>
       <depends>
         <after process="registerDigi" status="SUCCESS"/>
       </depends>
@@ -580,7 +580,7 @@
         <var name="%(calHist_versionName)s">%(calHist_version)s</var>
         <var name="%(calHistAlarm_versionName)s">%(calHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerCalHist" status="SUCCESS"/>
       </depends>
@@ -606,7 +606,7 @@
         <var name="inFileTypes">calHistAlarm</var>
         <var name="%(calHistAlarm_versionName)s">%(calHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerCalHistAlarm" status="SUCCESS"/>
       </depends>
@@ -617,7 +617,7 @@
         <var name="reportType">calHistAlarm</var>
         <var name="%(calHistAlarm_versionName)s">%(calHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerCalHistAlarm" status="SUCCESS"/>
       </depends>
@@ -644,7 +644,7 @@
         <var name="%(calTrend_versionName)s">%(calTrend_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="scanCalTrend" status="SUCCESS"/>
       </depends>
@@ -670,7 +670,7 @@
         <var name="reportType">calTrend</var>
         <var name="%(calTrend_versionName)s">%(calTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerCalTrend" status="SUCCESS"/>
       </depends>
@@ -683,7 +683,7 @@
         <var name="%(calHist_versionName)s">%(calHist_version)s</var>
         <var name="%(acdPedsAnalyzer_versionName)s">%(acdPedsAnalyzer_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerCalHist" status="SUCCESS"/>
       </depends>
@@ -711,7 +711,7 @@
         <var name="%(acdPedsAnalyzer_versionName)s">%(acdPedsAnalyzer_version)s</var>
         <var name="%(acdPedsAlarm_versionName)s">%(acdPedsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerAcdPedsAnalyzer" status="SUCCESS"/>
       </depends>
@@ -737,7 +737,7 @@
         <var name="inFileTypes">acdPedsAlarm</var>
         <var name="%(acdPedsAlarm_versionName)s">%(acdPedsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerAcdPedsAlarm" status="SUCCESS"/>
       </depends>
@@ -748,7 +748,7 @@
         <var name="reportType">acdPedsAlarm</var>
         <var name="%(acdPedsAlarm_versionName)s">%(acdPedsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerAcdPedsAlarm" status="SUCCESS"/>
       </depends>
@@ -761,7 +761,7 @@
         <var name="%(calHist_versionName)s">%(calHist_version)s</var>
         <var name="%(calGainsAnalyzer_versionName)s">%(calGainsAnalyzer_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerCalHist" status="SUCCESS"/>
       </depends>
@@ -789,7 +789,7 @@
         <var name="%(calGainsAnalyzer_versionName)s">%(calGainsAnalyzer_version)s</var>
         <var name="%(calGainsAlarm_versionName)s">%(calGainsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerCalGainsAnalyzer" status="SUCCESS"/>
       </depends>
@@ -815,7 +815,7 @@
         <var name="inFileTypes">calGainsAlarm</var>
         <var name="%(calGainsAlarm_versionName)s">%(calGainsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerCalGainsAlarm" status="SUCCESS"/>
       </depends>
@@ -826,7 +826,7 @@
         <var name="reportType">calGainsAlarm</var>
         <var name="%(calGainsAlarm_versionName)s">%(calGainsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerCalGainsAlarm" status="SUCCESS"/>
       </depends>
@@ -839,7 +839,7 @@
         <var name="%(calHist_versionName)s">%(calHist_version)s</var>
         <var name="%(calPedsAnalyzer_versionName)s">%(calPedsAnalyzer_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerCalHist" status="SUCCESS"/>
       </depends>
@@ -867,7 +867,7 @@
         <var name="%(calPedsAnalyzer_versionName)s">%(calPedsAnalyzer_version)s</var>
         <var name="%(calPedsAlarm_versionName)s">%(calPedsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerCalPedsAnalyzer" status="SUCCESS"/>
       </depends>
@@ -893,7 +893,7 @@
         <var name="inFileTypes">calPedsAlarm</var>
         <var name="%(calPedsAlarm_versionName)s">%(calPedsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerCalPedsAlarm" status="SUCCESS"/>
       </depends>
@@ -904,7 +904,7 @@
         <var name="reportType">calPedsAlarm</var>
         <var name="%(calPedsAlarm_versionName)s">%(calPedsAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerCalPedsAlarm" status="SUCCESS"/>
       </depends>
@@ -931,7 +931,7 @@
         <var name="%(fastMonTuple_versionName)s">%(fastMonTuple_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="scanFastMonTuple" status="SUCCESS"/>
       </depends>
@@ -959,7 +959,7 @@
         <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="scanFastMonTuple" status="SUCCESS"/>
       </depends>
@@ -985,7 +985,7 @@
         <var name="reportType">fastMonError</var>
         <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerFastMonError" status="SUCCESS"/>
       </depends>
@@ -998,7 +998,7 @@
         <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
         <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerFastMonError" status="SUCCESS"/>
       </depends>
@@ -1024,7 +1024,7 @@
         <var name="inFileTypes">fastMonErrorAlarm</var>
         <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerFastMonErrorAlarm" status="SUCCESS"/>
       </depends>
@@ -1035,7 +1035,7 @@
         <var name="reportType">fastMonErrorAlarm</var>
         <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerFastMonErrorAlarm" status="SUCCESS"/>
       </depends>
@@ -1062,7 +1062,7 @@
         <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="scanFastMonHist" status="SUCCESS"/>
       </depends>
@@ -1090,7 +1090,7 @@
         <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
         <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerFastMonHist" status="SUCCESS"/>
       </depends>
@@ -1116,7 +1116,7 @@
         <var name="inFileTypes">fastMonHistAlarm</var>
         <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerFastMonHistAlarm" status="SUCCESS"/>
       </depends>
@@ -1127,7 +1127,7 @@
         <var name="reportType">fastMonHistAlarm</var>
         <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerFastMonHistAlarm" status="SUCCESS"/>
       </depends>
@@ -1154,7 +1154,7 @@
         <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="scanFastMonTrend" status="SUCCESS"/>
       </depends>
@@ -1180,7 +1180,7 @@
         <var name="reportType">fastMonTrend</var>
         <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerFastMonTrend" status="SUCCESS"/>
       </depends>
@@ -1193,7 +1193,7 @@
         <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
         <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerFastMonTrend" status="SUCCESS"/>
       </depends>
@@ -1219,7 +1219,7 @@
         <var name="reportType">fastMonTrendAlarm</var>
         <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerFastMonTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -1230,7 +1230,7 @@
         <var name="inFileTypes">fastMonTrendAlarm</var>
         <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerFastMonTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -1257,7 +1257,7 @@
         <var name="%(gcr_versionName)s">%(gcr_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="scanGcrChunks" status="SUCCESS"/>
       </depends>
@@ -1299,7 +1299,7 @@
         <var name="%(merit_versionName)s">%(merit_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[scratch=2]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[scratch=2]&quot; " />
       <depends>
         <after process="scanMeritChunks" status="SUCCESS"/>
       </depends>
@@ -1319,7 +1319,8 @@
         <after process="mergeMeritChunks" status="SUCCESS"/>
       </depends>
     </process>
- 
+
+<!-- 
     <process name="filterMerit" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="inFileTypes">merit</var>
@@ -1328,7 +1329,7 @@
         <var name="%(filteredMerit_versionName)s">%(filteredMerit_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=2]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=2]&quot; " />
       <depends>
         <after process="registerMerit" status="SUCCESS"/>
       </depends>
@@ -1348,7 +1349,7 @@
         <after process="filterMerit" status="SUCCESS"/>
       </depends>
     </process>
-
+-->
  
     <process name="electronMerit" autoRetryMaxAttempts="%(retries)s">
       <variables>
@@ -1358,7 +1359,7 @@
         <var name="%(electronMerit_versionName)s">%(electronMerit_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=2]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=2]&quot; " />
       <depends>
         <after process="registerMerit" status="SUCCESS"/>
       </depends>
@@ -1385,7 +1386,7 @@
         <var name="%(merit_versionName)s">%(merit_version)s</var>
         <var name="%(verifyMeritError_versionName)s">%(verifyMeritError_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/verifyMerit.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/verifyMerit.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerMerit" status="SUCCESS"/>
       </depends>
@@ -1411,7 +1412,7 @@
         <var name="reportType">verifyMeritError</var>
         <var name="%(verifyMeritError_versionName)s">%(verifyMeritError_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerVerifyMeritError" status="SUCCESS"/>
       </depends>
@@ -1425,7 +1426,7 @@
         <var name="%(verifyMeritError_versionName)s">%(verifyMeritError_version)s</var>
         <var name="%(verifyMeritErrorAlarm_versionName)s">%(verifyMeritErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerVerifyMeritError" status="SUCCESS"/>
       </depends>
@@ -1451,7 +1452,7 @@
         <var name="inFileTypes">verifyMeritErrorAlarm</var>
         <var name="%(verifyMeritErrorAlarm_versionName)s">%(verifyMeritErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerVerifyMeritErrorAlarm" status="SUCCESS"/>
       </depends>
@@ -1462,7 +1463,7 @@
         <var name="reportType">verifyMeritErrorAlarm</var>
         <var name="%(verifyMeritErrorAlarm_versionName)s">%(verifyMeritErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerVerifyMeritErrorAlarm" status="SUCCESS"/>
       </depends>
@@ -1473,7 +1474,7 @@
         <var name="%(digi_versionName)s">%(digi_version)s</var>
         <var name="%(digiGap_versionName)s">%(digiGap_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeGaps.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[scratch=5]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/makeGaps.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[scratch=5]&quot; " />
       <depends>
         <after process="registerDigi" status="SUCCESS"/>
       </depends>
@@ -1507,7 +1508,7 @@
 
 <!--        <var name="L1_magic7L1_filename">${datacatalog.getDataset(RUNID, "/Data/Flight/Level1/"+DATASOURCE, "MAGIC7L1").getLocation("SLAC_XROOT").getPath()}</var>   -->
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ft2Entries.py" batchOptions=" -q %(longQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[scratch=15]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/ft2Entries.py" batchOptions=" -q %(longQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[scratch=15]&quot; " />
       <depends>
         <after process="registerGaps" status="SUCCESS"/>
         <after process="registerM7L1" status="SUCCESS"/>
@@ -1536,7 +1537,7 @@
       <variables>
         <var name="%(ft2Txt_versionName)s">%(ft2Txt_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ft2Db.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/ft2Db.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerFt2Txt" status="SUCCESS"/>
       </depends>
@@ -1550,7 +1551,7 @@
         <var name="%(ft2SecondsNoQual_versionName)s">%(ft2SecondsNoQual_version)s</var>
         <var name="%(ft2NoQual_versionName)s">%(ft2NoQual_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/makeFT2File.py" batchOptions=" -q %(shortQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/makeFT2File.py" batchOptions=" -q %(shortQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <!-- <after process="ingestFT2" status="SUCCESS"/> -->
         <after process="registerFt2SecondsNoQual" status="SUCCESS"/>
@@ -1593,7 +1594,7 @@
         <var name="inFileTypes">ft2NoQual/ft2SecondsNoQual</var>
         <var name="outFileTypes">ft2/ft2Seconds</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerFT2NoQual" status="SUCCESS"/>
         <after process="setupQuality" status="SUCCESS"/>
@@ -1620,7 +1621,7 @@
         <var name="fileType">ft2</var>
         <var name="%(ft2_versionName)s">%(ft2_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerFT2" status="SUCCESS"/>
       </depends>
@@ -1646,7 +1647,7 @@
         <var name="fileType">ft2Seconds</var>
         <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerFt2Seconds" status="SUCCESS"/>
       </depends>
@@ -1671,7 +1672,7 @@
         <var name="%(ft2_versionName)s">%(ft2_version)s</var>
         <var name="%(verifyFt2Error_versionName)s">%(verifyFt2Error_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/verifyFt2.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/verifyFt2.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerFT2" status="SUCCESS"/>
       </depends>
@@ -1697,7 +1698,7 @@
         <var name="reportType">verifyFt2Error</var>
         <var name="%(verifyFt2Error_versionName)s">%(verifyFt2Error_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerVerifyFt2Error" status="SUCCESS"/>
       </depends>
@@ -1711,7 +1712,7 @@
         <var name="%(verifyFt2Error_versionName)s">%(verifyFt2Error_version)s</var>
         <var name="%(verifyFt2ErrorAlarm_versionName)s">%(verifyFt2ErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerVerifyFt2Error" status="SUCCESS"/>
       </depends>
@@ -1737,7 +1738,7 @@
         <var name="inFileTypes">verifyFt2ErrorAlarm</var>
         <var name="%(verifyFt2ErrorAlarm_versionName)s">%(verifyFt2ErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerVerifyFt2ErrorAlarm" status="SUCCESS"/>
       </depends>
@@ -1748,7 +1749,7 @@
         <var name="reportType">verifyFt2ErrorAlarm</var>
         <var name="%(verifyFt2ErrorAlarm_versionName)s">%(verifyFt2ErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerVerifyFt2ErrorAlarm" status="SUCCESS"/>
       </depends>
@@ -1774,7 +1775,7 @@
         <var name="outFileTypes">ft1BadGti</var>
         <var name="%(ft1BadGti_versionName)s">%(ft1BadGti_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="scanFT1" status="SUCCESS"/>
       </depends>
@@ -1803,7 +1804,7 @@
         <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
         <var name="%(extendedFT1_versionName)s">%(extendedFT1_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerFT1BadGti" status="SUCCESS"/>
         <after process="registerFt2Seconds" status="SUCCESS"/>
@@ -1833,7 +1834,7 @@
         <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
         <var name="%(ft1_versionName)s">%(ft1_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerExtendedFT1" status="SUCCESS"/>
       </depends>
@@ -1859,7 +1860,7 @@
         <var name="fileType">ft1</var>
         <var name="%(ft1_versionName)s">%(ft1_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerFT1" status="SUCCESS"/>
       </depends>
@@ -1870,7 +1871,7 @@
         <var name="%(extendedFT1_versionName)s">%(extendedFT1_version)s</var>
         <var name="%(verifyFt1Error_versionName)s">%(verifyFt1Error_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/verifyFt1.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/verifyFt1.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerExtendedFT1" status="SUCCESS"/>
       </depends>
@@ -1896,7 +1897,7 @@
         <var name="reportType">verifyFt1Error</var>
         <var name="%(verifyFt1Error_versionName)s">%(verifyFt1Error_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerVerifyFt1Error" status="SUCCESS"/>
       </depends>
@@ -1910,7 +1911,7 @@
         <var name="%(verifyFt1Error_versionName)s">%(verifyFt1Error_version)s</var>
         <var name="%(verifyFt1ErrorAlarm_versionName)s">%(verifyFt1ErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerVerifyFt1Error" status="SUCCESS"/>
       </depends>
@@ -1936,7 +1937,7 @@
         <var name="inFileTypes">verifyFt1ErrorAlarm</var>
         <var name="%(verifyFt1ErrorAlarm_versionName)s">%(verifyFt1ErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerVerifyFt1ErrorAlarm" status="SUCCESS"/>
       </depends>
@@ -1947,7 +1948,7 @@
         <var name="reportType">verifyFt1ErrorAlarm</var>
         <var name="%(verifyFt1ErrorAlarm_versionName)s">%(verifyFt1ErrorAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerVerifyFt1ErrorAlarm" status="SUCCESS"/>
       </depends>
@@ -1960,7 +1961,7 @@
         <var name="%(merit_versionName)s">%(merit_version)s</var>
         <var name="%(electronFT1BadGti_versionName)s">%(electronFT1BadGti_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerElectronMerit" status="SUCCESS"/>
       </depends>
@@ -1989,7 +1990,7 @@
         <var name="%(electronFT1BadGti_versionName)s">%(electronFT1BadGti_version)s</var>
         <var name="%(electronFT1_versionName)s">%(electronFT1_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerElectronFT1BadGti" status="SUCCESS"/>
         <after process="registerFt2Seconds" status="SUCCESS"/>
@@ -2019,7 +2020,7 @@
         <var name="%(merit_versionName)s">%(merit_version)s</var>
         <var name="%(ls1BadGti_versionName)s">%(ls1BadGti_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerMerit" status="SUCCESS"/>
       </depends>
@@ -2048,7 +2049,7 @@
         <var name="%(ls1BadGti_versionName)s">%(ls1BadGti_version)s</var>
         <var name="%(extendedLS1_versionName)s">%(extendedLS1_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerLS1BadGti" status="SUCCESS"/>
         <after process="registerFt2Seconds" status="SUCCESS"/>
@@ -2078,7 +2079,7 @@
         <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
         <var name="%(ls1_versionName)s">%(ls1_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerExtendedLS1" status="SUCCESS"/>
       </depends>
@@ -2104,9 +2105,51 @@
         <var name="fileType">ls1</var>
         <var name="%(ls1_versionName)s">%(ls1_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="registerLS1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="scanRelationChunks" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunk</var>
+        <var name="subProcess">mergeRelationCrumbs</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunk.mergeRelationCrumbs" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeRelationChunks" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanRelationChunks").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">relation</var>
+        <var name="%(relation_versionName)s">%(relation_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=250]&quot; "/>
+      <depends>
+        <after process="scanRelationChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerRelation" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeRelationChunks</var>
+        <var name="fileType">relation</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeRelationChunks" status="SUCCESS"/>
       </depends>
     </process>
 
@@ -2131,7 +2174,7 @@
         <var name="%(cal_versionName)s">%(cal_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=250]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=250]&quot; "/>
       <depends>
         <after process="scanCalChunks" status="SUCCESS"/>
       </depends>
@@ -2173,7 +2216,7 @@
         <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="scanMeritTrend" status="SUCCESS"/>
       </depends>
@@ -2199,7 +2242,7 @@
         <var name="reportType">meritTrend</var>
         <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerMeritTrend" status="SUCCESS"/>
       </depends>
@@ -2212,7 +2255,7 @@
         <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
         <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerMeritTrend" status="SUCCESS"/>
       </depends>
@@ -2238,7 +2281,7 @@
         <var name="inFileTypes">meritTrendAlarm</var>
         <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerMeritTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -2249,7 +2292,7 @@
         <var name="reportType">meritTrendAlarm</var>
         <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerMeritTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -2263,7 +2306,7 @@
         <var name="%(merit_versionName)s">%(merit_version)s</var>
         <var name="%(meritHist_versionName)s">%(meritHist_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="doChunk.allRecon" status="SUCCESS"/>
         <after process="registerDigi" status="SUCCESS"/>
@@ -2293,7 +2336,7 @@
         <var name="%(meritHist_versionName)s">%(meritHist_version)s</var>
         <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerMeritHist" status="SUCCESS"/>
       </depends>
@@ -2319,7 +2362,7 @@
         <var name="reportType">meritHistAlarm</var>
         <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerMeritHistAlarm" status="SUCCESS"/>
       </depends>
@@ -2330,7 +2373,7 @@
         <var name="inFileTypes">meritHistAlarm</var>
         <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerMeritHistAlarm" status="SUCCESS"/>
       </depends>
@@ -2344,7 +2387,7 @@
         <var name="%(solarFlareLog_versionName)s">%(solarFlareLog_version)s</var>
         <var name="%(solarFlarePlot_versionName)s">%(solarFlarePlot_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/findSolarFlares.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/findSolarFlares.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerDigiTrend" status="SUCCESS"/>
         <after process="registerMeritTrend" status="SUCCESS"/>
@@ -2432,7 +2475,7 @@
         <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <!-- <after process="doChunk.mergeCalCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
         <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
@@ -2460,7 +2503,7 @@
         <var name="reportType">reconTrend</var>
         <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerReconTrend" status="SUCCESS"/>
       </depends>
@@ -2473,7 +2516,7 @@
         <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
         <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerReconTrend" status="SUCCESS"/>
       </depends>
@@ -2499,7 +2542,7 @@
         <var name="reportType">reconTrendAlarm</var>
         <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerReconTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -2510,7 +2553,7 @@
         <var name="inFileTypes">reconTrendAlarm</var>
         <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerReconTrendAlarm" status="SUCCESS"/>
       </depends>
@@ -2537,7 +2580,7 @@
         <var name="%(reconHist_versionName)s">%(reconHist_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <!-- <after process="doChunk.mergeCalCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
         <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
@@ -2567,7 +2610,7 @@
         <var name="%(reconHist_versionName)s">%(reconHist_version)s</var>
         <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerReconHist" status="SUCCESS"/>
       </depends>
@@ -2593,7 +2636,7 @@
         <var name="inFileTypes">reconHistAlarm</var>
         <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerReconHistAlarm" status="SUCCESS"/>
       </depends>
@@ -2604,7 +2647,7 @@
         <var name="reportType">reconHistAlarm</var>
         <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerReconHistAlarm" status="SUCCESS"/>
       </depends>
@@ -2616,7 +2659,7 @@
         <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
         <var name="%(reconHistAlarmDist_versionName)s">%(reconHistAlarmDist_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/alarmPostProcessor.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/alarmPostProcessor.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="registerReconHistAlarm" status="SUCCESS"/>
       </depends>
@@ -2666,7 +2709,7 @@
     </process>
 
     <process name="checkRun" autoRetryMaxAttempts="%(retries)s">
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="acdPedsLogger" status="SUCCESS"/>
         <after process="calGainsLogger" status="SUCCESS"/>
@@ -2715,12 +2758,13 @@
         <after process="registerCal" status="SUCCESS"/>
         <after process="registerElectronFT1" status="SUCCESS"/>
         <after process="registerFastMonTuple" status="SUCCESS"/>
-        <after process="registerFilteredMerit" status="SUCCESS"/>
+<!--        <after process="registerFilteredMerit" status="SUCCESS"/>    -->
         <after process="registerGcr" status="SUCCESS"/>
         <after process="registerM7Hp" status="SUCCESS"/>
         <after process="registerMeritHist" status="SUCCESS"/>
         <after process="registerOrbitPlot" status="SUCCESS"/>
         <after process="registerReconHistAlarmDist" status="SUCCESS"/>
+        <after process="registerRelation" status="SUCCESS"/>
         <after process="registerSolarFlareHist" status="SUCCESS"/>
         <after process="registerSolarFlareLog" status="SUCCESS"/>
         <after process="registerSolarFlarePlot" status="SUCCESS"/>
@@ -2763,7 +2807,7 @@
           <var name="mootKey">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunks").getVariable("mootKey")}</var>
           <var name="mootAlias">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunks").getVariable("mootAlias")}</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimes.py" batchOptions=" %(lockOption)s -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/getTimes.py" batchOptions=" %(lockOption)s -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       </process>
 
       <process name="mergeReconChunks" autoRetryMaxAttempts="%(retries)s">
@@ -2774,7 +2818,7 @@
           <var name="%(recon_versionName)s">%(recon_version)s</var>
           <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=250]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=250]&quot; "/>
         <depends>
           <after process="getTimes" status="SUCCESS"/>
         </depends>
@@ -2802,7 +2846,7 @@
           <var name="%(verifyHisto_versionName)s">%(verifyHisto_version)s</var>
 	  <var name="completeness">Complete</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/verify.py" batchOptions=" -q %(mediumQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="getTimes" status="SUCCESS"/>
         </depends>
@@ -2843,7 +2887,7 @@
           <var name="reportType">verifyLog</var>
           <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="registerVerifyLogComp" status="SUCCESS"/>
         </depends>
@@ -2856,7 +2900,7 @@
           <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
           <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="registerVerifyLogComp" status="SUCCESS"/>
         </depends>
@@ -2882,7 +2926,7 @@
           <var name="inFileTypes">verifyErrorAlarm</var>
           <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="registerVerifyErrorAlarmComp" status="SUCCESS"/>
         </depends>
@@ -2893,7 +2937,7 @@
           <var name="reportType">verifyErrorAlarm</var>
           <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="registerVerifyErrorAlarmComp" status="SUCCESS"/>
         </depends>
@@ -2906,7 +2950,7 @@
           <var name="%(tkrAnalysis_versionName)s">%(tkrAnalysis_version)s</var>
           <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
           <after process="getTimes" status="SUCCESS"/>
@@ -2935,7 +2979,7 @@
           <var name="%(tkrReport_versionName)s">%(tkrReport_version)s</var>
           <!-- <var name="%(tkrAlarm_versionName)s">%(tkrAlarm_version)s</var> -->
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/tkrMonitor.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/tkrMonitor.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="registerTkrAnalysis" status="SUCCESS"/>
         </depends>
@@ -2995,7 +3039,7 @@
           <var name="%(tkrMonitor_versionName)s">%(tkrMonitor_version)s</var>
           <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="registerTkrMonitor" status="SUCCESS"/>
         </depends>
@@ -3021,7 +3065,7 @@
           <var name="reportType">tkrTrend</var>
           <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/ingestTrending.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="registerTkrTrend" status="SUCCESS"/>
         </depends>
@@ -3034,7 +3078,7 @@
           <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
           <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="registerTkrTrend" status="SUCCESS"/>
         </depends>
@@ -3060,7 +3104,7 @@
           <var name="reportType">tkrTrendAlarm</var>
           <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="registerTkrTrendAlarm" status="SUCCESS"/>
         </depends>
@@ -3071,14 +3115,14 @@
           <var name="inFileTypes">tkrTrendAlarm</var>
           <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="registerTkrTrendAlarm" status="SUCCESS"/>
         </depends>
       </process>
  
       <process name="cleanupChunks" autoRetryMaxAttempts="%(retries)s">
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="registerRecon" status="SUCCESS"/>
           <after process="registerTkrReport" status="SUCCESS"/>
@@ -3099,7 +3143,7 @@
         <variables>
           <var name="l1LockAction">UnLock</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/lockFile.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/lockFile.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="cleanupChunks" status="SUCCESS"/>
         </depends>
@@ -3124,14 +3168,14 @@
           <var name="%(event_versionName)s">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunks").getVariable("L1_PI_version")}</var>
           <var name="outFileTypes">digi</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       </process>
  
       <process name="fakeFT2" autoRetryMaxAttempts="%(retries)s">
         <variables>
           <var name="outFileTypes">ft2Fake</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       </process>
  
       <process name="fastMonTuple" autoRetryMaxAttempts="%(retries)s">
@@ -3141,7 +3185,7 @@
           <var name="reportType">fastMonTuple</var>
           <var name="outFileTypes">fastMonTuple/fastMonError</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       </process>
 
       <process name="fastMonHist" autoRetryMaxAttempts="%(retries)s">
@@ -3151,7 +3195,7 @@
           <var name="outFileTypes">fastMonHist</var>
           <var name="%(fastMonTuple_versionName)s">${pipeline.getCurrentStream.getProcessInstance("fastMonTuple").getVariable("L1_PI_version")}</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="fastMonTuple" status="SUCCESS"/>
         </depends>
@@ -3163,7 +3207,7 @@
           <var name="outFileTypes">fastMonTrend</var>
           <var name="%(fastMonTuple_versionName)s">${pipeline.getCurrentStream.getProcessInstance("fastMonTuple").getVariable("L1_PI_version")}</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="fastMonTuple" status="SUCCESS"/>
         </depends>
@@ -3175,7 +3219,7 @@
           <var name="outFileTypes">digiHist</var>
           <var name="%(digi_versionName)s">${pipeline.getCurrentStream.getProcessInstance("digitization").getVariable("L1_PI_version")}</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="digitization" status="SUCCESS"/>
         </depends>
@@ -3187,7 +3231,7 @@
           <var name="outFileTypes">digiTrend</var>
           <var name="%(digi_versionName)s">${pipeline.getCurrentStream.getProcessInstance("digitization").getVariable("L1_PI_version")}</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="digitization" status="SUCCESS"/>
         </depends>
@@ -3199,7 +3243,7 @@
           <var name="outFileTypes">calTrend</var>
           <var name="%(digi_versionName)s">${pipeline.getCurrentStream.getProcessInstance("digitization").getVariable("L1_PI_version")}</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="digitization" status="SUCCESS"/>
         </depends>
@@ -3212,7 +3256,7 @@
           <var name="%(digi_versionName)s">${pipeline.getCurrentStream.getProcessInstance("digitization").getVariable("L1_PI_version")}</var>
           <var name="%(ft2Fake_versionName)s">${pipeline.getCurrentStream.getProcessInstance("fakeFT2").getVariable("L1_PI_version")}</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
         <depends>
           <after process="digitization" status="SUCCESS"/>
           <after process="fakeFT2" status="SUCCESS"/>
@@ -3252,7 +3296,7 @@
           <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanReconCrumbs").getVariable("goodPis")}</var>  
           <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
         <depends>
           <after process="scanReconCrumbs" status="SUCCESS"/>
         </depends>
@@ -3264,10 +3308,21 @@
           <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
           <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanReconCrumbs").getVariable("goodPis")}</var>  
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="scanReconCrumbs" status="SUCCESS"/>
-<!--          <after process="mergeMeritCrumbs" status="DONE"/>  This is an I/O optimization, not logically required. -->
+        </depends>
+      </process>
+
+      <process name="mergeRelationCrumbs" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="outFileTypes">relation</var>
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+          <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanReconCrumbs").getVariable("goodPis")}</var>  
+        </variables>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <depends>
+          <after process="scanReconCrumbs" status="SUCCESS"/>
         </depends>
       </process>
 
@@ -3277,10 +3332,9 @@
           <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
           <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanReconCrumbs").getVariable("goodPis")}</var>  
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="scanReconCrumbs" status="SUCCESS"/>
-<!--          <after process="mergeReconCrumbs" status="DONE"/>  This is an I/O optimization, not logically required. -->
         </depends>
       </process>
 
@@ -3290,10 +3344,9 @@
           <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
           <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanReconCrumbs").getVariable("goodPis")}</var>  
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="scanReconCrumbs" status="SUCCESS"/>
-<!--          <after process="mergeCalCrumbs" status="DONE"/>  This is an I/O optimization, not logically required. -->
         </depends>
       </process>
 
@@ -3303,7 +3356,7 @@
           <var name="outFileTypes">ft1NoDiffRsp</var>
           <var name="%(merit_versionName)s">${pipeline.getCurrentStream.getProcessInstance("mergeMeritCrumbs").getVariable("L1_PI_version")}</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
         <depends>
           <after process="mergeMeritCrumbs" status="SUCCESS"/>
         </depends>
@@ -3316,7 +3369,7 @@
           <var name="%(ft1NoDiffRsp_versionName)s">${pipeline.getCurrentStream.getProcessInstance("makeFT1").getVariable("L1_PI_version")}</var>
           <var name="%(ft2Fake_versionName)s">${pipeline.getCurrentStream.getProcessInstance("fakeFT2").getVariable("L1_PI_version")}</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
         <depends>
           <after process="makeFT1" status="SUCCESS"/>
         </depends>
@@ -3329,7 +3382,7 @@
           <var name="%(digi_versionName)s">${pipeline.getCurrentStream.getProcessInstance("digitization").getVariable("L1_PI_version")}</var>
           <var name="%(merit_versionName)s">${pipeline.getCurrentStream.getProcessInstance("mergeMeritCrumbs").getVariable("L1_PI_version")}</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="allRecon" status="SUCCESS"/>
           <after process="mergeMeritCrumbs" status="SUCCESS"/>
@@ -3344,7 +3397,7 @@
           <var name="%(digi_versionName)s">${pipeline.getCurrentStream.getProcessInstance("digitization").getVariable("L1_PI_version")}</var>
           <var name="%(recon_versionName)s">${pipeline.getCurrentStream.getProcessInstance("mergeReconCrumbs").getVariable("L1_PI_version")}</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="allRecon" status="SUCCESS"/>
           <after process="mergeCalCrumbs" status="SUCCESS"/>
@@ -3360,7 +3413,7 @@
           <var name="%(digi_versionName)s">${pipeline.getCurrentStream.getProcessInstance("digitization").getVariable("L1_PI_version")}</var>
           <var name="%(recon_versionName)s">${pipeline.getCurrentStream.getProcessInstance("mergeReconCrumbs").getVariable("L1_PI_version")}</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="allRecon" status="SUCCESS"/>
           <after process="mergeCalCrumbs" status="SUCCESS"/>
@@ -3375,7 +3428,7 @@
           <var name="%(digi_versionName)s">${pipeline.getCurrentStream.getProcessInstance("digitization").getVariable("L1_PI_version")}</var>
           <var name="%(recon_versionName)s">${pipeline.getCurrentStream.getProcessInstance("mergeReconCrumbs").getVariable("L1_PI_version")}</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="allRecon" status="SUCCESS"/>
           <after process="mergeReconCrumbs" status="SUCCESS"/>
@@ -3383,7 +3436,7 @@
       </process>
  
       <process name="checkChunk" autoRetryMaxAttempts="%(retries)s">
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="fastMonHist" status="SUCCESS"/>
           <after process="fastMonTrend" status="SUCCESS"/>
@@ -3392,6 +3445,7 @@
           <after process="calTrend" status="SUCCESS"/>
           <after process="diffRspFT1" status="SUCCESS"/>
           <after process="mergeGcrCrumbs" status="SUCCESS"/>
+          <after process="mergeRelationCrumbs" status="SUCCESS"/>
           <after process="meritTrend" status="SUCCESS"/>
           <after process="reconHist" status="SUCCESS"/>
           <after process="reconTrend" status="SUCCESS"/>
@@ -3408,7 +3462,7 @@
         </prerequisites>
 
         <process name="recon" autoRetryMaxAttempts="%(retries)s">
-          <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/recon.py" batchOptions=" -q %(longQ)s -sp ${reconPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+          <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/recon.py" batchOptions=" -q %(longQ)s -sp ${reconPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
         </process>
 
       </task> <!-- doCrumb -->
@@ -3433,7 +3487,7 @@
       <variables>
         <var name="l1LockAction">LockDirOnly</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" %(lockOption)s -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" %(lockOption)s -q %(expressQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <createsSubtasks>
         <subtask>doChunkLci</subtask>
       </createsSubtasks>
@@ -3456,7 +3510,7 @@
       <variables>
         <var name="%(magic7Hp_versionName)s">%(magic7Hp_version)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/copyM7.py" batchOptions=" -q %(shortQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
       <depends>
         <after process="findChunksLci" status="SUCCESS"/>
       </depends>
@@ -3498,7 +3552,7 @@
         <var name="%(digi_versionName)s">%(digi_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=250]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=250]&quot; "/>
       <depends>
         <after process="scanDigiLci" status="SUCCESS"/>
       </depends>
@@ -3540,7 +3594,7 @@
         <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[scratch=10]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[scratch=10]&quot; "/>
       <depends>
         <after process="scanDigiHistLci" status="SUCCESS"/>
       </depends>
@@ -3582,7 +3636,7 @@
         <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(shortQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="scanFastMonTupleLci" status="SUCCESS"/>
       </depends>
@@ -3610,7 +3664,7 @@
         <var name="%(fastMonTuple_versionName)s">%(fastMonTuple_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[scratch=10]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[scratch=10]&quot; "/>
       <depends>
         <after process="scanFastMonTupleLci" status="SUCCESS"/>
       </depends>
@@ -3652,7 +3706,7 @@
         <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[scratch=10]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[scratch=10]&quot; "/>
       <depends>
         <after process="scanFastMonHistLci" status="SUCCESS"/>
       </depends>
@@ -3674,7 +3728,7 @@
     </process>
  
     <process name="checkRunLci" autoRetryMaxAttempts="%(retries)s">
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/checkRun.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       <depends>
         <after process="doChunkLci.checkChunkLci" status="SUCCESS"/>
         <after process="registerDigiLci" status="SUCCESS"/>
@@ -3706,7 +3760,7 @@
     <task name="cleanupCompleteRunLci" version="%(L1Version)s" type="Data">
 
       <process name="cleanupChunksLci" autoRetryMaxAttempts="%(retries)s">
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/deleteDirs.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       </process>
 
     </task> <!-- cleanupCompleteRunLci -->
@@ -3728,7 +3782,7 @@
           <var name="%(event_versionName)s">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunksLci").getVariable("L1_PI_version")}</var>
           <var name="outFileTypes">digi</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       </process>
  
       <process name="fastMonTupleLci" autoRetryMaxAttempts="%(retries)s">
@@ -3738,7 +3792,7 @@
           <var name="reportType">fastMonTuple</var>
           <var name="outFileTypes">fastMonTuple/fastMonError</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
       </process>
  
       <process name="fastMonHistLci" autoRetryMaxAttempts="%(retries)s">
@@ -3748,7 +3802,7 @@
           <var name="outFileTypes">fastMonHist</var>
           <var name="%(fastMonTuple_versionName)s">${pipeline.getCurrentStream.getProcessInstance("fastMonTupleLci").getVariable("L1_PI_version")}</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="fastMonTupleLci" status="SUCCESS"/>
         </depends>
@@ -3760,14 +3814,14 @@
           <var name="outFileTypes">digiHist</var>
           <var name="%(digi_versionName)s">${pipeline.getCurrentStream.getProcessInstance("digitizationLci").getVariable("L1_PI_version")}</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${midPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="digitizationLci" status="SUCCESS"/>
         </depends>
       </process>
  
       <process name="checkChunkLci" autoRetryMaxAttempts="%(retries)s">
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/checkChunk.py" batchOptions=" -q %(expressQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="fastMonHistLci" status="SUCCESS"/>
           <after process="digiHistLci" status="SUCCESS"/>

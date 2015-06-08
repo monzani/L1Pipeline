@@ -1,5 +1,3 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
-
 """@brief Do TKR analysis.
 
 @author W. Focke <focke@slac.stanford.edu>
@@ -39,6 +37,10 @@ source %(l1Setup)s
 %(app)s %(stagedDigiFile)s %(stagedReconFile)s %(stagedOutFile)s
 """ % locals()
 
-    status |= runner.run(cmd)
+    #do nothing. TKR analysis is not working.
+    #status |= runner.run(cmd)
+    
+    open(stagedOutFile,"w")
+    status = 0
 
     return status

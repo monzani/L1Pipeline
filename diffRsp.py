@@ -1,5 +1,3 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc --add-env=oracle11 python2.5
-
 import os
 import sys
 
@@ -43,15 +41,17 @@ def diffRsp(files, inFileTypes, outFileTypes, workDir, **args):
     source %(stSetup)s
     ''' % locals()
 
-    for evcls in config.diffRspMap.keys():
-        irf = config.diffRspMap[evcls]['irf']
-        model = config.diffRspMap[evcls]['model']
-        cmdTail = '''%(app)s scfile=%(stagedFt2File)s evfile=%(tmpFt1File)s srcmdl=%(model)s irfs=%(irf)s evclass=%(evcls)s
-        ''' % locals()
-        cmd = cmdHead + cmdTail
-        status |= runner.run(cmd)
-        if status: return status
-        continue
+    #do nothing here: there is no diffuse responseto be computed for Pass8
+    #just rename the file (see below) and be happy
+    #for evcls in config.diffRspMap.keys():
+        #irf = config.diffRspMap[evcls]['irf']
+        #model = config.diffRspMap[evcls]['model']
+        #cmdTail = '''%(app)s scfile=%(stagedFt2File)s evfile=%(tmpFt1File)s srcmdl=%(model)s irfs=%(irf)s evclass=%(evcls)s
+        #''' % locals()
+        #cmd = cmdHead + cmdTail
+        #status |= runner.run(cmd)
+        #if status: return status
+        #continue
 
     os.rename(tmpFt1File, stagedOutFile)
 

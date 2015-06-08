@@ -1,5 +1,3 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
-
 """@brief Merge results of chunk or crumb processing.
 
 @author W. Focke <focke@slac.stanford.edu>
@@ -49,7 +47,7 @@ def merge(files, idArgs, level, outFileTypes, staged, workDir, **args):
         'fits': ['ft1', 'ft2', 'ft1BadGti', 'ft1NoDiffRsp', 'ls1', 'ls3'],
         'report': ['calHist', 'digiHist', 'fastMonHist', 'meritHist', 'reconHist'],
         'tkr': ['tkrAnalysis'],
-        'tree': ['cal', 'digi', 'gcr', 'merit', 'recon', 'fastMonTuple'],
+        'tree': ['cal', 'digi', 'gcr', 'merit', 'recon', 'relation', 'fastMonTuple'],
         'trend': ['calTrend', 'digiTrend', 'fastMonTrend', 'meritTrend', 'reconTrend'],
         }
     # Check whether any types occur in multiple lists.
@@ -159,6 +157,7 @@ def merge(files, idArgs, level, outFileTypes, staged, workDir, **args):
         'gcr': 'GcrSelect',
         'merit': 'MeritTuple',
         'recon': 'Recon',
+        'relation': 'Relations',
         }
 
     print >> sys.stderr, '------------------- start merge ------------------'

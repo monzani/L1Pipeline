@@ -1,4 +1,4 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
+#!/afs/slac/g/glast/isoc/flightOps/rhel5_gcc41/ISOC_PROD/bin/shisoc python2.6
 
 import sys
 import os
@@ -38,7 +38,7 @@ tStop = glastTime.met2Iso8860(float(os.environ['tStop']) + config.m7Pad)
 
 arch = config.l0Archive
 
-cmd = """eval `%(isocBin)s/isoc env --add-env=flightops`
+cmd = """
 export LD_PRELOAD=$ISOC_INSTALLROOT/lib/libXrdPosixPreload.so
 %(python)s %(taskBase)s/scripts/DiagRet.py --scid %(scid)s -b "%(tStart)s" -e "%(tStop)s" --lsm --arch %(arch)s | grep -E 'ATT|ORB' > %(stagedOutFile)s
 """ % locals()

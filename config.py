@@ -1,4 +1,4 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
+#!/afs/slac/g/glast/isoc/flightOps/rhel6_gcc44/ISOC_PROD/bin/shisoc python2.6
 
 """@brief Configuration.
 
@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "4.10"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "5.0"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -177,12 +177,13 @@ groundRoot = os.path.join(glastRoot, 'ground')
 #glastSetup = os.path.join(groundRoot, 'scripts', 'group.sh')
 #glastSetupCsh = os.path.join(groundRoot, 'scripts', 'group.cshrc')
 scons = '/afs/slac.stanford.edu/g/glast/applications/install/@sys/usr/bin/scons'
+
+#this is for rhel6:
+optConfig = 'redhat6-x86_64-64bit-gcc44-Optimized'
+glastExt = os.path.join(groundRoot, 'GLAST_EXT', 'redhat6-x86_64-64bit-gcc44')
+releaseDir = os.path.join(groundRoot, 'releases', 'volume12')
 #
-optConfig = 'redhat5-i686-32bit-gcc41-Optimized'
-glastExt = os.path.join(groundRoot, 'GLAST_EXT', 'redhat5-i686-32bit-gcc41')
-#
-releaseDir = os.path.join(groundRoot, 'releases', 'volume10')
-glastVersion = '17-35-24-lp61'
+glastVersion = '20-10-02'
 releaseName = 'GlastRelease'
 #
 glastName = '-'.join((releaseName, glastVersion))
@@ -204,12 +205,12 @@ reconOptions = {
     'MC': os.path.join(L1Data, 'recon.jobOpt.mc'),
 }
 
-rootSys = os.path.join(glastExt, 'ROOT/v5.26.00a-gl6/gcc41')
+rootSys = os.path.join(glastExt, 'ROOT/v5.34.03-gr01')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
-stDir = os.path.join(groundRoot, 'releases', 'volume03')
-stVersion = '09-33-00'
+stDir = os.path.join(groundRoot, 'releases', 'volume12')
+stVersion = '10-01-01'
 stName = 'ScienceTools'
 
 ST = os.path.join(stDir, "ScienceTools-%s" % stVersion)
@@ -223,7 +224,7 @@ l1ExeDir = os.path.join(L1Build, 'exe', optConfig)
 l1Setup = os.path.join(l1BinDir, '_setup.sh')
 
 isoc = '/afs/slac/g/glast/isoc/flightOps'
-isocPlatform = 'rhel5_gcc41'
+isocPlatform = 'rhel6_gcc44'
 isocMode = os.environ.get('isocMode', 'ISOC_PROD')
 isocBin = os.path.join(isoc, isocPlatform, isocMode, 'bin')
 isocRun = os.path.join(isoc, isocPlatform, '${isocMode}', 'bin', 'isoc run')
@@ -261,13 +262,13 @@ else:
     pass
 aspAlreadyLaunched = 160
 
-elFt1ProcVer = 202
-exFt1ProcVer = 203
-exLs1ProcVer = 202
-ft1ProcVer = 203
+elFt1ProcVer = 302
+exFt1ProcVer = 302
+exLs1ProcVer = 302
+ft1ProcVer = 302
 ft2ProcVer = 202
 ft2SecondsProcVer = 203
-ls1ProcVer = 202
+ls1ProcVer = 302
 
 procVer = {
     'electronFT1BadGti': elFt1ProcVer,
@@ -277,29 +278,29 @@ procVer = {
     
 
 sConsPackages = {
-    'calibGenTKR': {
-        'repository': '',
-        'version': 'calibGenTKR-04-08-01',
-        },
+    #'calibGenTKR': {
+    #    'repository': '',
+    #    'version': 'calibGenTKR-04-08-03',
+    #    },
     'calibTkrUtil': {
         'repository': '',
-        'version': 'calibTkrUtil-02-09-06-gr02',
+        'version': 'calibTkrUtil-02-10-01',
         },
     'findGaps': {
         'repository': 'svac',
-        'version': 'findGaps-02-02-00',
+        'version': 'findGaps-02-03-00',
         },
     'fitsGen': {
         'repository': '',
-        'version': 'fitsGen-06-06-05',
+        'version': 'fitsGen-07-01-02',
         },
     'ft2Util': {
         'repository': '',
-        'version': 'ft2Util-02-02-00',
+        'version': 'ft2Util-02-04-00',
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'Monitor-02-01-05',
+        'version': 'Monitor-03-13-03',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -307,22 +308,22 @@ sConsPackages = {
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'TestReport-12-01-00',
+        'version': 'TestReport-12-02-00',
         },
     }
 
 cvsPackages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'Common-06-12-00',
+        'version': 'Common-07-00-00',
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'DigiReconCalMeritCfg-01-20-04',
+        'version': 'DigiReconCalMeritCfg-02-01-02',
         },
     'evtClassDefs': {
         'repository': '',
-        'version': 'evtClassDefs-00-19-05',
+        'version': 'evtClassDefs-01-01-04',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
@@ -338,7 +339,7 @@ cvsPackages = {
         },
     'IGRF': {
         'repository': 'dataMonitoring',
-        'version': 'IGRF-03-00-00',
+        'version': 'IGRF-03-01-04',
         },
     }
 
@@ -566,15 +567,16 @@ tdBin = {
 
 evclData = packages['evtClassDefs']['data']
 evclXml = packages['evtClassDefs']['xml']
-electronCuts = os.path.join(evclData, 'pass7.6_Electrons_cuts_L1')
-extendedCuts = os.path.join(evclData, 'pass7.6_Extended_cuts_L1')
-ft1Vars = os.path.join(evclData, 'FT1variables')
-ls1Vars = os.path.join(evclData, 'LS1variables')
-electronClass = 'EvtCREventClass'
+electronCuts = os.path.join(evclData, 'pass8.2_Electrons_cuts_L1')
+extendedCuts = os.path.join(evclData, 'pass8.2_Extended_cuts_L1')
+ft1Vars = os.path.join(evclData, 'pass8_FT1variables')
+ls1Vars = os.path.join(evclData, 'pass8_LS1variables')
 photonClass = 'FT1EventClass'
+#electronClass = 'EvtCREventClass'
+electronClass = 'FT1EventClass'
 #transientCuts = os.path.join(evclData, 'pass7.6_Transient_cuts_L1')
 #sourceCuts = os.path.join(evclData, 'pass7.6_Source_cuts_L1')
-xmlClassifier =  os.path.join(evclXml, 'EvtClassDefs_P7REP.xml')
+xmlClassifier =  os.path.join(evclXml, 'EvtClassDefs_P8R2.xml')
 filterClassifyMap = {
     'electronMerit': {
         'cutFile': electronCuts,
@@ -599,20 +601,22 @@ filterClassifyMap = {
         },
     }
 gtSelectClass = {
-    'ft1': 2,
-    'ls1': 0,
+    'ft1': 128,
+    'ls1': 65544,
 }
 
-diffRspMap = {
-    2: {
-        'irf': 'P7REP_SOURCE_V15',
-        'model': os.path.join(glastExt, 'diffuseModels/v4r1/diffmodel_p7rep_source_v05_rev1.xml'),
-        },
-    3: {
-        'irf': 'P7REP_CLEAN_V15',
-        'model': os.path.join(glastExt, 'diffuseModels/v4r1/diffmodel_p7rep_clean_v05_rev1.xml'),
-        },
-    }
+#do nothing: there is no diffuse responseto be computed for Pass8
+
+#diffRspMap = {
+#    2: {
+#        'irf': 'P7REP_SOURCE_V15',
+#        'model': os.path.join(glastExt, 'diffuseModels/v4r1/diffmodel_p7rep_source_v05_rev1.xml'),
+#        },
+#    3: {
+#        'irf': 'P7REP_CLEAN_V15',
+#        'model': os.path.join(glastExt, 'diffuseModels/v4r1/diffmodel_p7rep_clean_v05_rev1.xml'),
+#        },
+#    }
 
 verifyOptions = {
     'InProgress': '',
@@ -687,7 +691,7 @@ reconPriority = highPriority - 1 # to reduce self-throttling
 frdPriority = highPriority + 1
 #
 minCrumbCpuf = 9
-standardSelect = 'rhel60 || rhel50'
+standardSelect = 'rhel60'
 standardRusage = 'scratch=1'
 bigRusage = 'scratch=250'
 #

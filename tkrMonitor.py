@@ -1,4 +1,4 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
+#!/afs/slac/g/glast/isoc/flightOps/rhel5_gcc41/ISOC_PROD/bin/shisoc python2.6
 
 """@brief Process TKR analysis file.
 
@@ -59,16 +59,25 @@ cd %(workDir)s
 export INST_DIR=%(instDir)s 
 export GLAST_EXT=%(glastExt)s
 source %(l1Setup)s
-/afs/slac.stanford.edu/g/glast/ground/GLAST_EXT/rh9_gcc32opt/python/2.5.1/bin/python2.5 %(app)s %(stagedInFile)s %(stagedMonFile)s %(htmlDir)s %(stagedAlarmFile)s %(logFile)s
+%(python)s %(app)s %(stagedInFile)s %(stagedMonFile)s %(htmlDir)s %(stagedAlarmFile)s %(logFile)s
 """ % locals()
 
-status = runner.run(cmd)
-if status: finishOption = 'wipe'
+#do nothing. TKR analysis is not working.
+#status = runner.run(cmd)
+#if status: finishOption = 'wipe'
+#
+#if not status:
+#    tkrReport = tarfile.open(stagedReportFile, 'w')
+#    tkrReport.add(htmlDir, htmlBase)
+#    tkrReport.close()
+#    pass
+
+status = 0
 
 if not status:
     tkrReport = tarfile.open(stagedReportFile, 'w')
-    tkrReport.add(htmlDir, htmlBase)
     tkrReport.close()
+    open(stagedMonFile,"w")
     pass
 
 status |= staged.finish(finishOption)

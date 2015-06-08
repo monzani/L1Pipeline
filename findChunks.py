@@ -1,5 +1,3 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc --add-env=oracle11 --add-env=flightops python2.5
-
 """@brief Find new chunk files.
 
 @author W. Focke <focke@slac.stanford.edu>

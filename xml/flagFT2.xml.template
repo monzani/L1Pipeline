@@ -46,7 +46,7 @@
 
 
   <process name="getTimes" autoRetryMaxAttempts="%(retries)s">
-    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.5 ${L1ProcROOT}/getTimesAcq.py" batchOptions=" -q express "/>
+    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/getTimesAcq.py" batchOptions=" -q express "/>
     <depends>
     <after process="lockRun" status="SUCCESS"/>
    </depends>
@@ -68,7 +68,7 @@
     <variables>
       <var name="fileTypes">ft2,ft2Seconds,ft2NoQual,ft2SecondsNoQual</var>
     </variables>
-    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.5 ${L1ProcROOT}/lookupJob.py" batchOptions=" -q %(shortQ)s -sp ${highPriority} " />
+    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.6 ${L1ProcROOT}/lookupJob.py" batchOptions=" -q %(shortQ)s -sp ${highPriority} " />
     <depends>
       <after process="lockRun" status="SUCCESS"/>
     </depends>
@@ -86,7 +86,7 @@
       <var name="inFileTypes">ft2NoQual/ft2SecondsNoQual</var>
       <var name="outFileTypes">ft2/ft2Seconds</var>
     </variables>
-    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
     <depends>
       <after process="setupQuality" status="SUCCESS"/>
       <after process="lookupFiles" status="SUCCESS"/>
@@ -115,7 +115,7 @@
       <var name="fileType">ft2Seconds</var>
       <var name="%(ft2Seconds_versionName)s">${pipeline.processInstance("flagFT2").getVariable("L1_ft2Seconds_ver")}</var>
     </variables>
-    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
     <depends>
       <after process="registerFt2Seconds" status="SUCCESS"/>
     </depends>
@@ -144,7 +144,7 @@
       <var name="fileType">ft2</var>
       <var name="%(ft2_versionName)s">${pipeline.processInstance("flagFT2").getVariable("L1_ft2_ver")}</var>
     </variables>
-    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.5 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
+    <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/exportStuff.py" batchOptions=" -q %(expressQ)s -sp ${highPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; " />
     <depends>
       <after process="registerFT2" status="SUCCESS"/>
     </depends>
@@ -170,7 +170,7 @@
         <variables>
           <var name="l1LockAction">UnLock</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.5 ${L1ProcROOT}/lockFile.py" batchOptions=" -q glastdataq -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/lockFile.py" batchOptions=" -q glastdataq -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[${standardRusage}]&quot; "/>
         <depends>
           <after process="wrapupQuality" status="SUCCESS"/>
         </depends>

@@ -87,6 +87,7 @@ fileTypes = {
     'reconHistAlarmDist': 'root',
     'reconTrend': 'root',
     'reconTrendAlarm': 'xml',
+    'relation': 'root',
     'solarFlareHist': 'root',
     'solarFlareLog': 'xml',
     'solarFlarePlot': 'png',

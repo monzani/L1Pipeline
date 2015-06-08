@@ -1,4 +1,4 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel3_gcc32/ISOC_PROD/bin/shisoc python2.5
+#!/afs/slac/g/glast/isoc/flightOps/rhel5_gcc41/ISOC_PROD/bin/shisoc python2.6
 
 import os
 import sys
@@ -30,10 +30,11 @@ realOutFile = fileNames.fileName(outFileType, dlId, runId, next=True)
 stagedOutFile = staged.stageOut(realOutFile)
 
 workDir = os.path.dirname(stagedInFile)
+python = config.python
 
 app = config.apps[reportType]
 
-cmd = '%(app)s -o %(stagedOutFile)s %(stagedInFile)s' % locals()
+cmd = '%(python)s %(app)s -o %(stagedOutFile)s %(stagedInFile)s' % locals()
 
 status = runner.run(cmd)
 
