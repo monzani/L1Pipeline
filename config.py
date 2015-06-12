@@ -300,7 +300,7 @@ sConsPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'Monitor-03-13-03',
+        'version': 'Monitor-03-13-04',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -327,11 +327,11 @@ cvsPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'FastMon-05-03-03',
+        'version': 'FastMon-05-03-04',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
-        'version': 'FastMonCfg-02-02-01',
+        'version': 'FastMonCfg-02-02-03',
         },
     'GPLtools': {
         'repository': '',
