@@ -1,4 +1,4 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel5_gcc41/ISOC_PROD/bin/shisoc --add-env=flightops python2.6
+#!/afs/slac/g/glast/isoc/flightOps/rhel6_gcc44/ISOC_PROD/bin/shisoc --add-env=flightops python2.6
 
 """
 Generate new chunkLists to patch up halfpipe issues.
