@@ -62,22 +62,13 @@ source %(l1Setup)s
 %(python)s %(app)s %(stagedInFile)s %(stagedMonFile)s %(htmlDir)s %(stagedAlarmFile)s %(logFile)s
 """ % locals()
 
-#do nothing. TKR analysis is not working.
-#status = runner.run(cmd)
-#if status: finishOption = 'wipe'
-#
-#if not status:
-#    tkrReport = tarfile.open(stagedReportFile, 'w')
-#    tkrReport.add(htmlDir, htmlBase)
-#    tkrReport.close()
-#    pass
-
-status = 0
+status = runner.run(cmd)
+if status: finishOption = 'wipe'
 
 if not status:
     tkrReport = tarfile.open(stagedReportFile, 'w')
+    tkrReport.add(htmlDir, htmlBase)
     tkrReport.close()
-    open(stagedMonFile,"w")
     pass
 
 status |= staged.finish(finishOption)

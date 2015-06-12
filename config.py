@@ -284,7 +284,7 @@ sConsPackages = {
     #    },
     'calibTkrUtil': {
         'repository': '',
-        'version': 'calibTkrUtil-02-10-01',
+        'version': 'calibTkrUtil-03-00-00',
         },
     'findGaps': {
         'repository': 'svac',
