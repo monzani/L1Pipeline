@@ -2,7 +2,7 @@
 -----------------
 This is to implement the Pass8 public release
 rhel6-64 build, new ISOC platform (rhel6-64), python 2.6, gcc4.4
-New version of root 5.34.03-gr01, new GR 20-10-02, new ST 10-01-01 
+New version of root 5.34.03-gr01, new GR 20-10-03, new ST 10-01-01 
 Complete reworking of merit/recon DQM. Bufixes everywhere in DQM
 Add leap second at 2015-06-30 (=457401602 per xTime)
 
