@@ -319,7 +319,7 @@ cvsPackages = {
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'DigiReconCalMeritCfg-02-01-02',
+        'version': 'DigiReconCalMeritCfg-02-01-03',
         },
     'evtClassDefs': {
         'repository': '',
