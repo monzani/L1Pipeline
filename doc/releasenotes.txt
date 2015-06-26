@@ -1,3 +1,9 @@
+5.1
+-----------------
+First round of normalized factors for Pass8.
+Misc DQM fixes (BTI plot, 2D orbit plot).
+
+
 5.0
 -----------------
 This is to implement the Pass8 public release

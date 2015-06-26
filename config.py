@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "5.0"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "5.1"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -315,11 +315,11 @@ sConsPackages = {
 cvsPackages = {
     'Common': {
         'repository': 'dataMonitoring',
-        'version': 'Common-07-00-00',
+        'version': 'Common-07-00-01',
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'DigiReconCalMeritCfg-02-01-04',
+        'version': 'DigiReconCalMeritCfg-02-01-05',
         },
     'evtClassDefs': {
         'repository': '',
@@ -327,7 +327,7 @@ cvsPackages = {
         },
     'FastMon': {
         'repository': 'dataMonitoring',
-        'version': 'FastMon-05-03-04',
+        'version': 'FastMon-05-03-05',
         },
     'FastMonCfg': {
         'repository': 'dataMonitoring',
