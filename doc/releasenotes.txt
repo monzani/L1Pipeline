@@ -1,6 +1,5 @@
 5.1
 -----------------
-First round of normalized factors for Pass8.
 Misc DQM fixes (BTI plot, 2D orbit plot).
 
 
