@@ -118,9 +118,9 @@ else:
 
 xrootStage = os.path.join(xrootGlast, 'Scratch', stageBase)
 
-maxCrumbs = 30 # Maximum number of crumbs/chunk.
+maxCrumbs = 45 # Maximum number of crumbs/chunk.
 crumbSize = 1500 # minimum average crumb size (chunkEvents/nCrumbs)
-crumbMmr = 2.0 # largestCrumb / smallestCrumb
+crumbMmr = 1.5 # largestCrumb / smallestCrumb
 
 maxChunks = 1000 # We can't handle too many chunks. Fail if more.
 
