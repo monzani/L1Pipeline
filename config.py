@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "5.1"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "5.2"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -118,7 +118,7 @@ else:
 
 xrootStage = os.path.join(xrootGlast, 'Scratch', stageBase)
 
-maxCrumbs = 45 # Maximum number of crumbs/chunk.
+maxCrumbs = 50 # Maximum number of crumbs/chunk.
 crumbSize = 1500 # minimum average crumb size (chunkEvents/nCrumbs)
 crumbMmr = 1.5 # largestCrumb / smallestCrumb
 
