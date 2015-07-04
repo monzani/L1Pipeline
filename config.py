@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "5.2"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "5.1"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -108,7 +108,7 @@ baseVersion = 0
 
 #throttle parameters
 throttleDir =  os.path.join(L1Dir, 'throttle')
-throttleLimit = 6
+throttleLimit = 9
 
 if testMode:
     stageBase = 'l1Test'
@@ -118,7 +118,7 @@ else:
 
 xrootStage = os.path.join(xrootGlast, 'Scratch', stageBase)
 
-maxCrumbs = 50 # Maximum number of crumbs/chunk.
+maxCrumbs = 45 # Maximum number of crumbs/chunk.
 crumbSize = 1500 # minimum average crumb size (chunkEvents/nCrumbs)
 crumbMmr = 1.5 # largestCrumb / smallestCrumb
 
@@ -300,7 +300,7 @@ sConsPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'Monitor-03-13-04',
+        'version': 'Monitor-03-13-05',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -308,7 +308,7 @@ sConsPackages = {
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'TestReport-12-02-00',
+        'version': 'TestReport-12-02-01',
         },
     }
 
