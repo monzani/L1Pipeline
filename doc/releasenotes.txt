@@ -1,3 +1,8 @@
+5.3
+-----------------
+New normalization factors, with a bugfix.
+
+
 5.2
 -----------------
 New normalization factors (Pass8).
