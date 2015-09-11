@@ -1,3 +1,8 @@
+5.4
+-----------------
+56-days normalization factors (Pass8).
+
+
 5.3
 -----------------
 New normalization factors, with a bugfix.
@@ -31,6 +36,7 @@ and raise findRunDirs by 1.
 Monitor 02-01-05: check output file is not zombie.
 FastMon 05-03-03 fixes a date bug.
 IGRF 02-01-01 has a switch to work outside the valid time range.
+
 
 4.8
 -----------------

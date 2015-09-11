@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "5.3"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "5.4"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -205,7 +205,7 @@ reconOptions = {
     'MC': os.path.join(L1Data, 'recon.jobOpt.mc'),
 }
 
-rootSys = os.path.join(glastExt, 'ROOT/v5.34.03-gr01')
+rootSys = os.path.join(glastExt, 'ROOT/v6.34.03-gr01')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
@@ -319,7 +319,7 @@ cvsPackages = {
         },
     'DigiReconCalMeritCfg': {
         'repository': 'dataMonitoring',
-        'version': 'DigiReconCalMeritCfg-02-01-07',
+        'version': 'DigiReconCalMeritCfg-02-01-08',
         },
     'evtClassDefs': {
         'repository': '',
