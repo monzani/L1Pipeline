@@ -19,7 +19,7 @@ iso8860Fmt = '%Y-%m-%d %H:%M:%S'
 
 dtMet0 = datetime.datetime(2001, 1, 1, 0, 0, 0, 0) # datetime for MET 0
 
-leapsMet = [157766400, 252460800, 362793601, 457401602]
+leapsMet = [157766400, 252460800, 362793601, 457401602, 504921603]
 
 
 def met(unixTime=None):
