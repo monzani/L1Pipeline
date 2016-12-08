@@ -183,7 +183,7 @@ optConfig = 'redhat6-x86_64-64bit-gcc44-Optimized'
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', 'redhat6-x86_64-64bit-gcc44')
 releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
 #
-glastVersion = '20-10-04'
+glastVersion = '20-10-04-gr02'
 releaseName = 'GlastRelease'
 #
 glastName = '-'.join((releaseName, glastVersion))
@@ -209,8 +209,8 @@ rootSys = os.path.join(glastExt, 'ROOT/v5.34.03-gr01')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
-stDir = os.path.join(groundRoot, 'releases', 'volume12')
-stVersion = '10-01-01'
+stDir = os.path.join(groundRoot, 'releases', 'volume07')
+stVersion = '11-05-01'
 stName = 'ScienceTools'
 
 ST = os.path.join(stDir, "ScienceTools-%s" % stVersion)
@@ -300,7 +300,7 @@ sConsPackages = {
         },
     'Monitor': {
         'repository': 'svac',
-        'version': 'Monitor-03-14-02',
+        'version': 'Monitor-03-14-03',
         },
     'pipelineDatasets': {
         'repository': 'users/richard',
@@ -308,7 +308,7 @@ sConsPackages = {
         },
     'TestReport': {
         'repository': 'svac',
-        'version': 'TestReport-12-03-01',
+        'version': 'TestReport-12-03-02',
         },
     }
 
