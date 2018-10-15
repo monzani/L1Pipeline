@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "5.6"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "5.7"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -262,13 +262,13 @@ else:
     pass
 aspAlreadyLaunched = 160
 
-elFt1ProcVer = 302
-exFt1ProcVer = 302
-exLs1ProcVer = 302
-ft1ProcVer = 302
-ft2ProcVer = 202
-ft2SecondsProcVer = 203
-ls1ProcVer = 302
+elFt1ProcVer = 305
+exFt1ProcVer = 305
+exLs1ProcVer = 305
+ft1ProcVer = 305
+ft2ProcVer = 305
+ft2SecondsProcVer = 305
+ls1ProcVer = 305
 
 procVer = {
     'electronFT1BadGti': elFt1ProcVer,
@@ -289,14 +289,6 @@ sConsPackages = {
     'findGaps': {
         'repository': 'svac',
         'version': 'findGaps-02-03-00',
-        },
-    'fitsGen': {
-        'repository': '',
-        'version': 'fitsGen-07-01-02',
-        },
-    'ft2Util': {
-        'repository': '',
-        'version': 'ft2Util-02-04-00',
         },
     'Monitor': {
         'repository': 'svac',
@@ -323,7 +315,7 @@ cvsPackages = {
         },
     'evtClassDefs': {
         'repository': '',
-        'version': 'evtClassDefs-01-01-04',
+        'version': 'evtClassDefs-01-01-05',
         },
     'FastMon': {
         'repository': 'dataMonitoring',
@@ -343,8 +335,20 @@ cvsPackages = {
         },
     }
 
+githubPackages = {
+    'fitsGen': {
+        'repository': 'https://github.com/fermi-lat/fitsGen',
+        'version': 'fermitools-11-07-01',
+        },
+    'ft2Util': {
+        'repository': 'https://github.com/fermi-lat/ft2Util',
+        'version': 'ft2Util-02-05-00',
+        },
+    }
+
 packages = dict(cvsPackages)
 packages.update(sConsPackages)
+packages.update(githubPackages)
 
 # fill in standard values for standard packages
 for packName in packages:
@@ -567,8 +571,8 @@ tdBin = {
 
 evclData = packages['evtClassDefs']['data']
 evclXml = packages['evtClassDefs']['xml']
-electronCuts = os.path.join(evclData, 'pass8.2_Electrons_cuts_L1')
-extendedCuts = os.path.join(evclData, 'pass8.2_Extended_cuts_L1')
+electronCuts = os.path.join(evclData, 'pass8.3_Electrons_cuts_L1')
+extendedCuts = os.path.join(evclData, 'pass8.3_Extended_cuts_L1')
 ft1Vars = os.path.join(evclData, 'pass8_FT1variables')
 ls1Vars = os.path.join(evclData, 'pass8_LS1variables')
 photonClass = 'FT1EventClass'
@@ -576,7 +580,7 @@ photonClass = 'FT1EventClass'
 electronClass = 'FT1EventClass'
 #transientCuts = os.path.join(evclData, 'pass7.6_Transient_cuts_L1')
 #sourceCuts = os.path.join(evclData, 'pass7.6_Source_cuts_L1')
-xmlClassifier =  os.path.join(evclXml, 'EvtClassDefs_P8R2.xml')
+xmlClassifier =  os.path.join(evclXml, 'EvtClassDefs_P8R3.xml')
 filterClassifyMap = {
     'electronMerit': {
         'cutFile': electronCuts,

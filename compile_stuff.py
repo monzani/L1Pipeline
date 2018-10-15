@@ -22,6 +22,8 @@ def doPackage(packName):
         doSConsPackage(packName)
     elif packName in config.cvsPackages:
         doCvsPackage(packName)
+    elif packName in config.githubPackages:
+        doGithubPackage(packName)
         pass
     return
 
