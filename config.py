@@ -266,8 +266,8 @@ elFt1ProcVer = 305
 exFt1ProcVer = 305
 exLs1ProcVer = 305
 ft1ProcVer = 305
-ft2ProcVer = 305
-ft2SecondsProcVer = 305
+ft2ProcVer = 202
+ft2SecondsProcVer = 203
 ls1ProcVer = 305
 
 procVer = {
@@ -338,11 +338,11 @@ cvsPackages = {
 githubPackages = {
     'fitsGen': {
         'repository': 'https://github.com/fermi-lat/fitsGen',
-        'version': 'fermitools-11-07-01',
+        'version': 'fitsGen-07-01-03',
         },
     'ft2Util': {
         'repository': 'https://github.com/fermi-lat/ft2Util',
-        'version': 'ft2Util-02-05-00',
+        'version': 'ft2Util-02-04-00',
         },
     }
 
