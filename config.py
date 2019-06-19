@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "5.7"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "5.8"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -266,8 +266,8 @@ elFt1ProcVer = 305
 exFt1ProcVer = 305
 exLs1ProcVer = 305
 ft1ProcVer = 305
-ft2ProcVer = 202
-ft2SecondsProcVer = 203
+ft2ProcVer = 310
+ft2SecondsProcVer = 310
 ls1ProcVer = 305
 
 procVer = {
@@ -338,11 +338,12 @@ cvsPackages = {
 githubPackages = {
     'fitsGen': {
         'repository': 'https://github.com/fermi-lat/fitsGen',
-        'version': 'fitsGen-07-01-03',
+        'version': 'fermitools-11-07-01',
+#        'version': 'fitsGen-07-01-03',
         },
     'ft2Util': {
         'repository': 'https://github.com/fermi-lat/ft2Util',
-        'version': 'ft2Util-02-04-00',
+        'version': 'ft2Util-02-05-00',
         },
     }
 
