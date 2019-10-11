@@ -181,9 +181,9 @@ scons = '/afs/slac.stanford.edu/g/glast/applications/install/@sys/usr/bin/scons'
 #this is for rhel6:
 optConfig = 'redhat6-x86_64-64bit-gcc44-Optimized'
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', 'redhat6-x86_64-64bit-gcc44')
-releaseDir = os.path.join(groundRoot, 'releases', 'volume14')
+releaseDir = os.path.join(groundRoot, 'releases', 'volume05')
 #
-glastVersion = '20-10-04-gr02'
+glastVersion = '20-10-04-gr06'
 releaseName = 'GlastRelease'
 #
 glastName = '-'.join((releaseName, glastVersion))

@@ -14,7 +14,7 @@ import runner
 if len(sys.argv) > 1:
     names = sys.argv[1:]
 else:
-    names = config.packages.keys()
+    names = config.cvsPackages.keys() + config.githubPackages.keys() + config.sConsPackages.keys()
     pass
 
 def doPackage(packName):
@@ -46,7 +46,7 @@ def doSConsPackage(packName):
     cd %(L1Build)s
     cvs co -r %(version)s -d %(root)s %(checkOutName)s
     cd %(glastLocation)s 
-    %(scons)s --with-GLAST-EXT=%(glastExt)s --supersede %(L1Build)s --compile-opt %(packName)s 
+    %(scons)s -C GlastRelease --with-GLAST-EXT=%(glastExt)s --supersede %(L1Build)s --site-dir=../SConsShared/site_scons --compile-opt %(packName)s 
     ''' % args
 
     runner.run(cmd)
@@ -81,7 +81,7 @@ def doGithubPackage(packName):
     wget -O - %(source)s | tar xzv
     mv %(directory)s %(packName)s
     cd %(glastLocation)s 
-    %(scons)s --with-GLAST-EXT=%(glastExt)s --supersede %(L1Build)s --compile-opt %(packName)s 
+    %(scons)s -C GlastRelease --with-GLAST-EXT=%(glastExt)s --supersede %(L1Build)s --site-dir=../SConsShared/site_scons --compile-opt %(packName)s 
     ''' % args
 
     runner.run(cmd)
