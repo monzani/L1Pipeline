@@ -2,7 +2,7 @@
 <pipeline
   xmlns="http://glast-ground.slac.stanford.edu/pipeline"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline http://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.0/pipeline.xsd">
+  xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline https://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.1/pipeline.xsd">
 
 <task name="P130-FT2" version="%(L1Version)s" type="Data">
 
