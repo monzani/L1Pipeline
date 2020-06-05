@@ -331,7 +331,7 @@ cvsPackages = {
         },
     'IGRF': {
         'repository': 'dataMonitoring',
-        'version': 'IGRF-03-01-04',
+        'version': 'IGRF-03-01-05',
         },
     }
 
@@ -723,7 +723,7 @@ waitingStatus = 'InProgress'
 
 solarFlareFlag = -1
 
-ignoreIgrfBoundary = False
+ignoreIgrfBoundary = True
 igrfExport = {
     True: 'IGNORE_IGRF_BOUNDARY=yesPlease ; export IGNORE_IGRF_BOUNDARY',
     False: ''
