@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "5.8"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "5.9"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
 
@@ -183,7 +183,7 @@ optConfig = 'redhat6-x86_64-64bit-gcc44-Optimized'
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', 'redhat6-x86_64-64bit-gcc44')
 releaseDir = os.path.join(groundRoot, 'releases', 'volume05')
 #
-glastVersion = '20-10-04-gr06'
+glastVersion = '20-10-04-gr07'
 releaseName = 'GlastRelease'
 #
 glastName = '-'.join((releaseName, glastVersion))
@@ -723,7 +723,7 @@ waitingStatus = 'InProgress'
 
 solarFlareFlag = -1
 
-ignoreIgrfBoundary = True
+ignoreIgrfBoundary = False
 igrfExport = {
     True: 'IGNORE_IGRF_BOUNDARY=yesPlease ; export IGNORE_IGRF_BOUNDARY',
     False: ''
