@@ -2132,7 +2132,7 @@
         <var name="%(relation_versionName)s">%(relation_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=250]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=200]&quot; "/>
       <depends>
         <after process="scanRelationChunks" status="SUCCESS"/>
       </depends>
@@ -2174,7 +2174,7 @@
         <var name="%(cal_versionName)s">%(cal_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=250]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=200]&quot; "/>
       <depends>
         <after process="scanCalChunks" status="SUCCESS"/>
       </depends>
@@ -2818,7 +2818,7 @@
           <var name="%(recon_versionName)s">%(recon_version)s</var>
           <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
         </variables>
-        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=250]&quot; "/>
+        <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(longQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=200]&quot; "/>
         <depends>
           <after process="getTimes" status="SUCCESS"/>
         </depends>
@@ -3552,7 +3552,7 @@
         <var name="%(digi_versionName)s">%(digi_version)s</var>
         <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
       </variables>
-      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=250]&quot; "/>
+      <job executable="${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions=" -q %(mediumQ)s -sp ${standardPriority} -R &quot;select[${standardSelect}] rusage[scratch=200]&quot; "/>
       <depends>
         <after process="scanDigiLci" status="SUCCESS"/>
       </depends>
