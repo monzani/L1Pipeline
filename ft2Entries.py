@@ -60,8 +60,8 @@ else:
 # run start and stop from merit file
 mStart, mStop = meritFiles.startAndStop(stagedMeritFile)
 print >> sys.stderr, 'merit:', mStart, mStop
-tStart = mStart - config.ft2Pad
-tStop = mStop + config.ft2Pad
+tStart = mStart # - config.ft2Pad
+tStop = mStop #+ config.ft2Pad
 
 template = config.ft2Template
 templOpt = '-templateFT2 %s' % template
