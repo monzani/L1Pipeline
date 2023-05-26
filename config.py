@@ -1,8 +1,8 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel6_gcc44/ISOC_PROD/bin/shisoc python2.6
+#!/sdf/group/fermi/a/isoc/flightOps/rhel6_gcc44/ISOC_PROD/bin/shisoc python2.6
 
 """@brief Configuration.
 
-@author W. Focke <focke@slac.stanford.edu>
+@author W. Focke <focke@slac.stanford.edu>, M.E. Monzani <monzani@slac.stanford.edu>
 """
 
 import os
@@ -11,13 +11,15 @@ import sys
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
 L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "5.9"
 fullTaskName = '-'.join([L1Name, L1Version])
-installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/Level1"
+installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac/g/glast/ground/PipelineConfig/Level1"
 
 creator = '-'.join([L1Name, L1Version])
     
-BuildVolume = '/afs/slac/g/glast/ground/releases/volume11'
+#BuildVolume = '/afs/slac/g/glast/ground/releases/volume11'
+BuildVolume = '/sdf/group/fermi/a/ground/releases/volumeL1'
 L1BuildBase = os.environ.get('L1_BUILD_DIR') or os.path.join(BuildVolume, 'L1Proc')
-L1Build = os.path.join(L1BuildBase, L1Version)
+#L1Build = os.path.join(L1BuildBase, L1Version)
+L1Build = os.path.join(L1BuildBase, '5.9')
 
 doCleanup = True
 
@@ -53,8 +55,7 @@ L1Xml = os.path.join(L1ProcROOT, 'xml')
 L1Data = os.path.join(L1ProcROOT, 'data')
 
 LATCalibRoot = '/afs/slac/g/glast/ground/releases/calibrations/'
-LATMonRoot = "/afs/slac.stanford.edu/g/glast/ground/releases/monitor/"
-#mootArchive = 'MOOT_ARCHIVE=/afs/slac.stanford.edu/g/glast/moot/archive-mood'
+LATMonRoot = "/afs/slac/g/glast/ground/releases/monitor/"
 
 calibFlavors = { # not using this now, have separate JO files for LPA & MC
     'LPA': {
@@ -171,12 +172,8 @@ cleanupSubTask = {
         },
     }
 
-
-glastRoot = '/afs/slac.stanford.edu/g/glast'
-groundRoot = os.path.join(glastRoot, 'ground')
-#glastSetup = os.path.join(groundRoot, 'scripts', 'group.sh')
-#glastSetupCsh = os.path.join(groundRoot, 'scripts', 'group.cshrc')
-scons = '/afs/slac.stanford.edu/g/glast/applications/install/@sys/usr/bin/scons'
+groundRoot = '/sdf/group/fermi/a/ground'
+scons = '/sdf/group/fermi/a/applications/SCons/2.1.0/bin/scons'
 
 #this is for rhel6:
 optConfig = 'redhat6-x86_64-64bit-gcc44-Optimized'
@@ -223,7 +220,7 @@ l1BinDir = os.path.join(L1Build, 'bin', optConfig)
 l1ExeDir = os.path.join(L1Build, 'exe', optConfig)
 l1Setup = os.path.join(l1BinDir, '_setup.sh')
 
-isoc = '/afs/slac/g/glast/isoc/flightOps'
+isoc = '/sdf/group/fermi/a/isoc/flightOps'
 isocPlatform = 'rhel6_gcc44'
 isocMode = os.environ.get('isocMode', 'ISOC_PROD')
 isocBin = os.path.join(isoc, isocPlatform, isocMode, 'bin')

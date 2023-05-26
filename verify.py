@@ -1,4 +1,4 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel6_gcc44/ISOC_PROD/bin/shisoc python2.6
+#!/sdf/group/fermi/a/isoc/flightOps/rhel6_gcc44/ISOC_PROD/bin/shisoc python2.6
 
 import os
 import sys
@@ -17,7 +17,8 @@ import stageFiles
 head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
-completeness = os.environ['completeness']
+#completeness = os.environ['completeness']
+completeness = 'complete'
 
 staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption

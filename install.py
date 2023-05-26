@@ -1,4 +1,4 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel6_gcc44/ISOC_PROD/bin/shisoc python2.6
+#!/sdf/group/fermi/a/isoc/flightOps/rhel6_gcc44/ISOC_PROD/bin/shisoc python2.6
 
 import os
 import sys
@@ -12,7 +12,7 @@ import variables
 
 #os.chdir(config.L1ProcROOT) # ?
 
-taskNames = ['forceL1Merge', 'L1Proc', 'noReconMerge', 'setL1Status', 'P310-FT2', 'flagFT2', 'flagFT2-P310']
+taskNames = ['forceL1Merge', 'L1Proc', 'noReconMerge', 'setL1Status', 'flagFT2', 'testVerifyS3df']
 
 scriptNames = {
     'placeHolderBody': 'placeHolder.py',

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline
+  xmlns="http://glast-ground.slac.stanford.edu/pipeline"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline https://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.2/pipeline.xsd">
+
+<task name="AAA-testVerifyS3df" version="%(L1Version)s" type="Data">
+
+  <variables>
+    <var name="preamble"></var> <!-- Make sure local cache is setup -->
+    <var name="container_image">/sdf/group/fermi/sw/containers/slacdistrib_6.10.sif</var>
+    <var name="container_volumes">--bind /sdf/group/fermi/a:/afs/slac/g/glast --bind /sdf:/sdf </var>
+    <var name="container_wrap">singularity exec ${container_volumes} ${container_image}</var>
+    <var name="extra"></var>
+    <var name="jobsite">S3DFDATA</var>
+    <var name="DATASOURCE">LPA</var>
+    <var name="GLAST_EXT">%(glastExt)s</var>
+    <var name="GPL2">%(GPL2)s</var>
+    <var name="isocMode">%(isocMode)s</var>
+    <var name="isocRun">%(isocRun)s</var>
+    <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+    <var name="LATCalibRoot">%(LATCalibRoot)s</var>
+    <var name="LD_LIBRARY_PATH">%(libraryPath)s</var>
+    <var name="MALLOC_CHECK_">0</var>
+    <var name="PFILES">%(PFILES)s</var>
+    <var name="PYTHONPATH">%(pythonPath)s</var>
+    <var name="ROOTSYS">%(rootSys)s</var>
+    <var name="ST">%(ST)s</var>
+  </variables>
+
+  <prerequisites>
+    <prerequisite name="DOWNLINK_RAWDIR" type="string"/>
+    <prerequisite name="RUNID" type="string"/>
+  </prerequisites>
+
+  <process name="verify" site="${jobsite}">
+    <job executable="${container_wrap} ${isocRun} python2.6 ${L1ProcROOT}/verify.py" batchOptions="${extra}" />
+  </process>
+
+</task>
+</pipeline>

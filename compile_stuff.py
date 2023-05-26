@@ -1,11 +1,11 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel6_gcc44/ISOC_PROD/bin/shisoc python2.6
+#!/sdf/group/fermi/a/isoc/flightOps/rhel6_gcc44/ISOC_PROD/bin/shisoc python2.6
 
 import os
 import sys
 
 import config
 
-backupGplTools = '/afs/slac.stanford.edu/g/glast/ground/PipelineConfig/GPLtools/prod/python'
+backupGplTools = '/afs/slac/g/glast/ground/PipelineConfig/GPLtools/prod/python'
 sys.path.append(backupGplTools)
 
 import runner
