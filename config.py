@@ -250,7 +250,6 @@ l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
 lockOption = " -E &quot;${isocRun} ${L1ProcROOT}/lockFile.py&quot; "
 
 if testMode:
-    # aspLauncher = '/afs/slac/g/glast/ground/links/data/ASP/aspLauncher_dev.sh'
     aspLauncher = '/bin/true'
 else:
     aspLauncher = '/afs/slac/g/glast/ground/links/data/ASP/aspLauncher.sh'
@@ -273,10 +272,6 @@ procVer = {
     
 
 sConsPackages = {
-    'calibTkrUtil': {
-        'repository': '',
-        'version': 'calibTkrUtil-03-00-00',
-        },
     'findGaps': {
         'repository': 'svac',
         'version': 'findGaps-02-03-00',
@@ -327,6 +322,10 @@ cvsPackages = {
     }
 
 githubPackages = {
+    'calibTkrUtil': {
+        'repository': 'https://github.com/fermi-lat/calibTkrUtil',
+        'version': 'calibTkrUtil-03-00-00',
+        },
     'fitsGen': {
         'repository': 'https://github.com/fermi-lat/fitsGen',
         'version': 'fermitools-11-07-01',
