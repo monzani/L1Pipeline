@@ -11,13 +11,11 @@ import sys
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
 L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "5.9"
 fullTaskName = '-'.join([L1Name, L1Version])
-installRoot = os.environ.get('L1_INSTALL_DIR') or "/afs/slac/g/glast/ground/PipelineConfig/Level1"
+installRoot = os.environ.get('L1_INSTALL_DIR') or "/sdf/group/fermi/a/ground/PipelineConfig/L1Proc"
 
 creator = '-'.join([L1Name, L1Version])
     
-#BuildVolume = '/afs/slac/g/glast/ground/releases/volume11'
-BuildVolume = '/sdf/group/fermi/a/ground/releases/volumeL1'
-L1BuildBase = os.environ.get('L1_BUILD_DIR') or os.path.join(BuildVolume, 'L1Proc')
+L1BuildBase = os.environ.get('L1_BUILD_DIR') or "/sdf/group/fermi/a/ground/PipelineBuilds/L1Proc"
 #L1Build = os.path.join(L1BuildBase, L1Version)
 L1Build = os.path.join(L1BuildBase, '5.9')
 
@@ -275,10 +273,6 @@ procVer = {
     
 
 sConsPackages = {
-    #'calibGenTKR': {
-    #    'repository': '',
-    #    'version': 'calibGenTKR-04-08-03',
-    #    },
     'calibTkrUtil': {
         'repository': '',
         'version': 'calibTkrUtil-03-00-00',
@@ -336,7 +330,6 @@ githubPackages = {
     'fitsGen': {
         'repository': 'https://github.com/fermi-lat/fitsGen',
         'version': 'fermitools-11-07-01',
-#        'version': 'fitsGen-07-01-03',
         },
     'ft2Util': {
         'repository': 'https://github.com/fermi-lat/ft2Util',

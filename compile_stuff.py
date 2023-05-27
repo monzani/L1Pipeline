@@ -44,7 +44,8 @@ def doSConsPackage(packName):
     rm -rf $root
     mkdir -p $(dirname $root)
     cd %(L1Build)s
-    cvs co -r %(version)s -d %(root)s %(checkOutName)s
+    packName=%(packName)s
+    cvs co -r %(version)s -d %(packName)s %(checkOutName)s
     cd %(glastLocation)s 
     %(scons)s -C GlastRelease --with-GLAST-EXT=%(glastExt)s --supersede %(L1Build)s --site-dir=../SConsShared/site_scons --compile-opt %(packName)s 
     ''' % args
@@ -78,6 +79,7 @@ def doGithubPackage(packName):
     rm -rf $root
     mkdir -p $(dirname $root)
     cd %(L1Build)s
+    packName=%(packName)s
     wget -O - %(source)s | tar xzv
     mv %(directory)s %(packName)s
     cd %(glastLocation)s 
@@ -86,18 +88,13 @@ def doGithubPackage(packName):
 
     runner.run(cmd)
 
-    if packName == "Monitor":
-        cmd = os.path.join(config.L1ProcROOT, 'compileRunStrip.py')
-        runner.run(cmd)
-        pass
-    return
-
 
 def doCvsPackage(packName):
     package = config.packages[packName]
 
     args = {
         'L1Build': config.L1Build,
+        'packName': packName,
         }
     args.update(package)
 
@@ -106,7 +103,8 @@ def doCvsPackage(packName):
     rm -rf $root
     mkdir -p $(dirname $root)
     cd %(L1Build)s
-    cvs co -r %(version)s -d %(root)s %(checkOutName)s
+    packName=%(packName)s
+    cvs co -r %(version)s -d %(packName)s %(checkOutName)s
     ''' % args
 
     if packName == 'IGRF':
