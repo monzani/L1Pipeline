@@ -176,7 +176,7 @@ scons = '/sdf/group/fermi/a/applications/SCons/2.1.0/bin/scons'
 #this is for rhel6:
 optConfig = 'redhat6-x86_64-64bit-gcc44-Optimized'
 glastExt = os.path.join(groundRoot, 'GLAST_EXT', 'redhat6-x86_64-64bit-gcc44')
-releaseDir = os.path.join(groundRoot, 'releases', 'volume05')
+releaseDir = os.path.join(groundRoot, 'PipelineBuilds', 'GlastRelease')
 #
 glastVersion = '20-10-04-gr07'
 releaseName = 'GlastRelease'
@@ -204,7 +204,7 @@ rootSys = os.path.join(glastExt, 'ROOT/v5.34.03-gr01')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
-stDir = os.path.join(groundRoot, 'releases', 'volume07')
+stDir = os.path.join(groundRoot, 'PipelineBuilds', 'ScienceTools')
 stVersion = '11-05-01'
 stName = 'ScienceTools'
 
