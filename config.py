@@ -477,10 +477,9 @@ mergeConfigs = {
     }
 
 
-alarmRefBase = '/nfs/farm/g/glast/u41/Monitoring/ReferenceHistograms'
-alarmRefDir = os.path.join(alarmRefBase, mode)
-alarmCfgBase = '/afs/slac/g/glast/ground/releases/volume11'
-alarmBase = os.path.join(alarmCfgBase, 'AlarmsCfg', mode)
+alarmBase = os.path.join(groundRoot, 'PipelineBuilds', 'Monitoring')
+alarmRefDir = os.path.join(alarmBase, 'ReferHist',  mode)
+alarmBase = os.path.join(alarmBase, 'AlarmsCfg', mode)
 alarmConfigs = {
     'acdPedsAnalyzer': os.path.join(alarmBase, 'xml', 'acdpeds_eor_alarms.xml'),
     'calGainsAnalyzer': os.path.join(
