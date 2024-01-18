@@ -312,7 +312,7 @@ githubSCons = {
         'version': 'calibTkrUtil-03-00-00',
         },
     'findGaps': {
-        'repository': 'svac',
+        'repository': 'findGaps',
         'version': 'findGaps-02-03-00',
         },
     'fitsGen': {
@@ -324,7 +324,7 @@ githubSCons = {
         'version': 'ft2Util-02-05-00',
         },
     'Monitor': {
-        'repository': 'svac',
+        'repository': 'Monitor',
         'version': 'Monitor-03-14-03',
         },
     'pipelineDatasets': {
@@ -332,7 +332,7 @@ githubSCons = {
         'version': 'pipelineDatasets-01-00-00',
         },
     'TestReport': {
-        'repository': 'svac',
+        'repository': 'TestReport',
         'version': 'TestReport-12-03-02',
         },
     }
@@ -345,7 +345,6 @@ for packName in packages:
     package = packages[packName]
     package['root'] = os.path.join(L1Build, packName)
     package['python'] = os.path.join(package['root'], 'python')
-    package['checkOutName'] = os.path.join(package['repository'], packName)
     continue
 
 # add nonstandard package info
