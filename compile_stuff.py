@@ -14,20 +14,18 @@ import runner
 if len(sys.argv) > 1:
     names = sys.argv[1:]
 else:
-    names = config.cvsPackages.keys() + config.githubPackages.keys() + config.sConsPackages.keys()
+    names = config.githubPlain.keys() + config.githubSCons.keys() + config.sConsPackages.keys()
     pass
 
 def doPackage(packName):
-    if packName in config.sConsPackages:
-        doSConsPackage(packName)
-    elif packName in config.cvsPackages:
-        doCvsPackage(packName)
-    elif packName in config.githubPackages:
-        doGithubPackage(packName)
+    if packName in config.githubPlain:
+        doGithubPlain(packName)
+    elif packName in config.githubSCons:
+        doGithubSCons(packName)
         pass
     return
 
-def doSConsPackage(packName):
+def doGithubSCons(packName):
     package = config.packages[packName]
 
     args = {
@@ -35,9 +33,18 @@ def doSConsPackage(packName):
         'glastLocation': config.glastLocation,
         'glastExt': config.glastExt,
         'scons': config.scons,
+        'githubMain': config.githubMain,
         'packName': packName,
         }
     args.update(package)
+
+    args['source'] = '%(githubMain)s/%(repository)s/archive/%(version)s.tar.gz' % args
+
+    if args['packName'] == args ['repository']:
+        args['directory'] = args['tagName'] = '%(repository)s-%(version)s' % args
+    else:
+        args['tagName'] = '%(repository)s-%(version)s' %args
+        args['directory'] = '%(tagName)s/%(packName)s' %args
 
     cmd = '''
     root=%(root)s
@@ -45,7 +52,9 @@ def doSConsPackage(packName):
     mkdir -p $(dirname $root)
     cd %(L1Build)s
     packName=%(packName)s
-    cvs co -r %(version)s -d %(packName)s %(checkOutName)s
+    wget -O - %(source)s | tar xzv
+    mv %(directory)s %(packName)s
+    rm -rf %(tagName)s
     cd %(glastLocation)s 
     %(scons)s -C GlastRelease --with-GLAST-EXT=%(glastExt)s --supersede %(L1Build)s --site-dir=../SConsShared/site_scons --compile-opt %(packName)s 
     ''' % args
@@ -59,20 +68,23 @@ def doSConsPackage(packName):
     return
 
 
-def doGithubPackage(packName):
+def doGithubPlain(packName):
     package = config.packages[packName]
 
     args = {
         'L1Build': config.L1Build,
-        'glastLocation': config.glastLocation,
-        'glastExt': config.glastExt,
-        'scons': config.scons,
+        'githubMain': config.githubMain,
         'packName': packName,
         }
     args.update(package)
 
-    args['source'] = '%(repository)s/archive/%(version)s.tar.gz' % args
-    args['directory'] = '%(packName)s-%(version)s' % args
+    args['source'] = '%(githubMain)s/%(repository)s/archive/%(version)s.tar.gz' % args
+
+    if args['packName'] == args ['repository']:
+        args['directory'] = args['tagName'] = '%(repository)s-%(version)s' % args
+    else:
+        args['tagName'] = '%(repository)s-%(version)s' %args
+        args['directory'] = '%(tagName)s/%(packName)s' %args
 
     cmd = '''
     root=%(root)s
@@ -80,31 +92,11 @@ def doGithubPackage(packName):
     mkdir -p $(dirname $root)
     cd %(L1Build)s
     packName=%(packName)s
+    tagName=%(tagName)s
+    directory=%(directory)s
     wget -O - %(source)s | tar xzv
     mv %(directory)s %(packName)s
-    cd %(glastLocation)s 
-    %(scons)s -C GlastRelease --with-GLAST-EXT=%(glastExt)s --supersede %(L1Build)s --site-dir=../SConsShared/site_scons --compile-opt %(packName)s 
-    ''' % args
-
-    runner.run(cmd)
-
-
-def doCvsPackage(packName):
-    package = config.packages[packName]
-
-    args = {
-        'L1Build': config.L1Build,
-        'packName': packName,
-        }
-    args.update(package)
-
-    cmd = '''
-    root=%(root)s
-    rm -rf $root
-    mkdir -p $(dirname $root)
-    cd %(L1Build)s
-    packName=%(packName)s
-    cvs co -r %(version)s -d %(packName)s %(checkOutName)s
+    rm -rf %(tagName)s
     ''' % args
 
     if packName == 'IGRF':

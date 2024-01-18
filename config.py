@@ -270,27 +270,12 @@ procVer = {
     'ls1BadGti': ls1ProcVer,
     }
     
+githubMain = 'https://github.com/fermi-lat'
 
 sConsPackages = {
-    'findGaps': {
-        'repository': 'svac',
-        'version': 'findGaps-02-03-00',
-        },
-    'Monitor': {
-        'repository': 'svac',
-        'version': 'Monitor-03-14-03',
-        },
-    'pipelineDatasets': {
-        'repository': 'users/richard',
-        'version': 'pipelineDatasets-01-00-00',
-        },
-    'TestReport': {
-        'repository': 'svac',
-        'version': 'TestReport-12-03-02',
-        },
     }
 
-cvsPackages = {
+githubPlain = {
     'Common': {
         'repository': 'dataMonitoring',
         'version': 'Common-07-00-01',
@@ -300,7 +285,7 @@ cvsPackages = {
         'version': 'DigiReconCalMeritCfg-02-01-08',
         },
     'evtClassDefs': {
-        'repository': '',
+        'repository': 'evtClassDefs',
         'version': 'evtClassDefs-01-01-05',
         },
     'FastMon': {
@@ -312,7 +297,7 @@ cvsPackages = {
         'version': 'FastMonCfg-02-02-03',
         },
     'GPLtools': {
-        'repository': '',
+        'repository': 'GPLtools',
         'version': 'GPLtools-02-00-00-wf03',
         },
     'IGRF': {
@@ -321,24 +306,39 @@ cvsPackages = {
         },
     }
 
-githubPackages = {
+githubSCons = {
     'calibTkrUtil': {
-        'repository': 'https://github.com/fermi-lat/calibTkrUtil',
+        'repository': 'calibTkrUtil',
         'version': 'calibTkrUtil-03-00-00',
         },
+    'findGaps': {
+        'repository': 'svac',
+        'version': 'findGaps-02-03-00',
+        },
     'fitsGen': {
-        'repository': 'https://github.com/fermi-lat/fitsGen',
+        'repository': 'fitsGen',
         'version': 'fermitools-11-07-01',
         },
     'ft2Util': {
-        'repository': 'https://github.com/fermi-lat/ft2Util',
+        'repository': 'ft2Util',
         'version': 'ft2Util-02-05-00',
+        },
+    'Monitor': {
+        'repository': 'svac',
+        'version': 'Monitor-03-14-03',
+        },
+    'pipelineDatasets': {
+        'repository': 'pipelineDatasets',
+        'version': 'pipelineDatasets-01-00-00',
+        },
+    'TestReport': {
+        'repository': 'svac',
+        'version': 'TestReport-12-03-02',
         },
     }
 
-packages = dict(cvsPackages)
-packages.update(sConsPackages)
-packages.update(githubPackages)
+packages = dict(githubPlain)
+packages.update(githubSCons)
 
 # fill in standard values for standard packages
 for packName in packages:
