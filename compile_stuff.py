@@ -14,7 +14,7 @@ import runner
 if len(sys.argv) > 1:
     names = sys.argv[1:]
 else:
-    names = config.githubPlain.keys() + config.githubSCons.keys() + config.sConsPackages.keys()
+    names = config.githubPlain.keys() + config.githubSCons.keys()
     pass
 
 def doPackage(packName):
@@ -38,13 +38,8 @@ def doGithubSCons(packName):
         }
     args.update(package)
 
-    args['source'] = '%(githubMain)s/%(repository)s/archive/%(version)s.tar.gz' % args
-
-    if args['packName'] == args ['repository']:
-        args['directory'] = args['tagName'] = '%(repository)s-%(version)s' % args
-    else:
-        args['tagName'] = '%(repository)s-%(version)s' %args
-        args['directory'] = '%(tagName)s/%(packName)s' %args
+    args['source'] = '%(githubMain)s/%(packName)s/archive/%(version)s.tar.gz' % args
+    args['directory'] = '%(packName)s-%(version)s' % args
 
     cmd = '''
     root=%(root)s
@@ -52,9 +47,9 @@ def doGithubSCons(packName):
     mkdir -p $(dirname $root)
     cd %(L1Build)s
     packName=%(packName)s
+    directory=%(directory)s
     wget -O - %(source)s | tar xzv
     mv %(directory)s %(packName)s
-    rm -rf %(tagName)s
     cd %(glastLocation)s 
     %(scons)s -C GlastRelease --with-GLAST-EXT=%(glastExt)s --supersede %(L1Build)s --site-dir=../SConsShared/site_scons --compile-opt %(packName)s 
     ''' % args
@@ -78,13 +73,8 @@ def doGithubPlain(packName):
         }
     args.update(package)
 
-    args['source'] = '%(githubMain)s/%(repository)s/archive/%(version)s.tar.gz' % args
-
-    if args['packName'] == args ['repository']:
-        args['directory'] = args['tagName'] = '%(repository)s-%(version)s' % args
-    else:
-        args['tagName'] = '%(repository)s-%(version)s' %args
-        args['directory'] = '%(tagName)s/%(packName)s' %args
+    args['source'] = '%(githubMain)s/%(packName)s/archive/%(version)s.tar.gz' % args
+    args['directory'] = '%(packName)s-%(version)s' % args
 
     cmd = '''
     root=%(root)s
@@ -92,11 +82,9 @@ def doGithubPlain(packName):
     mkdir -p $(dirname $root)
     cd %(L1Build)s
     packName=%(packName)s
-    tagName=%(tagName)s
     directory=%(directory)s
     wget -O - %(source)s | tar xzv
     mv %(directory)s %(packName)s
-    rm -rf %(tagName)s
     ''' % args
 
     if packName == 'IGRF':

@@ -272,67 +272,50 @@ procVer = {
     
 githubMain = 'https://github.com/fermi-lat'
 
-sConsPackages = {
-    }
-
 githubPlain = {
     'Common': {
-        'repository': 'dataMonitoring',
         'version': 'Common-07-00-01',
         },
     'DigiReconCalMeritCfg': {
-        'repository': 'dataMonitoring',
         'version': 'DigiReconCalMeritCfg-02-01-08',
         },
     'evtClassDefs': {
-        'repository': 'evtClassDefs',
         'version': 'evtClassDefs-01-01-05',
         },
     'FastMon': {
-        'repository': 'dataMonitoring',
         'version': 'FastMon-05-03-05',
         },
     'FastMonCfg': {
-        'repository': 'dataMonitoring',
         'version': 'FastMonCfg-02-02-03',
         },
     'GPLtools': {
-        'repository': 'GPLtools',
         'version': 'GPLtools-02-00-00-wf03',
         },
     'IGRF': {
-        'repository': 'dataMonitoring',
         'version': 'IGRF-03-02-00',
         },
     }
 
 githubSCons = {
     'calibTkrUtil': {
-        'repository': 'calibTkrUtil',
         'version': 'calibTkrUtil-03-00-00',
         },
     'findGaps': {
-        'repository': 'findGaps',
         'version': 'findGaps-02-03-00',
         },
     'fitsGen': {
-        'repository': 'fitsGen',
         'version': 'fermitools-11-07-01',
         },
     'ft2Util': {
-        'repository': 'ft2Util',
         'version': 'ft2Util-02-05-00',
         },
     'Monitor': {
-        'repository': 'Monitor',
         'version': 'Monitor-03-14-03',
         },
     'pipelineDatasets': {
-        'repository': 'pipelineDatasets',
         'version': 'pipelineDatasets-01-00-00',
         },
     'TestReport': {
-        'repository': 'TestReport',
         'version': 'TestReport-12-03-02',
         },
     }
