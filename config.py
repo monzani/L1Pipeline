@@ -69,7 +69,7 @@ calibFlavors = { # not using this now, have separate JO files for LPA & MC
     }
 
 
-L1Disk = '/nfs/farm/g/glast/u41/L1'
+L1Disk = '/sdf/group/fermi/n/u41/L1'
 if testMode: L1Disk += 'Test'
 # L1Dir = os.path.join(L1Disk, 'rootData')
 L1Dir = L1Disk
@@ -79,7 +79,7 @@ if testMode: dlStorage = os.path.join(dlStorage, 'test')
 saveDl = True
 
 #logRoot = os.path.join(L1Disk, 'logs')
-logRoot = '/nfs/farm/g/glast/u41/L1/logs'
+logRoot = '/sdf/group/fermi/n/u41/L1/logs'
 
 # normal
 dataCatBase = '/Data/Flight/Level1'
@@ -90,11 +90,7 @@ dataCatDir = os.environ.get('dataCatDir', dataCatDir)
 #dataCatDir = '/Data/Flight/Reprocess/P100'
 #dataCatBase = dataCatDir
 
-if testMode:
-    xrootGlast = 'root://glast-test-rdr.slac.stanford.edu//glast'
-else:
-    xrootGlast = 'root://glast-rdr.slac.stanford.edu//glast'
-    pass
+xrootGlast = 'root://glast-rdr.slac.stanford.edu//glast'
 xrootSubDir = '%s/%s/%s' % (dataCatDir, mode, L1Version)
 xrootBase = xrootGlast + xrootSubDir
 
@@ -289,7 +285,7 @@ githubPlain = {
         'version': 'FastMonCfg-02-02-03',
         },
     'GPLtools': {
-        'version': 'GPLtools-02-00-00-wf03',
+        'version': 'GPLtools-02-00-00-s3df',
         },
     'IGRF': {
         'version': 'IGRF-03-02-00',

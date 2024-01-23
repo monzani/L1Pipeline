@@ -17,8 +17,7 @@ import stageFiles
 head, dlId = os.path.split(os.environ['DOWNLINK_RAWDIR'])
 if not dlId: head, dlId = os.path.split(head)
 runId = os.environ['RUNID']
-#completeness = os.environ['completeness']
-completeness = 'complete'
+completeness = os.environ['completeness']
 
 staged = stageFiles.StageSet(excludeIn=config.excludeIn)
 finishOption = config.finishOption
