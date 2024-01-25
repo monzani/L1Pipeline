@@ -8,11 +8,11 @@
 
   <variables>
     <var name="preamble"></var> <!-- Make sure local cache is setup -->
-    <var name="container_image">/sdf/group/fermi/sw/containers/fermi-rhel6.sif</var>
-    <var name="container_volumes">-B /sdf/group/fermi/sw/package:/afs/slac.stanford.edu/package -B /sdf/data/fermi/a:/afs/slac.stanford.edu/g/glast -B /sdf:/sdf</var>
-    <var name="container_wrap">singularity exec ${container_volumes} ${container_image}</var>
-    <var name="jobsite">S3DFDATA</var>
-    <var name="extra">--partition milano --account fermi:L1</var>
+    <var name="container_image">%(container_image)s</var>
+    <var name="container_volumes">%(container_volumes)s</var>
+    <var name="container_wrap">%(container_exec)s ${container_volumes} ${container_image}</var>
+    <var name="jobsite">%(jobsite)s</var>
+    <var name="extra">%(slurm_extras)s</var>
     <var name="L1_TASK_NAME">%(L1Name)s</var>
     <var name="L1_TASK_VERSION">%(L1Version)s</var>
     <var name="DATASOURCE">LPA</var>

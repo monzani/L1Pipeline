@@ -71,14 +71,12 @@ calibFlavors = { # not using this now, have separate JO files for LPA & MC
 
 L1Disk = '/sdf/data/fermi/n/u41/L1'
 if testMode: L1Disk += 'Test'
-# L1Dir = os.path.join(L1Disk, 'rootData')
 L1Dir = L1Disk
 
 dlStorage = os.path.join(L1Disk, 'deliveries')
 if testMode: dlStorage = os.path.join(dlStorage, 'test')
 saveDl = True
 
-#logRoot = os.path.join(L1Disk, 'logs')
 logRoot = '/sdf/data/fermi/n/u41/L1/logs'
 
 # normal
@@ -95,7 +93,6 @@ xrootSubDir = '%s/%s/%s' % (dataCatDir, mode, L1Version)
 xrootBase = xrootGlast + xrootSubDir
 
 if testMode: L1Dir = os.path.join(L1Dir, 'test')
-#L1Dir = os.path.join(L1Dir, dataSource)
 
 # optional override for versions looked up from datacat
 # actual version will be max of the normal version and this. 
@@ -577,19 +574,6 @@ gtSelectClass = {
     'ls1': 65544,
 }
 
-#do nothing: there is no diffuse responseto be computed for Pass8
-
-#diffRspMap = {
-#    2: {
-#        'irf': 'P7REP_SOURCE_V15',
-#        'model': os.path.join(glastExt, 'diffuseModels/v4r1/diffmodel_p7rep_source_v05_rev1.xml'),
-#        },
-#    3: {
-#        'irf': 'P7REP_CLEAN_V15',
-#        'model': os.path.join(glastExt, 'diffuseModels/v4r1/diffmodel_p7rep_clean_v05_rev1.xml'),
-#        },
-#    }
-
 verifyOptions = {
     'InProgress': '',
     'Complete': '-c',
@@ -648,14 +632,14 @@ try:
 except ImportError:
     pass
 
-# LSF stuff
+# LSF stuff: obsolete!!!
 #
 theQ = 'glastdataq'
 expressQ = theQ
 mediumQ = theQ
 shortQ = theQ
 longQ = theQ
-#
+
 highPriority = 75     # for exports and their dependencies
 midPriority = 60      # monitoring & dependencies
 standardPriority = 50 # everything else (which isn't much, really)
@@ -670,9 +654,22 @@ bigRusage = 'scratch=200'
 reconMergeScratch = " -R &quot;select[scratch&gt;70]&quot; "
 reconCrumbCpuf = " -R &quot;select[cpuf&gt;%s]&quot; " % minCrumbCpuf
 
+# SLURM parameters 
+#
+jobsite = 'S3DFDATA'
+slurm_extras = '--partition milano --account fermi:L1'
+
 # number of autoretries for processes that do that
 defaultRetries = 1
 retries = os.environ.get('L1Retries', defaultRetries)
+
+# container settings parameters 
+#
+container_image = '/sdf/group/fermi/sw/containers/fermi-rhel6.sif'
+bind_package = '-B /sdf/group/fermi/sw/package:/afs/slac.stanford.edu/package'
+bind_others = '-B /sdf/data/fermi/a:/afs/slac.stanford.edu/g/glast -B /sdf:/sdf'
+container_volumes = ' '.join([bind_package, bind_others])
+container_exec = 'singularity exec'
 
 # default option for stageSet input exclusion filter
 excludeIn = None
