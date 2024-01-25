@@ -16,8 +16,7 @@ installRoot = os.environ.get('L1_INSTALL_DIR') or "/sdf/data/fermi/a/ground/Pipe
 creator = '-'.join([L1Name, L1Version])
     
 L1BuildBase = os.environ.get('L1_BUILD_DIR') or "/sdf/data/fermi/a/ground/PipelineBuilds/L1Proc"
-#L1Build = os.path.join(L1BuildBase, L1Version)
-L1Build = os.path.join(L1BuildBase, '5.9')
+L1Build = os.path.join(L1BuildBase, L1Version)
 
 doCleanup = True
 
@@ -631,28 +630,6 @@ try:
     stageFiles.defaultStrictSetup = True
 except ImportError:
     pass
-
-# LSF stuff: obsolete!!!
-#
-theQ = 'glastdataq'
-expressQ = theQ
-mediumQ = theQ
-shortQ = theQ
-longQ = theQ
-
-highPriority = 75     # for exports and their dependencies
-midPriority = 60      # monitoring & dependencies
-standardPriority = 50 # everything else (which isn't much, really)
-reconPriority = highPriority - 1 # to reduce self-throttling
-frdPriority = highPriority + 1
-#
-minCrumbCpuf = 9
-standardSelect = 'rhel60'
-standardRusage = 'scratch=1'
-bigRusage = 'scratch=200'
-#
-reconMergeScratch = " -R &quot;select[scratch&gt;70]&quot; "
-reconCrumbCpuf = " -R &quot;select[cpuf&gt;%s]&quot; " % minCrumbCpuf
 
 # SLURM parameters 
 #
