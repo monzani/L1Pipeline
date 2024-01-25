@@ -1,4 +1,4 @@
-#!/sdf/group/fermi/a/isoc/flightOps/rhel6_gcc44/ISOC_PROD/bin/shisoc python2.6
+#!/sdf/data/fermi/a/isoc/flightOps/rhel6_gcc44/ISOC_PROD/bin/shisoc python2.6
 
 """@brief Configuration.
 
@@ -11,11 +11,11 @@ import sys
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
 L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "5.9"
 fullTaskName = '-'.join([L1Name, L1Version])
-installRoot = os.environ.get('L1_INSTALL_DIR') or "/sdf/group/fermi/a/ground/PipelineConfig/L1Proc"
+installRoot = os.environ.get('L1_INSTALL_DIR') or "/sdf/data/fermi/a/ground/PipelineConfig/L1Proc"
 
 creator = '-'.join([L1Name, L1Version])
     
-L1BuildBase = os.environ.get('L1_BUILD_DIR') or "/sdf/group/fermi/a/ground/PipelineBuilds/L1Proc"
+L1BuildBase = os.environ.get('L1_BUILD_DIR') or "/sdf/data/fermi/a/ground/PipelineBuilds/L1Proc"
 #L1Build = os.path.join(L1BuildBase, L1Version)
 L1Build = os.path.join(L1BuildBase, '5.9')
 
@@ -69,7 +69,7 @@ calibFlavors = { # not using this now, have separate JO files for LPA & MC
     }
 
 
-L1Disk = '/sdf/group/fermi/n/u41/L1'
+L1Disk = '/sdf/data/fermi/n/u41/L1'
 if testMode: L1Disk += 'Test'
 # L1Dir = os.path.join(L1Disk, 'rootData')
 L1Dir = L1Disk
@@ -79,7 +79,7 @@ if testMode: dlStorage = os.path.join(dlStorage, 'test')
 saveDl = True
 
 #logRoot = os.path.join(L1Disk, 'logs')
-logRoot = '/sdf/group/fermi/n/u41/L1/logs'
+logRoot = '/sdf/data/fermi/n/u41/L1/logs'
 
 # normal
 dataCatBase = '/Data/Flight/Level1'
@@ -166,8 +166,8 @@ cleanupSubTask = {
         },
     }
 
-groundRoot = '/sdf/group/fermi/a/ground'
-scons = '/sdf/group/fermi/a/applications/SCons/2.1.0/bin/scons'
+groundRoot = '/sdf/data/fermi/a/ground'
+scons = '/sdf/data/fermi/a/applications/SCons/2.1.0/bin/scons'
 
 #this is for rhel6:
 optConfig = 'redhat6-x86_64-64bit-gcc44-Optimized'
@@ -214,11 +214,12 @@ l1BinDir = os.path.join(L1Build, 'bin', optConfig)
 l1ExeDir = os.path.join(L1Build, 'exe', optConfig)
 l1Setup = os.path.join(l1BinDir, '_setup.sh')
 
-isoc = '/sdf/group/fermi/a/isoc/flightOps'
+isoc = '/sdf/data/fermi/a/isoc/flightOps'
 isocPlatform = 'rhel6_gcc44'
 isocMode = os.environ.get('isocMode', 'ISOC_PROD')
 isocBin = os.path.join(isoc, isocPlatform, isocMode, 'bin')
 isocRun = os.path.join(isoc, isocPlatform, '${isocMode}', 'bin', 'isoc run')
+python27 = '/sdf/data/fermi/a/ground/GLAST_EXT/redhat6-x86_64-64bit-gcc44/python/2.7.2-gl4/bin/python'
 
 isocScript = os.path.join(isocBin, 'isoc')
 isocEnv = 'eval `%s isoc_env --add-env=flightops`' % isocScript
