@@ -47,8 +47,29 @@
       <var name="%(verifyHisto_versionName)s">004</var>
       <var name="completeness">InProgress</var>
     </variables> 
-    <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/verifyLong.py" batchOptions="${extra}" />
+    <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/verifySubs.py" batchOptions="${extra}" />
+    <createsSubtasks>
+      <subtask>checkSubStream</subtask>
+    </createsSubtasks>
   </process>
 
-</task>
+  <task name="checkSubStream" version="%(L1Version)s" type="Data">
+    <prerequisites>
+      <prerequisite name="RUNID" type="string"/>
+      <prerequisite name="isComplete" type="string"/>
+    </prerequisites>
+
+    <process name="checkSubTask" site="${jobsite}">
+      <script><![CDATA[
+print('Testing what happens within the substream...')
+runNumber = int(RUNID[1:])
+print(runNumber)
+print(isComplete)
+]]></script>
+     </process>
+
+  </task>
+
+  </task>
+
 </pipeline>
