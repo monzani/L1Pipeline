@@ -9,7 +9,7 @@ import os
 import sys
 
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
-L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "5.9"
+L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "6.0"
 fullTaskName = '-'.join([L1Name, L1Version])
 installRoot = os.environ.get('L1_INSTALL_DIR') or "/sdf/data/fermi/a/ground/PipelineConfig/L1Proc"
 
@@ -282,7 +282,7 @@ githubPlain = {
         'version': 'FastMonCfg-02-02-03',
         },
     'GPLtools': {
-        'version': 'GPLtools-02-00-00-s3df',
+        'version': 'GPLtools-03-00-00',
         },
     'IGRF': {
         'version': 'IGRF-03-02-00',

@@ -5,7 +5,7 @@ import sys
 
 import config
 
-backupGplTools = '/afs/slac/g/glast/ground/PipelineConfig/GPLtools/prod/python'
+backupGplTools = '/sdf/group/fermi/a/ground/PipelineConfig/L1Proc/5.9/GPLtools/python'
 sys.path.append(backupGplTools)
 
 import runner
