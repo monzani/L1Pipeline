@@ -1,0 +1,3835 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline
+  xmlns="http://glast-ground.slac.stanford.edu/pipeline"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline https://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.1/pipeline.xsd">
+
+<task name="%(L1Name)s" version="%(L1Version)s" type="Data">
+
+  <variables>
+    <var name="preamble"></var> <!-- Make sure local cache is setup -->
+    <var name="container_image">%(container_image)s</var>
+    <var name="container_volumes">%(container_volumes)s</var>
+    <var name="container_wrap">%(container_exec)s ${container_volumes} ${container_image}</var>
+    <var name="jobsite">%(jobsite)s</var>
+    <var name="baseVersion">%(baseVersion)s</var>
+    <var name="creator">%(creator)s</var>
+    <var name="deliveriesToIgnore">""</var> <!-- colon-separated list of deliveries to skip when merging -->
+    <var name="isocMode">%(isocMode)s</var>
+    <var name="isocRun">%(isocRun)s</var>
+    <var name="L1ProcROOT">%(L1ProcROOT)s</var>
+    <var name="L1_TASK_NAME">%(L1Name)s</var>
+    <var name="L1_TASK_VERSION">%(L1Version)s</var>
+    <var name="L1_INSTALL_DIR">%(installRoot)s</var>
+    <var name="L1_BUILD_DIR">%(L1BuildBase)s</var>
+    <var name="L1TrendVersion">Prompt</var> <!-- override if reprocessing -->
+    <var name="LD_LIBRARY_PATH">%(libraryPath)s</var>
+    <var name="logRoot">%(logRoot)s/${pipeline.mode}</var>
+    <var name="nameManglingPrefix">%(nameManglingPrefix)s</var>
+  </variables>
+
+  <prerequisites>
+    <prerequisite name="DOWNLINK_RAWDIR" type="string"/>
+    <prerequisite name="DOWNLINK_ID" type="string"/>
+  </prerequisites>
+
+  <process name="findRunDirs" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+    <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/findRunDirs.py" batchOptions="${extra}"/>
+    <createsSubtasks>
+      <subtask>doRun</subtask>
+      <subtask>doLci</subtask>
+    </createsSubtasks>
+  </process>
+
+  <process name="kludgeAsp" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+    <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/kludgeAsp.py" batchOptions="${extra}"/>
+    <depends>
+      <after process="doRun.registerExtendedFT1" status="SUCCESS"/>
+      <after process="doRun.registerFT2" status="SUCCESS"/>
+    </depends>
+  </process>
+
+  <process name="cleanupDl" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+    <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/deleteDirs.py" batchOptions="${extra}"/>
+    <depends>
+      <after process="doLci.checkRunLci" status="SUCCESS"/>
+      <after process="doRun.checkRun" status="SUCCESS"/>
+    </depends>
+  </process>
+
+  <task name="doRun" version="%(L1Version)s" type="Data">
+
+    <variables>
+      <var name="dataCatDir">%(dataCatBase)s/${DATASOURCE}</var>
+    </variables>
+
+    <prerequisites>
+      <prerequisite name="DATASOURCE" type="string"/>
+      <prerequisite name="RUNID" type="string"/>
+      <prerequisite name="RUNSTATUS" type="string"/>
+   </prerequisites>
+
+    <process name="findChunks" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="l1LockAction">LockAndThrottle</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <createsSubtasks>
+        <subtask>doChunk</subtask>
+      </createsSubtasks>
+    </process>
+
+    <process name="setRunning" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="l1RunStatus">%(runningStatus)s</var>
+      </variables>
+      <script><![CDATA[
+%(runningScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="findChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="copyM7Hp" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="%(magic7Hp_versionName)s">%(magic7Hp_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/copyM7.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="findChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerM7Hp" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">copyM7Hp</var>
+        <var name="fileType">magic7Hp</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="copyM7Hp" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="makeM7L1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="%(magic7L1_versionName)s">%(magic7L1_version)s</var>
+        <var name="tStart">${pipeline.getCurrentStream().getProcessInstance("findChunks").getVariable("tStart")}</var>      
+        <var name="tStop">${pipeline.getCurrentStream().getProcessInstance("findChunks").getVariable("tStop")}</var>      
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/makeM7.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="findChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerM7L1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">makeM7L1</var>
+        <var name="fileType">magic7L1</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="makeM7L1" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="drawOrbit" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">magic7L1</var>
+        <var name="%(magic7L1_versionName)s">%(magic7L1_version)s</var>
+        <var name="outFileTypes">orbitPlot</var>
+        <var name="%(orbitPlot_versionName)s">%(orbitPlot_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerM7L1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerOrbitPlot" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">drawOrbit</var>
+        <var name="fileType">orbitPlot</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="drawOrbit" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="scanDigi" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunk</var>
+        <var name="subProcess">digitization</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunk.digitization" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeDigi" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanDigi").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">digi</var>
+        <var name="%(digi_versionName)s">%(digi_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="scanDigi" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerDigi" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeDigi</var>
+        <var name="fileType">digi</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeDigi" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="scanDigiHist" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunk</var>
+        <var name="subProcess">digiHist</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunk.digiHist" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeDigiHist" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanDigiHist").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">digiHist</var>
+        <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="scanDigiHist" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="registerDigiHist" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeDigiHist</var>
+        <var name="fileType">digiHist</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeDigiHist" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="digiHistAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">digiHist</var>
+        <var name="outFileTypes">digiHistAlarm</var>
+        <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
+        <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerDigiHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerDigiHistAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">digiHistAlarm</var>
+        <var name="fileType">digiHistAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="digiHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestDigiHistRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">digiHistAlarm</var>
+        <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerDigiHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="digiHistLogger" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">digiHistAlarm</var>
+        <var name="%(digiHistAlarm_versionName)s">%(digiHistAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerDigiHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="verify" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="%(digi_versionName)s">%(digi_version)s</var>
+        <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
+        <var name="%(verifyHisto_versionName)s">%(verifyHisto_version)s</var>
+	<var name="completeness">InProgress</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/verify.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerDigi" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerVerifyHisto" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">verify</var>
+        <var name="fileType">verifyHisto</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="verify" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerVerifyLog" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">verify</var>
+        <var name="fileType">verifyLog</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="verify" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestVerifyErrorRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">verifyLog</var>
+        <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerVerifyLog" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="verifyErrorAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">verifyLog</var>
+        <var name="outFileTypes">verifyErrorAlarm</var>
+        <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
+        <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerVerifyLog" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerVerifyErrorAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">verifyErrorAlarm</var>
+        <var name="fileType">verifyErrorAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="verifyErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="verifyErrorLogger" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">verifyErrorAlarm</var>
+        <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerVerifyErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestVerifyErrorAlarmRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">verifyErrorAlarm</var>
+        <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerVerifyErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="acdPlots" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">digiHist</var>
+        <var name="outFileTypes">acdPlots</var>
+        <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
+        <var name="%(acdPlots_versionName)s">%(acdPlots_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerDigiHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerAcdPlots" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">acdPlots</var>
+        <var name="fileType">acdPlots</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="acdPlots" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="scanDigiTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunk</var>
+        <var name="subProcess">digiTrend</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunk.digiTrend" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeDigiTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanDigiTrend").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">digiTrend</var>
+        <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="scanDigiTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="registerDigiTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeDigiTrend</var>
+        <var name="fileType">digiTrend</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeDigiTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestDigiTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">digiTrend</var>
+        <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/ingestTrending.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerDigiTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="digiTrendAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">digiTrend</var>
+        <var name="outFileTypes">digiTrendAlarm</var>
+        <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
+        <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerDigiTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerDigiTrendAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">digiTrendAlarm</var>
+        <var name="fileType">digiTrendAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="digiTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="digiTrendLogger" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">digiTrendAlarm</var>
+        <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerDigiTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestDigiTrendRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">digiTrendAlarm</var>
+        <var name="%(digiTrendAlarm_versionName)s">%(digiTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerDigiTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="calHist" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">digi</var>
+        <var name="outFileTypes">calHist</var>
+        <var name="%(calHist_versionName)s">%(calHist_version)s</var>
+        <var name="%(digi_versionName)s">%(digi_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerDigi" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="registerCalHist" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">calHist</var>
+        <var name="fileType">calHist</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="calHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="calHistAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">calHist</var>
+        <var name="outFileTypes">calHistAlarm</var>
+        <var name="%(calHist_versionName)s">%(calHist_version)s</var>
+        <var name="%(calHistAlarm_versionName)s">%(calHistAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerCalHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerCalHistAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">calHistAlarm</var>
+        <var name="fileType">calHistAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="calHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="calHistLogger" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">calHistAlarm</var>
+        <var name="%(calHistAlarm_versionName)s">%(calHistAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerCalHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestCalHistRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">calHistAlarm</var>
+        <var name="%(calHistAlarm_versionName)s">%(calHistAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerCalHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="scanCalTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunk</var>
+        <var name="subProcess">calTrend</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunk.calTrend" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeCalTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanCalTrend").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">calTrend</var>
+        <var name="%(calTrend_versionName)s">%(calTrend_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="scanCalTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="registerCalTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeCalTrend</var>
+        <var name="fileType">calTrend</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeCalTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestCalTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">calTrend</var>
+        <var name="%(calTrend_versionName)s">%(calTrend_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/ingestTrending.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerCalTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="acdPedsAnalyzer" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="fileType">calHist</var>
+        <var name="reportType">acdPedsAnalyzer</var>
+        <var name="%(calHist_versionName)s">%(calHist_version)s</var>
+        <var name="%(acdPedsAnalyzer_versionName)s">%(acdPedsAnalyzer_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerCalHist" status="SUCCESS"/>
+      </depends>
+    </process>
+   
+    <process name="registerAcdPedsAnalyzer" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">acdPedsAnalyzer</var>
+        <var name="fileType">acdPedsAnalyzer</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="acdPedsAnalyzer" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="acdPedsAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">acdPedsAnalyzer</var>
+        <var name="outFileTypes">acdPedsAlarm</var>
+        <var name="%(acdPedsAnalyzer_versionName)s">%(acdPedsAnalyzer_version)s</var>
+        <var name="%(acdPedsAlarm_versionName)s">%(acdPedsAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerAcdPedsAnalyzer" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerAcdPedsAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">acdPedsAlarm</var>
+        <var name="fileType">acdPedsAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="acdPedsAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="acdPedsLogger" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">acdPedsAlarm</var>
+        <var name="%(acdPedsAlarm_versionName)s">%(acdPedsAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerAcdPedsAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestAcdPedsRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">acdPedsAlarm</var>
+        <var name="%(acdPedsAlarm_versionName)s">%(acdPedsAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerAcdPedsAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="calGainsAnalyzer" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="fileType">calHist</var>
+        <var name="reportType">calGainsAnalyzer</var>
+        <var name="%(calHist_versionName)s">%(calHist_version)s</var>
+        <var name="%(calGainsAnalyzer_versionName)s">%(calGainsAnalyzer_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerCalHist" status="SUCCESS"/>
+      </depends>
+    </process>
+   
+    <process name="registerCalGainsAnalyzer" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">calGainsAnalyzer</var>
+        <var name="fileType">calGainsAnalyzer</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="calGainsAnalyzer" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="calGainsAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">calGainsAnalyzer</var>
+        <var name="outFileTypes">calGainsAlarm</var>
+        <var name="%(calGainsAnalyzer_versionName)s">%(calGainsAnalyzer_version)s</var>
+        <var name="%(calGainsAlarm_versionName)s">%(calGainsAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerCalGainsAnalyzer" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerCalGainsAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">calGainsAlarm</var>
+        <var name="fileType">calGainsAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="calGainsAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="calGainsLogger" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">calGainsAlarm</var>
+        <var name="%(calGainsAlarm_versionName)s">%(calGainsAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerCalGainsAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestCalGainsRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">calGainsAlarm</var>
+        <var name="%(calGainsAlarm_versionName)s">%(calGainsAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerCalGainsAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="calPedsAnalyzer" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="fileType">calHist</var>
+        <var name="reportType">calPedsAnalyzer</var>
+        <var name="%(calHist_versionName)s">%(calHist_version)s</var>
+        <var name="%(calPedsAnalyzer_versionName)s">%(calPedsAnalyzer_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/gainsPedsAnalyzer.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerCalHist" status="SUCCESS"/>
+      </depends>
+    </process>
+   
+    <process name="registerCalPedsAnalyzer" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">calPedsAnalyzer</var>
+        <var name="fileType">calPedsAnalyzer</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="calPedsAnalyzer" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="calPedsAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">calPedsAnalyzer</var>
+        <var name="outFileTypes">calPedsAlarm</var>
+        <var name="%(calPedsAnalyzer_versionName)s">%(calPedsAnalyzer_version)s</var>
+        <var name="%(calPedsAlarm_versionName)s">%(calPedsAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerCalPedsAnalyzer" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerCalPedsAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">calPedsAlarm</var>
+        <var name="fileType">calPedsAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="calPedsAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="calPedsLogger" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">calPedsAlarm</var>
+        <var name="%(calPedsAlarm_versionName)s">%(calPedsAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerCalPedsAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestCalPedsRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">calPedsAlarm</var>
+        <var name="%(calPedsAlarm_versionName)s">%(calPedsAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerCalPedsAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="scanFastMonTuple" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunk</var>
+        <var name="subProcess">fastMonTuple</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunk.fastMonTuple" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeFastMonTuple" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanFastMonTuple").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">fastMonTuple</var>
+        <var name="%(fastMonTuple_versionName)s">%(fastMonTuple_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="scanFastMonTuple" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonTuple" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeFastMonTuple</var>
+        <var name="fileType">fastMonTuple</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonTuple" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="mergeFastMonError" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanFastMonTuple").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">fastMonError</var>
+        <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="scanFastMonTuple" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonError" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeFastMonError</var>
+        <var name="fileType">fastMonError</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonError" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestFastMonErrorRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">fastMonError</var>
+        <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerFastMonError" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="fastMonErrorAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">fastMonError</var>
+        <var name="outFileTypes">fastMonErrorAlarm</var>
+        <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
+        <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerFastMonError" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonErrorAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">fastMonErrorAlarm</var>
+        <var name="fileType">fastMonErrorAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="fastMonErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="fastMonErrorLogger" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">fastMonErrorAlarm</var>
+        <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerFastMonErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestFastMonErrorAlarmRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">fastMonErrorAlarm</var>
+        <var name="%(fastMonErrorAlarm_versionName)s">%(fastMonErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerFastMonErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="scanFastMonHist" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunk</var>
+        <var name="subProcess">fastMonHist</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunk.fastMonHist" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeFastMonHist" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanFastMonHist").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">fastMonHist</var>
+        <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="scanFastMonHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonHist" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeFastMonHist</var>
+        <var name="fileType">fastMonHist</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="fastMonHistAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">fastMonHist</var>
+        <var name="outFileTypes">fastMonHistAlarm</var>
+        <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
+        <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerFastMonHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonHistAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">fastMonHistAlarm</var>
+        <var name="fileType">fastMonHistAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="fastMonHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="fastMonHistLogger" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">fastMonHistAlarm</var>
+        <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerFastMonHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestFastMonHistRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">fastMonHistAlarm</var>
+        <var name="%(fastMonHistAlarm_versionName)s">%(fastMonHistAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerFastMonHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="scanFastMonTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunk</var>
+        <var name="subProcess">fastMonTrend</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunk.fastMonTrend" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeFastMonTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanFastMonTrend").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">fastMonTrend</var>
+        <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="scanFastMonTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="registerFastMonTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeFastMonTrend</var>
+        <var name="fileType">fastMonTrend</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestFastMonTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">fastMonTrend</var>
+        <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/ingestTrending.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerFastMonTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="fastMonTrendAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">fastMonTrend</var>
+        <var name="outFileTypes">fastMonTrendAlarm</var>
+        <var name="%(fastMonTrend_versionName)s">%(fastMonTrend_version)s</var>
+        <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerFastMonTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonTrendAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">fastMonTrendAlarm</var>
+        <var name="fileType">fastMonTrendAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="fastMonTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestFastMonTrendRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">fastMonTrendAlarm</var>
+        <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerFastMonTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="fastMonTrendLogger" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">fastMonTrendAlarm</var>
+        <var name="%(fastMonTrendAlarm_versionName)s">%(fastMonTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerFastMonTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="scanGcrChunks" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunk</var>
+        <var name="subProcess">mergeGcrCrumbs</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunk.mergeGcrCrumbs" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeGcrChunks" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanGcrChunks").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">gcr</var>
+        <var name="%(gcr_versionName)s">%(gcr_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="scanGcrChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerGcr" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeGcrChunks</var>
+        <var name="fileType">gcr</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeGcrChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="scanMeritChunks" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunk</var>
+        <var name="subProcess">mergeMeritCrumbs</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunk.mergeMeritCrumbs" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeMeritChunks" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanMeritChunks").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">merit</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="scanMeritChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerMerit" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeMeritChunks</var>
+        <var name="fileType">merit</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeMeritChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+<!-- 
+    <process name="filterMerit" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">merit</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="outFileTypes">filteredMerit</var>
+        <var name="%(filteredMerit_versionName)s">%(filteredMerit_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerMerit" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFilteredMerit" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">filterMerit</var>
+        <var name="fileType">filteredMerit</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="filterMerit" status="SUCCESS"/>
+      </depends>
+    </process>
+-->
+ 
+    <process name="electronMerit" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">merit</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="outFileTypes">electronMerit</var>
+        <var name="%(electronMerit_versionName)s">%(electronMerit_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerMerit" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerElectronMerit" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">electronMerit</var>
+        <var name="fileType">electronMerit</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="electronMerit" status="SUCCESS"/>
+      </depends>
+    </process>
+
+
+    <process name="verifyMerit" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="%(verifyMeritError_versionName)s">%(verifyMeritError_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/verifyMerit.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerMerit" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerVerifyMeritError" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">verifyMerit</var>
+        <var name="fileType">verifyMeritError</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="verifyMerit" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestVerifyMeritErrorRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">verifyMeritError</var>
+        <var name="%(verifyMeritError_versionName)s">%(verifyMeritError_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerVerifyMeritError" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="verifyMeritErrorAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">verifyMeritError</var>
+        <var name="outFileTypes">verifyMeritErrorAlarm</var>
+        <var name="alarmFileType">verifyMeritErrorAlarm</var>
+        <var name="%(verifyMeritError_versionName)s">%(verifyMeritError_version)s</var>
+        <var name="%(verifyMeritErrorAlarm_versionName)s">%(verifyMeritErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerVerifyMeritError" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerVerifyMeritErrorAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">verifyMeritErrorAlarm</var>
+        <var name="fileType">verifyMeritErrorAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="verifyMeritErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="verifyMeritErrorLogger" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">verifyMeritErrorAlarm</var>
+        <var name="%(verifyMeritErrorAlarm_versionName)s">%(verifyMeritErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerVerifyMeritErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestVerifyMeritErrorAlarmRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">verifyMeritErrorAlarm</var>
+        <var name="%(verifyMeritErrorAlarm_versionName)s">%(verifyMeritErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerVerifyMeritErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="makeGaps" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="%(digi_versionName)s">%(digi_version)s</var>
+        <var name="%(digiGap_versionName)s">%(digiGap_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/makeGaps.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerDigi" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerGaps" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">makeGaps</var>
+        <var name="fileType">digiGap</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="makeGaps" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="ft2Runs" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="outFileType">ft2SecondsNoQual</var>
+        <var name="%(digi_versionName)s">%(digi_version)s</var>
+        <var name="%(ft2SecondsNoQual_versionName)s">%(ft2SecondsNoQual_version)s</var>
+        <var name="%(digiGap_versionName)s">%(digiGap_version)s</var>
+        <var name="%(magic7L1_versionName)s">%(magic7L1_version)s</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="runQuality">${pipeline.getCurrentStream.getProcessInstance("setRunning").getVariable("runQuality")}</var>
+        <var name="mootAlias">${pipeline.getCurrentStream().getProcessInstance("findChunks").getVariable("mootAlias")}</var>
+
+<!--        <var name="L1_magic7L1_filename">${datacatalog.getDataset(RUNID, "/Data/Flight/Level1/"+DATASOURCE, "MAGIC7L1").getLocation("SLAC_XROOT").getPath()}</var>   -->
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/ft2Entries.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerGaps" status="SUCCESS"/>
+        <after process="registerM7L1" status="SUCCESS"/>
+        <after process="registerMerit" status="SUCCESS"/>
+        <after process="setRunning" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFt2SecondsNoQual" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">ft2Runs</var>
+        <var name="fileType">ft2SecondsNoQual</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="ft2Runs" status="SUCCESS"/>
+      </depends>
+    </process>
+
+<!--
+    <process name="ingestFT2" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="%(ft2Txt_versionName)s">%(ft2Txt_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/ft2Db.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerFt2Txt" status="SUCCESS"/>
+      </depends>
+    </process>
+-->
+
+    <process name="makeFT2" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileType">ft2SecondsNoQual</var>
+        <var name="outFileType">ft2NoQual</var>
+        <var name="%(ft2SecondsNoQual_versionName)s">%(ft2SecondsNoQual_version)s</var>
+        <var name="%(ft2NoQual_versionName)s">%(ft2NoQual_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/makeFT2File.py" batchOptions="${extra}"/>
+      <depends>
+        <!-- <after process="ingestFT2" status="SUCCESS"/> -->
+        <after process="registerFt2SecondsNoQual" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFT2NoQual" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">makeFT2</var>
+        <var name="fileType">ft2NoQual</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="makeFT2" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="setupQuality">
+      <script><![CDATA[
+%(setupQScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="findChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="flagFT2" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="btiProcess">setupQuality</var>
+        <var name="badRanges">${pipeline.getCurrentStream.getProcessInstance(btiProcess).getVariable("badRanges")}</var>
+        <var name="%(ft2_versionName)s">%(ft2_version)s</var>
+        <var name="%(ft2NoQual_versionName)s">%(ft2NoQual_version)s</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
+        <var name="%(ft2SecondsNoQual_versionName)s">%(ft2SecondsNoQual_version)s</var>
+        <var name="inFileTypes">ft2NoQual/ft2SecondsNoQual</var>
+        <var name="outFileTypes">ft2/ft2Seconds</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerFT2NoQual" status="SUCCESS"/>
+        <after process="setupQuality" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFT2" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">flagFT2</var>
+        <var name="fileType">ft2</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="flagFT2" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="exportFT2" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="fileType">ft2</var>
+        <var name="%(ft2_versionName)s">%(ft2_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/exportStuff.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerFT2" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFt2Seconds" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">flagFT2</var>
+        <var name="fileType">ft2Seconds</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="flagFT2" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="exportFT2Seconds" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="fileType">ft2Seconds</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/exportStuff.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerFt2Seconds" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="wrapupQuality">
+      <variables>
+        <var name="btiProcess">flagFT2</var>
+      </variables>
+      <script><![CDATA[
+%(wrapupQScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="exportFT2Seconds" status="SUCCESS"/>
+        <after process="exportFT2" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="verifyFt2" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="%(ft2_versionName)s">%(ft2_version)s</var>
+        <var name="%(verifyFt2Error_versionName)s">%(verifyFt2Error_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/verifyFt2.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerFT2" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerVerifyFt2Error" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">verifyFt2</var>
+        <var name="fileType">verifyFt2Error</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="verifyFt2" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestVerifyFt2ErrorRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">verifyFt2Error</var>
+        <var name="%(verifyFt2Error_versionName)s">%(verifyFt2Error_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerVerifyFt2Error" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="verifyFt2ErrorAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">verifyFt2Error</var>
+        <var name="outFileTypes">verifyFt2ErrorAlarm</var>
+        <var name="alarmFileType">verifyFt2ErrorAlarm</var>
+        <var name="%(verifyFt2Error_versionName)s">%(verifyFt2Error_version)s</var>
+        <var name="%(verifyFt2ErrorAlarm_versionName)s">%(verifyFt2ErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerVerifyFt2Error" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerVerifyFt2ErrorAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">verifyFt2ErrorAlarm</var>
+        <var name="fileType">verifyFt2ErrorAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="verifyFt2ErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="verifyFt2ErrorLogger" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">verifyFt2ErrorAlarm</var>
+        <var name="%(verifyFt2ErrorAlarm_versionName)s">%(verifyFt2ErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerVerifyFt2ErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestVerifyFt2ErrorAlarmRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">verifyFt2ErrorAlarm</var>
+        <var name="%(verifyFt2ErrorAlarm_versionName)s">%(verifyFt2ErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerVerifyFt2ErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="scanFT1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunk</var>
+        <var name="subProcess">diffRspFT1</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunk.diffRspFT1" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeFT1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanFT1").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">ft1BadGti</var>
+        <var name="%(ft1BadGti_versionName)s">%(ft1BadGti_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="scanFT1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFT1BadGti" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeFT1</var>
+        <var name="fileType">ft1BadGti</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFT1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="gtiFT1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">ft1BadGti/ft2Seconds</var>
+        <var name="outFileTypes">extendedFT1</var>
+        <var name="%(ft1BadGti_versionName)s">%(ft1BadGti_version)s</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
+        <var name="%(extendedFT1_versionName)s">%(extendedFT1_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerFT1BadGti" status="SUCCESS"/>
+        <after process="registerFt2Seconds" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerExtendedFT1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">gtiFT1</var>
+        <var name="fileType">extendedFT1</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="gtiFT1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="filterFT1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">extendedFT1/ft2Seconds</var>        
+        <var name="outFileTypes">ft1</var>
+        <var name="%(extendedFT1_versionName)s">%(extendedFT1_version)s</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
+        <var name="%(ft1_versionName)s">%(ft1_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerExtendedFT1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFT1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">filterFT1</var>
+        <var name="fileType">ft1</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="filterFT1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="exportFT1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="fileType">ft1</var>
+        <var name="%(ft1_versionName)s">%(ft1_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/exportStuff.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerFT1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="verifyFt1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="%(extendedFT1_versionName)s">%(extendedFT1_version)s</var>
+        <var name="%(verifyFt1Error_versionName)s">%(verifyFt1Error_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/verifyFt1.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerExtendedFT1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerVerifyFt1Error" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">verifyFt1</var>
+        <var name="fileType">verifyFt1Error</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="verifyFt1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestVerifyFt1ErrorRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">verifyFt1Error</var>
+        <var name="%(verifyFt1Error_versionName)s">%(verifyFt1Error_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerVerifyFt1Error" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="verifyFt1ErrorAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">verifyFt1Error</var>
+        <var name="outFileTypes">verifyFt1ErrorAlarm</var>
+        <var name="alarmFileType">verifyFt1ErrorAlarm</var>
+        <var name="%(verifyFt1Error_versionName)s">%(verifyFt1Error_version)s</var>
+        <var name="%(verifyFt1ErrorAlarm_versionName)s">%(verifyFt1ErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerVerifyFt1Error" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerVerifyFt1ErrorAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">verifyFt1ErrorAlarm</var>
+        <var name="fileType">verifyFt1ErrorAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="verifyFt1ErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="verifyFt1ErrorLogger" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">verifyFt1ErrorAlarm</var>
+        <var name="%(verifyFt1ErrorAlarm_versionName)s">%(verifyFt1ErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerVerifyFt1ErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestVerifyFt1ErrorAlarmRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">verifyFt1ErrorAlarm</var>
+        <var name="%(verifyFt1ErrorAlarm_versionName)s">%(verifyFt1ErrorAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerVerifyFt1ErrorAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="electronFT1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">merit</var>
+        <var name="outFileTypes">electronFT1BadGti</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="%(electronFT1BadGti_versionName)s">%(electronFT1BadGti_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerElectronMerit" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerElectronFT1BadGti" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">electronFT1</var>
+        <var name="fileType">electronFT1BadGti</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="electronFT1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="gtiElectronFT1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">electronFT1BadGti/ft2Seconds</var>
+        <var name="outFileTypes">electronFT1</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
+        <var name="%(electronFT1BadGti_versionName)s">%(electronFT1BadGti_version)s</var>
+        <var name="%(electronFT1_versionName)s">%(electronFT1_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerElectronFT1BadGti" status="SUCCESS"/>
+        <after process="registerFt2Seconds" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerElectronFT1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">gtiElectronFT1</var>
+        <var name="fileType">electronFT1</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="gtiElectronFT1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+
+    <process name="makeLS1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">merit</var>        
+        <var name="outFileTypes">ls1BadGti</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="%(ls1BadGti_versionName)s">%(ls1BadGti_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerMerit" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerLS1BadGti" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">makeLS1</var>
+        <var name="fileType">ls1BadGti</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="makeLS1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="gtiLS1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">ls1BadGti/ft2Seconds</var>        
+        <var name="outFileTypes">extendedLS1</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
+        <var name="%(ls1BadGti_versionName)s">%(ls1BadGti_version)s</var>
+        <var name="%(extendedLS1_versionName)s">%(extendedLS1_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerLS1BadGti" status="SUCCESS"/>
+        <after process="registerFt2Seconds" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerExtendedLS1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">gtiLS1</var>
+        <var name="fileType">extendedLS1</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="gtiLS1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="filterLS1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">extendedLS1/ft2Seconds</var>        
+        <var name="outFileTypes">ls1</var>
+        <var name="%(extendedLS1_versionName)s">%(extendedLS1_version)s</var>
+        <var name="%(ft2Seconds_versionName)s">%(ft2Seconds_version)s</var>
+        <var name="%(ls1_versionName)s">%(ls1_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerExtendedLS1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerLS1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">filterLS1</var>
+        <var name="fileType">ls1</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="filterLS1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="exportLS1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="fileType">ls1</var>
+        <var name="%(ls1_versionName)s">%(ls1_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/exportStuff.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerLS1" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="scanRelationChunks" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunk</var>
+        <var name="subProcess">mergeRelationCrumbs</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunk.mergeRelationCrumbs" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeRelationChunks" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanRelationChunks").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">relation</var>
+        <var name="%(relation_versionName)s">%(relation_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="scanRelationChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerRelation" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeRelationChunks</var>
+        <var name="fileType">relation</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeRelationChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="scanCalChunks" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunk</var>
+        <var name="subProcess">mergeCalCrumbs</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunk.mergeCalCrumbs" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeCalChunks" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanCalChunks").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">cal</var>
+        <var name="%(cal_versionName)s">%(cal_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="scanCalChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerCal" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeCalChunks</var>
+        <var name="fileType">cal</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeCalChunks" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="scanMeritTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunk</var>
+        <var name="subProcess">meritTrend</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunk.meritTrend" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeMeritTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanMeritTrend").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">meritTrend</var>
+        <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="scanMeritTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="registerMeritTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeMeritTrend</var>
+        <var name="fileType">meritTrend</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeMeritTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestMeritTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">meritTrend</var>
+        <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/ingestTrending.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerMeritTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="meritTrendAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">meritTrend</var>
+        <var name="outFileTypes">meritTrendAlarm</var>
+        <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
+        <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerMeritTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerMeritTrendAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">meritTrendAlarm</var>
+        <var name="fileType">meritTrendAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="meritTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="meritTrendLogger" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">meritTrendAlarm</var>
+        <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerMeritTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestMeritTrendRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">meritTrendAlarm</var>
+        <var name="%(meritTrendAlarm_versionName)s">%(meritTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerMeritTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="meritHist" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">digi/merit</var>
+        <var name="outFileTypes">meritHist</var>
+        <var name="%(digi_versionName)s">%(digi_version)s</var>
+        <var name="%(merit_versionName)s">%(merit_version)s</var>
+        <var name="%(meritHist_versionName)s">%(meritHist_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="doChunk.allRecon" status="SUCCESS"/>
+        <after process="registerDigi" status="SUCCESS"/>
+        <after process="registerMerit" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="registerMeritHist" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">meritHist</var>
+        <var name="fileType">meritHist</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="meritHist" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="meritHistAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">meritHist</var>
+        <var name="outFileTypes">meritHistAlarm</var>
+        <var name="%(meritHist_versionName)s">%(meritHist_version)s</var>
+        <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerMeritHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerMeritHistAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">meritHistAlarm</var>
+        <var name="fileType">meritHistAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="meritHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestMeritHistRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">meritHistAlarm</var>
+        <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerMeritHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="meritHistLogger" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">meritHistAlarm</var>
+        <var name="%(meritHistAlarm_versionName)s">%(meritHistAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerMeritHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="findSolarFlares" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="%(digiTrend_versionName)s">%(digiTrend_version)s</var>
+        <var name="%(meritTrend_versionName)s">%(meritTrend_version)s</var>
+        <var name="%(solarFlareHist_versionName)s">%(solarFlareHist_version)s</var>
+        <var name="%(solarFlareLog_versionName)s">%(solarFlareLog_version)s</var>
+        <var name="%(solarFlarePlot_versionName)s">%(solarFlarePlot_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/findSolarFlares.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerDigiTrend" status="SUCCESS"/>
+        <after process="registerMeritTrend" status="SUCCESS"/>
+	<after process="doChunk.digiTrend" status="SUCCESS"/>
+	<after process="doChunk.meritTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="registerSolarFlareHist" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">findSolarFlares</var>
+        <var name="fileType">solarFlareHist</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="findSolarFlares" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="registerSolarFlareLog" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">findSolarFlares</var>
+        <var name="fileType">solarFlareLog</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="findSolarFlares" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="registerSolarFlarePlot" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">findSolarFlares</var>
+        <var name="fileType">solarFlarePlot</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="findSolarFlares" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="suggestQuality" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="btiProcess">findSolarFlares</var>
+      </variables>
+      <script><![CDATA[
+%(suggestBody)s
+]]>
+      </script>
+      <depends>
+        <after process="findSolarFlares" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="scanReconTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunk</var>
+        <var name="subProcess">reconTrend</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunk.reconTrend" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeReconTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanReconTrend").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">reconTrend</var>
+        <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <!-- <after process="doChunk.mergeCalCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
+        <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
+        <after process="scanReconTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="registerReconTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeReconTrend</var>
+        <var name="fileType">reconTrend</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeReconTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestReconTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">reconTrend</var>
+        <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/ingestTrending.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerReconTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="reconTrendAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">reconTrend</var>
+        <var name="outFileTypes">reconTrendAlarm</var>
+        <var name="%(reconTrend_versionName)s">%(reconTrend_version)s</var>
+        <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerReconTrend" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerReconTrendAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">reconTrendAlarm</var>
+        <var name="fileType">reconTrendAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="reconTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestReconTrendRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">reconTrendAlarm</var>
+        <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerReconTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="reconTrendLogger" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">reconTrendAlarm</var>
+        <var name="%(reconTrendAlarm_versionName)s">%(reconTrendAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerReconTrendAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="scanReconHist" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunk</var>
+        <var name="subProcess">reconHist</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunk.reconHist" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeReconHist" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanReconHist").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">reconHist</var>
+        <var name="%(reconHist_versionName)s">%(reconHist_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <!-- <after process="doChunk.mergeCalCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
+        <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
+        <after process="scanReconHist" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="registerReconHist" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeReconHist</var>
+        <var name="fileType">reconHist</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeReconHist" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="reconHistAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">reconHist</var>
+        <var name="outFileTypes">reconHistAlarm</var>
+        <var name="%(reconHist_versionName)s">%(reconHist_version)s</var>
+        <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerReconHist" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerReconHistAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">reconHistAlarm</var>
+        <var name="fileType">reconHistAlarm</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="reconHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="reconHistLogger" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="inFileTypes">reconHistAlarm</var>
+        <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerReconHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="ingestReconHistRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="reportType">reconHistAlarm</var>
+        <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerReconHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="reconHistPostProcessor" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="fileType">reconHistAlarm</var>
+        <var name="%(reconHistAlarm_versionName)s">%(reconHistAlarm_version)s</var>
+        <var name="%(reconHistAlarmDist_versionName)s">%(reconHistAlarmDist_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/alarmPostProcessor.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="registerReconHistAlarm" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerReconHistAlarmDist" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">reconHistPostProcessor</var>
+        <var name="fileType">reconHistAlarmDist</var>
+        <var name="timeProcess">findChunks</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="reconHistPostProcessor" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="scanTkrAnalysis" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunk</var>
+        <var name="subProcess">tkrAnalysis</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunk.tkrAnalysis" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="scanReconChunks" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunk</var>
+        <var name="subProcess">mergeReconCrumbs</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunk.mergeReconCrumbs" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="checkRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/checkRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="acdPedsLogger" status="SUCCESS"/>
+        <after process="calGainsLogger" status="SUCCESS"/>
+        <after process="calHistLogger" status="SUCCESS"/>
+        <after process="calPedsLogger" status="SUCCESS"/>
+        <after process="doChunk.checkChunk" status="SUCCESS"/>
+        <after process="digiHistLogger" status="SUCCESS"/>
+        <after process="digiTrendLogger" status="SUCCESS"/>
+        <after process="exportFT1" status="SUCCESS"/>
+        <after process="exportLS1" status="SUCCESS"/>
+        <after process="fastMonErrorLogger" status="SUCCESS"/>
+        <after process="fastMonHistLogger" status="SUCCESS"/>
+        <after process="fastMonTrendLogger" status="SUCCESS"/>
+        <after process="ingestAcdPedsRun" status="SUCCESS"/>
+        <after process="ingestCalGainsRun" status="SUCCESS"/>
+        <after process="ingestCalHistRun" status="SUCCESS"/>
+        <after process="ingestCalPedsRun" status="SUCCESS"/>
+        <after process="ingestCalTrend" status="SUCCESS"/>
+        <after process="ingestDigiTrend" status="SUCCESS"/>
+        <after process="ingestFastMonTrend" status="SUCCESS"/>
+        <after process="ingestMeritTrend" status="SUCCESS"/>
+        <after process="ingestReconTrend" status="SUCCESS"/>
+        <after process="ingestFastMonTrendRun" status="SUCCESS"/>
+        <after process="ingestFastMonHistRun" status="SUCCESS"/>
+        <after process="ingestFastMonErrorRun" status="SUCCESS"/>
+        <after process="ingestFastMonErrorAlarmRun" status="SUCCESS"/>
+        <after process="ingestDigiTrendRun" status="SUCCESS"/>
+        <after process="ingestDigiHistRun" status="SUCCESS"/>
+        <after process="ingestMeritTrendRun" status="SUCCESS"/>
+        <after process="ingestMeritHistRun" status="SUCCESS"/>
+        <after process="ingestReconTrendRun" status="SUCCESS"/>
+        <after process="ingestReconHistRun" status="SUCCESS"/>
+        <after process="ingestVerifyErrorRun" status="SUCCESS"/>
+        <after process="ingestVerifyErrorAlarmRun" status="SUCCESS"/>
+        <after process="ingestVerifyFt1ErrorRun" status="SUCCESS"/>
+        <after process="ingestVerifyFt1ErrorAlarmRun" status="SUCCESS"/>
+        <after process="ingestVerifyFt2ErrorRun" status="SUCCESS"/>
+        <after process="ingestVerifyFt2ErrorAlarmRun" status="SUCCESS"/>
+        <after process="ingestVerifyMeritErrorRun" status="SUCCESS"/>
+        <after process="ingestVerifyMeritErrorAlarmRun" status="SUCCESS"/>
+        <after process="meritHistLogger" status="SUCCESS"/>
+        <after process="meritTrendLogger" status="SUCCESS"/>
+        <after process="reconHistLogger" status="SUCCESS"/>
+        <after process="reconTrendLogger" status="SUCCESS"/>
+        <after process="registerAcdPlots" status="SUCCESS"/>
+        <after process="registerCal" status="SUCCESS"/>
+        <after process="registerElectronFT1" status="SUCCESS"/>
+        <after process="registerFastMonTuple" status="SUCCESS"/>
+<!--        <after process="registerFilteredMerit" status="SUCCESS"/>    -->
+        <after process="registerGcr" status="SUCCESS"/>
+        <after process="registerM7Hp" status="SUCCESS"/>
+        <after process="registerMeritHist" status="SUCCESS"/>
+        <after process="registerOrbitPlot" status="SUCCESS"/>
+        <after process="registerReconHistAlarmDist" status="SUCCESS"/>
+        <after process="registerRelation" status="SUCCESS"/>
+        <after process="registerSolarFlareHist" status="SUCCESS"/>
+        <after process="registerSolarFlareLog" status="SUCCESS"/>
+        <after process="registerSolarFlarePlot" status="SUCCESS"/>
+        <after process="registerVerifyHisto" status="SUCCESS"/>
+        <after process="scanReconChunks" status="SUCCESS"/>
+        <after process="suggestQuality" status="SUCCESS"/>
+        <after process="scanTkrAnalysis" status="SUCCESS"/>
+        <after process="verifyErrorLogger" status="SUCCESS"/>
+        <after process="verifyFt1ErrorLogger" status="SUCCESS"/>
+        <after process="verifyFt2ErrorLogger" status="SUCCESS"/>
+        <after process="wrapupQuality" status="SUCCESS"/>
+        <after process="verifyMeritErrorLogger" status="SUCCESS"/>
+      </depends>
+      <createsSubtasks>
+        <subtask>cleanupCompleteRun</subtask>
+      </createsSubtasks>
+    </process>
+
+    <process name="setStatus" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">checkRun</var>
+      </variables>
+      <script><![CDATA[
+%(successScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="checkRun" status="DONE"/>
+        <after process="setRunning" status="DONE"/>
+      </depends>
+    </process>
+
+    <task name="cleanupCompleteRun" version="%(L1Version)s" type="Data">
+
+      <process name="getTimes" autoRetryMaxAttempts="0"> <!-- Should use genericScript.py with a cleanup routine here -->
+        <variables>
+	      <var name="l1LockAction">LockDirOnly</var>
+          <var name="tStart">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunks").getVariable("tStart")}</var>
+          <var name="tStop">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunks").getVariable("tStop")}</var>
+          <var name="mootKey">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunks").getVariable("mootKey")}</var>
+          <var name="mootAlias">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunks").getVariable("mootAlias")}</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/getTimes.py" batchOptions="${extra}"/>
+      </process>
+
+      <process name="mergeReconChunks" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <!-- <var name="goodPis">${goodReconPis}</var> -->
+          <var name="goodPis">${pipeline.getCurrentStream().getParentStream().getProcessInstance("scanReconChunks").getVariable("goodPis")}</var>
+          <var name="outFileTypes">recon</var>
+          <var name="%(recon_versionName)s">%(recon_version)s</var>
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="getTimes" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="registerRecon" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="parentProcess">mergeReconChunks</var>
+          <var name="fileType">recon</var>
+          <var name="timeProcess">getTimes</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="mergeReconChunks" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="verifyComp" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="%(digi_versionName)s">%(digi_version)s</var>
+          <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
+          <var name="%(verifyHisto_versionName)s">%(verifyHisto_version)s</var>
+	  <var name="completeness">Complete</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/verify.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="getTimes" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="registerVerifyHistoComp" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="parentProcess">verifyComp</var>
+          <var name="fileType">verifyHisto</var>
+          <var name="timeProcess">getTimes</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="verifyComp" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="registerVerifyLogComp" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="parentProcess">verifyComp</var>
+          <var name="fileType">verifyLog</var>
+          <var name="timeProcess">getTimes</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="verifyComp" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="ingestVerifyErrorRunComp" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="reportType">verifyLog</var>
+          <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="registerVerifyLogComp" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="verifyErrorAlarmComp" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">verifyLog</var>
+          <var name="outFileTypes">verifyErrorAlarm</var>
+          <var name="%(verifyLog_versionName)s">%(verifyLog_version)s</var>
+          <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="registerVerifyLogComp" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="registerVerifyErrorAlarmComp" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="parentProcess">verifyErrorAlarmComp</var>
+          <var name="fileType">verifyErrorAlarm</var>
+          <var name="timeProcess">getTimes</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="verifyErrorAlarmComp" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="verifyErrorLoggerComp" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">verifyErrorAlarm</var>
+          <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="registerVerifyErrorAlarmComp" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="ingestVerifyErrorAlarmRunComp" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="reportType">verifyErrorAlarm</var>
+          <var name="%(verifyErrorAlarm_versionName)s">%(verifyErrorAlarm_version)s</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="registerVerifyErrorAlarmComp" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="mergeTkrAnalysis" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="goodPis">${pipeline.getCurrentStream().getParentStream().getProcessInstance("scanTkrAnalysis").getVariable("goodPis")}</var>  
+          <var name="outFileTypes">tkrAnalysis</var>
+          <var name="%(tkrAnalysis_versionName)s">%(tkrAnalysis_version)s</var>
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <!-- <after process="doChunk.mergeReconCrumbs" status="DONE"/> # This is not really necessary.  In the situation it was designed to protect against, we'd rather not run at all.  But we can't say that. -->
+          <after process="getTimes" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="registerTkrAnalysis" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="parentProcess">mergeTkrAnalysis</var>
+          <var name="fileType">tkrAnalysis</var>
+          <var name="timeProcess">getTimes</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="mergeTkrAnalysis" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="tkrMonitor" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="%(tkrAnalysis_versionName)s">%(tkrAnalysis_version)s</var>
+          <var name="%(tkrMonitor_versionName)s">%(tkrMonitor_version)s</var>
+          <var name="%(tkrReport_versionName)s">%(tkrReport_version)s</var>
+          <!-- <var name="%(tkrAlarm_versionName)s">%(tkrAlarm_version)s</var> -->
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/tkrMonitor.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="registerTkrAnalysis" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="registerTkrMonitor" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="parentProcess">tkrMonitor</var>
+          <var name="fileType">tkrMonitor</var>
+          <var name="timeProcess">getTimes</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="tkrMonitor" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="registerTkrReport" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="parentProcess">tkrMonitor</var>
+          <var name="fileType">tkrReport</var>
+          <var name="timeProcess">getTimes</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="tkrMonitor" status="SUCCESS"/>
+        </depends>
+      </process>
+
+<!-- We don't have TKR alarms yet
+      <process name="registerTkrAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="parentProcess">tkrMonitor</var>
+          <var name="fileType">tkrAlarm</var>
+          <var name="timeProcess">getTimes</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="tkrMonitor" status="SUCCESS"/>
+        </depends>
+      </process>
+ -->
+
+      <process name="tkrTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">tkrMonitor</var>
+          <var name="outFileTypes">tkrTrend</var>
+          <var name="%(tkrMonitor_versionName)s">%(tkrMonitor_version)s</var>
+          <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="registerTkrMonitor" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="registerTkrTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="parentProcess">tkrTrend</var>
+          <var name="fileType">tkrTrend</var>
+          <var name="timeProcess">getTimes</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="tkrTrend" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="ingestTkrTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="reportType">tkrTrend</var>
+          <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/ingestTrending.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="registerTkrTrend" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="tkrTrendAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">tkrTrend</var>
+          <var name="outFileTypes">tkrTrendAlarm</var>
+          <var name="%(tkrTrend_versionName)s">%(tkrTrend_version)s</var>
+          <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="registerTkrTrend" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="registerTkrTrendAlarm" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="parentProcess">tkrTrendAlarm</var>
+          <var name="fileType">tkrTrendAlarm</var>
+          <var name="timeProcess">getTimes</var>
+        </variables>
+        <script><![CDATA[
+%(registerBody)s
+]]>
+        </script>
+        <depends>
+          <after process="tkrTrendAlarm" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="ingestTkrTrendRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="reportType">tkrTrendAlarm</var>
+          <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/ingestRun.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="registerTkrTrendAlarm" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="tkrTrendLogger" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">tkrTrendAlarm</var>
+          <var name="%(tkrTrendAlarm_versionName)s">%(tkrTrendAlarm_version)s</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="registerTkrTrendAlarm" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="cleanupChunks" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/deleteDirs.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="registerRecon" status="SUCCESS"/>
+          <after process="registerTkrReport" status="SUCCESS"/>
+          <after process="ingestTkrTrend" status="SUCCESS"/>
+          <after process="ingestTkrTrendRun" status="SUCCESS"/>
+          <after process="ingestVerifyErrorRunComp" status="SUCCESS"/>
+          <after process="ingestVerifyErrorAlarmRunComp" status="SUCCESS"/>
+<!-- We don't have TKR alarms (yet?)
+          <after process="registerTkrAlarm" status="SUCCESS"/>
+-->
+          <after process="registerVerifyHistoComp" status="SUCCESS"/>
+          <after process="tkrTrendLogger" status="SUCCESS"/>
+          <after process="verifyErrorLoggerComp" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="unLockRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="l1LockAction">UnLock</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/lockFile.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="cleanupChunks" status="SUCCESS"/>
+        </depends>
+      </process>
+
+    </task> <!-- cleanupCompleteRun -->
+
+    <task name="doChunk" version="%(L1Version)s" type="Data">
+
+      <variables>
+         <var name="EVENTSTOSKIP"></var>
+      </variables>
+
+      <prerequisites>
+         <prerequisite name="CHUNK_ID" type="string"/>
+      </prerequisites>
+
+      <process name="digitization" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+          <var name="inFileTypes">event</var>
+          <var name="%(event_versionName)s">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunks").getVariable("L1_PI_version")}</var>
+          <var name="outFileTypes">digi</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      </process>
+ 
+      <process name="fakeFT2" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="outFileTypes">ft2Fake</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      </process>
+ 
+      <process name="fastMonTuple" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">event</var>
+          <var name="%(event_versionName)s">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunks").getVariable("L1_PI_version")}</var>
+          <var name="reportType">fastMonTuple</var>
+          <var name="outFileTypes">fastMonTuple/fastMonError</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      </process>
+
+      <process name="fastMonHist" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="reportType">fastMonHist</var>
+          <var name="inFileTypes">fastMonTuple</var>
+          <var name="outFileTypes">fastMonHist</var>
+          <var name="%(fastMonTuple_versionName)s">${pipeline.getCurrentStream.getProcessInstance("fastMonTuple").getVariable("L1_PI_version")}</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="fastMonTuple" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="fastMonTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">fastMonTuple</var>
+          <var name="outFileTypes">fastMonTrend</var>
+          <var name="%(fastMonTuple_versionName)s">${pipeline.getCurrentStream.getProcessInstance("fastMonTuple").getVariable("L1_PI_version")}</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="fastMonTuple" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="digiHist" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">digi</var>
+          <var name="outFileTypes">digiHist</var>
+          <var name="%(digi_versionName)s">${pipeline.getCurrentStream.getProcessInstance("digitization").getVariable("L1_PI_version")}</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="digitization" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="digiTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">digi</var>
+          <var name="outFileTypes">digiTrend</var>
+          <var name="%(digi_versionName)s">${pipeline.getCurrentStream.getProcessInstance("digitization").getVariable("L1_PI_version")}</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="digitization" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="calTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">digi</var>
+          <var name="outFileTypes">calTrend</var>
+          <var name="%(digi_versionName)s">${pipeline.getCurrentStream.getProcessInstance("digitization").getVariable("L1_PI_version")}</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="digitization" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="setupCrumbs" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">digi</var>
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+          <var name="%(digi_versionName)s">${pipeline.getCurrentStream.getProcessInstance("digitization").getVariable("L1_PI_version")}</var>
+          <var name="%(ft2Fake_versionName)s">${pipeline.getCurrentStream.getProcessInstance("fakeFT2").getVariable("L1_PI_version")}</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="digitization" status="SUCCESS"/>
+          <after process="fakeFT2" status="SUCCESS"/>
+        </depends>
+        <createsSubtasks>
+          <subtask>doCrumb</subtask>
+        </createsSubtasks>
+      </process>
+
+      <process name="scanReconCrumbs" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="subTask">doCrumb</var>
+          <var name="subProcess">recon</var>
+        </variables>
+        <script><![CDATA[
+%(scanScriptBody)s
+]]>
+        </script>
+        <depends>
+          <after process="doCrumb.recon" status="DONE"/>
+        </depends>
+      </process>
+
+      <process name="allRecon" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <script><![CDATA[
+%(placeHolderBody)s
+]]>
+        </script>
+        <depends>
+          <after process="doCrumb.recon" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="mergeMeritCrumbs" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="outFileTypes">merit</var>
+          <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanReconCrumbs").getVariable("goodPis")}</var>  
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="scanReconCrumbs" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="mergeReconCrumbs" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="outFileTypes">recon</var>
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+          <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanReconCrumbs").getVariable("goodPis")}</var>  
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="scanReconCrumbs" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="mergeRelationCrumbs" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="outFileTypes">relation</var>
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+          <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanReconCrumbs").getVariable("goodPis")}</var>  
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="scanReconCrumbs" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="mergeCalCrumbs" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="outFileTypes">cal</var>
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+          <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanReconCrumbs").getVariable("goodPis")}</var>  
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="scanReconCrumbs" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="mergeGcrCrumbs" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="outFileTypes">gcr</var>
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+          <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanReconCrumbs").getVariable("goodPis")}</var>  
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="scanReconCrumbs" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="makeFT1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">merit</var>
+          <var name="outFileTypes">ft1NoDiffRsp</var>
+          <var name="%(merit_versionName)s">${pipeline.getCurrentStream.getProcessInstance("mergeMeritCrumbs").getVariable("L1_PI_version")}</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="mergeMeritCrumbs" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="diffRspFT1" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">ft1NoDiffRsp/ft2Fake</var>
+          <var name="outFileTypes">ft1BadGti</var>
+          <var name="%(ft1NoDiffRsp_versionName)s">${pipeline.getCurrentStream.getProcessInstance("makeFT1").getVariable("L1_PI_version")}</var>
+          <var name="%(ft2Fake_versionName)s">${pipeline.getCurrentStream.getProcessInstance("fakeFT2").getVariable("L1_PI_version")}</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="makeFT1" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="meritTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">digi/merit</var>
+          <var name="outFileTypes">meritTrend</var>
+          <var name="%(digi_versionName)s">${pipeline.getCurrentStream.getProcessInstance("digitization").getVariable("L1_PI_version")}</var>
+          <var name="%(merit_versionName)s">${pipeline.getCurrentStream.getProcessInstance("mergeMeritCrumbs").getVariable("L1_PI_version")}</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="allRecon" status="SUCCESS"/>
+          <after process="mergeMeritCrumbs" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="reconHist" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">cal/digi/recon</var>
+          <var name="outFileTypes">reconHist</var>
+          <var name="%(cal_versionName)s">${pipeline.getCurrentStream.getProcessInstance("mergeCalCrumbs").getVariable("L1_PI_version")}</var>
+          <var name="%(digi_versionName)s">${pipeline.getCurrentStream.getProcessInstance("digitization").getVariable("L1_PI_version")}</var>
+          <var name="%(recon_versionName)s">${pipeline.getCurrentStream.getProcessInstance("mergeReconCrumbs").getVariable("L1_PI_version")}</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="allRecon" status="SUCCESS"/>
+          <after process="mergeCalCrumbs" status="SUCCESS"/>
+          <after process="mergeReconCrumbs" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="reconTrend" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">cal/digi/recon</var>
+          <var name="outFileTypes">reconTrend</var>
+          <var name="%(cal_versionName)s">${pipeline.getCurrentStream.getProcessInstance("mergeCalCrumbs").getVariable("L1_PI_version")}</var>
+          <var name="%(digi_versionName)s">${pipeline.getCurrentStream.getProcessInstance("digitization").getVariable("L1_PI_version")}</var>
+          <var name="%(recon_versionName)s">${pipeline.getCurrentStream.getProcessInstance("mergeReconCrumbs").getVariable("L1_PI_version")}</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="allRecon" status="SUCCESS"/>
+          <after process="mergeCalCrumbs" status="SUCCESS"/>
+          <after process="mergeReconCrumbs" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="tkrAnalysis" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">digi/recon</var>
+          <var name="outFileTypes">tkrAnalysis</var>
+          <var name="%(digi_versionName)s">${pipeline.getCurrentStream.getProcessInstance("digitization").getVariable("L1_PI_version")}</var>
+          <var name="%(recon_versionName)s">${pipeline.getCurrentStream.getProcessInstance("mergeReconCrumbs").getVariable("L1_PI_version")}</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="allRecon" status="SUCCESS"/>
+          <after process="mergeReconCrumbs" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="checkChunk" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/checkChunk.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="fastMonHist" status="SUCCESS"/>
+          <after process="fastMonTrend" status="SUCCESS"/>
+          <after process="digiHist" status="SUCCESS"/>
+          <after process="digiTrend" status="SUCCESS"/>
+          <after process="calTrend" status="SUCCESS"/>
+          <after process="diffRspFT1" status="SUCCESS"/>
+          <after process="mergeGcrCrumbs" status="SUCCESS"/>
+          <after process="mergeRelationCrumbs" status="SUCCESS"/>
+          <after process="meritTrend" status="SUCCESS"/>
+          <after process="reconHist" status="SUCCESS"/>
+          <after process="reconTrend" status="SUCCESS"/>
+          <after process="tkrAnalysis" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <task name="doCrumb" version="%(L1Version)s" type="Data">
+
+        <prerequisites>
+          <prerequisite name="CRUMB_ID" type="string"/>
+          <prerequisite name="crumbEvents" type="string"/>
+          <prerequisite name="crumbStart" type="string"/>
+        </prerequisites>
+
+        <process name="recon" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+          <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/recon.py" batchOptions="${extra}"/>
+        </process>
+
+      </task> <!-- doCrumb -->
+     
+    </task> <!-- doChunk -->
+
+  </task> <!-- doRun -->
+
+  <task name="doLci" version="%(L1Version)s" type="Data">
+
+    <variables>
+      <var name="dataCatDir">%(dataCatBase)s/${DATASOURCE}</var>
+    </variables>
+
+    <prerequisites>
+      <prerequisite name="DATASOURCE" type="string"/>
+      <prerequisite name="RUNID" type="string"/>
+      <prerequisite name="RUNSTATUS" type="string"/>
+    </prerequisites>
+
+    <process name="findChunksLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="l1LockAction">LockDirOnly</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <createsSubtasks>
+        <subtask>doChunkLci</subtask>
+      </createsSubtasks>
+    </process>
+
+    <process name="setRunningLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="l1RunStatus">%(runningStatus)s</var>
+      </variables>
+      <script><![CDATA[
+%(runningScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="findChunksLci" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="copyM7HpLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="%(magic7Hp_versionName)s">%(magic7Hp_version)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/copyM7.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="findChunksLci" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerM7HpLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">copyM7HpLci</var>
+        <var name="fileType">magic7Hp</var>
+        <var name="timeProcess">findChunksLci</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="copyM7HpLci" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="scanDigiLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunkLci</var>
+        <var name="subProcess">digitizationLci</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunkLci.digitizationLci" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeDigiLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanDigiLci").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">digi</var>
+        <var name="%(digi_versionName)s">%(digi_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="scanDigiLci" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerDigiLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeDigiLci</var>
+        <var name="fileType">digi</var>
+        <var name="timeProcess">findChunksLci</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeDigiLci" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="scanDigiHistLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunkLci</var>
+        <var name="subProcess">digiHistLci</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunkLci.digiHistLci" status="DONE"/>
+      </depends>
+    </process>
+
+     <process name="mergeDigiHistLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanDigiHistLci").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">digiHist</var>
+        <var name="%(digiHist_versionName)s">%(digiHist_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="scanDigiHistLci" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="registerDigiHistLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeDigiHistLci</var>
+        <var name="fileType">digiHist</var>
+        <var name="timeProcess">findChunksLci</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeDigiHistLci" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="scanFastMonTupleLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunkLci</var>
+        <var name="subProcess">fastMonTupleLci</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunkLci.fastMonTupleLci" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeFastMonErrorLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanFastMonTupleLci").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">fastMonError</var>
+        <var name="%(fastMonError_versionName)s">%(fastMonError_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="scanFastMonTupleLci" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonErrorLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeFastMonErrorLci</var>
+        <var name="fileType">fastMonError</var>
+        <var name="timeProcess">findChunksLci</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonErrorLci" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="mergeFastMonTupleLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanFastMonTupleLci").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">fastMonTuple</var>
+        <var name="%(fastMonTuple_versionName)s">%(fastMonTuple_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="scanFastMonTupleLci" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonTupleLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeFastMonTupleLci</var>
+        <var name="fileType">fastMonTuple</var>
+        <var name="timeProcess">findChunksLci</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonTupleLci" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="scanFastMonHistLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="subTask">doChunkLci</var>
+        <var name="subProcess">fastMonHistLci</var>
+      </variables>
+      <script><![CDATA[
+%(scanScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="doChunkLci.fastMonHistLci" status="DONE"/>
+      </depends>
+    </process>
+
+    <process name="mergeFastMonHistLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="goodPis">${pipeline.getCurrentStream.getProcessInstance("scanFastMonHistLci").getVariable("goodPis")}</var>  
+        <var name="outFileTypes">fastMonHist</var>
+        <var name="%(fastMonHist_versionName)s">%(fastMonHist_version)s</var>
+        <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+      </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="scanFastMonHistLci" status="SUCCESS"/>
+      </depends>
+    </process>
+
+    <process name="registerFastMonHistLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">mergeFastMonHistLci</var>
+        <var name="fileType">fastMonHist</var>
+        <var name="timeProcess">findChunksLci</var>
+      </variables>
+      <script><![CDATA[
+%(registerBody)s
+]]>
+      </script>
+      <depends>
+        <after process="mergeFastMonHistLci" status="SUCCESS"/>
+      </depends>
+    </process>
+ 
+    <process name="checkRunLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/checkRun.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="doChunkLci.checkChunkLci" status="SUCCESS"/>
+        <after process="registerDigiLci" status="SUCCESS"/>
+        <after process="registerDigiHistLci" status="SUCCESS"/>
+        <after process="registerFastMonErrorLci" status="SUCCESS"/>
+        <after process="registerFastMonHistLci" status="SUCCESS"/>
+        <after process="registerFastMonTupleLci" status="SUCCESS"/>
+        <after process="registerM7HpLci" status="SUCCESS"/>
+      </depends>
+      <createsSubtasks>
+        <subtask>cleanupCompleteRunLci</subtask>
+      </createsSubtasks>
+    </process>
+
+    <process name="setStatusLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+      <variables>
+        <var name="parentProcess">checkRunLci</var>
+      </variables>
+      <script><![CDATA[
+%(successScriptBody)s
+]]>
+      </script>
+      <depends>
+        <after process="checkRunLci" status="DONE"/>
+        <after process="setRunningLci" status="DONE"/>
+      </depends>
+    </process>
+
+    <task name="cleanupCompleteRunLci" version="%(L1Version)s" type="Data">
+
+      <process name="cleanupChunksLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/deleteDirs.py" batchOptions="${extra}"/>
+      </process>
+
+    </task> <!-- cleanupCompleteRunLci -->
+
+    <task name="doChunkLci" version="%(L1Version)s" type="Data">
+
+      <variables>
+         <var name="EVENTSTOSKIP"></var>
+      </variables>
+
+      <prerequisites>
+         <prerequisite name="CHUNK_ID" type="string"/>
+      </prerequisites>
+
+      <process name="digitizationLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="LD_LIBRARY_PATH">%(libraryPath)s:%(grPath)s</var>
+          <var name="inFileTypes">event</var>
+          <var name="%(event_versionName)s">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunksLci").getVariable("L1_PI_version")}</var>
+          <var name="outFileTypes">digi</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      </process>
+ 
+      <process name="fastMonTupleLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">event</var>
+          <var name="%(event_versionName)s">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunksLci").getVariable("L1_PI_version")}</var>
+          <var name="reportType">fastMonTuple</var>
+          <var name="outFileTypes">fastMonTuple/fastMonError</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      </process>
+ 
+      <process name="fastMonHistLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="reportType">fastMonHist</var>
+          <var name="inFileTypes">fastMonTuple</var>
+          <var name="outFileTypes">fastMonHist</var>
+          <var name="%(fastMonTuple_versionName)s">${pipeline.getCurrentStream.getProcessInstance("fastMonTupleLci").getVariable("L1_PI_version")}</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=flightops python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="fastMonTupleLci" status="SUCCESS"/>
+        </depends>
+      </process>
+
+      <process name="digiHistLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <variables>
+          <var name="inFileTypes">digi</var>
+          <var name="outFileTypes">digiHist</var>
+          <var name="%(digi_versionName)s">${pipeline.getCurrentStream.getProcessInstance("digitizationLci").getVariable("L1_PI_version")}</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="digitizationLci" status="SUCCESS"/>
+        </depends>
+      </process>
+ 
+      <process name="checkChunkLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/checkChunk.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="fastMonHistLci" status="SUCCESS"/>
+          <after process="digiHistLci" status="SUCCESS"/>
+        </depends>
+      </process>
+
+    </task> <!-- doChunkLci -->
+
+  </task> <!-- doLci -->
+
+
+</task> <!-- L1Proc -->
+</pipeline>
+
