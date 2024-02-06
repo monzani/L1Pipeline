@@ -1,0 +1,8 @@
+#ignore all xml files
+*.xml
+
+#ignore all pyc ciles
+*.pyc
+
+#ignore build files
+*.log
