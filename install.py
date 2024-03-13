@@ -13,7 +13,7 @@ import variables
 #os.chdir(config.L1ProcROOT) # ?
 
 #taskNames = ['forceL1Merge', 'L1Proc', 'noReconMerge', 'setL1Status', 'flagFT2']
-taskNames = ['testVerifyS3df']
+taskNames = ['L1ProcS3df','testVerifyS3df']
 
 scriptNames = {
     'placeHolderBody': 'placeHolder.py',

@@ -1,4 +1,4 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel6_gcc44/ISOC_PROD/bin/shisoc python2.6
+#!/sdf/data/fermi/a/isoc/flightOps/rhel6_gcc44/ISOC_PROD/bin/shisoc --add-env=flightops python2.6
 
 import sys
 import os
@@ -28,8 +28,8 @@ realOutFile = fileNames.fileName(fileType, dlId, runId, next=True)
 stagedOutFile = staged.stageOut(realOutFile)
 
 isocBin = config.isocBin
+isocRun = config.isocRun
 
-python = config.python
 taskBase = config.hpTaskBase
 scid = config.scid
 
@@ -40,7 +40,7 @@ arch = config.l0Archive
 
 cmd = """
 export LD_PRELOAD=$ISOC_INSTALLROOT/lib/libXrdPosixPreload.so
-%(python)s %(taskBase)s/scripts/DiagRet.py --scid %(scid)s -b "%(tStart)s" -e "%(tStop)s" --lsm --arch %(arch)s | grep -E 'ATT|ORB' > %(stagedOutFile)s
+${isocRun} --add-env=flightops python2.6 %(taskBase)s/scripts/DiagRet.py --scid %(scid)s -b "%(tStart)s" -e "%(tStop)s" --lsm --arch %(arch)s | grep -E 'ATT|ORB' > %(stagedOutFile)s
 """ % locals()
 
 status = runner.run(cmd)

@@ -51,8 +51,8 @@ L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
 L1Data = os.path.join(L1ProcROOT, 'data')
 
-LATCalibRoot = '/afs/slac/g/glast/ground/releases/calibrations/'
-LATMonRoot = "/afs/slac/g/glast/ground/releases/monitor/"
+LATCalibRoot = '/sdf/data/fermi/a/ground/releases/calibrations/'
+LATMonRoot = '/sdf/data/fermi/a/ground/releases/monitor/'
 
 calibFlavors = { # not using this now, have separate JO files for LPA & MC
     'LPA': {
@@ -643,10 +643,13 @@ retries = os.environ.get('L1Retries', defaultRetries)
 # container settings parameters 
 #
 container_image = '/sdf/group/fermi/sw/containers/fermi-rhel6.sif'
-bind_package = '-B /sdf/group/fermi/sw/package:/afs/slac.stanford.edu/package'
-bind_others = '-B /sdf/data/fermi/a:/afs/slac.stanford.edu/g/glast -B /sdf:/sdf'
-container_volumes = ' '.join([bind_package, bind_others])
-container_exec = 'singularity exec'
+bind_mounts = '-B /sdf:/sdf -B /sdf/data/fermi/a:/afs/slac/g/glast'
+bind_afs_twice = '-B /sdf/data/fermi/a:/afs/slac.stanford.edu/g/glast'
+bind_package = '-B /sdf/group/fermi/sw/package:/afs/slac/package'
+bind_pkg_twice = '-B /sdf/group/fermi/sw/package:/afs/slac.stanford.edu/package'
+bind_TWW_mysql = '-B /sdf/group/fermi/sw/containers/rhel6/opt/TWWfsw:/opt/TWWfsw'
+container_volumes = ' '.join([bind_mounts, bind_afs_twice, bind_package, bind_pkg_twice, bind_TWW_mysql])
+container_exec = 'singularity exec --env LD_LIBRARY_PATH=${LD_LIBRARY_PATH}'
 
 # default option for stageSet input exclusion filter
 excludeIn = None
