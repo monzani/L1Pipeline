@@ -1,4 +1,4 @@
-#!/afs/slac/g/glast/isoc/flightOps/rhel6_gcc44/ISOC_PROD/bin/shisoc --add-env=flightops python2.6
+#!/sdf/data/fermi/a/isoc/flightOps/rhel6_gcc44/ISOC_PROD/bin/shisoc --add-env=flightops python2.6
 
 """@brief Find new run directories.
 
@@ -18,7 +18,6 @@ import chunkTester
 import fileNames
 import finders
 import glastTime
-import lsf
 import pipeline
 import runner
 import stageFiles
