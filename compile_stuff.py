@@ -1,11 +1,11 @@
-#!/sdf/data/fermi/a/isoc/flightOps/rhel6_gcc44/ISOC_PROD/bin/shisoc python2.6
+#!/sdf/group/fermi/a/isoc/flightOps/rhel6_gcc44/ISOC_PROD/bin/shisoc python2.6
 
 import os
 import sys
 
 import config
 
-backupGplTools = '/sdf/group/fermi/a/ground/PipelineConfig/L1Proc/5.9/GPLtools/python'
+backupGplTools = '/sdf/group/fermi/ground/PipelineBuilds/BackupGplTools/python'
 sys.path.append(backupGplTools)
 
 import runner

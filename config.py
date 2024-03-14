@@ -11,11 +11,11 @@ import sys
 L1Name = os.environ.get('L1_TASK_NAME') or "L1Proc"
 L1Version = os.environ.get('PIPELINE_TASKVERSION') or os.environ.get('L1_TASK_VERSION') or "6.0"
 fullTaskName = '-'.join([L1Name, L1Version])
-installRoot = os.environ.get('L1_INSTALL_DIR') or "/sdf/data/fermi/a/ground/PipelineConfig/L1Proc"
+installRoot = os.environ.get('L1_INSTALL_DIR') or "/sdf/group/fermi/ground/PipelineConfig/L1Proc"
 
 creator = '-'.join([L1Name, L1Version])
     
-L1BuildBase = os.environ.get('L1_BUILD_DIR') or "/sdf/data/fermi/a/ground/PipelineBuilds/L1Proc"
+L1BuildBase = os.environ.get('L1_BUILD_DIR') or "/sdf/group/fermi/ground/PipelineBuilds/L1Proc"
 L1Build = os.path.join(L1BuildBase, L1Version)
 
 doCleanup = True
@@ -51,8 +51,7 @@ L1ProcROOT = os.path.join(installRoot, L1Version)
 L1Xml = os.path.join(L1ProcROOT, 'xml')
 L1Data = os.path.join(L1ProcROOT, 'data')
 
-LATCalibRoot = '/sdf/data/fermi/a/ground/releases/calibrations/'
-LATMonRoot = '/sdf/data/fermi/a/ground/releases/monitor/'
+LATCalibRoot = '/sdf/group/fermi/ground/releases/calibrations/'
 
 calibFlavors = { # not using this now, have separate JO files for LPA & MC
     'LPA': {
@@ -162,13 +161,14 @@ cleanupSubTask = {
         },
     }
 
-groundRoot = '/sdf/data/fermi/a/ground'
+groundRootNew = '/sdf/group/fermi/ground'
+groundRootOld = '/sdf/data/fermi/a/ground'
 scons = '/sdf/data/fermi/a/applications/SCons/2.1.0/bin/scons'
 
 #this is for rhel6:
 optConfig = 'redhat6-x86_64-64bit-gcc44-Optimized'
-glastExt = os.path.join(groundRoot, 'GLAST_EXT', 'redhat6-x86_64-64bit-gcc44')
-releaseDir = os.path.join(groundRoot, 'PipelineBuilds', 'GlastRelease')
+glastExt = os.path.join(groundRootOld, 'GLAST_EXT', 'redhat6-x86_64-64bit-gcc44')
+releaseDir = os.path.join(groundRootNew, 'PipelineBuilds', 'GlastRelease')
 #
 glastVersion = '20-10-04-gr07'
 releaseName = 'GlastRelease'
@@ -196,7 +196,7 @@ rootSys = os.path.join(glastExt, 'ROOT/v5.34.03-gr01')
 haddRootSys = rootSys
 hadd = os.path.join(glastExt, haddRootSys, 'bin', 'hadd')
 
-stDir = os.path.join(groundRoot, 'PipelineBuilds', 'ScienceTools')
+stDir = os.path.join(groundRootNew, 'PipelineBuilds', 'ScienceTools')
 stVersion = '11-05-01'
 stName = 'ScienceTools'
 
@@ -452,7 +452,7 @@ mergeConfigs = {
     }
 
 
-alarmBase = os.path.join(groundRoot, 'PipelineBuilds', 'Monitoring')
+alarmBase = os.path.join(groundRootNew, 'PipelineConfig', 'Monitoring')
 alarmRefDir = os.path.join(alarmBase, 'ReferHist',  mode)
 alarmBase = os.path.join(alarmBase, 'AlarmsCfg', mode)
 alarmConfigs = {
@@ -678,7 +678,6 @@ astroTools = "/afs/slac/g/glast/applications/astroTools/astrotools_setup.sh"
 os.environ['GLAST_EXT'] = glastExt
 os.environ['GPL2'] = GPL2
 os.environ['LATCalibRoot'] = LATCalibRoot
-os.environ['LATMonRoot'] = LATMonRoot
 os.environ['MALLOC_CHECK_'] = '0'
 os.environ['PFILES'] = PFILES
 os.environ['PYTHONPATH'] = pythonPath

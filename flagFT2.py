@@ -21,7 +21,6 @@ import pipeline
 import registerPrep
 import runner
 
-#os.environ['PFILES'] = '/afs/slac.stanford.edu/u/ek/focke/pfiles;/afs/slac/g/glast/applications/astroTools/headas/i686-pc-linux-gnu-libc2.2.4/syspfiles'
 
 dlId = 'dl'
 chunkId = None
