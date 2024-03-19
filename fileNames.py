@@ -253,7 +253,7 @@ def fileName(fileType, dlId, runId=None, chunkId=None, crumbId=None,
         pass
     
     if level == 'run' and fileType is None:
-        runDir = os.path.join(config.L1Dir, subDir)
+        runDir = os.path.join(config.L1Output, subDir)
         return runDir
         
     # Assign a version. Maybe.
@@ -461,14 +461,14 @@ def dlDirectory(dlRawDir):
 
 def baseDirectory(fileType, level, relativePath):
     if level == 'downlink':
-        baseDir = config.L1Dir
+        baseDir = config.L1Output
     elif level == 'run':
         if fileTypes[fileType] in xrootFileTypes:
             baseDir = config.xrootBase
         elif fileType is None:
             baseDir = config.xrootStage
         else:
-            baseDir = config.L1Dir
+            baseDir = config.L1Output
             pass
     elif level == 'chunk' and fileType is None:
         # deleting crumb directories

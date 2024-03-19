@@ -21,6 +21,7 @@ import pipeline
 import registerPrep
 import runner
 
+#os.environ['PFILES'] = '/sdf/group/fermi/ground/PipelineBuilds/BackupPfiles;/sdf/group/fermi/a/applications/astroTools/headas/afs/i686-pc-linux-gnu-libc2.2.4/syspfiles'
 
 dlId = 'dl'
 chunkId = None

@@ -3,8 +3,8 @@
 CONTAINERDIR=/sdf/group/fermi/sw/containers
 #-B $CONTAINERDIR/rhel6/afs/slac.stanford.edu/package/perl:/afs/slac.stanford.edu/package/perl \
 apptainer shell -B /sdf:/sdf \
-		-B /sdf/data/fermi/a:/afs/slac/g/glast \
-		-B /sdf/data/fermi/a:/afs/slac.stanford.edu/g/glast \
+		-B /sdf/group/fermi/a:/afs/slac/g/glast \
+		-B /sdf/group/fermi/a:/afs/slac.stanford.edu/g/glast \
 		-B /sdf/group/fermi/sw/package:/afs/slac/package \
 		-B /sdf/group/fermi/sw/package:/afs/slac.stanford.edu/package \
 		-B $CONTAINERDIR/rhel6/opt/TWWfsw:/opt/TWWfsw \

@@ -67,15 +67,13 @@ calibFlavors = { # not using this now, have separate JO files for LPA & MC
     }
 
 
-L1Disk = '/sdf/data/fermi/n/u41/L1'
-if testMode: L1Disk += 'Test'
-L1Dir = L1Disk
+L1Output = '/sdf/group/fermi/ground/PipelineOutput/L1'
+if testMode: L1Output += 'Test'
 
-dlStorage = os.path.join(L1Disk, 'deliveries')
-if testMode: dlStorage = os.path.join(dlStorage, 'test')
+dlStorage = os.path.join(L1Output, 'deliveries')
 saveDl = True
 
-logRoot = '/sdf/data/fermi/n/u41/L1/logs'
+logRoot = '/sdf/group/fermi/ground/PipelineOutput/L1/logs'
 
 # normal
 dataCatBase = '/Data/Flight/Level1'
@@ -90,14 +88,13 @@ xrootGlast = 'root://glast-rdr.slac.stanford.edu//glast'
 xrootSubDir = '%s/%s/%s' % (dataCatDir, mode, L1Version)
 xrootBase = xrootGlast + xrootSubDir
 
-if testMode: L1Dir = os.path.join(L1Dir, 'test')
 
 # optional override for versions looked up from datacat
 # actual version will be max of the normal version and this. 
 baseVersion = 0
 
 #throttle parameters
-throttleDir =  os.path.join(L1Dir, 'throttle')
+throttleDir =  os.path.join(L1Output, 'throttle')
 throttleLimit = 6
 
 if testMode:
@@ -108,7 +105,7 @@ else:
 
 xrootStage = os.path.join(xrootGlast, 'Scratch', stageBase)
 
-maxCrumbs = 45 # Maximum number of crumbs/chunk.
+maxCrumbs = 30 # Maximum number of crumbs/chunk.
 crumbSize = 1500 # minimum average crumb size (chunkEvents/nCrumbs)
 crumbMmr = 1.5 # largestCrumb / smallestCrumb
 
@@ -162,8 +159,8 @@ cleanupSubTask = {
     }
 
 groundRootNew = '/sdf/group/fermi/ground'
-groundRootOld = '/sdf/data/fermi/a/ground'
-scons = '/sdf/data/fermi/a/applications/SCons/2.1.0/bin/scons'
+groundRootOld = '/sdf/group/fermi/a/ground'
+scons = '/sdf/group/fermi/a/applications/SCons/2.1.0/bin/scons'
 
 #this is for rhel6:
 optConfig = 'redhat6-x86_64-64bit-gcc44-Optimized'
@@ -210,12 +207,12 @@ l1BinDir = os.path.join(L1Build, 'bin', optConfig)
 l1ExeDir = os.path.join(L1Build, 'exe', optConfig)
 l1Setup = os.path.join(l1BinDir, '_setup.sh')
 
-isoc = '/sdf/data/fermi/a/isoc/flightOps'
+isoc = '/sdf/group/fermi/a/isoc/flightOps'
 isocPlatform = 'rhel6_gcc44'
 isocMode = os.environ.get('isocMode', 'ISOC_PROD')
 isocBin = os.path.join(isoc, isocPlatform, isocMode, 'bin')
 isocRun = os.path.join(isoc, isocPlatform, '${isocMode}', 'bin', 'isoc run')
-python27 = '/sdf/data/fermi/a/ground/GLAST_EXT/redhat6-x86_64-64bit-gcc44/python/2.7.2-gl4/bin/python'
+python27 = '/sdf/group/fermi/a/ground/GLAST_EXT/redhat6-x86_64-64bit-gcc44/python/2.7.2-gl4/bin/python'
 
 isocScript = os.path.join(isocBin, 'isoc')
 isocEnv = 'eval `%s isoc_env --add-env=flightops`' % isocScript
@@ -595,8 +592,8 @@ if testMode:
 else:
     trendMode = 'prod'
     pass
-trendIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/%s/bin/ingestTrendingFile' % trendMode
-runIngestor = '/afs/slac.stanford.edu/g/glast/ground/dataQualityMonitoring/%s/bin/ingestRunFile' % trendMode
+trendIngestor = '/sdf/group/fermi/a/ground/dataQualityMonitoring/%s/bin/ingestTrendingFile' % trendMode
+runIngestor = '/sdf/group/fermi/a/ground/dataQualityMonitoring/%s/bin/ingestRunFile' % trendMode
 
 rootPath = os.path.join(rootSys, 'lib')
 libraryPath = ':'.join(
@@ -643,8 +640,8 @@ retries = os.environ.get('L1Retries', defaultRetries)
 # container settings parameters 
 #
 container_image = '/sdf/group/fermi/sw/containers/fermi-rhel6.sif'
-bind_mounts = '-B /sdf:/sdf -B /sdf/data/fermi/a:/afs/slac/g/glast'
-bind_afs_twice = '-B /sdf/data/fermi/a:/afs/slac.stanford.edu/g/glast'
+bind_mounts = '-B /sdf:/sdf -B /sdf/group/fermi/a:/afs/slac/g/glast'
+bind_afs_twice = '-B /sdf/group/fermi/a:/afs/slac.stanford.edu/g/glast'
 bind_package = '-B /sdf/group/fermi/sw/package:/afs/slac/package'
 bind_pkg_twice = '-B /sdf/group/fermi/sw/package:/afs/slac.stanford.edu/package'
 bind_TWW_mysql = '-B /sdf/group/fermi/sw/containers/rhel6/opt/TWWfsw:/opt/TWWfsw'
@@ -673,7 +670,7 @@ igrfExport = {
     False: ''
     }[ignoreIgrfBoundary]
 
-astroTools = "/afs/slac/g/glast/applications/astroTools/astrotools_setup.sh"
+astroTools = '/sdf/group/fermi/a/applications/astroTools/astrotools_setup_s3df.sh'
 
 os.environ['GLAST_EXT'] = glastExt
 os.environ['GPL2'] = GPL2
