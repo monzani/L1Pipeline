@@ -88,7 +88,6 @@ xrootGlast = 'root://glast-rdr.slac.stanford.edu//glast'
 xrootSubDir = '%s/%s/%s' % (dataCatDir, mode, L1Version)
 xrootBase = xrootGlast + xrootSubDir
 
-
 # optional override for versions looked up from datacat
 # actual version will be max of the normal version and this. 
 baseVersion = 0
@@ -105,7 +104,7 @@ else:
 
 xrootStage = os.path.join(xrootGlast, 'Scratch', stageBase)
 
-maxCrumbs = 30 # Maximum number of crumbs/chunk.
+maxCrumbs = 25 # Maximum number of crumbs/chunk.
 crumbSize = 1500 # minimum average crumb size (chunkEvents/nCrumbs)
 crumbMmr = 1.5 # largestCrumb / smallestCrumb
 
@@ -234,7 +233,7 @@ maxDbWait = 120
 scid = 77
 hpTaskBase = '/afs/slac/g/glast/isoc/flightOps/offline/halfPipe/prod'
 
-l0Archive = '/nfs/farm/g/glast/u23/ISOC-flight/Archive/level0'
+l0Archive = '/sdf/group/fermi/n/u23/ISOC-flight/Archive/level0'
 
 # LSF pre-exec option for run & throttle locking
 lockOption = " -E &quot;${isocRun} ${L1ProcROOT}/lockFile.py&quot; "
@@ -282,7 +281,7 @@ githubPlain = {
         'version': 'GPLtools-03-00-00',
         },
     'IGRF': {
-        'version': 'IGRF-03-02-00',
+        'version': 'IGRF-03-03-00',
         },
     }
 
