@@ -59,9 +59,10 @@ stagedInFile = staged.stageIn(inputFile)
 args = stagedInFile
 
 isocBin = config.isocBin
+outCfg = config.fastCopyCfg
 
 cmd = """eval `%(isocBin)s/isoc env --add-env=flightops`
-FASTCopy.py %(send)s %(args)s
+ISOC_SITEDEP=%(outCfg)s FASTCopy.py %(send)s %(args)s
 """ % locals()
 
 status = runner.run(cmd)

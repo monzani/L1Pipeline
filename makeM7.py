@@ -38,8 +38,8 @@ tStop = glastTime.met2Iso8860(float(os.environ['tStop']) + config.m7Pad)
 
 arch = config.l0Archive
 
+#export LD_PRELOAD=$ISOC_INSTALLROOT/lib/libXrdPosixPreload.so
 cmd = """
-export LD_PRELOAD=$ISOC_INSTALLROOT/lib/libXrdPosixPreload.so
 ${isocRun} --add-env=flightops python2.6 %(taskBase)s/scripts/DiagRet.py --scid %(scid)s -b "%(tStart)s" -e "%(tStop)s" --lsm --arch %(arch)s | grep -E 'ATT|ORB' > %(stagedOutFile)s
 """ % locals()
 

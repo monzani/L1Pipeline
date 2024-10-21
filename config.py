@@ -67,13 +67,13 @@ calibFlavors = { # not using this now, have separate JO files for LPA & MC
     }
 
 
-L1Output = '/sdf/group/fermi/ground/PipelineOutput/L1'
+L1Output = '/sdf/data/fermi/ground/PipelineOutput/L1'
 if testMode: L1Output += 'Test'
 
 dlStorage = os.path.join(L1Output, 'deliveries')
 saveDl = True
 
-logRoot = '/sdf/group/fermi/ground/PipelineOutput/L1/logs'
+logRoot = '/sdf/data/fermi/ground/PipelineOutput/L1/logs'
 
 # normal
 dataCatBase = '/Data/Flight/Level1'
@@ -106,7 +106,7 @@ xrootStage = os.path.join(xrootGlast, 'Scratch', stageBase)
 
 maxCrumbs = 25 # Maximum number of crumbs/chunk.
 crumbSize = 1500 # minimum average crumb size (chunkEvents/nCrumbs)
-crumbMmr = 1.5 # largestCrumb / smallestCrumb
+crumbMmr = 1.3 # largestCrumb / smallestCrumb
 
 maxChunks = 1000 # We can't handle too many chunks. Fail if more.
 
@@ -215,6 +215,8 @@ python27 = '/sdf/group/fermi/a/ground/GLAST_EXT/redhat6-x86_64-64bit-gcc44/pytho
 
 isocScript = os.path.join(isocBin, 'isoc')
 isocEnv = 'eval `%s isoc_env --add-env=flightops`' % isocScript
+fastCopyOut = '/sdf/group/fermi/ground/FASTCopyOutdir'
+fastCopyCfg = os.path.join(fastCopyOut, 'outgoing.ini')
 
 # DB for acqsummary
 if mode == 'prod':
@@ -234,9 +236,6 @@ scid = 77
 hpTaskBase = '/afs/slac/g/glast/isoc/flightOps/offline/halfPipe/prod'
 
 l0Archive = '/sdf/group/fermi/n/u23/ISOC-flight/Archive/level0'
-
-# LSF pre-exec option for run & throttle locking
-lockOption = " -E &quot;${isocRun} ${L1ProcROOT}/lockFile.py&quot; "
 
 if testMode:
     aspLauncher = '/bin/true'
@@ -631,6 +630,10 @@ except ImportError:
 #
 jobsite = 'S3DFDATA'
 slurm_extras = '--partition milano --account fermi:L1'
+
+# LSF/slurm pre-exec option for run & throttle locking
+#lockOption = " -E &quot;${isocRun} ${L1ProcROOT}/lockFile.py&quot; "
+lockOption = "${isocRun} ${L1ProcROOT}/lockFile.py"
 
 # number of autoretries for processes that do that
 defaultRetries = 1
