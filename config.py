@@ -92,7 +92,7 @@ dataCatDir = os.environ.get('dataCatDir', dataCatDir)
 #dataCatBase = dataCatDir
 
 if testMode:
-    xrootGlast = 'root://glast-test-rdr.slac.stanford.edu//glast'
+    xrootGlast = 'root://glast-rdr.slac.stanford.edu//glast'
 else:
     xrootGlast = 'root://glast-rdr.slac.stanford.edu//glast'
     pass
@@ -343,7 +343,7 @@ githubPackages = {
         },
     'ft2Util': {
         'repository': 'https://github.com/fermi-lat/ft2Util',
-        'version': 'ft2Util-02-05-00',
+        'version': 'ft2Util-02-05-04',
         },
     }
 
