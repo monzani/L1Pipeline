@@ -280,7 +280,7 @@ githubPlain = {
         'version': 'GPLtools-03-00-00',
         },
     'IGRF': {
-        'version': 'IGRF-03-03-00',
+        'version': 'IGRF-03-04-01',
         },
     }
 
@@ -295,7 +295,7 @@ githubSCons = {
         'version': 'fermitools-11-07-01',
         },
     'ft2Util': {
-        'version': 'ft2Util-02-05-00',
+        'version': 'ft2Util-02-05-04',
         },
     'Monitor': {
         'version': 'Monitor-03-14-03',
