@@ -280,7 +280,7 @@ githubPlain = {
         'version': 'GPLtools-03-00-00',
         },
     'IGRF': {
-        'version': 'IGRF-03-04-01',
+        'version': 'IGRF-03-04-02',
         },
     }
 

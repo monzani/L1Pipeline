@@ -90,6 +90,7 @@ def doGithubPlain(packName):
     if packName == 'IGRF':
         igrfDir = os.path.join(package['root'], 'python')
         cmd += '''cd %s
+        eval `/afs/slac/g/glast/isoc/flightOps/rhel6_gcc44/ISOC_PROD/bin/isoc isoc_env --add-env=flightops`
         make clean
         make
         ''' % igrfDir
