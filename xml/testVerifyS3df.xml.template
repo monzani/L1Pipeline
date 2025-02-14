@@ -2,9 +2,9 @@
 <pipeline
   xmlns="http://glast-ground.slac.stanford.edu/pipeline"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline https://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.2/pipeline.xsd">
+  xsi:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline https://glast-ground.slac.stanford.edu/Pipeline-II/schemas/2.3/pipeline.xsd">
 
-<task name="AAA-testVerifyS3df-develop" version="%(L1Version)s" type="Data">
+<task name="AAA-testVerifyS3df-locking" version="%(L1Version)s" type="Data">
 
   <variables>
     <var name="preamble"></var> <!-- Make sure local cache is setup -->
@@ -16,7 +16,7 @@
     <var name="L1_TASK_NAME">%(L1Name)s</var>
     <var name="L1_TASK_VERSION">%(L1Version)s</var>
     <var name="DATASOURCE">LPA</var>
-    <var name="RUNID">r0570405973</var>
+    <var name="RUNID">r0759863065</var>
     <var name="DOWNLINK_ID">0</var>
     <var name="DOWNLINK_RAWDIR">/nowhere/0</var>
     <var name="GLAST_EXT">%(glastExt)s</var>
@@ -37,7 +37,12 @@
     <var name="baseVersion">%(baseVersion)s</var>
     <var name="creator">%(creator)s</var>
     <var name="nameManglingPrefix">%(nameManglingPrefix)s</var>
+    <var name="l1LockAction">LockAndThrottle</var>
   </variables>
+
+  <process name="lockRun" site="${jobsite}">
+    <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/lockFile.py" batchOptions="${extra}" />
+  </process>
 
   <process name="verify" site="${jobsite}">
     <variables>
@@ -47,6 +52,9 @@
       <var name="completeness">InProgress</var>
     </variables> 
     <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/verifySubs.py" batchOptions="${extra}" />
+     <depends>
+       <after process="lockRun" status="SUCCESS"/>
+     </depends>
     <createsSubtasks>
       <subtask>checkSubStream</subtask>
     </createsSubtasks>

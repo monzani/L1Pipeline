@@ -69,13 +69,20 @@
       <prerequisite name="DATASOURCE" type="string"/>
       <prerequisite name="RUNID" type="string"/>
       <prerequisite name="RUNSTATUS" type="string"/>
-   </prerequisites>
+    </prerequisites>
 
-    <process name="findChunks" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+    <process name="lockRun" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="l1LockAction">LockAndThrottle</var>
       </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/lockFile.py" batchOptions="${extra}" />
+    </process>
+
+    <process name="findChunks" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
       <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="lockRun" status="SUCCESS"/>
+      </depends>
       <createsSubtasks>
         <subtask>doChunk</subtask>
       </createsSubtasks>
@@ -2797,16 +2804,25 @@
     </process>
 
     <task name="cleanupCompleteRun" version="%(L1Version)s" type="Data">
-
-      <process name="getTimes" autoRetryMaxAttempts="0"> <!-- Should use genericScript.py with a cleanup routine here -->
+	    
+      <process name="lockRecon" site="${jobsite}" autoRetryMaxAttempts="0">
         <variables>
-	      <var name="l1LockAction">LockDirOnly</var>
+          <var name="l1LockAction">LockDirOnly</var>
+        </variables>
+        <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/lockFile.py" batchOptions="${extra}" />
+      </process>
+
+      <process name="getTimes" site="${jobsite}" autoRetryMaxAttempts="0">
+        <variables>
           <var name="tStart">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunks").getVariable("tStart")}</var>
           <var name="tStop">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunks").getVariable("tStop")}</var>
           <var name="mootKey">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunks").getVariable("mootKey")}</var>
           <var name="mootAlias">${pipeline.getCurrentStream().getParentStream().getProcessInstance("findChunks").getVariable("mootAlias")}</var>
         </variables>
         <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 python2.6 ${L1ProcROOT}/getTimes.py" batchOptions="${extra}"/>
+        <depends>
+          <after process="lockRecon" status="SUCCESS"/>
+        </depends>
       </process>
 
       <process name="mergeReconChunks" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
@@ -3482,11 +3498,18 @@
       <prerequisite name="RUNSTATUS" type="string"/>
     </prerequisites>
 
-    <process name="findChunksLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
+    <process name="lockRunLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
       <variables>
         <var name="l1LockAction">LockDirOnly</var>
       </variables>
+      <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} python2.6 ${L1ProcROOT}/lockFile.py" batchOptions="${extra}" />
+    </process>
+
+    <process name="findChunksLci" site="${jobsite}" autoRetryMaxAttempts="%(retries)s">
       <job executable="${container_wrap} ${L1ProcROOT}/tools/wrapper ${isocRun} --add-env=oracle11 --add-env=flightops python2.6 ${L1ProcROOT}/genericScript.py" batchOptions="${extra}"/>
+      <depends>
+        <after process="lockRunLci" status="SUCCESS"/>
+      </depends>
       <createsSubtasks>
         <subtask>doChunkLci</subtask>
       </createsSubtasks>

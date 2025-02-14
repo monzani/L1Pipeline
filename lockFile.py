@@ -52,6 +52,10 @@ def lockDir(directory, base, id):
 
     lockFile = os.path.join(directory, lockFileName(base))
     
+    while os.path.exists(lockFile):
+        print >> sys.stderr, 'File %s already exists at [%s]' % (lockFile,time.ctime())
+        time.sleep(300)
+
     # This should fail if the file already exists.  It should be atomic for a
     # local file, but not if the file is on NFS.  So if this fails, we know
     # there's a problem, but if it succeeds, things still might not be okay.
@@ -101,6 +105,10 @@ def lockAndThrottle(directory, base, id):
 
     lockFile = os.path.join(directory, lockFileName(base))
     
+    while os.path.exists(lockFile):
+        print >> sys.stderr, 'File %s already exists at [%s]' % (lockFile,time.ctime())
+        time.sleep(300)
+ 
     # This should fail if the file already exists.  It should be atomic for a
     # local file, but not if the file is on NFS.  So if this fails, we know
     # there's a problem, but if it succeeds, things still might not be okay.
@@ -138,6 +146,10 @@ def lockAndThrottle(directory, base, id):
     os.unlink(uniqFile)
 
     # Now I try to get a throttling lock
+    while len(os.listdir(config.throttleDir)) >= config.throttleLimit:
+        print >> sys.stderr, 'No available throttle locks at [%s]' % (time.ctime())
+        time.sleep(300)
+ 
     print >> sys.stderr, 'Trying to create %s' % uniqThr
     try:
         fd = os.open(uniqThr, os.O_EXCL | os.O_RDWR | os.O_CREAT)

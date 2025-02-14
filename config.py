@@ -633,7 +633,7 @@ slurm_extras = '--partition milano --account fermi:L1'
 
 # LSF/slurm pre-exec option for run & throttle locking
 #lockOption = " -E &quot;${isocRun} ${L1ProcROOT}/lockFile.py&quot; "
-lockOption = "${isocRun} ${L1ProcROOT}/lockFile.py"
+lockScript = "${L1ProcROOT}/lockFile.py"
 
 # number of autoretries for processes that do that
 defaultRetries = 1
